@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout="@layout/activity_main_header">
+
+    <PreferenceCategory android:title="Timer">
+
+    <ListPreference
+        android:title="@string/skip_forward"
+        android:key="timerPlus"
+        android:defaultValue="20"
+        android:entries="@array/timerMinusPlus"
+        android:entryValues="@array/timerMinusPlusValues"/>
+    <ListPreference
+        android:title="@string/skip_backward"
+        android:key="timerMinus"
+        android:defaultValue="20"
+        android:entries="@array/timerMinusPlus"
+        android:entryValues="@array/timerMinusPlusValues"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/notification">
+
+    <SwitchPreference
+        android:title="@string/vibrate"
+        android:summary="@string/vibrateSummary"
+        android:defaultValue="true"
+        android:key="vibrationEnable"/>
+    <RingtonePreference
+        android:title="@string/ringtone"
+        android:key="ringtoneUri"
+        android:ringtoneType="notification"
+        android:defaultValue="content://settings/system/notification_sound"
+        android:showDefault="true"
+        android:showSilent="true"/>
+    <ListPreference
+        android:title="@string/lightColor"
+        android:key="lightColor"
+        android:defaultValue="green"
+        android:entries="@array/lightColor"
+        android:entryValues="@array/lightColorValues"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/extraNotification">
+
+    <SwitchPreference
+        android:title="@string/enable"
+        android:summary="@string/extraNotificationSummary"
+        android:defaultValue="true"
+        android:key="timerGetReadyEnable"/>
+    <ListPreference
+        android:title="@string/getReadyTime"
+        android:summary="@string/getReadyTimeSummary"
+        android:key="timerGetReady"
+        android:defaultValue="15"
+        android:entries="@array/timerGetReady"
+        android:entryValues="@array/timerGetReadyValues"/>
+    <SwitchPreference
+        android:title="@string/vibrate"
+        android:summary="@string/vibrateSummaryGetReady"
+        android:defaultValue="true"
+        android:key="vibrationReadyEnable"/>
+    <RingtonePreference
+        android:key="ringtoneUriReady"
+        android:title="@string/ringtone"
+        android:ringtoneType="notification"
+        android:defaultValue="content://settings/system/notification_sound"
+        android:showDefault="true"
+        android:showSilent="true"/>
+    <ListPreference
+        android:title="@string/lightColor"
+        android:key="lightReadyColor"
+        android:defaultValue="yellow"
+        android:entries="@array/lightColor"
+        android:entryValues="@array/lightColorValues"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

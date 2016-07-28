@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.simpleworkout.timer.MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/actionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        android:elevation="4dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/actionBar"
+        android:gravity="bottom"
+        android:weightSum="1">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="256dp"
+                android:layout_weight="0.53">
+
+                <ProgressBar
+                    android:id="@+id/timerProgressBar"
+                    android:scaleType="center"
+                    android:padding="55dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="-90"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:progressDrawable="@drawable/round_progressbar"
+                    android:progress="60"
+                    android:max="100"
+                    android:indeterminate="false"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentStart="true" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerInside"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:id="@+id/imageButtonTimerPlus"
+                        android:src="@drawable/ic_stopwatch_add_black_48dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="91:24"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="bold"
+                        android:textSize="52sp"
+                        android:textColor="@color/colorPrimary"
+                        android:id="@+id/textViewTimer"
+                        android:gravity="center"
+                        android:layout_gravity="center_horizontal" />
+
+                    <ImageButton
+                        android:id="@+id/imageButtonTimerMinus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerInside"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_stopwatch_remove_black_48dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_gravity="center"
+            android:weightSum="3" >
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:paddingLeft="16dp"
+                android:scaleType="fitEnd"
+                android:adjustViewBounds="true"
+                android:padding="0dp"
+                android:id="@+id/imageButtonSetsPlus"
+                android:src="@drawable/ic_chevron_left_black_48dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="x12"
+                android:fontFamily="sans-serif-light"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="30sp"
+                android:id="@+id/textViewSetsNumber"
+                android:gravity="center"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:paddingRight="16dp"
+                android:scaleType="fitStart"
+                android:adjustViewBounds="true"
+                android:padding="0dp"
+                android:id="@+id/imageButtonSetsMinus"
+                android:src="@drawable/ic_chevron_right_black_48dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:weightSum="3">
+
+            <ImageButton
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:padding="4dp"
+                android:id="@+id/imageButtonLeft"
+                android:src="@drawable/ic_refresh_black_48dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_gravity="center"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:padding="0dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="false"
+                android:layout_gravity="center"
+                android:id="@+id/imageButtonCenter"
+                android:src="@drawable/ic_play_circle_filled_black_48dp"
+                android:layout_weight="1"
+                android:background="?selectableItemBackgroundBorderless" />
+
+            <ImageButton
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:padding="4dp"
+                android:id="@+id/imageButtonRight"
+                android:src="@drawable/ic_chevron_right_double_black_48dp"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pickers -->
+    <string name="time_separator" translatable="false">:</string>
+</resources>
