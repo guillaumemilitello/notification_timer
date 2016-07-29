@@ -330,7 +330,7 @@ public class InteractiveNotification extends Notification {
                         notificationBuilder.setVibrate(null);
                     notificationBuilder.setSound(ringtoneReady);
                     if(lightReadyColor != COLOR_NONE)
-                        notificationBuilder.setLights(lightReadyColor, 2000, 1);
+                        notificationBuilder.setLights(lightReadyColor, 500, 600);
                     notificationBuilder.setPriority(PRIORITY_MAX);
                     break;
                 // Light, sound and long vibration
@@ -339,7 +339,7 @@ public class InteractiveNotification extends Notification {
                         notificationBuilder.setVibrate(MainActivity.vibrationPattern);
                     notificationBuilder.setSound(ringtone);
                     if(lightColor != COLOR_NONE)
-                        notificationBuilder.setLights(lightColor, 2000, 1);
+                        notificationBuilder.setLights(lightColor, 1000, 1000);
                     notificationBuilder.setPriority(PRIORITY_MAX);
                     break;
                 // Light only
@@ -347,7 +347,7 @@ public class InteractiveNotification extends Notification {
                     notificationBuilder.setVibrate(null);
                     notificationBuilder.setSound(null);
                     if(lightReadyColor != -1)
-                        notificationBuilder.setLights(lightReadyColor, 2000, 1);
+                        notificationBuilder.setLights(lightReadyColor, 500, 600);
                     notificationBuilder.setPriority(PRIORITY_MAX);
                     break;
             }
