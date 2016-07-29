@@ -1,7 +1,9 @@
 package com.simpleworkout.timer;
 
 
+import android.app.ActivityManager;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -50,10 +52,17 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
+                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                    getColor(R.color.colorPrimary)));
+        } else {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
+                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                    getResources().getColor(R.color.colorPrimary)));
+        }
 
         settingsFragment = new TimerPreferenceFragment();
         getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();

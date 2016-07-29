@@ -67,6 +67,7 @@ import java.util.Map;
 /**
  * Icons list:
  * add alarm
+ * thicker chevrons
  * delete pickers ?
  * APPLICATION ICON
  */
@@ -618,7 +619,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
         if(id == R.id.preferences) {
             Log.d(TAG, "onOptionsItemSelected: item.id=settings");
-            startActivity(new Intent(this, PreferencesActivity.class));
+            startActivityForResult(new Intent(this, PreferencesActivity.class), requestCode);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             return true;
         }
@@ -632,7 +633,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
         else if(id == R.id.about) {
             Log.d(TAG, "onOptionsItemSelected: item.id=about");
-            startActivity(new Intent(this, AboutActivity.class));
+            startActivityForResult(new Intent(this, AboutActivity.class), requestCode);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             return true;
         }
