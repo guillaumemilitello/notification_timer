@@ -61,7 +61,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="fill_parent"
-            android:src="@drawable/ic_refresh_black_48dp"
+            android:src="@drawable/ic_stopwatch_remove_black_48dp"
             android:scaleType="fitCenter"
             android:background="@null"
             android:id="@+id/notification3Buttons2"
@@ -70,7 +70,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="fill_parent"
-            android:src="@drawable/ic_refresh_black_48dp"
+            android:src="@drawable/ic_close_black_48dp"
             android:scaleType="fitCenter"
             android:background="@null"
             android:id="@+id/notification3Buttons1"
@@ -79,7 +79,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_refresh_black_48dp"
+            android:src="@drawable/ic_pause_black_48dp"
             android:scaleType="fitCenter"
             android:background="@null"
             android:id="@+id/notification3Buttons0"
