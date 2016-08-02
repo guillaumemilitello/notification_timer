@@ -13,11 +13,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import java.util.Locale;
 
-
-/**
- * Created by guillaume on 31/05/16.
- */
 @SuppressLint("ParcelCreator")
 public class InteractiveNotification extends Notification {
 
@@ -151,14 +148,9 @@ public class InteractiveNotification extends Notification {
         }
     }
 
-    protected void updateButtonsLayout(){
-        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED)
-            updateButtonsLayout();
-    }
-
     protected void updateButtonsLayout(ButtonsLayout layout) {
-        Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() +", timerCurrent=" + timerCurrent);
-        if(buttonsLayout != layout) {
+        Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() +", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
                     button2 = ButtonAction.NO_ACTION;
@@ -167,7 +159,7 @@ public class InteractiveNotification extends Notification {
                     notificationBuilder.setOngoing(false);
                     break;
                 case RUNNING:
-                    button2 = ButtonAction.NEXT_SET_START;
+                    button2 = (setsCurrent > 1) ? ButtonAction.NEXT_SET_START : ButtonAction.NEXT_SET;
                     button1 = (timerCurrent > timerMinus) ? ButtonAction.TIMER_MINUS : ButtonAction.NEXT_SET;
                     button0 = ButtonAction.PAUSE;
                     notificationBuilder.setOngoing(true);
@@ -367,7 +359,7 @@ public class InteractiveNotification extends Notification {
 
     protected void updateTimerTextView(long time) {
         timerCurrent = time;
-        timerString = String.format("%d:%02d", timerCurrent / 60, timerCurrent % 60);
+        timerString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
         Log.d(TAG, "updateTimerTextView: timerString='" + timerString + "'");
     }
 
@@ -378,18 +370,18 @@ public class InteractiveNotification extends Notification {
         // Keep "Extra set" displayed
         else if (setsCurrent == 1 && !setsString.equals(context.getString(R.string.extra_timer)))
             setsString = "Last timer";
-        Log.d(TAG, "updateSetsTextView: setting new timer text='" + timerString + "', setsString='" + setsString + "'");
+        Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
     }
 
     protected void updateOneSetTextViews() {
         setsCurrent = 1;
-        setsString = String.format(context.getString(R.string.one_timer));
+        setsString = context.getString(R.string.one_timer);
         Log.d(TAG, "updateOneSetTextViews: setsString='" + setsString + "'");
     }
 
     protected void updateExtraSetTextViews() {
         setsCurrent = 1;
-        setsString = String.format(context.getString(R.string.extra_timer));
+        setsString = context.getString(R.string.extra_timer);
         Log.d(TAG, "updateExtraSetTextViews: setsString='" + setsString + "'");
     }
 

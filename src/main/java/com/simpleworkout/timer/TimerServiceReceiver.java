@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-/**
- * Created by guillaume on 13/07/16.
- */
 public class TimerServiceReceiver extends BroadcastReceiver {
 
     private static final String TAG = "TimerServiceReceiver";

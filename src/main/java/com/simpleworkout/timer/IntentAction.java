@@ -1,8 +1,5 @@
 package com.simpleworkout.timer;
 
-/**
- * Created by guillaume on 09/06/16.
- */
 public class IntentAction {
 
     // Sent from the buttons

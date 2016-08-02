@@ -1,6 +1,5 @@
 package com.simpleworkout.timer;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -86,8 +85,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     // Timer done alerts
     private AlertDialog alertSetDone, alertAllSetsDone;
-    private AlertBuilderSetDone alertBuilderSetDone;
-    private AlertBuilderAllSetsDone alertBuilderAllSetsDone;
 
     // MainActivity user interface
     private MsPickerBuilder timerPickerBuilder;
@@ -119,8 +116,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private long timerPlus = 30;
     private boolean vibrationEnable = false;
     private boolean vibrationReadyEnable = false;
-    private int lightColor = Color.GREEN;
-    private int lightReadyColor = Color.YELLOW;
     private Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     private Uri ringtoneReady = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -180,8 +175,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
      */
     private GoogleApiClient client;
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -204,8 +199,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerTextView = (TextView) findViewById(R.id.textViewTimer);
         setsNumbersTextView = (TextView) findViewById(R.id.textViewSetsNumber);
 
-        alertBuilderSetDone = new AlertBuilderSetDone(this);
-        alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
+        AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
+        AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
         alertSetDone = alertBuilderSetDone.create();
         alertAllSetsDone = alertBuilderAllSetsDone.create();
 
@@ -391,8 +386,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
      * Update the timer and sets TextView and Progress Bar
      * Use the timerCurrent and setsCurrent variables
      */
+    @SuppressWarnings("deprecation")
     private void updateTimerDisplay() {
-        String timeString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60, timerUser / 60, timerUser % 60);
+        String timeString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
         Log.d(TAG, "updateTimerDisplay: timeString='" + timeString + "'");
         timerTextView.setText(timeString);
         timerProgressBar.setMax((int)timerUser);
@@ -881,8 +877,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         mainActivityVisible = false;
 
         if(timerServiceBound) {
-            timerService.setMainActivityVisible(mainActivityVisible);
-            timerService.updateNotificationVisibility(!mainActivityVisible);
+            timerService.setMainActivityVisible(false);
+            timerService.updateNotificationVisibility(true);
         }
 
         // Complete ongoing pop-up action
@@ -902,8 +898,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         Log.d(TAG, "onResume");
         mainActivityVisible = true;
         if(timerServiceBound) {
-            timerService.setMainActivityVisible(mainActivityVisible);
-            timerService.updateNotificationVisibility(!mainActivityVisible);
+            timerService.setMainActivityVisible(true);
+            timerService.updateNotificationVisibility(false);
         }
     }
 
@@ -936,7 +932,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             TimerBinder binder = (TimerBinder) service;
             timerService = binder.getService();
             timerServiceBound = true;
-            Log.d(TAG, "onServiceConnected: timerServiceBound=" + timerServiceBound);
+            Log.d(TAG, "onServiceConnected");
             getTimerServiceContext();
             updateUserInterface();
             updateAllPreferences();
@@ -1003,27 +999,39 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 }
                 break;
             case "lightColor":
+                int lightColor;
                 color = sharedPreferences.getString("lightColor", "green");
                 Log.d(TAG, "updatePreference: color=" + color);
-                if(color.equals("none"))
-                    lightColor = InteractiveNotification.COLOR_NONE;
-                else if(color.equals("default"))
-                    lightColor = InteractiveNotification.COLOR_DEFAULT;
-                else
-                    lightColor = Color.parseColor(color);
+                switch (color) {
+                    case "none":
+                        lightColor = InteractiveNotification.COLOR_NONE;
+                        break;
+                    case "default":
+                        lightColor = InteractiveNotification.COLOR_DEFAULT;
+                        break;
+                    default:
+                        lightColor = Color.parseColor(color);
+                        break;
+                }
                 if(timerServiceBound)
                     timerService.interactiveNotification.setLightColor(lightColor);
                 Log.d(TAG, "updatePreference: lightColor=" + color);
                 break;
             case "lightReadyColor":
+                int lightReadyColor;
                 color = sharedPreferences.getString("lightReadyColor", "yellow");
                 Log.d(TAG, "updatePreference: color=" + color);
-                if(color.equals("none"))
-                    lightReadyColor = InteractiveNotification.COLOR_NONE;
-                else if(color.equals("default"))
-                    lightReadyColor = InteractiveNotification.COLOR_DEFAULT;
-                else
-                    lightReadyColor = Color.parseColor(color);
+                switch (color) {
+                    case "none":
+                        lightReadyColor = InteractiveNotification.COLOR_NONE;
+                        break;
+                    case "default":
+                        lightReadyColor = InteractiveNotification.COLOR_DEFAULT;
+                        break;
+                    default:
+                        lightReadyColor = Color.parseColor(color);
+                        break;
+                }
                 if(timerServiceBound)
                     timerService.interactiveNotification.setLightReadyColor(lightReadyColor);
                 Log.d(TAG, "updatePreference: lightReadyColor=" + color);

@@ -150,39 +150,44 @@ public abstract class CountDownPauseTimer {
      */
     public abstract void onFinish();
 
-
     private static final int MSG = 1;
 
+    private CountDownPauseTimerHandler mHandler = new CountDownPauseTimerHandler(this);
 
-    // handles counting down
-    private Handler mHandler = new Handler() {
+    private static class CountDownPauseTimerHandler extends Handler {
+
+        private final CountDownPauseTimer timer;
+
+        CountDownPauseTimerHandler(CountDownPauseTimer timer) {
+            this.timer = timer;
+        }
 
         @Override
         public void handleMessage(Message msg) {
 
-            synchronized (CountDownPauseTimer.this) {
-                if (mCancelled) {
+            synchronized (timer) {
+                if (timer.mCancelled) {
                     return;
                 }
 
-                mTimeLeft = mStopTimeInFuture - SystemClock.elapsedRealtime();
+                timer.mTimeLeft = timer.mStopTimeInFuture - SystemClock.elapsedRealtime();
 
-                if (mTimeLeft <= 0) {
-                    onFinish();
+                if (timer.mTimeLeft <= 0) {
+                    timer.onFinish();
                 } else {
                     long lastTickStart = SystemClock.elapsedRealtime();
-                    onTick(mTimeLeft);
+                    timer.onTick(timer.mTimeLeft);
 
                     // take into account user's onTick taking time to execute
-                    long delay = lastTickStart + mCountdownInterval - SystemClock.elapsedRealtime();
+                    long delay = lastTickStart + timer.mCountdownInterval - SystemClock.elapsedRealtime();
 
                     // special case: user's onTick took more than interval to
                     // complete, skip to next interval
-                    while (delay < 0) delay += mCountdownInterval;
+                    while (delay < 0) delay += timer.mCountdownInterval;
 
                     sendMessageDelayed(obtainMessage(MSG), delay);
                 }
             }
         }
-    };
+    }
 }

@@ -58,8 +58,9 @@ public class MainActivityReceiver extends BroadcastReceiver {
                 break;
             case IntentAction.TIMER_STATE:
                 if (intent.hasExtra("state")) {
-                    String state = intent.getExtras().getString("state").toUpperCase(Locale.US);
-                    ((MainActivity)context).updateTimerState(TimerService.State.valueOf(state));
+                    String state = intent.getExtras().getString("state");
+                    if(state != null)
+                        ((MainActivity)context).updateTimerState(TimerService.State.valueOf(state.toUpperCase(Locale.US)));
                 }
                 break;
             case IntentAction.TIMER_UPDATE:

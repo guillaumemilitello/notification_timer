@@ -15,9 +15,6 @@ import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by guillaume on 21/06/16.
- */
 public class TimerService extends Service {
 
     public static final String TAG = "TimerService";
@@ -32,7 +29,6 @@ public class TimerService extends Service {
     public void setMainActivityVisible(boolean mainActivityVisible) { this.mainActivityVisible = mainActivityVisible; }
 
     private AlarmManager alarmManager;
-    private PowerManager powerManager;
     private PendingIntent pendingIntentAlarm;
     private PowerManager.WakeLock wakeLock;
 
@@ -93,6 +89,7 @@ public class TimerService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate");
+        PowerManager powerManager;
 
         interactiveNotification = new InteractiveNotification(this);
 
@@ -150,18 +147,18 @@ public class TimerService extends Service {
 
     public void updateNotificationVisibility(boolean visible) {
         Log.d(TAG, "updateNotificationVisibility: visible=" + visible);
-        if(isWaiting())
-            return;
-        else if (visible) {
-            // make the service persistent to make it running forever
-            startForeground(InteractiveNotification.getID(), notification);
-            interactiveNotification.setVisible();
-        }
-        else {
-            stopForeground(true);
-            interactiveNotification.dismiss();
-            if (interactiveNotificationAlert)
-                notificationDeleted();
+        if(!isWaiting()) {
+            if (visible) {
+                // make the service persistent to make it running forever
+                startForeground(InteractiveNotification.getID(), notification);
+                interactiveNotification.setVisible();
+            }
+            else {
+                stopForeground(true);
+                interactiveNotification.dismiss();
+                if (interactiveNotificationAlert)
+                    notificationDeleted();
+            }
         }
     }
 
@@ -417,8 +414,7 @@ public class TimerService extends Service {
         // Only light for time < timerGetReady
         if(time < timerGetReady && timerGetReadyEnable)
             notification_alert_level = 3;
-        if(notification_alert_level >= 0)
-            interactiveNotification.build(notification_alert_level);
+        interactiveNotification.build(notification_alert_level);
     }
 
     // Method only called from the MainActivity
