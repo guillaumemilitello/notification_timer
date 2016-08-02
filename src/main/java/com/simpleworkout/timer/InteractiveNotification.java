@@ -36,6 +36,7 @@ public class InteractiveNotification extends Notification {
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
 
+    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus; }
     public void setVibrationEnable(boolean vibrationEnable) { this.vibrationEnable = vibrationEnable; }
     public void setVibrationReadyEnable(boolean vibrationReadyEnable) { this.vibrationReadyEnable = vibrationReadyEnable; }
     public void setLightColor(int lightColor) { this.lightColor = lightColor; }
@@ -141,13 +142,6 @@ public class InteractiveNotification extends Notification {
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
-    protected void updateTimerMinusButton() {
-        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
-            button1 = (timerCurrent > timerMinus) ? ButtonAction.TIMER_MINUS : ButtonAction.NEXT_SET;
-            Log.d(TAG, "button timer minus updated");
-        }
-    }
-
     protected void updateButtonsLayout(ButtonsLayout layout) {
         Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() +", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
         if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
@@ -159,14 +153,22 @@ public class InteractiveNotification extends Notification {
                     notificationBuilder.setOngoing(false);
                     break;
                 case RUNNING:
-                    button2 = (setsCurrent > 1) ? ButtonAction.NEXT_SET_START : ButtonAction.NEXT_SET;
-                    button1 = (timerCurrent > timerMinus) ? ButtonAction.TIMER_MINUS : ButtonAction.NEXT_SET;
+                    if(timerCurrent > timerMinus) {
+                        button2 = ButtonAction.NEXT_SET;
+                        button1 = ButtonAction.TIMER_MINUS;
+                    }
+                    else {
+                        button2 = ButtonAction.NO_ACTION;
+                        button1 = ButtonAction.NEXT_SET;
+                    }
+                    if(setsCurrent > 1)
+                        button2 = ButtonAction.NEXT_SET_START;
                     button0 = ButtonAction.PAUSE;
                     notificationBuilder.setOngoing(true);
                     break;
                 case PAUSED:
-                    button2 = ButtonAction.NEXT_SET;
-                    button1 = ButtonAction.DISMISS;
+                    button2 = ButtonAction.DISMISS;
+                    button1 = ButtonAction.NEXT_SET;
                     button0 = ButtonAction.RESUME;
                     notificationBuilder.setOngoing(false);
                     break;

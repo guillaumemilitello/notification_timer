@@ -63,7 +63,7 @@ public class TimerService extends Service {
 
     public void setTimerGetReadyEnable(boolean timerGetReadyEnable) { this.timerGetReadyEnable = timerGetReadyEnable; }
     public void setTimerGetReady(int timerGetReady) { this.timerGetReady = timerGetReady; }
-    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus; }
+    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus; interactiveNotification.setTimerMinus(timerMinus);}
     public void setTimerPlus(long timerPlus) { this.timerPlus = timerPlus; }
 
     public enum State {
@@ -343,7 +343,7 @@ public class TimerService extends Service {
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
         interactiveNotification.updateTimerTextView(timerCurrent);
-        interactiveNotification.updateTimerMinusButton();
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
         interactiveNotification.build(0);
     }
 
@@ -352,7 +352,7 @@ public class TimerService extends Service {
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
         interactiveNotification.updateTimerTextView(timerCurrent);
-        interactiveNotification.updateTimerMinusButton();
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
         interactiveNotification.build(0);
     }
 
@@ -406,7 +406,7 @@ public class TimerService extends Service {
             if (mainActivityVisible)
                 getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time));
             interactiveNotification.updateTimerTextView(timerCurrent);
-            interactiveNotification.updateTimerMinusButton();
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
         }
         // Get ready notification light, sound and vibration
         if(time == timerGetReady && timerGetReadyEnable)

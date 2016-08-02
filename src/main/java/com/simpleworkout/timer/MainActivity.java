@@ -645,7 +645,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         if(requestCode == 1){
             Log.d(TAG, "onActivityResult: resultCode=" + resultCode);
         }
-
     }
 
     private void vibrate() {
