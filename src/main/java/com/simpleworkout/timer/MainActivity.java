@@ -896,6 +896,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         super.onResume();
         Log.d(TAG, "onResume");
         mainActivityVisible = true;
+        updateUserInterface();
         if(timerServiceBound) {
             timerService.setMainActivityVisible(true);
             timerService.updateNotificationVisibility(false);
