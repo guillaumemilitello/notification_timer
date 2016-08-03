@@ -47,17 +47,13 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * TODO: finalize behavior : service + UI in MainActivity
  * TODO:  --> UI update
- * TODO: refactor + remove errors logs
- * TODO: put strings to xml
+ * TODO: remove errors logs
  * TODO: clean code -> first github release : get a  LICENSE
  * TODO: finalize UI : main activity
  * TODO: finalize UI : text messages
  * TODO: finalize UI : icons
  * TODO: finalize UI : status bar color at launch
- * TODO: help screen activity
- * TODO: feedback activity
  * TODO: option screen on
  * TODO: about screen
  * TODO: merge request on pickers
