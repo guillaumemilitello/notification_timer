@@ -116,7 +116,7 @@
     <include
             layout="@layout/three_keys_view_leftright"
             android:id="@+id/fourth"/>
-    <!-- <com.codetroopers.betterpickers.numberpicker.NumberPickerErrorTextView
+    <com.codetroopers.betterpickers.numberpicker.NumberPickerErrorTextView
             android:id="@+id/error"
             android:visibility="invisible"
             android:paddingLeft="20dp"
@@ -127,5 +127,5 @@
             android:gravity="center_horizontal"
             android:background="#ffff4444"
             android:textColor="#ffffffff"
-            android:textStyle="bold"/> -->
+            android:textStyle="bold"/>
 </LinearLayout>
