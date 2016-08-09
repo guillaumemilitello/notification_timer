@@ -10,8 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -30,7 +29,6 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
 import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
@@ -653,17 +651,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void ring(Uri notification) {
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        if(streamVolume == 0) {
-            Log.d(TAG, "ring: streamVolume=" + streamVolume + ", showing toast message");
-            CharSequence text = getString(R.string.increase_volume);
-            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-        } else{
-            MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), notification);
-            mediaPlayer.start();
-            Log.i(TAG, "ring: notification=" + notification.toString());
-        }
+        Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        ringtone.play();
+        Log.i(TAG, "ring: notification=" + notification.toString());
     }
 
     private void updateSetsButtons() {

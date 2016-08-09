@@ -20,8 +20,6 @@
     <string name="extra_timer">Extra timer</string>
     <string name="all_timers_done">All timers done</string>
     <string name="time_is_up">Time is up</string>
-    <!-- Toast -->
-    <string name="increase_volume">Silent mode is enabled</string>
     <!-- Settings -->
     <string name="timer">Timer</string>
     <string name="notification">Notification</string>
