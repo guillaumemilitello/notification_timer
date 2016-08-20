@@ -136,7 +136,7 @@ public class TimerService extends Service {
         interactiveNotification.build(0);
         interactiveNotification.dismiss();
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     protected void updateNotificationVisibilityScreenLocked() {
