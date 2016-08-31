@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -36,7 +37,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
     private static final String TAG = "PreferencesActivity";
 
-    public SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
     private TimerPreferenceFragment settingsFragment;
 
     @Override
@@ -77,6 +78,18 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
+
+            Preference clearPresetPreference = findPreference("clearPreset");
+            if (clearPresetPreference != null) {
+                clearPresetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Log.d(TAG, "onPreferenceClick: preference=clearPreset");
+                        clearPreset();
+                        return true;
+                    }
+                });
+            }
         }
     }
 
@@ -102,6 +115,16 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    private static void clearPreset() {
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        for(int position=0; position < 3; ++position) {
+            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
+            sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+            sharedPreferencesEditor.apply();
+        }
+        Log.d(TAG, "clearPreset: all preset timer cleared");
     }
 
     private void updateExtraNotificationEnable() {
@@ -144,12 +167,15 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                // preferenceChangeListener implementation
-                Log.d(TAG, "SharedPreferenceChanged: key=" + key);
-                updateSummary(settingsFragment.findPreference(key));
+                // avoid checking for preset timer keys
+                if(!key.contains("presetArray_")) {
+                    // preferenceChangeListener implementation
+                    Log.d(TAG, "SharedPreferenceChanged: key=" + key);
+                    updateSummary(settingsFragment.findPreference(key));
 
-                if(key.equals("timerGetReadyEnable"))
-                    updateExtraNotificationEnable();
+                    if (key.equals("timerGetReadyEnable"))
+                        updateExtraNotificationEnable();
+                }
             }
         };
 }

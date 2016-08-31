@@ -98,6 +98,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonSetsMinus, imageButtonSetsPlus;
     private ImageButton imageButtonPresetLeft, imageButtonPresetCenter, imageButtonPresetRight;
+    private TextView presetLeftTextView, presetCenterTextView, presetRightTextView;
     private final float alphaEnabled = (float) 1.0;
     private final float alphaDisabled = (float) 0.3;
 
@@ -109,7 +110,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private int setsUser;
 
     // Settings
-    public static final long[] vibrationPattern = { 0, 400, 200, 400, };
+    protected static final long[] vibrationPattern = { 0, 400, 200, 400, };
 
     // User preferences
     private boolean timerGetReadyEnable = true;
@@ -120,7 +121,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private boolean vibrationReadyEnable = false;
     private Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     private Uri ringtoneReady = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    private Preset[] presetArray;
 
     public SharedPreferences sharedPreferences;
 
@@ -243,6 +243,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             public void onClick(View v) { presetInput(2); }
         });
 
+        presetLeftTextView = (TextView) findViewById(R.id.textViewPresetLeft);
+        presetCenterTextView = (TextView) findViewById(R.id.textViewPresetCenter);
+        presetRightTextView= (TextView) findViewById(R.id.textViewPresetRight);
+
         imageButtonTimerMinus = (ImageButton) findViewById(R.id.imageButtonTimerMinus);
         imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
         imageButtonSetsMinus = (ImageButton) findViewById(R.id.imageButtonSetsMinus);
@@ -299,18 +303,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        presetArray = new Preset[3];
-        presetArray[0] = new Preset();
-        presetArray[1] = new Preset();
-        presetArray[2] = new Preset();
-
-        presetArray[0].setSets(1);
-        presetArray[0].setTimer(100);
-        presetArray[1].setSets(2);
-        presetArray[1].setTimer(200);
-        presetArray[2].setSets(3);
-        presetArray[2].setTimer(300);
 
         if(!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");
@@ -462,35 +454,82 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
-    private void presetInput(int position) {
+    private void inputPreset(int position) {
+        long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+        int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
 
-        long time = presetArray[position].getTimer();
-        int sets  = presetArray[position].getSets();
-
-        if(timerServiceBound) {
-            timerService.setTimer(time);
-            timerService.setSets(sets);
+        if(timer < 0 || timer < 0) {
+            Log.e(TAG, "inputPreset : error in the saved values position=" + position + ", time=" + timer + ", sets=" + sets);
+            return;
         }
-        timerCurrent = time;
-        timerUser = time;
+        Log.d(TAG, "inputPreset: position=" + position + ", timerUser=" + timer + ", setsUser=" + sets);
+
+        timerCurrent = timer;
+        timerUser = timer;
         setsCurrent = sets;
         setsUser = sets;
 
-        Log.d(TAG, "presetInput: position=" + position + ", timerUser=" + time + ", setsUser=" + sets);
-
+        // Update READY UI
         timerProgressBar.setMax((int)timerUser);
         updateTimerDisplay();
         timerPickerDone = true;
         setsPickerDone = true;
 
-        timerState = TimerService.State.READY;
-        if(timerServiceBound)
+        if(timerServiceBound) {
+            timerService.setTimer(timer);
+            timerService.setSets(sets);
             timerService.setState(timerState);
+        }
+
+        timerState = TimerService.State.READY;
         updateButtonsLayout();
     }
 
     private void updatePresetTextView(int position) {
+        Log.d(TAG, "updatePresetTextView position=" + position);
+        String presetString = "-";
+        long time = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+        int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
+        if (time > 0 && sets > 0)
+            presetString = String.format(Locale.US, "%d:%02d x%d", time / 60, time % 60, sets);
+        switch (position) {
+            case 0:
+                presetLeftTextView.setText(presetString);
+                break;
+            case 1:
+                presetCenterTextView.setText(presetString);
+                break;
+            case 2:
+                presetRightTextView.setText(presetString);
+                break;
+        }
+    }
 
+    private void presetInput(int position) {
+        Log.d(TAG, "presetInput position=" + position);
+        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            inputPreset(position);
+        }
+        else if(buttonsLayout == ButtonsLayout.READY || buttonsLayout == ButtonsLayout.STOPPED) {
+            addPreset(position);
+        }
+        updatePresetButtons();
+    }
+
+    private void addPreset(int position) {
+        Log.d(TAG, "addPreset: position=" + position + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), setsCurrent);
+        sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), timerCurrent);
+        sharedPreferencesEditor.commit();
+        updatePresetTextView(position);
+    }
+
+    private boolean presetAvailable(int position) {
+        Log.d(TAG, "presetAvailable position=" + position);
+        long time = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+        int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
+        return (time > 0 && sets > 0);
     }
 
     protected void start() {
@@ -762,13 +801,32 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updatePresetButtons() {
-        if(buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+        int ic_add = R.drawable.ic_add_circle_black_48dp;
+        int ic_play = R.drawable.ic_play_circle_filled_black_48dp;
+        imageButtonPresetLeft.setImageResource(ic_add);
+        imageButtonPresetCenter.setImageResource(ic_add);
+        imageButtonPresetRight.setImageResource(ic_add);
+        if(buttonsLayout == ButtonsLayout.READY) {
             imageButtonPresetLeft.setEnabled(true);
             imageButtonPresetLeft.setAlpha(alphaEnabled);
             imageButtonPresetCenter.setEnabled(true);
             imageButtonPresetCenter.setAlpha(alphaEnabled);
             imageButtonPresetRight.setEnabled(true);
             imageButtonPresetRight.setAlpha(alphaEnabled);
+        }
+        else if(buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            boolean enable = presetAvailable(0);
+            imageButtonPresetLeft.setImageResource(enable? ic_play : ic_add);
+            imageButtonPresetLeft.setEnabled(enable);
+            imageButtonPresetLeft.setAlpha(enable? alphaEnabled : alphaDisabled);
+            enable = presetAvailable(1);
+            imageButtonPresetCenter.setImageResource(enable? ic_play : ic_add);
+            imageButtonPresetCenter.setEnabled(enable);
+            imageButtonPresetCenter.setAlpha(enable? alphaEnabled : alphaDisabled);
+            enable = presetAvailable(2);
+            imageButtonPresetRight.setImageResource(enable? ic_play : ic_add);
+            imageButtonPresetRight.setEnabled(enable);
+            imageButtonPresetRight.setAlpha(enable? alphaEnabled : alphaDisabled);
         }
         else {
             imageButtonPresetLeft.setEnabled(false);
@@ -778,6 +836,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             imageButtonPresetRight.setEnabled(false);
             imageButtonPresetRight.setAlpha(alphaDisabled);
         }
+        updatePresetTextView(0);
+        updatePresetTextView(1);
+        updatePresetTextView(2);
     }
 
     private void updateButtonsLayout() {
@@ -1134,19 +1195,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    Log.d(TAG, "SharedPreferenceChanged: key=" + key);
-                    updatePreference(key);
+                    // avoid checking for preset timer keys
+                    if(!key.contains("presetArray_")) {
+                        Log.d(TAG, "SharedPreferenceChanged: key=" + key);
+                        updatePreference(key);
+                    }
                 }
             };
-
-    protected class Preset {
-        private int sets;
-        private long timer;
-
-        public long getTimer() { return timer; }
-        public int getSets() { return sets; }
-
-        public void setTimer(long timer) { this.timer = timer; }
-        public void setSets(int sets) { this.sets = sets; }
-    }
 }

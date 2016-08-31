@@ -17,6 +17,11 @@
         android:entries="@array/timerMinusPlus"
         android:entryValues="@array/timerMinusPlusValues"/>
 
+    <Preference
+        android:title="@string/reset_preset"
+        android:key="clearPreset"
+        android:summary="@string/reset_preset_summary"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notification">

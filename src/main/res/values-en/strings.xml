@@ -27,6 +27,8 @@
     <string name="extraNotificationSummary">Notification seconds before the timer is done</string>
     <string name="skip_forward">Skip forward</string>
     <string name="skip_backward">Skip backward</string>
+    <string name="reset_preset">Clear preset timers</string>
+    <string name="reset_preset_summary">Clear all the preset timers</string>
     <string name="vibrate">Vibrate</string>
     <string name="vibrateSummary">Vibrate when the timer is done</string>
     <string name="ringtone">Ringtone</string>

@@ -25,21 +25,27 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginTop="16dp"
             android:gravity="center"
             android:weightSum="3">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:gravity="center" >
 
                 <ImageButton
+                    style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/imageButtonPresetLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_add_circle_black_48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="false"
                     android:layout_weight="1" />
 
                 <TextView
@@ -53,16 +59,21 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:gravity="center" >
 
                 <ImageButton
+                    style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/imageButtonPresetCenter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_add_circle_black_48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="false"
                     android:layout_weight="1" />
 
                 <TextView
@@ -76,17 +87,22 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:gravity="center" >
 
                 <ImageButton
+                    style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/imageButtonPresetRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_width="42dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_add_circle_black_48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="false"
+                    android:layout_weight="1"/>
 
                 <TextView
                     android:id="@+id/textViewPresetRight"
@@ -101,16 +117,16 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="256dp"
+                android:layout_height="280dp"
                 android:layout_weight="0.53"
                 android:layout_marginTop="12dp" >
 
                 <ProgressBar
                     android:id="@+id/timerProgressBar"
                     android:scaleType="center"
-                    android:padding="55dp"
+                    android:padding="60dp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:rotation="-90"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:progressDrawable="@drawable/round_progressbar"
@@ -168,7 +184,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="6dp"
             android:layout_gravity="center"
             android:weightSum="3" >
 
@@ -215,8 +230,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
             android:weightSum="3">
 
             <ImageButton
