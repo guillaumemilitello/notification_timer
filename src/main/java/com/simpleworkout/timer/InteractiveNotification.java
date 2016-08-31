@@ -28,6 +28,8 @@ public class InteractiveNotification extends Notification {
     private NotificationManager notificationManager;
     private NotificationCompat.Builder notificationBuilder;
 
+    public Notification getNotification() { return notificationBuilder.build(); }
+
     // Timer service related
     private long timerCurrent;
     private int setsCurrent;

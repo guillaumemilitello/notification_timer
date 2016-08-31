@@ -102,10 +102,17 @@ public class TimerService extends Service {
          * Start a persistent service in foreground by using this base notification
          * and the same ID of the interactiveNotification
          */
+
+        // pending intent to go back to the main activity from the notification
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+
         notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Simple Workout Timer")
                 .setContentText("Service running...")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .build();
 
         timerServiceReceiver = new TimerServiceReceiver();
@@ -136,7 +143,7 @@ public class TimerService extends Service {
         interactiveNotification.build(0);
         interactiveNotification.dismiss();
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     protected void updateNotificationVisibilityScreenLocked() {
@@ -150,7 +157,7 @@ public class TimerService extends Service {
         if(!isWaiting()) {
             if (visible) {
                 // make the service persistent to make it running forever
-                startForeground(InteractiveNotification.getID(), notification);
+                startForeground(interactiveNotification.getID(), interactiveNotification.getNotification());
                 interactiveNotification.setVisible();
             }
             else {
