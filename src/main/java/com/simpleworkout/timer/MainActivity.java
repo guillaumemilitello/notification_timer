@@ -92,7 +92,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private NumberPickerBuilder setsPickerBuilder;
     private boolean timerPickerDone, setsPickerDone;
     private TextView timerTextView,setsNumbersTextView;
-    private ProgressBar timerProgressBar;
+    private ProgressBar timerProgressBar, timerReadyProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
@@ -222,6 +222,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         setsPickerDone = false;
 
         timerProgressBar = (ProgressBar) findViewById(R.id.timerProgressBar);
+        timerReadyProgressBar = (ProgressBar) findViewById(R.id.timerReadyProgressBar);
 
         imageButtonLeft = (ImageButton) findViewById(R.id.imageButtonLeft);
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
@@ -361,6 +362,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private void updateUserInterface() {
         timerProgressBar.setMax((int)timerUser);
         timerProgressBar.setProgress((int)timerCurrent);
+        timerReadyProgressBar.setMax((int)timerUser);
+        timerReadyProgressBar.setProgress(timerGetReadyEnable? timerGetReady : 0);
         updateSetsDisplay();
         updateTimerDisplay();
         updateButtonsLayout();
@@ -386,6 +389,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerUser = time;
         Log.d(TAG, "onDialogMsSet: timerUser=" + time);
         timerProgressBar.setMax((int)timerUser);
+        timerReadyProgressBar.setMax((int)timerUser);
         updateTimerDisplay();
         timerPickerDone = true;
         input();
@@ -416,6 +420,12 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerTextView.setText(timeString);
         timerProgressBar.setMax((int)timerUser);
         timerProgressBar.setProgress((int)timerCurrent);
+        timerReadyProgressBar.setMax((int)timerUser);
+        if(!timerGetReadyEnable || timerCurrent <= timerGetReady)
+            timerReadyProgressBar.setProgress(0);
+        else
+            timerReadyProgressBar.setProgress(timerGetReady);
+
         int color;
         if(timerCurrent == 0)
             color = Color.GRAY;
@@ -427,6 +437,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             color = getResources().getColor(R.color.colorPrimary);
         timerTextView.setTextColor(color);
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(color));
+
     }
 
     private void updateSetsDisplay() {
@@ -471,6 +482,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
         // Update READY UI
         timerProgressBar.setMax((int)timerUser);
+        timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         timerPickerDone = true;
         setsPickerDone = true;
@@ -521,7 +533,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), setsCurrent);
         sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), timerCurrent);
-        sharedPreferencesEditor.commit();
+        sharedPreferencesEditor.apply();
         updatePresetTextView(position);
     }
 
