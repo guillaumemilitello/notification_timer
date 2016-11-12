@@ -8,7 +8,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -243,9 +242,10 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
      * Update the 0 button to determine whether it is able to be clicked.
      */
     public void updateZeroButton() {
-        boolean enabled = mInputPointer != -1;
+        boolean enabled = mInputPointer >= 0;
         if (mNumbers[0] != null) {
             mNumbers[0].setEnabled(enabled);
+            mNumbers[0].setAlpha(enabled? (float) 1: (float) 0.3);
         }
     }
 
@@ -287,7 +287,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
                 for (int i = 0; i < mInputPointer; i++) {
                     mInput[i] = mInput[i + 1];
                 }
-                mInput[mInputPointer] = -1;
+                mInput[mInputPointer] = 0;
                 mInputPointer--;
             }
         } else if (v == mLeft) {
@@ -313,14 +313,14 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
 
     private void updateKeypad() {
         // Update state of keypad
-        // Update the number
         updateLeftRightButtons();
+        // Update the number
         updateNumber();
         // enable/disable the "set" key
         enableSetButton();
         // Update the backspace button
         updateDeleteButton();
-        // Update the 0 button
+        // Update the zero button
         updateZeroButton();
     }
 

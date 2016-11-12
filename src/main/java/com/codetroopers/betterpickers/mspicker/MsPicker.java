@@ -185,6 +185,17 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     }
 
     /**
+     * Update the 0 button to determine whether it is able to be clicked.
+     */
+    public void updateZeroButton() {
+        boolean enabled = mInputPointer >= 0;
+        if (mNumbers[0] != null) {
+            mNumbers[0].setEnabled(enabled);
+            mNumbers[0].setAlpha(enabled? (float) 1: (float) 0.3);
+        }
+    }
+
+    /**
      * Update the delete button to determine whether it is able to be clicked.
      */
     public void updateDeleteButton() {
@@ -200,6 +211,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
         doOnClick(v);
         updateDeleteButton();
+        updateZeroButton();
     }
 
     protected void doOnClick(View v) {
@@ -260,7 +272,8 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         enableSetButton();
         // Update the backspace button
         updateDeleteButton();
-
+        // Update the zero button
+        updateZeroButton();
     }
 
     /**
