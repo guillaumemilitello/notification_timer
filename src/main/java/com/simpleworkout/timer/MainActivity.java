@@ -3,6 +3,7 @@ package com.simpleworkout.timer;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -233,15 +234,30 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         imageButtonPresetRight = (ImageButton) findViewById(R.id.imageButtonPresetRight);
         imageButtonPresetLeft.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { presetInput(0); }
+            public void onClick(View v) { presetClick(0); }
         });
         imageButtonPresetCenter.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { presetInput(1); }
+            public void onClick(View v) { presetClick(1); }
         });
         imageButtonPresetRight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { presetInput(2); }
+            public void onClick(View v) { presetClick(2); }
+        });
+        imageButtonPresetLeft.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {presetLongClick(0); return true;
+            }
+        });
+        imageButtonPresetCenter.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {presetLongClick(1); return true;
+            }
+        });
+        imageButtonPresetRight.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {presetLongClick(2); return true;
+            }
         });
 
         presetLeftTextView = (TextView) findViewById(R.id.textViewPresetLeft);
@@ -505,20 +521,14 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         if (time > 0 && sets > 0)
             presetString = String.format(Locale.US, "%d:%02d x%d", time / 60, time % 60, sets);
         switch (position) {
-            case 0:
-                presetLeftTextView.setText(presetString);
-                break;
-            case 1:
-                presetCenterTextView.setText(presetString);
-                break;
-            case 2:
-                presetRightTextView.setText(presetString);
-                break;
+            case 0: presetLeftTextView.setText(presetString); break;
+            case 1: presetCenterTextView.setText(presetString); break;
+            case 2: presetRightTextView.setText(presetString); break;
         }
     }
 
-    private void presetInput(int position) {
-        Log.d(TAG, "presetInput position=" + position);
+    private void presetClick(int position) {
+        Log.d(TAG, "presetClick position=" + position);
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
             inputPreset(position);
         }
@@ -528,6 +538,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         updatePresetButtons();
     }
 
+    private void presetLongClick(int position) {
+        Log.d(TAG, "presetLongClick position=" + position);
+        deletePresetAlertDialog(position);
+    }
+
     private void addPreset(int position) {
         Log.d(TAG, "addPreset: position=" + position + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
@@ -535,6 +550,37 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), timerCurrent);
         sharedPreferencesEditor.apply();
         updatePresetTextView(position);
+    }
+
+    private void deletePreset(int position) {
+        Log.d(TAG, "deletePreset: position=" + position);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
+        sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+        sharedPreferencesEditor.apply();
+        updatePresetButtons();
+    }
+
+    private void deletePresetAlertDialog(final int position) {
+        Log.d(TAG, "deletePreset: position=" + position);
+        AlertDialog.Builder alertBuilderDeletePreset = new AlertDialog.Builder(this);
+        alertBuilderDeletePreset
+            .setMessage("Delete preset timer ?")
+            .setCancelable(false)
+            .setPositiveButton("YES",new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog,int id) {
+                    deletePreset(position);
+                    dialog.cancel();
+                }
+            })
+            .setNegativeButton("NO",new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog,int id) {
+                    Log.d(TAG, "deletePreset: user cancel");
+                    dialog.cancel();
+                }
+            });
+        AlertDialog alertDialogDeletePreset = alertBuilderDeletePreset.create();
+        alertDialogDeletePreset.show();
     }
 
     private boolean presetAvailable(int position) {
