@@ -24,6 +24,7 @@ public class IntentAction {
     public static final String NOTIFICATION_DISMISS = "com.simpleworkout.action.NOTIFICATION_DISMISS";
 
     // Sent from the TimerService to the MainActivity UI and InteractiveNotification
+    public static final String TIMER_REBIND = "com.simpleworkout.action.TIMER_REBIND";
     public static final String TIMER_UPDATE = "com.simpleworkout.action.TIMER_UPDATE";
     public static final String TIMER_STATE = "com.simpleworkout.action.TIMER_STATE";
     public static final String TIMER_DONE = "com.simpleworkout.action.TIMER_DONE";

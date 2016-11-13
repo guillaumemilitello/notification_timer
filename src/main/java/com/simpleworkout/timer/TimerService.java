@@ -547,6 +547,7 @@ public class TimerService extends Service {
     @Override
     public void onRebind(Intent intent) {
         Log.v(TAG, "onRebind");
+        getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_REBIND));
         super.onRebind(intent);
     }
 

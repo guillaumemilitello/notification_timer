@@ -184,6 +184,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d(TAG, "onCreate");
 
         // Update system color bar and icon for the system
         setSupportActionBar((Toolbar) findViewById(R.id.actionBar));
@@ -308,6 +309,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         filter.addAction(IntentAction.SETS_PLUS);
         filter.addAction(IntentAction.SET_DONE);
         filter.addAction(IntentAction.ALL_SETS_DONE);
+        filter.addAction(IntentAction.TIMER_REBIND);
         filter.addAction(IntentAction.TIMER_STATE);
         filter.addAction(IntentAction.TIMER_UPDATE);
         filter.addAction(IntentAction.TIMER_DONE);
@@ -385,7 +387,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         updateButtonsLayout();
     }
 
-    private boolean timerServiceIsRunning(){
+    private boolean timerServiceIsRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         // Loop through the running services
         for(ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
@@ -393,6 +395,15 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 return true;
         }
         return false;
+    }
+
+    protected void timerServiceRebind() {
+        Log.d(TAG, "timerServiceRebind");
+        timerServiceBound = true;
+        // Rebind occurs only when relaunching the mainActivity
+        timerService.setMainActivityVisible(true);
+        timerService.updateNotificationVisibility(false);
+        getTimerServiceContext();
     }
 
     @Override
@@ -1087,7 +1098,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "onResume: timerServiceBound=" + timerServiceBound);
         mainActivityVisible = true;
         updateUserInterface();
         if(timerServiceBound) {
@@ -1101,16 +1112,12 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
 
-        if(timerServiceBound)
-            timerService.updateNotificationVisibility(false);
         unregisterReceiver(mainActivityReceiver);
 
         if (timerServiceBound) {
             unbindService(serviceConnection);
             timerServiceBound = false;
         }
-        // Don't stop the service on WIN DEATH
-        //stopService(new Intent(getBaseContext(), TimerService.class));
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
