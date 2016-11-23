@@ -313,6 +313,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         filter.addAction(IntentAction.TIMER_STATE);
         filter.addAction(IntentAction.TIMER_UPDATE);
         filter.addAction(IntentAction.TIMER_DONE);
+        filter.addAction(IntentAction.NOTIFICATION_DISMISS);
         registerReceiver(mainActivityReceiver, filter);
 
         Intent intent = new Intent(this, TimerService.class);
@@ -378,6 +379,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateUserInterface() {
+        if(timerServiceBound){
+            timerService.setMainActivityVisible(mainActivityVisible);
+            timerService.updateNotificationVisibility(!mainActivityVisible);
+        }
         timerProgressBar.setMax((int)timerUser);
         timerProgressBar.setProgress((int)timerCurrent);
         timerReadyProgressBar.setMax((int)timerUser);
@@ -408,13 +413,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     @Override
     public void onDialogMsSet(int reference, boolean isNegative, int minutes, int seconds) {
-        long time = minutes * 60 + seconds;
-        //getBaseContext().sendBroadcast(new Intent(IntentAction.SET_TIMER).putExtra("time", time));
-        if(timerServiceBound)
-            timerService.setTimer(time);
-        timerCurrent = time;
-        timerUser = time;
-        Log.d(TAG, "onDialogMsSet: timerUser=" + time);
+        long timer = minutes * 60 + seconds;
+        timerCurrent = timer;
+        timerUser = timer;
+        Log.d(TAG, "onDialogMsSet: timerUser=" + timer);
         timerProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setMax((int)timerUser);
         updateTimerDisplay();
@@ -425,9 +427,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
         int sets = number.intValue();
-        //getBaseContext().sendBroadcast(new Intent(IntentAction.SET_SETS).putExtra("sets", sets));
-        if(timerServiceBound)
-            timerService.setSets(sets);
         setsCurrent = sets;
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + sets);
@@ -464,7 +463,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             color = getResources().getColor(R.color.colorPrimary);
         timerTextView.setTextColor(color);
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(color));
-
     }
 
     private void updateSetsDisplay() {
@@ -486,8 +484,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             setsPickerBuilder.show();
         } else {
             timerState = TimerService.State.READY;
-            if(timerServiceBound)
-                timerService.setState(timerState);
+            updateInputTimerService();
             updateButtonsLayout();
         }
     }
@@ -511,21 +508,24 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
-        timerPickerDone = true;
-        setsPickerDone = true;
 
-        if(timerServiceBound) {
-            timerService.setTimer(timer);
-            timerService.setSets(sets);
-            timerService.setState(timerState);
-        }
+        timerPickerDone = false;
+        setsPickerDone = false;
 
         timerState = TimerService.State.READY;
+        updateInputTimerService();
         updateButtonsLayout();
     }
 
+    private void updateInputTimerService() {
+        if(timerServiceBound) {
+            timerService.setState(timerState);
+            timerService.setTimer(timerCurrent);
+            timerService.setSets(setsCurrent);
+        }
+    }
+
     private void updatePresetTextView(int position) {
-        Log.d(TAG, "updatePresetTextView position=" + position);
         String presetString = "-";
         long time = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
         int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
@@ -538,20 +538,31 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
+    private void updateAllPresetTextViews() {
+        updatePresetTextView(0);
+        updatePresetTextView(1);
+        updatePresetTextView(2);
+    }
+
     private void presetClick(int position) {
         Log.d(TAG, "presetClick position=" + position);
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
             inputPreset(position);
         }
-        else if(buttonsLayout == ButtonsLayout.READY || buttonsLayout == ButtonsLayout.STOPPED) {
-            addPreset(position);
+        else if (buttonsLayout == ButtonsLayout.READY && inputFromPickers()) {
+            addPresetAlertDialog(position);
         }
-        updatePresetButtons();
     }
 
     private void presetLongClick(int position) {
         Log.d(TAG, "presetLongClick position=" + position);
-        deletePresetAlertDialog(position);
+        if (buttonsLayout == ButtonsLayout.READY && inputFromPickers()) {
+            addPresetAlertDialog(position);
+        }
+        else {
+            deletePresetAlertDialog(position);
+        }
+        updatePresetButtons();
     }
 
     private void addPreset(int position) {
@@ -572,8 +583,30 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         updatePresetButtons();
     }
 
+    private void addPresetAlertDialog(final int position) {
+        Log.d(TAG, "addPresetAlertDialog: position=" + position);
+        AlertDialog.Builder alertBuilderDeletePreset = new AlertDialog.Builder(this);
+        alertBuilderDeletePreset
+                .setMessage("Add current timer to preset setting ?")
+                .setCancelable(false)
+                .setPositiveButton("YES",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        addPreset(position);
+                        dialog.cancel();
+                    }
+                })
+                .setNegativeButton("NO",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        Log.d(TAG, "addPresetAlertDialog: user cancel");
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialogDeletePreset = alertBuilderDeletePreset.create();
+        alertDialogDeletePreset.show();
+    }
+
     private void deletePresetAlertDialog(final int position) {
-        Log.d(TAG, "deletePreset: position=" + position);
+        Log.d(TAG, "deletePresetAlertDialog: position=" + position);
         AlertDialog.Builder alertBuilderDeletePreset = new AlertDialog.Builder(this);
         alertBuilderDeletePreset
             .setMessage("Delete preset timer ?")
@@ -586,7 +619,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             })
             .setNegativeButton("NO",new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog,int id) {
-                    Log.d(TAG, "deletePreset: user cancel");
+                    Log.d(TAG, "deletePresetAlertDialog: user cancel");
                     dialog.cancel();
                 }
             });
@@ -604,6 +637,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void start() {
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
+        // Give the user the possibility to save a timer once
+        timerPickerDone = false;
+        setsPickerDone = false;
         updateButtonsLayout();
     }
 
@@ -869,21 +905,38 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
+    private void updatePresetButtons(int state) {
+        Log.d(TAG, "updatePresetButtons: state=" + state);
+        switch (state) {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
+    }
+
+    private boolean inputFromPickers() {
+        return timerPickerDone && setsPickerDone;
+    }
+
     private void updatePresetButtons() {
+        Log.d(TAG, "updatePresetButtons: state=" + timerState + ", inputFromPickers=" + inputFromPickers());
         int ic_add = R.drawable.ic_add_circle_black_48dp;
-        int ic_play = R.drawable.ic_play_circle_filled_black_48dp;
-        imageButtonPresetLeft.setImageResource(ic_add);
-        imageButtonPresetCenter.setImageResource(ic_add);
-        imageButtonPresetRight.setImageResource(ic_add);
-        if(buttonsLayout == ButtonsLayout.READY) {
+        if(buttonsLayout == ButtonsLayout.READY && inputFromPickers()) {
+            imageButtonPresetLeft.setImageResource(ic_add);
             imageButtonPresetLeft.setEnabled(true);
             imageButtonPresetLeft.setAlpha(alphaEnabled);
+            imageButtonPresetCenter.setImageResource(ic_add);
             imageButtonPresetCenter.setEnabled(true);
             imageButtonPresetCenter.setAlpha(alphaEnabled);
+            imageButtonPresetRight.setImageResource(ic_add);
             imageButtonPresetRight.setEnabled(true);
             imageButtonPresetRight.setAlpha(alphaEnabled);
         }
         else if(buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            int ic_play = R.drawable.ic_play_circle_filled_black_48dp;
             boolean enable = presetAvailable(0);
             imageButtonPresetLeft.setImageResource(enable? ic_play : ic_add);
             imageButtonPresetLeft.setEnabled(enable);
@@ -898,16 +951,17 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             imageButtonPresetRight.setAlpha(enable? alphaEnabled : alphaDisabled);
         }
         else {
+            imageButtonPresetLeft.setImageResource(ic_add);
             imageButtonPresetLeft.setEnabled(false);
             imageButtonPresetLeft.setAlpha(alphaDisabled);
+            imageButtonPresetCenter.setImageResource(ic_add);
             imageButtonPresetCenter.setEnabled(false);
             imageButtonPresetCenter.setAlpha(alphaDisabled);
+            imageButtonPresetRight.setImageResource(ic_add);
             imageButtonPresetRight.setEnabled(false);
             imageButtonPresetRight.setAlpha(alphaDisabled);
         }
-        updatePresetTextView(0);
-        updatePresetTextView(1);
-        updatePresetTextView(2);
+        updateAllPresetTextViews();
     }
 
     private void updateButtonsLayout() {
@@ -1120,6 +1174,29 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        String str = "";
+        switch (level) {
+            case TRIM_MEMORY_RUNNING_MODERATE: // 5
+                str = "RUNNING_MODERATE";
+                break;
+            case TRIM_MEMORY_RUNNING_LOW: // 10
+                str = "RUNNING_LOW";
+                break;
+            case TRIM_MEMORY_RUNNING_CRITICAL: // 15
+                str = "RUNNING_CRITICAL, finishing activity";
+                finish();
+                break;
+            case TRIM_MEMORY_UI_HIDDEN: // 20
+                str = "UI_HIDDEN";
+                // TODO: release some ressources
+                break;
+        }
+        Log.d(TAG, "onTrimMemory: level=" + str);
+    }
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
@@ -1150,6 +1227,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updatePreference(String key) {
+
+        if(key.contains("presetArray_") || key.contains("timerService_"))
+            return;
+
         Log.d(TAG, "updatePreference: key=" + key);
         String color, uri, title;
 
@@ -1158,50 +1239,50 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 timerMinus = Long.parseLong(sharedPreferences.getString("timerMinus", "30"));
                 if(timerServiceBound)
                     timerService.setTimerMinus(timerMinus);
-                Log.d(TAG, "updatePreference: timerMinus=" + timerMinus);
+                //Log.d(TAG, "updatePreference: timerMinus=" + timerMinus);
                 break;
             case "timerPlus":
                 timerPlus = Long.parseLong(sharedPreferences.getString("timerPlus", "30"));
                 if(timerServiceBound)
                     timerService.setTimerPlus(timerPlus);
-                Log.d(TAG, "updatePreference: timerPlus=" + timerPlus);
+                //Log.d(TAG, "updatePreference: timerPlus=" + timerPlus);
                 break;
             case "vibrationEnable":
                 vibrationEnable = sharedPreferences.getBoolean("vibrationEnable", true);
                 if(timerServiceBound)
                     timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
-                Log.d(TAG, "updatePreference: vibrationEnable=" + vibrationEnable);
+                //Log.d(TAG, "updatePreference: vibrationEnable=" + vibrationEnable);
                 break;
             case "vibrationReadyEnable":
                 vibrationReadyEnable = sharedPreferences.getBoolean("vibrationReadyEnable", true);
                 if(timerServiceBound)
                     timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
-                Log.d(TAG, "updatePreference: vibrationReadyEnable=" + vibrationReadyEnable);
+                //Log.d(TAG, "updatePreference: vibrationReadyEnable=" + vibrationReadyEnable);
                 break;
             case "timerGetReadyEnable":
                 timerGetReadyEnable = sharedPreferences.getBoolean("timerGetReadyEnable", true);
                 if(timerServiceBound)
                     timerService.setTimerGetReadyEnable(timerGetReadyEnable);
-                Log.d(TAG, "updatePreference: timerGetReadyEnable=" + timerGetReadyEnable);
+                //Log.d(TAG, "updatePreference: timerGetReadyEnable=" + timerGetReadyEnable);
                 break;
             case "timerGetReady":
                 if(timerGetReadyEnable) {
                     timerGetReady = Integer.parseInt(sharedPreferences.getString("timerGetReady", "15"));
                     if(timerServiceBound)
                         timerService.setTimerGetReady(timerGetReady);
-                    Log.d(TAG, "updatePreference: timerGetReady=" + timerGetReady);
+                    //Log.d(TAG, "updatePreference: timerGetReady=" + timerGetReady);
                 }
                 else {
                     timerGetReady = -1;
                     if(timerServiceBound)
                         timerService.setTimerGetReady(timerGetReady);
-                    Log.d(TAG, "updatePreference: timerGetReady=" + timerGetReady);
+                    //Log.d(TAG, "updatePreference: timerGetReady=" + timerGetReady);
                 }
                 break;
             case "lightColor":
                 int lightColor;
                 color = sharedPreferences.getString("lightColor", "green");
-                Log.d(TAG, "updatePreference: color=" + color);
+                //Log.d(TAG, "updatePreference: color=" + color);
                 switch (color) {
                     case "none":
                         lightColor = InteractiveNotification.COLOR_NONE;
@@ -1215,12 +1296,12 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 }
                 if(timerServiceBound)
                     timerService.interactiveNotification.setLightColor(lightColor);
-                Log.d(TAG, "updatePreference: lightColor=" + color);
+                //Log.d(TAG, "updatePreference: lightColor=" + color);
                 break;
             case "lightReadyColor":
                 int lightReadyColor;
                 color = sharedPreferences.getString("lightReadyColor", "yellow");
-                Log.d(TAG, "updatePreference: color=" + color);
+                //Log.d(TAG, "updatePreference: color=" + color);
                 switch (color) {
                     case "none":
                         lightReadyColor = InteractiveNotification.COLOR_NONE;
@@ -1234,7 +1315,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 }
                 if(timerServiceBound)
                     timerService.interactiveNotification.setLightReadyColor(lightReadyColor);
-                Log.d(TAG, "updatePreference: lightReadyColor=" + color);
+                //Log.d(TAG, "updatePreference: lightReadyColor=" + color);
                 break;
             case "ringtoneUri":
                 uri = sharedPreferences.getString("ringtoneUri", "default");
@@ -1242,7 +1323,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 if(timerServiceBound)
                     timerService.interactiveNotification.setRingtone(ringtone);
                 title = RingtoneManager.getRingtone(this, ringtone).getTitle(this);
-                Log.d(TAG, "updatePreference: ringtone=" + title);
+                //Log.d(TAG, "updatePreference: ringtone=" + title);
                 break;
             case "ringtoneUriReady":
                 uri = sharedPreferences.getString("ringtoneUriReady", "default");
@@ -1250,21 +1331,17 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 if(timerServiceBound)
                     timerService.interactiveNotification.setRingtoneReady(ringtoneReady);
                 title = RingtoneManager.getRingtone(this, ringtoneReady).getTitle(this);
-                Log.d(TAG, "updatePreference: ringtone=" + title);
+                //Log.d(TAG, "updatePreference: ringtone=" + title);
                 break;
             default:
-                Log.e(TAG, "updateSetting: not supported preference key=" + key);
+                Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
     }
 
     SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    // avoid checking for preset timer keys
-                    if(!key.contains("presetArray_")) {
-                        Log.d(TAG, "SharedPreferenceChanged: key=" + key);
-                        updatePreference(key);
-                    }
+                    updatePreference(key);
                 }
             };
 }

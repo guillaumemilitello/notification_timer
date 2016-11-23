@@ -1,23 +1,26 @@
 package com.simpleworkout.timer;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v7.app.NotificationCompat;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class TimerService extends Service {
 
     public static final String TAG = "TimerService";
+
+    private boolean running = false;
 
     private final IBinder binder = new TimerBinder();
     private TimerServiceReceiver timerServiceReceiver;
@@ -25,20 +28,23 @@ public class TimerService extends Service {
     private CountDownPauseTimer countDownPauseTimer;
 
     private boolean mainActivityVisible = true;
-
     public void setMainActivityVisible(boolean mainActivityVisible) { this.mainActivityVisible = mainActivityVisible; }
 
     private AlarmManager alarmManager;
     private PendingIntent pendingIntentAlarm;
     private PowerManager.WakeLock wakeLock;
+    private SharedPreferences sharedPreferences;
 
     // Notification related
     protected InteractiveNotification interactiveNotification;
-    private Notification notification;
     private boolean interactiveNotificationAlert = false;
+    private boolean interactiveNotificationRebuild = true;
 
     public void setInteractiveNotificationAlert(boolean interactiveNotificationAlert) {
         this.interactiveNotificationAlert = interactiveNotificationAlert;
+    }
+    public void setInteractiveNotificationRebuild(boolean interactiveNotificationRebuild) {
+        this.interactiveNotificationRebuild = interactiveNotificationRebuild;
     }
 
     // Running values
@@ -53,7 +59,7 @@ public class TimerService extends Service {
     public int getSetsCurrent() { return setsCurrent; }
     public int getSetsUser() { return setsUser; }
     public State getState() { return state; }
-    public void setState(State state) { this.state = state; }
+    public void setState(State state) { this.state = state; saveContextPreferences(); }
 
     // Settings
     private boolean timerGetReadyEnable = true;
@@ -98,23 +104,6 @@ public class TimerService extends Service {
         pendingIntentAlarm = PendingIntent.getBroadcast(getBaseContext(), 0, new Intent(IntentAction.ACQUIRE_WAKELOCK), 0);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SimpleWorkoutTimerWakeLock");
 
-        /*
-         * Start a persistent service in foreground by using this base notification
-         * and the same ID of the interactiveNotification
-         */
-
-        // pending intent to go back to the main activity from the notification
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
-
-        notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Simple Workout Timer")
-                .setContentText("Service running...")
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .build();
-
         timerServiceReceiver = new TimerServiceReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(IntentAction.START);
@@ -134,21 +123,22 @@ public class TimerService extends Service {
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(IntentAction.ACQUIRE_WAKELOCK);
         registerReceiver(timerServiceReceiver, filter);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        loadContextPreferences();
+
+        running = true;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        // Make sure we remove any dead notification
-        interactiveNotification.build(0);
-        interactiveNotification.dismiss();
-
+        Log.d(TAG, "onStartCommand: running=" + running);
         return START_NOT_STICKY;
     }
 
     protected void updateNotificationVisibilityScreenLocked() {
         Log.d(TAG, "updateNotificationVisibilityScreenLocked: interactiveNotificationAlert=" + interactiveNotificationAlert);
-        if(interactiveNotificationAlert)
+        if(interactiveNotificationRebuild && interactiveNotificationAlert)
             updateNotificationVisibility(true);
     }
 
@@ -156,16 +146,19 @@ public class TimerService extends Service {
         Log.d(TAG, "updateNotificationVisibility: visible=" + visible);
         if(!isWaiting()) {
             if (visible) {
-                // make the service persistent to make it running forever
+                Log.d(TAG, "updateNotificationVisibility: startForeground");
                 startForeground(interactiveNotification.getID(), interactiveNotification.getNotification());
                 interactiveNotification.setVisible();
+                interactiveNotificationRebuild = true;
             }
             else {
+                Log.d(TAG, "updateNotificationVisibility: stopForeground");
                 stopForeground(true);
                 interactiveNotification.dismiss();
                 if (interactiveNotificationAlert)
                     notificationDeleted();
             }
+            saveContextPreferences();
         }
     }
 
@@ -189,6 +182,15 @@ public class TimerService extends Service {
         updateStateIntent(State.RUNNING);
         interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
         interactiveNotification.build(0);
+        saveContextPreferences();
+    }
+
+    private void startContextPreferences() {
+        Log.d(TAG, "startContextPreferences: timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+        startCountDown(timerCurrent);
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
+        interactiveNotification.build(0);
+        saveContextPreferences();
     }
 
     protected void pause() {
@@ -198,7 +200,17 @@ public class TimerService extends Service {
             updateStateIntent(State.PAUSED);
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED);
             interactiveNotification.build(0);
+            saveContextPreferences();
         }
+    }
+
+    private void pauseContextPreference() {
+        Log.d(TAG, "pauseContextPreference: timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+        startCountDown(timerCurrent);
+        countDownPauseTimer.pause();
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED);
+        interactiveNotification.build(0);
+        saveContextPreferences();
     }
 
     protected void resume() {
@@ -208,6 +220,7 @@ public class TimerService extends Service {
             updateStateIntent(State.RUNNING);
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
             interactiveNotification.build(0);
+            saveContextPreferences();
         }
     }
 
@@ -225,6 +238,7 @@ public class TimerService extends Service {
         else
             Log.e(TAG, "stop: setCurrent cannot be 0");
         interactiveNotification.build(0);
+        saveContextPreferences();
     }
 
     private void done() {
@@ -248,6 +262,7 @@ public class TimerService extends Service {
             if(wakeLock.isHeld())
                 wakeLock.release();
         }
+        saveContextPreferences();
     }
 
     protected void nextSet() {
@@ -271,6 +286,7 @@ public class TimerService extends Service {
         updateTimerIntent(timerUser, setsCurrent);
         if(wakeLock.isHeld())
             wakeLock.release();
+        saveContextPreferences();
     }
 
     protected void nextSetStart() {
@@ -291,6 +307,7 @@ public class TimerService extends Service {
         interactiveNotification.updateTimerTextView(timerUser);
         interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
         interactiveNotification.build(0);
+        saveContextPreferences();
     }
 
     protected void extraSet() {
@@ -308,6 +325,7 @@ public class TimerService extends Service {
         updateStateIntent(State.RUNNING);
         interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
         interactiveNotification.build(0);
+        saveContextPreferences();
     }
 
     protected void reset() {
@@ -324,6 +342,7 @@ public class TimerService extends Service {
         updateStateIntent(State.READY);
         if(wakeLock.isHeld())
             wakeLock.release();
+        saveContextPreferences();
     }
 
     protected void clear() {
@@ -339,6 +358,7 @@ public class TimerService extends Service {
         // remove the notification and reset the timer to init state
         stopForeground(true);
         interactiveNotification.dismiss();
+        saveContextPreferences();
     }
 
     protected void timerMinus() {
@@ -413,7 +433,11 @@ public class TimerService extends Service {
             if (mainActivityVisible)
                 getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time));
             interactiveNotification.updateTimerTextView(timerCurrent);
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
+            if(state == State.RUNNING)
+                interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
+            else if(state == State.WAITING)
+                // Get ready for the next step
+                interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
         }
         // Get ready notification light, sound and vibration
         if(time == timerGetReady && timerGetReadyEnable)
@@ -523,12 +547,61 @@ public class TimerService extends Service {
         alarmManager.cancel(pendingIntentAlarm);
     }
 
-    @Override
-    public void onDestroy() {
-        Log.v(TAG, "onDestroy");
-        super.onDestroy();
-        interactiveNotification.dismiss();
-        unregisterReceiver(timerServiceReceiver);
+    private void saveContextPreferences() {
+        Log.d(TAG, "saveContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
+                + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putLong("timerService_timerEnd", System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timerCurrent));
+        sharedPreferencesEditor.putLong("timerService_timerCurrent", timerCurrent);
+        sharedPreferencesEditor.putLong("timerService_timerUser", timerUser);
+        sharedPreferencesEditor.putInt("timerService_setsCurrent", setsCurrent);
+        sharedPreferencesEditor.putInt("timerService_setsUser", setsUser);
+        sharedPreferencesEditor.putString("timerService_state", state.toString());
+        sharedPreferencesEditor.putBoolean("timerService_mainActivityVisible", mainActivityVisible);
+        sharedPreferencesEditor.apply();
+    }
+
+    private void loadContextPreferences() {
+        long timerEnd = sharedPreferences.getLong("timerService_timerEnd", System.currentTimeMillis());
+        timerCurrent = sharedPreferences.getLong("timerService_timerCurrent", timerCurrent);
+        timerUser = sharedPreferences.getLong("timerService_timerUser", timerUser);
+        setsCurrent = sharedPreferences.getInt("timerService_setsCurrent", setsCurrent);
+        setsUser = sharedPreferences.getInt("timerService_setsUser", setsUser);
+        state = State.valueOf(sharedPreferences.getString("timerService_state", state.toString()).toUpperCase(Locale.US));
+        mainActivityVisible = sharedPreferences.getBoolean("timerService_mainActivityVisible", mainActivityVisible);
+
+        if(state == State.RUNNING){
+            timerCurrent = TimeUnit.MILLISECONDS.toSeconds(timerEnd - System.currentTimeMillis());
+            startContextPreferences();
+        }
+        else if(state == State.PAUSED) {
+            pauseContextPreference();
+        }
+
+        if(!mainActivityVisible) {
+            updateNotificationVisibility(true);
+            interactiveNotification.updateSetsTextView(setsCurrent);
+            interactiveNotification.updateTimerTextView(timerCurrent);
+            switch (state) {
+                case RUNNING:
+                    interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
+                    break;
+                case PAUSED:
+                    interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED);
+                    break;
+                case STOPPED:
+                case READY:
+                    interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
+                    break;
+                case WAITING:
+                    interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.NO_LAYOUT);
+                    Log.e(TAG, "loadContextPreferences: cannot show the interactiveNotification with state=" + state);
+                    break;
+            }
+            interactiveNotification.build(0);
+        }
+        Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
+            + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
     }
 
     public class TimerBinder extends Binder {
@@ -536,6 +609,14 @@ public class TimerService extends Service {
             Log.d(TAG, "TimerServiceBinder getService");
             return TimerService.this;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.v(TAG, "onDestroy");
+        super.onDestroy();
+        interactiveNotification.dismiss();
+        unregisterReceiver(timerServiceReceiver);
     }
 
     @Override

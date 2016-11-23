@@ -57,7 +57,9 @@ public class TimerServiceReceiver extends BroadcastReceiver {
                 break;
             case IntentAction.NOTIFICATION_DISMISS:
                 ((TimerService)context).updateNotificationVisibility(false);
-                ((TimerService)context).setInteractiveNotificationAlert(false);
+                ((TimerService)context).setInteractiveNotificationRebuild(false);
+                ((TimerService)context).clear();
+                ((TimerService)context).stopSelf();
                 break;
             case Intent.ACTION_SCREEN_ON:
                 // Force rebuild the notification when the screen gets back on
