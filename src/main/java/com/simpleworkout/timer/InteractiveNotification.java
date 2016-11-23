@@ -254,6 +254,7 @@ public class InteractiveNotification extends Notification {
     }
 
     protected void setVisible() {
+        Log.d(TAG, "setVisible");
         restTimerNotificationVisible = true;
         build(0);
     }
@@ -288,7 +289,7 @@ public class InteractiveNotification extends Notification {
     }
 
     protected void build(int alertLevel) {
-
+        Log.d(TAG, "build: alertLevel=" + alertLevel + ", restTimerNotificationVisible=" + restTimerNotificationVisible);
         if(restTimerNotificationVisible) {
 
             RemoteViews remoteView = createRemoteView();
