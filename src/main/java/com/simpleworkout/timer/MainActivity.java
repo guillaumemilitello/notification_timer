@@ -508,6 +508,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
+        updateSetsDisplay();
 
         timerPickerDone = false;
         setsPickerDone = false;
