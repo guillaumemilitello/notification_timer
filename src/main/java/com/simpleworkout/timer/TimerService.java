@@ -479,8 +479,8 @@ public class TimerService extends Service {
             Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent);
             interactiveNotification.dismiss();
             if(mainActivityVisible) {
-                Log.d(TAG, "notificationDeleted: sending RESET action");
-                getBaseContext().sendBroadcast(new Intent(IntentAction.RESET));
+                Log.d(TAG, "notificationDeleted: sending CLEAR action");
+                getBaseContext().sendBroadcast(new Intent(IntentAction.CLEAR));
             }
             reset();
         }
