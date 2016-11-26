@@ -371,27 +371,27 @@ public class InteractiveNotification extends Notification {
     protected void updateSetsTextView(int sets) {
         setsCurrent = sets;
         if (sets > 1)
-            setsString = String.format("%d " + context.getString(com.simpleworkout.timer.R.string.more_timers), sets);
+            setsString = String.format("%d " + context.getString(com.simpleworkout.timer.R.string.more_sets), sets);
         // Keep "Extra set" displayed
-        else if (setsCurrent == 1 && !setsString.equals(context.getString(R.string.extra_timer)))
+        else if (setsCurrent == 1 && !setsString.equals(context.getString(R.string.extra_set)))
             setsString = "Last timer";
         Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
     }
 
     protected void updateOneSetTextViews() {
         setsCurrent = 1;
-        setsString = context.getString(R.string.one_timer);
+        setsString = context.getString(R.string.one_set);
         Log.d(TAG, "updateOneSetTextViews: setsString='" + setsString + "'");
     }
 
     protected void updateExtraSetTextViews() {
         setsCurrent = 1;
-        setsString = context.getString(R.string.extra_timer);
+        setsString = context.getString(R.string.extra_set);
         Log.d(TAG, "updateExtraSetTextViews: setsString='" + setsString + "'");
     }
 
     protected void updateAllSetsDoneTextView() {
-        setsString = context.getString(R.string.all_timers_done);
+        setsString = context.getString(R.string.all_sets_done);
         Log.d(TAG, "updateAllSetsDoneTextView: setsString='" + setsString + "'");
     }
 
@@ -404,7 +404,7 @@ public class InteractiveNotification extends Notification {
     protected void alertAllSetsDone() {
         Log.d(TAG, "setting alert all sets done");
         timerString = context.getString(R.string.time_is_up);
-        setsString = context.getString(R.string.all_timers_done);
+        setsString = context.getString(R.string.all_sets_done);
         updateButtonsLayout(ButtonsLayout.ALL_SETS_DONE);
     }
 }

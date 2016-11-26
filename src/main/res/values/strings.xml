@@ -1,5 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">SimpleWorkoutTimer</string>
+    <string name="feedback">Feedback</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
+    <string name="minute">minute</string>
+    <string name="minutes">minutes</string>
+    <string name="seconds">seconds</string>
     <!-- Pickers -->
     <string name="time_separator" translatable="false">:</string>
+    <string name="picker_timer">Timer</string>
+    <string name="picker_sets">Sets</string>
+    <string name="picker_cancel">CANCEL</string>
+    <string name="picker_set">OK</string>
+    <!-- Alerts -->
+    <string name="add_preset">Update the preset setting with the current timer ?</string>
+    <string name="delete_preset">Delete the preset setting ?</string>
+    <string name="alert_set_done">"TIME OUT!\nIt's time to do your set then select the action to do next"</string>
+    <string name="alert_all_sets_done">"TIME OUT!\nIt's time to do your last set"</string>
+    <string name="alert_stop">STOP</string>
+    <string name="alert_continue">CONTINUE</string>
+    <string name="alert_extra_set">EXTRA SET</string>
+    <string name="alert_reset">RESET</string>
+    <string name="alert_yes">YES</string>
+    <string name="alert_no">NO</string>
+    <!-- Notification -->
+    <string name="one_set">1 set</string>
+    <string name="more_sets">remaining sets</string>
+    <string name="last_set">Last set</string>
+    <string name="extra_set">Extra set</string>
+    <string name="all_sets_done">All sets done</string>
+    <string name="time_is_up">Time is up</string>
+    <!-- Settings -->
+    <string name="timer">Timer</string>
+    <string name="notification">Notification</string>
+    <string name="extra_notification">Extra Notification</string>
+    <string name="extra_notification_summary">Notification seconds before the timer is done</string>
+    <string name="skip_forward">Skip forward</string>
+    <string name="skip_backward">Skip backward</string>
+    <string name="reset_preset">Clear preset timers</string>
+    <string name="reset_preset_summary">Clear all the preset timers</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="vibrate_summary">Vibrate when the timer is done</string>
+    <string name="ringtone">Ringtone</string>
+    <string name="light_color">Light color</string>
+    <string name="enable">Enable</string>
+    <string name="get_ready_time">Get ready time</string>
+    <string name="get_ready_time_summary">Amount of time to enable get ready</string>
+    <string name="vibrate_summary_get_ready">Vibrate on the get ready time</string>
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="pref_title_vibrate">Vibrate</string>
 </resources>

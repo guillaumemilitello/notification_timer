@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/timer_number"
+        android:text="@string/picker_sets"
         android:fontFamily="sans-serif-light"
         android:id="@+id/textViewTimerText"
         android:gravity="center_vertical|center_horizontal"

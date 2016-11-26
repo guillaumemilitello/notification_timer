@@ -12,8 +12,8 @@ public class AlertBuilderSetDone extends AlertDialog.Builder {
 
     public AlertBuilderSetDone(final Context context) {
         super(context);
-        setMessage("Time out ! It's time to do your set then select the action to do next");
-        setNegativeButton("STOP",
+        setMessage(context.getString(R.string.alert_set_done));
+        setNegativeButton(context.getString(R.string.alert_stop),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
@@ -21,7 +21,7 @@ public class AlertBuilderSetDone extends AlertDialog.Builder {
                         context.sendBroadcast(new Intent(IntentAction.STOP));
                     }
                 });
-        setPositiveButton("CONTINUE",
+        setPositiveButton(context.getString(R.string.alert_continue),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {

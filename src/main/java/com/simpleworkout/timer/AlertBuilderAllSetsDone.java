@@ -12,8 +12,8 @@ public class AlertBuilderAllSetsDone extends AlertDialog.Builder {
 
     public AlertBuilderAllSetsDone(final Context context) {
         super(context);
-        setMessage("Time out ! It's time to do your last set !");
-        setNeutralButton("EXTRA SET",
+        setMessage(context.getString(R.string.alert_all_sets_done));
+        setNeutralButton(context.getString(R.string.alert_extra_set),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
@@ -21,7 +21,7 @@ public class AlertBuilderAllSetsDone extends AlertDialog.Builder {
                         context.sendBroadcast(new Intent(IntentAction.EXTRA_SET));
                     }
                 });
-        setPositiveButton("RESET",
+        setPositiveButton(context.getString(R.string.alert_reset),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {

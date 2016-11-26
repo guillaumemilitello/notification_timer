@@ -28,7 +28,7 @@
 
     <SwitchPreference
         android:title="@string/vibrate"
-        android:summary="@string/vibrateSummary"
+        android:summary="@string/vibrate_summary"
         android:defaultValue="true"
         android:key="vibrationEnable"/>
     <RingtonePreference
@@ -39,7 +39,7 @@
         android:showDefault="true"
         android:showSilent="true"/>
     <ListPreference
-        android:title="@string/lightColor"
+        android:title="@string/light_color"
         android:key="lightColor"
         android:defaultValue="green"
         android:entries="@array/lightColor"
@@ -47,23 +47,23 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/extraNotification">
+    <PreferenceCategory android:title="@string/extra_notification">
 
     <SwitchPreference
         android:title="@string/enable"
-        android:summary="@string/extraNotificationSummary"
+        android:summary="@string/extra_notification_summary"
         android:defaultValue="true"
         android:key="timerGetReadyEnable"/>
     <ListPreference
-        android:title="@string/getReadyTime"
-        android:summary="@string/getReadyTimeSummary"
+        android:title="@string/get_ready_time"
+        android:summary="@string/get_ready_time_summary"
         android:key="timerGetReady"
         android:defaultValue="15"
         android:entries="@array/timerGetReady"
         android:entryValues="@array/timerGetReadyValues"/>
     <SwitchPreference
         android:title="@string/vibrate"
-        android:summary="@string/vibrateSummaryGetReady"
+        android:summary="@string/vibrate_summary_get_ready"
         android:defaultValue="true"
         android:key="vibrationReadyEnable"/>
     <RingtonePreference
@@ -74,7 +74,7 @@
         android:showDefault="true"
         android:showSilent="true"/>
     <ListPreference
-        android:title="@string/lightColor"
+        android:title="@string/light_color"
         android:key="lightReadyColor"
         android:defaultValue="yellow"
         android:entries="@array/lightColor"
