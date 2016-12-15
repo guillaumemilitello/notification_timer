@@ -23,6 +23,7 @@
     <string name="alert_continue">CONTINUE</string>
     <string name="alert_extra_set">EXTRA SET</string>
     <string name="alert_reset">RESET</string>
+    <string name="alert_clear">CLEAR</string>
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->

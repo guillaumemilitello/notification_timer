@@ -29,6 +29,14 @@ public class AlertBuilderAllSetsDone extends AlertDialog.Builder {
                         context.sendBroadcast(new Intent(IntentAction.RESET));
                     }
                 });
+        setNegativeButton(context.getString(R.string.alert_clear),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        Log.d(TAG, "sending intent CLEAR");
+                        context.sendBroadcast(new Intent(IntentAction.CLEAR));
+                    }
+                });
         setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
