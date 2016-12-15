@@ -1126,6 +1126,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         if(timerServiceBound) {
             timerService.setMainActivityVisible(false);
             timerService.updateNotificationVisibility(true);
+            unbindService(serviceConnection);
+            timerServiceBound = false;
         }
 
         // Complete ongoing pop-up action
@@ -1149,6 +1151,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             timerService.setMainActivityVisible(true);
             timerService.updateNotificationVisibility(false);
         }
+        else {
+            Intent intent = new Intent(this, TimerService.class);
+            startService(intent);
+            bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+        }
     }
 
     @Override
@@ -1156,10 +1163,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
 
-        if (timerServiceBound) {
-            unbindService(serviceConnection);
-            timerServiceBound = false;
-        }
         unregisterReceiver(mainActivityReceiver);
     }
 
@@ -1190,6 +1193,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected");
             timerServiceBound = false;
         }
 
