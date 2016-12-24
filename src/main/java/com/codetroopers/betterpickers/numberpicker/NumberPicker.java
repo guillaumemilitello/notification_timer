@@ -12,18 +12,21 @@ import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.codetroopers.betterpickers.R;
+import com.simpleworkout.timer.MainActivity;
+import com.simpleworkout.timer.R;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 
 public class NumberPicker extends LinearLayout implements Button.OnClickListener,
-        Button.OnLongClickListener {
+        Button.OnLongClickListener, CheckBox.OnCheckedChangeListener {
 
     protected int mInputSize = 20;
     protected final Button mNumbers[] = new Button[10];
@@ -35,9 +38,13 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     protected final Context mContext;
 
     private TextView mLabel;
+    private CheckBox mCheckbox;
+    private boolean mChecked;
+    private boolean mInfinity;
     private NumberPickerErrorTextView mError;
     private int mSign;
     private String mLabelText = "";
+    private String mCheckboxLabelText = "";
     private Button mSetButton;
     private static final int CLICKED_DECIMAL = 10;
 
@@ -137,6 +144,9 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         if (mLabel != null) {
             mLabel.setTextColor(mTextColor);
         }
+        if (mCheckbox != null) {
+            mCheckbox.setTextColor(mTextColor);
+        }
     }
 
     @Override
@@ -149,11 +159,14 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         for (int i = 0; i < mInput.length; i++) {
             mInput[i] = -1;
         }
+        mChecked = false;
+        mInfinity = false;
 
         View v1 = findViewById(R.id.first);
         View v2 = findViewById(R.id.second);
         View v3 = findViewById(R.id.third);
         View v4 = findViewById(R.id.fourth);
+        View v5 = findViewById(R.id.fifth);
         mEnteredNumber = (NumberView) findViewById(R.id.number_text);
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
@@ -184,15 +197,18 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         updateNumber();
 
         Resources res = mContext.getResources();
-        mLeft.setText(res.getString(R.string.number_picker_plus_minus));
+        mLeft.setText(res.getString(R.string.infinity));
         mRight.setText(res.getString(R.string.number_picker_seperator));
         mLeft.setOnClickListener(this);
         mRight.setOnClickListener(this);
         mLabel = (TextView) findViewById(R.id.label);
+        mCheckbox = (CheckBox) v5.findViewById(R.id.key_checkbox);
+        mCheckbox.setOnCheckedChangeListener(this);
         mSign = SIGN_POSITIVE;
 
         // Set the correct label state
         showLabel();
+        showLabelCheckbox();
 
         restyleViews();
         updateKeypad();
@@ -242,7 +258,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
      * Update the 0 button to determine whether it is able to be clicked.
      */
     public void updateZeroButton() {
-        boolean enabled = mInputPointer >= 0;
+        boolean enabled = mInputPointer >= 0 && !mInfinity;
         if (mNumbers[0] != null) {
             mNumbers[0].setEnabled(enabled);
             mNumbers[0].setAlpha(enabled? (float) 1: (float) 0.3);
@@ -272,7 +288,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     @Override
     public void onClick(View v) {
         v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-        mError.hideImmediately();
         doOnClick(v);
         updateDeleteButton();
     }
@@ -283,7 +298,12 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             // A number was pressed
             addClickedNumber(val);
         } else if (v == mDelete) {
-            if (mInputPointer >= 0) {
+            if (mInfinity) {
+                reset();
+                enableKeypad(true);
+                mInfinity = false;
+            }
+            else if (mInputPointer >= 0) {
                 for (int i = 0; i < mInputPointer; i++) {
                     mInput[i] = mInput[i + 1];
                 }
@@ -301,7 +321,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     @Override
     public boolean onLongClick(View v) {
         v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-        mError.hideImmediately();
         if (v == mDelete) {
             mDelete.setPressed(false);
             reset();
@@ -309,6 +328,11 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        mChecked = isChecked;
     }
 
     private void updateKeypad() {
@@ -334,9 +358,20 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         showLabel();
     }
 
+    public void setCheckBoxLabelText(String labelText) {
+        mCheckboxLabelText = labelText;
+        showLabelCheckbox();
+    }
+
     private void showLabel() {
         if (mLabel != null) {
             mLabel.setText(mLabelText);
+        }
+    }
+
+    private void showLabelCheckbox() {
+        if (mCheckbox != null) {
+            mCheckbox.setText(mCheckboxLabelText);
         }
     }
 
@@ -349,6 +384,13 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         }
         mInputPointer = -1;
         updateNumber();
+    }
+
+    public void enableKeypad(boolean enable) {
+        for (int i = 0; i < 10; i++) {
+            mNumbers[i].setEnabled(enable);
+        }
+        mLeft.setEnabled(enable);
     }
 
     // Update the number displayed in the picker:
@@ -365,6 +407,9 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
                         mSign == SIGN_NEGATIVE);
             }
         } else if (split.length == 1) {
+            if (split[0].equals(String.valueOf(MainActivity.SETS_INFINITY))) {
+                split[0] = "∞";
+            }
             mEnteredNumber.setNumber(split[0], "", containsDecimal(),
                     mSign == SIGN_NEGATIVE);
         } else if (numberString.equals(".")) {
@@ -383,15 +428,11 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     private void addClickedNumber(int val) {
         if (mInputPointer < mInputSize - 1) {
             // For 0 we need to check if we have a value of zero or not
-            if (mInput[0] == 0 && mInput[1] == -1 && !containsDecimal() && val != CLICKED_DECIMAL) {
-                mInput[0] = val;
-            } else {
-                for (int i = mInputPointer; i >= 0; i--) {
-                    mInput[i + 1] = mInput[i];
-                }
-                mInputPointer++;
-                mInput[0] = val;
+            for (int i = mInputPointer; i >= 0; i--) {
+                mInput[i + 1] = mInput[i];
             }
+            mInputPointer++;
+            mInput[0] = val;
         }
     }
 
@@ -399,11 +440,14 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
      * Clicking on the bottom left button will toggle the sign.
      */
     private void onLeftClicked() {
-        if (mSign == SIGN_POSITIVE) {
-            mSign = SIGN_NEGATIVE;
-        } else {
-            mSign = SIGN_POSITIVE;
+        mInfinity = true;
+        reset();
+        for (int i = 0; i < 6; ++i) {
+            mInput[i] = 9;
+            mInputPointer++;
         }
+        updateNumber();
+        enableKeypad(false);
     }
 
     /**
@@ -469,6 +513,10 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         }
 
         return new BigDecimal(value);
+    }
+
+    public boolean getChecked() {
+        return mChecked;
     }
 
     private void updateLeftRightButtons() {

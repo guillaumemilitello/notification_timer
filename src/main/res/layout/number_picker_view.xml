@@ -46,14 +46,14 @@
                     android:gravity="top">
                 <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
                         android:id="@+id/number"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:ellipsize="none"
                         style="@style/medium_bold"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"/>
                 <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
                         android:id="@+id/decimal_separator"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:ellipsize="none"
                         style="@style/medium_light"
                         android:text="@string/number_picker_seperator"
@@ -61,7 +61,7 @@
                         android:layout_width="wrap_content"/>
                 <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
                         android:id="@+id/decimal"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:ellipsize="none"
                         style="@style/medium_bold"
                         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                         android:id="@+id/label"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:ellipsize="none"
                         style="@style/label"
                         android:gravity="top"/>
@@ -78,7 +78,7 @@
                         android:id="@+id/minus_label"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
-                        android:singleLine="true"
+                        android:maxLines="1"
                         android:ellipsize="none"
                         style="@style/label"
                         android:gravity="top"
@@ -102,8 +102,10 @@
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dip"
-            android:layout_below="@id/number_view_container"
             android:background="@color/default_divider_color_light"/>
+    <include
+            layout="@layout/checkbox_keys_view"
+            android:id="@+id/fifth"/>
     <include
             layout="@layout/three_keys_view"
             android:id="@+id/first"/>
@@ -116,16 +118,4 @@
     <include
             layout="@layout/three_keys_view_leftright"
             android:id="@+id/fourth"/>
-    <com.codetroopers.betterpickers.numberpicker.NumberPickerErrorTextView
-            android:id="@+id/error"
-            android:visibility="invisible"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/divider"
-            android:gravity="center_horizontal"
-            android:background="#ffff4444"
-            android:textColor="#ffffffff"
-            android:textStyle="bold"/>
 </LinearLayout>

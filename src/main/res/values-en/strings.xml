@@ -12,6 +12,7 @@
     <string name="time_separator" translatable="false">:</string>
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Sets</string>
+    <string name="picker_checkbox">Start the timer before the first set</string>
     <string name="picker_cancel">CANCEL</string>
     <string name="picker_set">OK</string>
     <!-- Alerts -->
@@ -27,10 +28,15 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="one_set">1 set</string>
-    <string name="more_sets">remaining sets</string>
-    <string name="last_set">Last set</string>
-    <string name="extra_set">Extra set</string>
+    <string name="current_set">Current %1$d/%2$d set</string>
+    <string name="current_sets">Current %1$d/%2$d sets</string>
+    <string name="current_sets_infinity">Current %1$d</string>
+    <string name="next_set">Next %1$d/%2$d set</string>
+    <string name="next_sets">Next %1$d/%2$d sets</string>
+    <string name="next_sets_infinity">Next %1$d</string>
+    <string name="total_set">%1$d set - starting at %2$d</string>
+    <string name="total_sets">%1$d sets - starting at %2$d</string>
+    <string name="total_sets_infinity">Starting at %1$d</string>
     <string name="all_sets_done">All sets done</string>
     <string name="time_is_up">Time is up</string>
     <!-- Settings -->

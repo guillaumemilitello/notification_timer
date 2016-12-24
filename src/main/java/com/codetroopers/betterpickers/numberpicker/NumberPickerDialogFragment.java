@@ -29,6 +29,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
     private static final String PLUS_MINUS_VISIBILITY_KEY = "NumberPickerDialogFragment_PlusMinusVisibilityKey";
     private static final String DECIMAL_VISIBILITY_KEY = "NumberPickerDialogFragment_DecimalVisibilityKey";
     private static final String LABEL_TEXT_KEY = "NumberPickerDialogFragment_LabelTextKey";
+    private static final String CHECKBOX_LABEL_TEXT_KEY = "NumberPickerDialogFragment_CheckBoxLabelTextKey";
     private static final String CURRENT_NUMBER_KEY = "NumberPickerDialogFragment_CurrentNumberKey";
     private static final String CURRENT_DECIMAL_KEY = "NumberPickerDialogFragment_CurrentDecimalKey";
     private static final String CURRENT_SIGN_KEY = "NumberPickerDialogFragment_CurrentSignKey";
@@ -39,6 +40,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
     private int mTheme = -1;
     private ColorStateList mTextColor;
     private String mLabelText = "";
+    private String mCheckboxLabelText = "";
     private int mDialogBackgroundResId;
 
     private BigDecimal mMinNumber = null;
@@ -69,6 +71,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
                                                          Integer plusMinusVisibility,
                                                          Integer decimalVisibility,
                                                          String labelText,
+                                                         String checkboxLabelText,
                                                          Integer currentNumberValue,
                                                          Double currentDecimalValue,
                                                          Integer currentNumberSign) {
@@ -90,6 +93,9 @@ public class NumberPickerDialogFragment extends DialogFragment {
         }
         if (labelText != null) {
             args.putString(LABEL_TEXT_KEY, labelText);
+        }
+        if (checkboxLabelText != null) {
+            args.putString(CHECKBOX_LABEL_TEXT_KEY, checkboxLabelText);
         }
         if (currentNumberValue != null) {
             args.putInt(CURRENT_NUMBER_KEY, currentNumberValue);
@@ -134,6 +140,9 @@ public class NumberPickerDialogFragment extends DialogFragment {
         }
         if (args != null && args.containsKey(LABEL_TEXT_KEY)) {
             mLabelText = args.getString(LABEL_TEXT_KEY);
+        }
+        if (args != null && args.containsKey(CHECKBOX_LABEL_TEXT_KEY)) {
+            mCheckboxLabelText = args.getString(CHECKBOX_LABEL_TEXT_KEY);
         }
         if (args != null && args.containsKey(CURRENT_NUMBER_KEY)) {
             mCurrentNumber = args.getInt(CURRENT_NUMBER_KEY);
@@ -180,6 +189,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
             public void onClick(View view) {
                 dismiss();
                 BigDecimal number = mPicker.getEnteredNumber();
+                boolean checked = mPicker.getChecked();
                 if (mMinNumber != null && mMaxNumber != null && (isSmaller(number) || isBigger(number))) {
                     String errorText = getString(R.string.min_max_error, mMinNumber, mMaxNumber);
                     //mPicker.getErrorView().setText(errorText);
@@ -197,16 +207,16 @@ public class NumberPickerDialogFragment extends DialogFragment {
                     return;
                 }
                 for (NumberPickerDialogHandlerV2 handler : mNumberPickerDialogHandlersV2) {
-                    handler.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number);
+                    handler.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number, checked);
                 }
                 final Activity activity = getActivity();
                 final Fragment fragment = getTargetFragment();
                 if (activity instanceof NumberPickerDialogHandlerV2) {
                     final NumberPickerDialogHandlerV2 act = (NumberPickerDialogHandlerV2) activity;
-                    act.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number);
+                    act.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number, checked);
                 } else if (fragment instanceof NumberPickerDialogHandlerV2) {
                     final NumberPickerDialogHandlerV2 frag = (NumberPickerDialogHandlerV2) fragment;
-                    frag.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number);
+                    frag.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number, checked);
                 }
             }
         });
@@ -217,6 +227,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
         mPicker.setDecimalVisibility(mDecimalVisibility);
         mPicker.setPlusMinusVisibility(mPlusMinusVisibility);
         mPicker.setLabelText(mLabelText);
+        mPicker.setCheckBoxLabelText(mCheckboxLabelText);
         if (mMinNumber != null) {
             mPicker.setMin(mMinNumber);
         }
@@ -241,7 +252,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
      * This interface allows objects to register for the Picker's set action.
      */
     public interface NumberPickerDialogHandlerV2 {
-        void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber);
+        void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber, boolean checked);
     }
 
     /**

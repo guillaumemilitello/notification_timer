@@ -18,10 +18,6 @@ import android.widget.TextView;
 
 import com.codetroopers.betterpickers.R;
 
-/**
- * TODO: fix import layout package
- */
-
 public class MsPicker extends LinearLayout implements Button.OnClickListener, Button.OnLongClickListener {
 
     protected int mInputSize = 4;

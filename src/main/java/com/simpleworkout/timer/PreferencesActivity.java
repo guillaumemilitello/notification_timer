@@ -120,8 +120,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     private static void clearPreset() {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         for(int position=0; position < 3; ++position) {
-            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
             sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
+            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
             sharedPreferencesEditor.apply();
         }
         Log.d(TAG, "clearPreset: all preset timer cleared");

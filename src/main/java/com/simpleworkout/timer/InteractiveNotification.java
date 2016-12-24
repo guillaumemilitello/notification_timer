@@ -32,7 +32,7 @@ public class InteractiveNotification extends Notification {
 
     // Timer service related
     private long timerCurrent;
-    private int setsCurrent;
+    private int setsCurrent, setsUser;
     private String timerString, setsString;
 
     private ButtonsLayout buttonsLayout;
@@ -106,6 +106,15 @@ public class InteractiveNotification extends Notification {
         }
     }
 
+    protected enum NotificationMode {
+
+        NO_NOTIFICATION,
+        UPDATE,
+        LIGHT_ONLY,
+        LIGHT_SOUND_SHORT_VIBRATE,
+        LIGHT_SOUND_LONG_VIBRATE;
+    }
+
     public InteractiveNotification(Context context) {
 
         this.context = context;
@@ -135,6 +144,7 @@ public class InteractiveNotification extends Notification {
         setsString = "";
         timerCurrent = 0;
         setsCurrent = 1;
+        setsUser = 1;
 
         button2 = ButtonAction.NO_ACTION;
         button1 = ButtonAction.NO_ACTION;
@@ -144,7 +154,17 @@ public class InteractiveNotification extends Notification {
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
+    protected void update(int setsCurrent, long timerCurrent, ButtonsLayout layout, NotificationMode notificationMode) {
+        updateButtonsLayout(layout);
+        updateTimerCurrent(timerCurrent);
+        updateSetsCurrent(setsCurrent, notificationMode);
+    }
+
     protected void updateButtonsLayout(ButtonsLayout layout) {
+        updateButtonsLayout(layout, NotificationMode.NO_NOTIFICATION);
+    }
+
+    protected void updateButtonsLayout(ButtonsLayout layout, NotificationMode notificationMode) {
         Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() +", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
         if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
             switch (layout) {
@@ -163,7 +183,7 @@ public class InteractiveNotification extends Notification {
                         button2 = ButtonAction.NO_ACTION;
                         button1 = ButtonAction.NEXT_SET;
                     }
-                    if(setsCurrent > 1)
+                    if(setsCurrent < setsUser - 1)
                         button2 = ButtonAction.NEXT_SET_START;
                     button0 = ButtonAction.PAUSE;
                     notificationBuilder.setOngoing(true);
@@ -191,6 +211,11 @@ public class InteractiveNotification extends Notification {
             }
             buttonsLayout = layout;
             Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
+
+            updateTimerTextView();
+            updateSetsTextView();
+
+            build(notificationMode);
         }
     }
 
@@ -256,7 +281,7 @@ public class InteractiveNotification extends Notification {
     protected void setVisible() {
         Log.d(TAG, "setVisible");
         restTimerNotificationVisible = true;
-        build(0);
+        build(NotificationMode.UPDATE);
     }
 
     private RemoteViews createRemoteView() {
@@ -288,9 +313,8 @@ public class InteractiveNotification extends Notification {
         return remoteView;
     }
 
-    protected void build(int alertLevel) {
-        Log.d(TAG, "build: alertLevel=" + alertLevel + ", restTimerNotificationVisible=" + restTimerNotificationVisible);
-        if(restTimerNotificationVisible) {
+    protected void build(NotificationMode notificationMode) {
+        if(restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
 
             RemoteViews remoteView = createRemoteView();
             notificationBuilder.setContent(remoteView);
@@ -311,100 +335,143 @@ public class InteractiveNotification extends Notification {
                     .setContent(remoteView)
                     .setPriority(PRIORITY_MAX);
 
-            switch (alertLevel) {
+            switch (notificationMode) {
                 default:
-                case 0:
+                case UPDATE:
                     notificationBuilder.setVibrate(null);
                     notificationBuilder.setSound(null);
                     notificationBuilder.setLights(COLOR_DEFAULT, 0, 0);
-                    notificationBuilder.setPriority(PRIORITY_MAX);
                     break;
-                // Light, sound and short vibration
-                case 1:
-                    if(vibrationReadyEnable)
-                        notificationBuilder.setVibrate(MainActivity.vibrationPattern);
-                    else
-                        notificationBuilder.setVibrate(null);
-                    notificationBuilder.setSound(ringtoneReady);
-                    if(lightReadyColor != COLOR_NONE)
-                        notificationBuilder.setLights(lightReadyColor, 500, 600);
-                    notificationBuilder.setPriority(PRIORITY_MAX);
-                    break;
-                // Light, sound and long vibration
-                case 2:
-                    if(vibrationEnable)
-                        notificationBuilder.setVibrate(MainActivity.vibrationPattern);
-                    notificationBuilder.setSound(ringtone);
-                    if(lightColor != COLOR_NONE)
-                        notificationBuilder.setLights(lightColor, 1000, 1000);
-                    notificationBuilder.setPriority(PRIORITY_MAX);
-                    break;
-                // Light only
-                case 3:
+                case LIGHT_ONLY:
                     notificationBuilder.setVibrate(null);
                     notificationBuilder.setSound(null);
-                    if(lightReadyColor != -1)
+                    if(lightReadyColor != -1) {
                         notificationBuilder.setLights(lightReadyColor, 500, 600);
-                    notificationBuilder.setPriority(PRIORITY_MAX);
+                    }
+                    break;
+                case LIGHT_SOUND_SHORT_VIBRATE:
+                    if(vibrationReadyEnable) {
+                        notificationBuilder.setVibrate(MainActivity.vibrationPattern);
+                    }
+                    else {
+                        notificationBuilder.setVibrate(null);
+                    }
+                    notificationBuilder.setSound(ringtoneReady);
+                    if(lightReadyColor != COLOR_NONE) {
+                        notificationBuilder.setLights(lightReadyColor, 500, 600);
+                    }
+                    break;
+                case LIGHT_SOUND_LONG_VIBRATE:
+                    if(vibrationEnable) {
+                        notificationBuilder.setVibrate(MainActivity.vibrationPattern);
+                    }
+                    notificationBuilder.setSound(ringtone);
+                    if(lightColor != COLOR_NONE) {
+                        notificationBuilder.setLights(lightColor, 1000, 1000);
+                    }
                     break;
             }
             notificationManager.notify(ID, notificationBuilder.build());
-            Log.d(TAG, "build : alertLevel=" + alertLevel);
+            Log.d(TAG, "build: notificationMode=" + notificationMode);
         }
     }
 
-    protected void dismiss() {
+    protected void updateTimerCurrent(long timer) {
+        updateTimerCurrent(timer, NotificationMode.NO_NOTIFICATION);
+    }
 
+    protected void updateTimerCurrent(long timer, NotificationMode notificationMode) {
+        Log.d(TAG, "updateTimerCurrent: timerCurrent=" + timer);
+        timerCurrent = timer;
+        updateTimerTextView();
+        build(notificationMode);
+    }
+
+    protected void updateSetsCurrent(int sets) {
+        updateSetsCurrent(sets, NotificationMode.NO_NOTIFICATION);
+    }
+
+    protected void updateSetsCurrent(int sets, NotificationMode notificationMode) {
+        Log.d(TAG, "updateSetsCurrent: setsCurrent=" + sets);
+        setsCurrent = sets;
+        updateSetsTextView();
+        build(notificationMode);
+    }
+
+    protected void updateSetsUser(int sets) {
+        updateSetsUser(sets, NotificationMode.NO_NOTIFICATION);
+    }
+
+    protected void updateSetsUser(int sets, NotificationMode notificationMode) {
+        Log.d(TAG, "updateSetsUser: setsUser=" + sets);
+        setsUser = sets;
+        updateSetsTextView();
+        build(notificationMode);
+    }
+
+    private void updateTimerTextView() {
+        switch (buttonsLayout) {
+            case READY:
+            case PAUSED:
+            case RUNNING:
+                timerString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
+                break;
+            case SET_DONE:
+            case ALL_SETS_DONE:
+                timerString = String.format(context.getString(R.string.time_is_up));
+                break;
+        }
+        Log.d(TAG, "updateTimerCurrent: timerString='" + timerString + "'");
+    }
+
+    private void updateSetsTextView() {
+        switch (buttonsLayout) {
+            // TODO: first, second, etc...
+            case READY:
+                if (setsUser == MainActivity.SETS_INFINITY) {
+                    setsString = String.format(context.getString(R.string.total_sets_infinity), setsCurrent);
+                }
+                else if (setsUser > 1) {
+                    setsString = String.format(context.getString(R.string.total_sets), setsUser, setsCurrent);
+                }
+                else {
+                    setsString = String.format(context.getString(R.string.total_set), setsUser, setsCurrent);
+                }
+                break;
+            case PAUSED:
+            case RUNNING:
+                if (setsUser == MainActivity.SETS_INFINITY) {
+                    setsString = String.format(context.getString(R.string.next_sets_infinity), setsCurrent + 1);
+                }
+                else if(setsUser > 1) {
+                    setsString = String.format(context.getString(R.string.next_sets), setsCurrent + 1, setsUser);
+                }
+                else {
+                    setsString = String.format(context.getString(R.string.next_set), setsCurrent + 1, setsUser);
+                }
+                break;
+            case SET_DONE:
+                if (setsUser == MainActivity.SETS_INFINITY) {
+                    setsString = String.format(context.getString(R.string.current_sets_infinity), setsCurrent);
+                    break;
+                }
+            case ALL_SETS_DONE:
+                if(setsUser > 1) {
+                    setsString = String.format(context.getString(R.string.current_sets), setsCurrent, setsUser);
+                }
+                else {
+                    setsString = String.format(context.getString(R.string.current_set), setsCurrent, setsUser);
+                }
+                break;
+        }
+        Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
+    }
+
+    protected void dismiss() {
         if(restTimerNotificationVisible) {
             notificationManager.cancel(ID);
             restTimerNotificationVisible = false;
             Log.d(TAG, "dismissed");
         }
-    }
-
-    protected void updateTimerTextView(long time) {
-        timerCurrent = time;
-        timerString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
-        Log.d(TAG, "updateTimerTextView: timerString='" + timerString + "'");
-    }
-
-    protected void updateSetsTextView(int sets) {
-        setsCurrent = sets;
-        if (sets > 1)
-            setsString = String.format("%d " + context.getString(com.simpleworkout.timer.R.string.more_sets), sets);
-        // Keep "Extra set" displayed
-        else if (setsCurrent == 1 && !setsString.equals(context.getString(R.string.extra_set)))
-            setsString = "Last timer";
-        Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
-    }
-
-    protected void updateOneSetTextViews() {
-        setsCurrent = 1;
-        setsString = context.getString(R.string.one_set);
-        Log.d(TAG, "updateOneSetTextViews: setsString='" + setsString + "'");
-    }
-
-    protected void updateExtraSetTextViews() {
-        setsCurrent = 1;
-        setsString = context.getString(R.string.extra_set);
-        Log.d(TAG, "updateExtraSetTextViews: setsString='" + setsString + "'");
-    }
-
-    protected void updateAllSetsDoneTextView() {
-        setsString = context.getString(R.string.all_sets_done);
-        Log.d(TAG, "updateAllSetsDoneTextView: setsString='" + setsString + "'");
-    }
-
-    protected void alertSetDone() {
-        Log.d(TAG, "alertSetDone: setting alert set done");
-        timerString = context.getString(R.string.time_is_up);
-        updateButtonsLayout(ButtonsLayout.SET_DONE);
-    }
-
-    protected void alertAllSetsDone() {
-        Log.d(TAG, "setting alert all sets done");
-        timerString = context.getString(R.string.time_is_up);
-        setsString = context.getString(R.string.all_sets_done);
-        updateButtonsLayout(ButtonsLayout.ALL_SETS_DONE);
     }
 }

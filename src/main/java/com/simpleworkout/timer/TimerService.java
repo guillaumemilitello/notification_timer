@@ -50,12 +50,14 @@ public class TimerService extends Service {
     // Running values
     private long timerCurrent = 0;
     private long timerUser = 0;
-    private int setsCurrent = 1;
+    private int setsInit = 0;
+    private int setsCurrent = 0;
     private int setsUser = 1;
     private State state = State.WAITING;
 
     public long getTimerCurrent() { return timerCurrent; }
     public long getTimerUser() { return timerUser; }
+    public int getSetsInit() { return setsInit; }
     public int getSetsCurrent() { return setsCurrent; }
     public int getSetsUser() { return setsUser; }
     public State getState() { return state; }
@@ -164,223 +166,244 @@ public class TimerService extends Service {
 
     private void updateStateIntent(State state) {
         this.state = state;
-        if(mainActivityVisible)
+        if(mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_STATE).putExtra("state", state.toString()));
+        }
     }
 
     /**
      * Send information to the MainActivity
      */
+    private void updateTimerIntent(long time) {
+        if(mainActivityVisible) {
+            getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time));
+        }
+    }
+
     private void updateTimerIntent(long time, int sets) {
-        if(mainActivityVisible)
+        if(mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time).putExtra("sets", sets));
+        }
     }
 
     protected void start() {
         Log.d(TAG, "start: timerUser=" + timerUser + ", setsCurrent=" + setsCurrent);
         startCountDown(timerUser);
         updateStateIntent(State.RUNNING);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-        interactiveNotification.build(0);
+
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+
         saveContextPreferences();
     }
 
     private void startContextPreferences() {
         Log.d(TAG, "startContextPreferences: timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
         startCountDown(timerCurrent);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-        interactiveNotification.build(0);
+
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+
         saveContextPreferences();
     }
 
     protected void pause() {
         if(state == State.RUNNING) {
             Log.d(TAG, "pause");
+
             countDownPauseTimer.pause();
+
             updateStateIntent(State.PAUSED);
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED);
-            interactiveNotification.build(0);
+
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED, InteractiveNotification.NotificationMode.UPDATE);
+
             saveContextPreferences();
         }
     }
 
     private void pauseContextPreference() {
         Log.d(TAG, "pauseContextPreference: timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+
         startCountDown(timerCurrent);
         countDownPauseTimer.pause();
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED);
-        interactiveNotification.build(0);
+
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED, InteractiveNotification.NotificationMode.UPDATE);
+
         saveContextPreferences();
     }
 
     protected void resume() {
         if(state == State.PAUSED) {
             Log.d(TAG,"resume");
+
             countDownPauseTimer.resume();
             updateStateIntent(State.RUNNING);
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-            interactiveNotification.build(0);
+
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+
             saveContextPreferences();
         }
     }
 
     protected void stop() {
         Log.d(TAG,"stop: setCurrent=" + setsCurrent);
+
         timerCurrent = timerUser;
-        if(state == State.RUNNING)
+
+        if(state == State.RUNNING) {
             cancelCountDown();
+        }
         updateStateIntent(State.STOPPED);
         updateTimerIntent(timerCurrent, setsCurrent);
-        interactiveNotification.updateSetsTextView(setsCurrent);
-        interactiveNotification.updateTimerTextView(timerCurrent);
-        if(setsCurrent >= 1)
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
-        else
-            Log.e(TAG, "stop: setCurrent cannot be 0");
-        interactiveNotification.build(0);
+
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
+
         saveContextPreferences();
     }
 
     private void done() {
+        Log.d(TAG, "done: setsCurrent=" + setsCurrent );
+
         // The timer will be stopped from the alerts
-        if(mainActivityVisible)
+        if(mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_DONE));
-        if (setsCurrent-- > 1) {
-            Log.d(TAG, "done: set done setsCurrent=" + setsCurrent);
-            interactiveNotification.alertSetDone();
-            interactiveNotification.build(2);
-            interactiveNotificationAlert = true;
-            // Update for the next set
-            interactiveNotification.updateSetsTextView(setsCurrent);
-        } else {
-            Log.d(TAG, "done: all sets done setsCurrent=" + setsCurrent);
-            interactiveNotification.alertAllSetsDone();
-            interactiveNotification.build(2);
-            interactiveNotificationAlert = true;
         }
-        if(wakeLock != null) {
-            if(wakeLock.isHeld())
-                wakeLock.release();
-        }
+
+        setsCurrent++;
+        doneInteractiveNotification(InteractiveNotification.NotificationMode.LIGHT_SOUND_LONG_VIBRATE);
+
+        releaseWakeLock();
+
         saveContextPreferences();
     }
 
     protected void nextSet() {
-        if(state == State.RUNNING)
+        Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent );
+
+        if(state == State.RUNNING) {
             cancelCountDown();
+        }
+
+        setsCurrent++;
         timerCurrent = timerUser;
-        Log.d(TAG, "nextSet: setsCurrent=" + (setsCurrent - 1));
-        if(setsCurrent-- > 1) {
-            interactiveNotification.updateSetsTextView(setsCurrent);
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.SET_DONE);
-            interactiveNotificationAlert = true;
-        }
-        else {
-            interactiveNotification.updateAllSetsDoneTextView();
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.ALL_SETS_DONE);
-            interactiveNotificationAlert = true;
-        }
-        interactiveNotification.updateTimerTextView(timerUser);
-        interactiveNotification.build(0);
+        doneInteractiveNotification(InteractiveNotification.NotificationMode.UPDATE);
+
         updateStateIntent(State.STOPPED);
         updateTimerIntent(timerUser, setsCurrent);
-        if(wakeLock.isHeld())
-            wakeLock.release();
+
+        releaseWakeLock();
+
         saveContextPreferences();
     }
 
+    private void doneInteractiveNotification(InteractiveNotification.NotificationMode notificationMode) {
+        if (setsCurrent < setsUser) {
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.SET_DONE);
+        } else {
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.ALL_SETS_DONE);
+        }
+        interactiveNotification.updateTimerCurrent(timerCurrent);
+        interactiveNotification.updateSetsCurrent(setsCurrent, notificationMode);
+        interactiveNotificationAlert = true;
+        Log.d(TAG, "goToNextSet: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser);
+    }
+
     protected void nextSetStart() {
-        if(state == State.RUNNING)
-            cancelCountDown();
+        Log.d(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
+
+        setsCurrent++;
+
         timerCurrent = timerUser;
-        Log.d(TAG, "nextSetStart: setsCurrent=" + (setsCurrent - 1));
-        if(setsCurrent-- > 1)
-            interactiveNotification.updateSetsTextView(setsCurrent);
-        else
-            Log.e(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
-        if(wakeLock.isHeld())
-            wakeLock.release();
-        Log.d(TAG, "nextSetStart: timerUser=" + timerUser + ", setsCurrent=" + setsCurrent);
+
+        if(state == State.RUNNING) {
+            cancelCountDown();
+        }
         startCountDown(timerUser);
         updateTimerIntent(timerUser, setsCurrent);
         updateStateIntent(State.RUNNING);
-        interactiveNotification.updateTimerTextView(timerUser);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-        interactiveNotification.build(0);
+
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+
+        releaseWakeLock();
+
         saveContextPreferences();
     }
 
     protected void extraSet() {
+        Log.d(TAG, "extraSet: setsCurrent=" + setsCurrent);
+
         timerCurrent = timerUser;
-        if(state == State.RUNNING)
+
+        if(state == State.RUNNING) {
             cancelCountDown();
-        else
-            Log.e(TAG, "extraSet: timerState=" + state.toString() + ", setsCurrent=" + setsCurrent);
-        setsCurrent += 1;
-        interactiveNotification.updateTimerTextView(timerUser);
-        interactiveNotification.updateExtraSetTextViews();
-        updateTimerIntent(timerUser, setsCurrent);
-        Log.d(TAG, "extraSet: timerUser=" + timerUser + ", setsCurrent=" + setsCurrent);
+        }
         startCountDown(timerUser);
+        updateTimerIntent(timerUser, setsCurrent);
         updateStateIntent(State.RUNNING);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-        interactiveNotification.build(0);
+
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+
         saveContextPreferences();
     }
 
     protected void reset() {
         Log.d(TAG, "reset");
-        setsCurrent = setsUser;
+
+        setsCurrent = setsInit;
         timerCurrent = timerUser;
-        if(state == State.RUNNING)
+
+        if(state == State.RUNNING) {
             cancelCountDown();
-        interactiveNotification.updateSetsTextView(setsUser);
-        interactiveNotification.updateTimerTextView(timerUser);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
-        interactiveNotification.build(0);
+        }
+
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
+
         updateTimerIntent(timerCurrent, setsCurrent);
         updateStateIntent(State.READY);
-        if(wakeLock.isHeld())
-            wakeLock.release();
+
+        releaseWakeLock();
+
         saveContextPreferences();
     }
 
     protected void clear() {
         Log.d(TAG, "clear");
+        if(state == State.RUNNING) {
+            cancelCountDown();
+        }
+
         timerCurrent = 0;
         timerUser = 0;
-        setsCurrent = 1;
-        setsUser = 1;
+        setsInit = 0;
+        setsCurrent = 0;
+        setsUser = 0;
+
         updateTimerIntent(timerCurrent, setsCurrent);
-        if(state == State.RUNNING)
-            cancelCountDown();
         updateStateIntent(State.WAITING);
+
         // remove the notification and reset the timer to init state
         stopForeground(true);
         interactiveNotification.dismiss();
+
         saveContextPreferences();
     }
 
     protected void timerMinus() {
-        if(timerCurrent < timerMinus) {
-            Log.e(TAG, "timerMinus: impossible timerCurrent=" + timerCurrent);
-            return;
-        }
         timerCurrent -= timerMinus;
-        updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
-        interactiveNotification.updateTimerTextView(timerCurrent);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-        interactiveNotification.build(0);
+
+        updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
+
+        interactiveNotification.updateTimerCurrent(timerCurrent);
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
     }
 
     protected void timerPlus() {
         timerCurrent += timerPlus;
-        updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
-        interactiveNotification.updateTimerTextView(timerCurrent);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-        interactiveNotification.build(0);
+
+        updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
+
+        interactiveNotification.updateTimerCurrent(timerCurrent);
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
     }
 
     protected void setsMinus() {
@@ -390,13 +413,15 @@ public class TimerService extends Service {
         }
         setsCurrent -= 1;
         Log.d(TAG, "setsMinus: setsCurrent=" + setsCurrent);
-        interactiveNotification.updateSetsTextView(setsCurrent);
+
+        interactiveNotification.updateSetsCurrent(setsCurrent, InteractiveNotification.NotificationMode.UPDATE);
     }
 
     protected void setsPlus() {
         setsCurrent += 1;
         Log.d(TAG, "setsPlus: setsCurrent=" + setsCurrent);
-        interactiveNotification.updateSetsTextView(setsCurrent);
+
+        interactiveNotification.updateSetsCurrent(setsCurrent, InteractiveNotification.NotificationMode.UPDATE);
     }
 
     public void setTimer(long time) {
@@ -413,51 +438,51 @@ public class TimerService extends Service {
             Log.e(TAG, "setTimer with time=" + time);
     }
 
-    public void setSets(int sets) {
-        Log.d(TAG, "setSets");
-        if(sets >= 1) {
-            setsUpdate(sets);
-            if(!isRunning())
-                setsUser = sets;
-            Log.d(TAG, "setSets: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
-        }
-        else
-            Log.e(TAG, "set_timer with sets=" + sets);
+    public void setSetsInit(int sets) {
+        Log.d(TAG, "setSetsInit: setsInit=" + sets);
+        setsInit = sets;
+    }
+
+    public void setSetsCurrent(int sets) {
+        Log.d(TAG, "setSetsCurrent: setsCurrent=" + sets);
+        setsCurrent = sets;
+        interactiveNotification.updateSetsCurrent(setsCurrent, InteractiveNotification.NotificationMode.UPDATE);
+    }
+
+    public void setSetsUser(int sets) {
+        Log.d(TAG, "setSetsUser: setsUser=" + sets);
+        setsUser = sets;
+        interactiveNotification.updateSetsUser(setsUser, InteractiveNotification.NotificationMode.UPDATE);
+    }
+
+    public void setTimerUser(long timer) {
+        Log.d(TAG, "setTimerUser: timerUser=" + timer);
+        timerUser = timer;
+    }
+
+    public void setTimerCurrent(long timer) {
+        Log.d(TAG, "setTimerCurrent: timerCurrent=" + timer);
+        timerCurrent = timer;
+        interactiveNotification.updateTimerCurrent(timer, InteractiveNotification.NotificationMode.UPDATE);
     }
 
     protected void timerUpdate(long time) {
         Log.d(TAG, "timerUpdate: time=" + time + ", timerCurrent=" + timerCurrent);
-        int notification_alert_level = 0;
+
         if(timerCurrent != time) {
             timerCurrent = time;
-            if (mainActivityVisible)
-                getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time));
-            interactiveNotification.updateTimerTextView(timerCurrent);
-            if(state == State.RUNNING)
-                interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
-            else if(state == State.WAITING)
-                // Get ready for the next step
-                interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
+            updateTimerIntent(timerCurrent);
         }
-        // Get ready notification light, sound and vibration
-        if(time == timerGetReady && timerGetReadyEnable)
-            notification_alert_level = 1;
-        // Only light for time < timerGetReady
-        if(time < timerGetReady && timerGetReadyEnable)
-            notification_alert_level = 3;
-        interactiveNotification.build(notification_alert_level);
-    }
 
-    // Method only called from the MainActivity
-    protected void setsUpdate(int sets) {
-        Log.d(TAG, "setsUpdate: sets=" + sets + ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser);
-        if(setsCurrent != sets) {
-            setsCurrent = sets;
-            interactiveNotification.updateSetsTextView(setsCurrent);
+        if(timerCurrent == timerGetReady && timerGetReadyEnable) {
+            interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.LIGHT_SOUND_SHORT_VIBRATE);
         }
-        else if(setsCurrent == 1 && setsUser == 1)
-            interactiveNotification.updateOneSetTextViews();
-        interactiveNotification.build(0);
+        else if(timerCurrent < timerGetReady && timerGetReadyEnable) {
+            interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.LIGHT_ONLY);
+        }
+        else {
+            interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.UPDATE);
+        }
     }
 
     private void notificationDeleted() {
@@ -517,6 +542,12 @@ public class TimerService extends Service {
         }
     }
 
+    private void releaseWakeLock() {
+        if(wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+    }
+
     private void startCountDown(long time) {
         setupAlarmManager();
         countDownPauseTimer = new CountDownPauseTimer(TimeUnit.SECONDS.toMillis(time), TimeUnit.SECONDS.toMillis(1)) {
@@ -549,11 +580,12 @@ public class TimerService extends Service {
 
     private void saveContextPreferences() {
         Log.d(TAG, "saveContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
-                + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+                + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.putLong("timerService_timerEnd", System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timerCurrent));
         sharedPreferencesEditor.putLong("timerService_timerCurrent", timerCurrent);
         sharedPreferencesEditor.putLong("timerService_timerUser", timerUser);
+        sharedPreferencesEditor.putInt("timerService_setsInit", setsInit);
         sharedPreferencesEditor.putInt("timerService_setsCurrent", setsCurrent);
         sharedPreferencesEditor.putInt("timerService_setsUser", setsUser);
         sharedPreferencesEditor.putString("timerService_state", state.toString());
@@ -565,8 +597,9 @@ public class TimerService extends Service {
         long timerEnd = sharedPreferences.getLong("timerService_timerEnd", System.currentTimeMillis());
         timerCurrent = sharedPreferences.getLong("timerService_timerCurrent", timerCurrent);
         timerUser = sharedPreferences.getLong("timerService_timerUser", timerUser);
-        setsCurrent = sharedPreferences.getInt("timerService_setsCurrent", setsCurrent);
-        setsUser = sharedPreferences.getInt("timerService_setsUser", setsUser);
+        setsInit = sharedPreferences.getInt("timerService_setsInit", setsInit);
+        setSetsCurrent(sharedPreferences.getInt("timerService_setsCurrent", setsCurrent));
+        setSetsUser(sharedPreferences.getInt("timerService_setsUser", setsUser));
         state = State.valueOf(sharedPreferences.getString("timerService_state", state.toString()).toUpperCase(Locale.US));
         mainActivityVisible = sharedPreferences.getBoolean("timerService_mainActivityVisible", mainActivityVisible);
 
@@ -580,8 +613,6 @@ public class TimerService extends Service {
 
         if(!mainActivityVisible) {
             updateNotificationVisibility(true);
-            interactiveNotification.updateSetsTextView(setsCurrent);
-            interactiveNotification.updateTimerTextView(timerCurrent);
             switch (state) {
                 case RUNNING:
                     interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
@@ -598,10 +629,11 @@ public class TimerService extends Service {
                     Log.e(TAG, "loadContextPreferences: cannot show the interactiveNotification with state=" + state);
                     break;
             }
-            interactiveNotification.build(0);
+            interactiveNotification.updateSetsCurrent(setsCurrent);
+            interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.UPDATE);
         }
         Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
-            + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+            + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
     }
 
     public class TimerBinder extends Binder {
