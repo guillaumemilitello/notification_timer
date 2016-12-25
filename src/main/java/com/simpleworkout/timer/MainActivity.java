@@ -109,6 +109,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private boolean timerPickerDone, setsPickerDone;
 
     // Presets Timers
+    protected int presetsNumber;
+    // TODO: update preset UI, no more preset UI
     private ImageButton imageButtonPresetLeft, imageButtonPresetCenter, imageButtonPresetRight;
     private TextView presetLeftTextView, presetCenterTextView, presetRightTextView;
 
@@ -241,6 +243,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
         imageButtonRight = (ImageButton) findViewById(R.id.imageButtonRight);
 
+        presetsNumber = 3;
+
+        // TODO: update preset UI, no more preset UI
         imageButtonPresetLeft = (ImageButton) findViewById(R.id.imageButtonPresetLeft);
         imageButtonPresetCenter = (ImageButton) findViewById(R.id.imageButtonPresetCenter);
         imageButtonPresetRight = (ImageButton) findViewById(R.id.imageButtonPresetRight);
@@ -543,10 +548,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
-    private void updatePresetTextView() {
-        updatePresetTextView(0);
-        updatePresetTextView(1);
-        updatePresetTextView(2);
+    private void updatePresetsTextView() {
+        for (int i=0; i < presetsNumber; ++i) {
+            updatePresetTextView(i);
+        }
     }
 
     private void updatePresetTextView(int position) {
@@ -564,6 +569,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             }
         }
 
+        // TODO: update preset UI, no more preset UI to be updated
         switch (position) {
             case 0: presetLeftTextView.setText(presetString); break;
             case 1: presetCenterTextView.setText(presetString); break;
@@ -982,7 +988,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             imageButtonPresetRight.setEnabled(false);
             imageButtonPresetRight.setAlpha(ALPHA_DISABLED);
         }
-        updatePresetTextView();
+        updatePresetsTextView();
     }
 
     private void updateButtonsLayout() {
@@ -1193,7 +1199,15 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
 
+        if(timerServiceBound) {
+            timerService.setMainActivityVisible(false);
+            timerService.updateNotificationVisibility(true);
+            unbindService(serviceConnection);
+            timerServiceBound = false;
+        }
+
         unregisterReceiver(mainActivityReceiver);
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
     }
 
     @Override

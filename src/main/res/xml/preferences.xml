@@ -21,10 +21,6 @@
         android:summary="@string/init_picker_summary"
         android:defaultValue="false"
         android:key="pickerInitZero"/>
-    <Preference
-        android:title="@string/reset_preset"
-        android:key="clearPreset"
-        android:summary="@string/reset_preset_summary"/>
 
     </PreferenceCategory>
 
