@@ -16,7 +16,11 @@
         android:defaultValue="20"
         android:entries="@array/timerMinusPlus"
         android:entryValues="@array/timerMinusPlusValues"/>
-
+    <SwitchPreference
+        android:title="@string/init_picker"
+        android:summary="@string/init_picker_summary"
+        android:defaultValue="false"
+        android:key="pickerInitZero"/>
     <Preference
         android:title="@string/reset_preset"
         android:key="clearPreset"

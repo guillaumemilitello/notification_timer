@@ -128,10 +128,13 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private int timerGetReady = 15;
     private long timerMinus = 30;
     private long timerPlus = 30;
+    private static boolean initPickerZero = false;
     private boolean vibrationEnable = false;
     private boolean vibrationReadyEnable = false;
     private Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     private Uri ringtoneReady = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+    public static boolean getInitPickerZero() { return initPickerZero; }
 
     public SharedPreferences sharedPreferences;
 
@@ -1268,6 +1271,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 if(timerServiceBound) {
                     timerService.setTimerPlus(timerPlus);
                 }
+                break;
+            case "pickerInitZero":
+                initPickerZero = sharedPreferences.getBoolean("pickerInitZero", true);
                 break;
             case "vibrationEnable":
                 vibrationEnable = sharedPreferences.getBoolean("vibrationEnable", true);

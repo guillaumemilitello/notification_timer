@@ -44,6 +44,8 @@
     <string name="notification">Notification</string>
     <string name="extra_notification">Extra Notification</string>
     <string name="extra_notification_summary">Notification seconds before the timer is done</string>
+    <string name="init_picker">Default sets choice</string>
+    <string name="init_picker_summary">The timer starts before the first set by default</string>
     <string name="skip_forward">Skip forward</string>
     <string name="skip_backward">Skip backward</string>
     <string name="reset_preset">Clear preset timers</string>

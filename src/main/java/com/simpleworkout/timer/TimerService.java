@@ -149,7 +149,7 @@ public class TimerService extends Service {
         if(!isWaiting()) {
             if (visible) {
                 Log.d(TAG, "updateNotificationVisibility: startForeground");
-                startForeground(interactiveNotification.getID(), interactiveNotification.getNotification());
+                startForeground(interactiveNotification.ID, interactiveNotification.getNotification());
                 interactiveNotification.setVisible();
                 interactiveNotificationRebuild = true;
             }
@@ -624,9 +624,8 @@ public class TimerService extends Service {
                 case READY:
                     interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
                     break;
-                case WAITING:
+                default:
                     interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.NO_LAYOUT);
-                    Log.e(TAG, "loadContextPreferences: cannot show the interactiveNotification with state=" + state);
                     break;
             }
             interactiveNotification.updateSetsCurrent(setsCurrent);

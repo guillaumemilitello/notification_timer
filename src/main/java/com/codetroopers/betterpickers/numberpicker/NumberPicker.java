@@ -209,6 +209,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         // Set the correct label state
         showLabel();
         showLabelCheckbox();
+        updateCheckbox(MainActivity.getInitPickerZero());
 
         restyleViews();
         updateKeypad();
@@ -372,6 +373,12 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     private void showLabelCheckbox() {
         if (mCheckbox != null) {
             mCheckbox.setText(mCheckboxLabelText);
+        }
+    }
+
+    private void updateCheckbox(boolean checked) {
+        if (mCheckbox != null) {
+            mCheckbox.setChecked(checked);
         }
     }
 
