@@ -3,7 +3,6 @@ package com.simpleworkout.timer;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -27,6 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,6 +43,8 @@ import com.simpleworkout.timer.TimerService.TimerBinder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -109,10 +112,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private boolean timerPickerDone, setsPickerDone;
 
     // Presets Timers
-    protected int presetsNumber;
-    // TODO: update preset UI, no more preset UI
-    private ImageButton imageButtonPresetLeft, imageButtonPresetCenter, imageButtonPresetRight;
-    private TextView presetLeftTextView, presetCenterTextView, presetRightTextView;
+    private PresetSpinner spinnerPresets;
+    private List<String> spinnerPresetsArray;
+    private ImageButton imageButtonPresets;
+    private boolean spinnerUserInteraction;
 
     // Timer service related
     private TimerService.State timerState;
@@ -243,43 +246,27 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
         imageButtonRight = (ImageButton) findViewById(R.id.imageButtonRight);
 
-        presetsNumber = 3;
+        spinnerPresetsArray =  new ArrayList<String>();
+        spinnerPresets = (PresetSpinner) findViewById(R.id.spinnerPresets);
+        imageButtonPresets = (ImageButton) findViewById(R.id.imageButtonPresets);
+        spinnerUserInteraction = false;
+        spinnerPresets.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                Log.d(TAG, "spinnerPresets.onItemSelected: position=" + position + ", spinnerUserInteraction=" + spinnerUserInteraction);
+                if (spinnerUserInteraction) {
+                    inputPreset(position);
+                }
+                else {
+                    spinnerUserInteraction = true;
+                }
+            }
 
-        // TODO: update preset UI, no more preset UI
-        imageButtonPresetLeft = (ImageButton) findViewById(R.id.imageButtonPresetLeft);
-        imageButtonPresetCenter = (ImageButton) findViewById(R.id.imageButtonPresetCenter);
-        imageButtonPresetRight = (ImageButton) findViewById(R.id.imageButtonPresetRight);
-        imageButtonPresetLeft.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { presetClick(0); }
-        });
-        imageButtonPresetCenter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { presetClick(1); }
-        });
-        imageButtonPresetRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { presetClick(2); }
-        });
-        imageButtonPresetLeft.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {presetLongClick(0); return true;
+            public void onNothingSelected(AdapterView<?> parentView) {
+                Log.d(TAG, "spinnerPresets.onNothingSelected");
             }
         });
-        imageButtonPresetCenter.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {presetLongClick(1); return true;
-            }
-        });
-        imageButtonPresetRight.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {presetLongClick(2); return true;
-            }
-        });
-
-        presetLeftTextView = (TextView) findViewById(R.id.textViewPresetLeft);
-        presetCenterTextView = (TextView) findViewById(R.id.textViewPresetCenter);
-        presetRightTextView= (TextView) findViewById(R.id.textViewPresetRight);
 
         imageButtonTimerMinus = (ImageButton) findViewById(R.id.imageButtonTimerMinus);
         imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
@@ -347,6 +334,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             Log.d(TAG, "onCreate: starting service TimerService");
             startService(new Intent(getBaseContext(), TimerService.class));
         }
+
+        updatePresetsArray();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -548,17 +537,20 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
-    private void updatePresetsTextView() {
-        for (int i=0; i < presetsNumber; ++i) {
-            updatePresetTextView(i);
+    private void updatePresetsArray() {
+        while (true) {
+            int position = spinnerPresetsArray.size();
+            long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
+            int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
+            int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
+            if (timer < 0 || sets < 0 || (init != 0 && init != 1)) {
+                break;
+            }
+            addPresetArray(timer, sets, init);
         }
     }
 
-    private void updatePresetTextView(int position) {
-        long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
-        int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
-        int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
-
+    private void addPresetArray(long timer, int sets, int init) {
         String presetString = "-";
         if(timer > 0 && sets > 0) {
             if (sets == SETS_INFINITY) {
@@ -568,106 +560,60 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 presetString = String.format(Locale.US, "%d:%02d x%d(%d)", timer / 60, timer % 60, sets, init);
             }
         }
-
-        // TODO: update preset UI, no more preset UI to be updated
-        switch (position) {
-            case 0: presetLeftTextView.setText(presetString); break;
-            case 1: presetCenterTextView.setText(presetString); break;
-            case 2: presetRightTextView.setText(presetString); break;
-        }
+        spinnerPresetsArray.add(presetString);
+        Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
+        updatePresetsSpinner();
+        spinnerPresets.setSelection(spinnerPresetsArray.size() - 1);
     }
 
-    private void presetClick(int position) {
-        Log.d(TAG, "presetClick position=" + position);
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            inputPreset(position);
+    private void deletePresetArray(int position) {
+        spinnerPresetsArray.remove(position);
+        Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        for (int i = position; i < spinnerPresetsArray.size(); ++i) {
+            long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", i + 1), -1);
+            int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", i + 1), -1);
+            int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", i + 1), -1);
+            sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", i), timer);
+            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", i), sets);
+            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", i), init);
         }
-        else if (buttonsLayout == ButtonsLayout.READY && inputFromPickers()) {
-            addPresetAlertDialog(position);
-        }
+        sharedPreferencesEditor.apply();
+        updatePresetsSpinner();
     }
 
-    private void presetLongClick(int position) {
-        Log.d(TAG, "presetLongClick position=" + position);
-        if (buttonsLayout == ButtonsLayout.READY && inputFromPickers()) {
-            addPresetAlertDialog(position);
-        }
-        else {
-            deletePresetAlertDialog(position);
-        }
-        updatePresetButtons();
+    private void updatePresetsSpinner() {
+        Log.d(TAG, "updatePresetsSpinner: spinnerUserInteraction=false");
+        spinnerUserInteraction = false;
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerPresetsArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerPresets.setAdapter(adapter);
     }
 
-    private void addPreset(int position) {
+    private void addPreset() {
+        int position = spinnerPresetsArray.size();
         Log.d(TAG, "addPreset: position=" + position + ", timerUser=" + timerUser + ", setsUser=" + setsUser + ", setsInit=" + setsInit);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        // TODO: keys to strings resources
         sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), timerUser);
         sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), setsUser);
         sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", position), setsInit);
         sharedPreferencesEditor.apply();
-        updatePresetTextView(position);
+        addPresetArray(timerUser, setsUser, setsInit);
+        updatePresetsButtonDelete(true);
     }
 
-    private void deletePreset(int position) {
+    private void deletePreset() {
+        int position = spinnerPresets.getSelectedItemPosition();
         Log.d(TAG, "deletePreset: position=" + position);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        // TODO: keys to strings resources
         sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
         sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
         sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
         sharedPreferencesEditor.apply();
-        updatePresetButtons();
-    }
-
-    private void addPresetAlertDialog(final int position) {
-        Log.d(TAG, "addPresetAlertDialog: position=" + position);
-        AlertDialog.Builder alertBuilderDeletePreset = new AlertDialog.Builder(this);
-        alertBuilderDeletePreset
-                .setMessage(getString(R.string.add_preset))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.alert_yes),new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
-                        addPreset(position);
-                        dialog.cancel();
-                    }
-                })
-                .setNegativeButton(getString(R.string.alert_no),new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
-                        Log.d(TAG, "addPresetAlertDialog: user cancel");
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alertDialogDeletePreset = alertBuilderDeletePreset.create();
-        alertDialogDeletePreset.show();
-    }
-
-    private void deletePresetAlertDialog(final int position) {
-        Log.d(TAG, "deletePresetAlertDialog: position=" + position);
-        AlertDialog.Builder alertBuilderDeletePreset = new AlertDialog.Builder(this);
-        alertBuilderDeletePreset
-            .setMessage(getString(R.string.delete_preset))
-            .setCancelable(false)
-            .setPositiveButton(getString(R.string.alert_yes),new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int id) {
-                    deletePreset(position);
-                    dialog.cancel();
-                }
-            })
-            .setNegativeButton(getString(R.string.alert_no),new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog,int id) {
-                    Log.d(TAG, "deletePresetAlertDialog: user cancel");
-                    dialog.cancel();
-                }
-            });
-        AlertDialog alertDialogDeletePreset = alertBuilderDeletePreset.create();
-        alertDialogDeletePreset.show();
-    }
-
-    private boolean presetAvailable(int position) {
-        Log.d(TAG, "presetAvailable position=" + position);
-        long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
-        int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
-        int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
-        return timer > 0 && sets > 0 && (init == 0 || init == 1);
+        deletePresetArray(position);
+        updatePresetsButtonAdd(true);
     }
 
     protected void start() {
@@ -948,47 +894,45 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
-    private void updatePresetButtons() {
-        Log.d(TAG, "updatePresetButtons: state=" + timerState + ", inputFromPickers=" + inputFromPickers());
-        int ic_add = R.drawable.ic_add_circle_black_48dp;
-        if(buttonsLayout == ButtonsLayout.READY && inputFromPickers()) {
-            imageButtonPresetLeft.setImageResource(ic_add);
-            imageButtonPresetLeft.setEnabled(true);
-            imageButtonPresetLeft.setAlpha(ALPHA_ENABLED);
-            imageButtonPresetCenter.setImageResource(ic_add);
-            imageButtonPresetCenter.setEnabled(true);
-            imageButtonPresetCenter.setAlpha(ALPHA_ENABLED);
-            imageButtonPresetRight.setImageResource(ic_add);
-            imageButtonPresetRight.setEnabled(true);
-            imageButtonPresetRight.setAlpha(ALPHA_ENABLED);
+    private void updatePresetsButton() {
+        Log.d(TAG, "updatePresetsButton: state=" + timerState + ", inputFromPickers=" + inputFromPickers());
+        if(buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            updatePresetsButtonAdd(false);
+            spinnerPresets.setEnabled(true);
         }
-        else if(buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            int ic_play = R.drawable.ic_play_circle_filled_black_48dp;
-            boolean enable = presetAvailable(0);
-            imageButtonPresetLeft.setImageResource(enable? ic_play : ic_add);
-            imageButtonPresetLeft.setEnabled(enable);
-            imageButtonPresetLeft.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
-            enable = presetAvailable(1);
-            imageButtonPresetCenter.setImageResource(enable? ic_play : ic_add);
-            imageButtonPresetCenter.setEnabled(enable);
-            imageButtonPresetCenter.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
-            enable = presetAvailable(2);
-            imageButtonPresetRight.setImageResource(enable? ic_play : ic_add);
-            imageButtonPresetRight.setEnabled(enable);
-            imageButtonPresetRight.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
+        else if(buttonsLayout == ButtonsLayout.READY) {
+            if(inputFromPickers()) {
+                updatePresetsButtonAdd(inputFromPickers());
+            }
+            else {
+                updatePresetsButtonDelete(true);
+            }
+            spinnerPresets.setEnabled(true);
         }
         else {
-            imageButtonPresetLeft.setImageResource(ic_add);
-            imageButtonPresetLeft.setEnabled(false);
-            imageButtonPresetLeft.setAlpha(ALPHA_DISABLED);
-            imageButtonPresetCenter.setImageResource(ic_add);
-            imageButtonPresetCenter.setEnabled(false);
-            imageButtonPresetCenter.setAlpha(ALPHA_DISABLED);
-            imageButtonPresetRight.setImageResource(ic_add);
-            imageButtonPresetRight.setEnabled(false);
-            imageButtonPresetRight.setAlpha(ALPHA_DISABLED);
+            updatePresetsButtonAdd(false);
+            spinnerPresets.setEnabled(false);
         }
-        updatePresetsTextView();
+    }
+
+    private void updatePresetsButtonAdd(boolean enable) {
+        imageButtonPresets.setImageResource(R.drawable.ic_add_circle_black_48dp);
+        imageButtonPresets.setEnabled(enable);
+        imageButtonPresets.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
+        imageButtonPresets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { addPreset(); }
+        });
+    }
+
+    private void updatePresetsButtonDelete(boolean enable) {
+        imageButtonPresets.setImageResource(R.drawable.ic_delete_black_48dp);
+        imageButtonPresets.setEnabled(enable);
+        imageButtonPresets.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
+        imageButtonPresets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { deletePreset(); }
+        });
     }
 
     private void updateButtonsLayout() {
@@ -1028,7 +972,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
         updateSetsButtons();
         updateTimerButtons();
-        updatePresetButtons();
+        updatePresetsButton();
     }
 
     private void updateButtons(ButtonAction left, ButtonAction center, ButtonAction right) {
@@ -1273,6 +1217,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         Log.d(TAG, "updatePreference: key=" + key);
         String color, uri;
 
+        // TODO: keys to strings resources
         switch(key) {
             case "timerMinus":
                 timerMinus = Long.parseLong(sharedPreferences.getString("timerMinus", "30"));

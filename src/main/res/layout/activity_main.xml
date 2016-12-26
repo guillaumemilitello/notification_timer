@@ -27,91 +27,23 @@
             android:orientation="horizontal"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:weightSum="3">
+            android:weightSum="2">
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:gravity="center" >
+            <com.simpleworkout.timer.PresetSpinner
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:id="@+id/spinnerPresets"
+                android:layout_weight="1"/>
 
-                <ImageButton
-                    style="?android:attr/borderlessButtonStyle"
-                    android:id="@+id/imageButtonPresetLeft"
-                    android:layout_width="42dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/ic_add_circle_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="false"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/textViewPresetLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="4:00 x4" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:gravity="center" >
-
-                <ImageButton
-                    style="?android:attr/borderlessButtonStyle"
-                    android:id="@+id/imageButtonPresetCenter"
-                    android:layout_width="42dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/ic_add_circle_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="false"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/textViewPresetCenter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="4:00 x4" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:gravity="center" >
-
-                <ImageButton
-                    style="?android:attr/borderlessButtonStyle"
-                    android:id="@+id/imageButtonPresetRight"
-                    android:layout_width="42dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/ic_add_circle_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="false"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/textViewPresetRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="4:00 x4" />
-
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/imageButtonPresets"
+                android:layout_width="128dp"
+                android:layout_height="48dp"
+                android:scaleType="center"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_delete_black_48dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
