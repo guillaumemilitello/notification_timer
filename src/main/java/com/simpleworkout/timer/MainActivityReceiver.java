@@ -64,10 +64,12 @@ public class MainActivityReceiver extends BroadcastReceiver {
                 }
                 break;
             case IntentAction.TIMER_UPDATE:
-                if (intent.hasExtra("time"))
-                    ((MainActivity)context).timerUpdate(intent.getExtras().getLong("time"));
-                if (intent.hasExtra("sets"))
-                    ((MainActivity)context).setsUpdate(intent.getExtras().getInt("sets"));
+                if (intent.hasExtra("time")) {
+                    ((MainActivity) context).timerUpdate(intent.getExtras().getLong("time"));
+                }
+                if (intent.hasExtra("sets")) {
+                    ((MainActivity) context).setsUpdate(intent.getExtras().getInt("sets"));
+                }
                 break;
             case IntentAction.TIMER_DONE:
                 ((MainActivity)context).done();
