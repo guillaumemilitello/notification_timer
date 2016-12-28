@@ -580,17 +580,22 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
     }
 
-    private void addPresetArray(long timer, int sets, int init) {
-        String presetString = "-";
+    private String presetToString(long timer, int sets, int init) {
+        String preset = "-";
         if(timer > 0 && sets > 0) {
             if (sets == SETS_INFINITY) {
-                presetString = String.format(Locale.US, "%d:%02d x∞(%d)", timer / 60, timer % 60, init);
+                preset = String.format(Locale.US, "%d:%02d x∞(%d)", timer / 60, timer % 60, init);
             }
             else {
-                presetString = String.format(Locale.US, "%d:%02d x%d(%d)", timer / 60, timer % 60, sets, init);
+                preset = String.format(Locale.US, "%d:%02d x%d(%d)", timer / 60, timer % 60, sets, init);
             }
         }
-        spinnerPresetsArray.add(presetString);
+        Log.d(TAG, "presetToString: preset='" + preset + "'");
+        return preset;
+    }
+
+    private void addPresetArray(long timer, int sets, int init) {
+        spinnerPresetsArray.add(presetToString(timer, sets, init));
         Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
         updatePresetsSpinner();
         spinnerPresets.setSelection(spinnerPresetsArray.size() - 1);
@@ -610,6 +615,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
         sharedPreferencesEditor.apply();
         updatePresetsSpinner();
+        spinnerPresets.setSelection(0);
     }
 
     private void updatePresetsSpinner() {
@@ -644,6 +650,17 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         sharedPreferencesEditor.apply();
         deletePresetArray(position);
         updatePresetsButtonAdd(true);
+    }
+
+    private boolean presetExists(long timer, int sets, int init) {
+        String preset = presetToString(timer, sets, init);
+        for (int position = 0; position < spinnerPresetsArray.size(); ++position) {
+            if (spinnerPresetsArray.get(position).equals(preset)) {
+                spinnerPresets.setSelection(position);
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void start() {
@@ -933,8 +950,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             spinnerPresets.setEnabled(true);
         }
         else if(buttonsLayout == ButtonsLayout.READY) {
-            if(inputFromPickers()) {
-                updatePresetsButtonAdd(inputFromPickers());
+            if(inputFromPickers() && !presetExists(timerUser, setsUser, setsInit)) {
+                updatePresetsButtonAdd(true);
             }
             else {
                 updatePresetsButtonDelete(true);
