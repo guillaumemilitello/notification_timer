@@ -23,31 +23,99 @@
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:orientation="horizontal"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:weightSum="2">
+            android:weightSum="3">
 
             <com.simpleworkout.timer.PresetSpinner
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_width="96dp"
+                android:layout_height="match_parent"
                 android:id="@+id/spinnerPresets"
                 android:layout_weight="1"/>
 
             <ImageButton
                 android:id="@+id/imageButtonPresets"
-                android:layout_width="128dp"
-                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:scaleType="center"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_delete_black_48dp"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackgroundBorderless" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="72dp"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:weightSum="2">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_stopwatch_add_black_48dp"
+                        android:layout_weight="1"/>
+
+                    <TextView
+                        android:id="@+id/textViewInfoTimer"
+                        android:layout_width="48dp"
+                        android:layout_height="match_parent"
+                        android:gravity="start|center_vertical"
+                        android:textAlignment="gravity"
+                        android:text="0:01"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="bold"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:weightSum="2">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_stopwatch_add_black_48dp"
+                        android:layout_weight="1"/>
+
+                    <TextView
+                        android:id="@+id/textViewInfoSets"
+                        android:layout_width="48dp"
+                        android:layout_height="match_parent"
+                        android:gravity="start|center_vertical"
+                        android:textAlignment="gravity"
+                        android:text="1→∞"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="bold"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-            <RelativeLayout
+        <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
                 android:layout_weight="0.53"
@@ -157,7 +225,7 @@
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:textSize="30sp"
-                android:id="@+id/textViewSetsNumber"
+                android:id="@+id/textViewSets"
                 android:gravity="center"
                 android:layout_weight="1" />
 

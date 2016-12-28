@@ -99,7 +99,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     public static final int SETS_INFINITY = 999999;
 
     // Main user interface
-    private TextView timerTextView,setsNumbersTextView;
+    private TextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
     private ProgressBar timerProgressBar, timerReadyProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -220,7 +220,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
 
         timerTextView = (TextView) findViewById(R.id.textViewTimer);
-        setsNumbersTextView = (TextView) findViewById(R.id.textViewSetsNumber);
+        setsTextView = (TextView) findViewById(R.id.textViewSets);
+        timerUserTextView = (TextView) findViewById(R.id.textViewInfoTimer);
+        setsUserTextView = (TextView) findViewById(R.id.textViewInfoSets);
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
@@ -364,7 +366,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerUser = 0;
         setsInit = 0;
         setsCurrent = 0;
-        setsUser = 1;
+        setsUser = 0;
         timerState = TimerService.State.WAITING;
 
         if(timerServiceBound) {
@@ -395,6 +397,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerReadyProgressBar.setProgress(timerGetReadyEnable? timerGetReady : 0);
         updateSetsDisplay();
         updateTimerDisplay();
+        updateTimerUserDisplay();
+        updateSetsUserDisplay();
         updateButtonsLayout();
     }
 
@@ -416,6 +420,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerService.setMainActivityVisible(true);
         timerService.updateNotificationVisibility(false);
         getTimerServiceContext();
+        updateUserInterface();
     }
 
     @Override
@@ -478,7 +483,28 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private void updateSetsDisplay() {
         String setsString = String.format(Locale.US, "x%d", setsCurrent);
         Log.d(TAG, "updateSetsDisplay: setsString='" + setsString + "'");
-        setsNumbersTextView.setText(setsString);
+        setsTextView.setText(setsString);
+    }
+
+    private void updateTimerUserDisplay() {
+        String timerInfoString = "-";
+        if (timerUser > 0) {
+            timerInfoString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
+        }
+        Log.d(TAG, "updateTimerInfo: timerInfoString='" + timerInfoString + "'");
+        timerUserTextView.setText(timerInfoString);
+    }
+
+    private void updateSetsUserDisplay() {
+        String setsInfoString = "-";
+        if (setsUser == SETS_INFINITY) {
+            setsInfoString = String.format(Locale.US, "%d→∞", setsInit);
+        }
+        else if (setsUser > 0) {
+            setsInfoString = String.format(Locale.US, "%d→%d", setsInit, setsUser);
+        }
+        Log.d(TAG, "updateSetsInfo: setsInfoString='" + setsInfoString + "'");
+        setsUserTextView.setText(setsInfoString);
     }
 
     private boolean inputFromPickers() {
@@ -497,6 +523,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             timerState = TimerService.State.READY;
             updateInputTimerService();
             updateButtonsLayout();
+            updateTimerUserDisplay();
+            updateSetsUserDisplay();
         }
     }
 
@@ -524,6 +552,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerState = TimerService.State.READY;
         updateInputTimerService();
         updateButtonsLayout();
+        updateTimerUserDisplay();
+        updateSetsUserDisplay();
     }
 
     private void updateInputTimerService() {
@@ -685,6 +715,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         setsPickerDone = false;
 
         updateButtonsLayout();
+        updateTimerUserDisplay();
+        updateSetsUserDisplay();
     }
 
     protected void reset() {
