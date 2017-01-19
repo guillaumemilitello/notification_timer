@@ -99,12 +99,12 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     public static final int SETS_INFINITY = 999999;
 
     // Main user interface
-    private TextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
-    private ProgressBar timerProgressBar, timerReadyProgressBar;
+    private TextView timerTextView, setsCurrentTextView, setsNextTextView, timerUserTextView, setsUserTextView;
+    private ProgressBar timerProgressBar, timerReadyProgressBar, setsProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
-    private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonSetsMinus, imageButtonSetsPlus;
+    private ImageButton imageButtonTimerMinus, imageButtonTimerPlus;
 
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
@@ -155,6 +155,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         CLEAR_DISABLED("clear_disabled"),
         RESET("reset"),
         RESET_DISABLED("reset_disabled"),
+        NEXT_SET("next_set"),
+        NEXT_SET_DISABLED("next_set_disabled"),
         NEXT_SET_START("next_set_start"),
         NEXT_SET_START_DISABLED("next_set_start_disabled");
 
@@ -220,7 +222,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
 
         timerTextView = (TextView) findViewById(R.id.textViewTimer);
-        setsTextView = (TextView) findViewById(R.id.textViewSets);
+        setsCurrentTextView = (TextView) findViewById(R.id.textViewSetsCurrent);
+        setsNextTextView = (TextView) findViewById(R.id.textViewSetsNext);
         timerUserTextView = (TextView) findViewById(R.id.textViewInfoTimer);
         setsUserTextView = (TextView) findViewById(R.id.textViewInfoSets);
 
@@ -243,6 +246,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
         timerProgressBar = (ProgressBar) findViewById(R.id.timerProgressBar);
         timerReadyProgressBar = (ProgressBar) findViewById(R.id.timerReadyProgressBar);
+        setsProgressBar = (ProgressBar) findViewById(R.id.progressBarSets);
 
         imageButtonLeft = (ImageButton) findViewById(R.id.imageButtonLeft);
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
@@ -272,8 +276,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
         imageButtonTimerMinus = (ImageButton) findViewById(R.id.imageButtonTimerMinus);
         imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
-        imageButtonSetsMinus = (ImageButton) findViewById(R.id.imageButtonSetsMinus);
-        imageButtonSetsPlus = (ImageButton) findViewById(R.id.imageButtonSetsPlus);
         imageButtonTimerMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { sendBroadcast(new Intent(IntentAction.TIMER_MINUS)); }
@@ -281,14 +283,6 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         imageButtonTimerPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { sendBroadcast(new Intent(IntentAction.TIMER_PLUS)); }
-        });
-        imageButtonSetsMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { sendBroadcast(new Intent(IntentAction.SETS_MINUS)); }
-        });
-        imageButtonSetsPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { sendBroadcast(new Intent(IntentAction.SETS_PLUS)); }
         });
 
         timerPickerDone = false;
@@ -395,6 +389,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerProgressBar.setProgress((int)timerCurrent);
         timerReadyProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setProgress(timerGetReadyEnable? timerGetReady : 0);
+        setsProgressBar.setMax((int)timerUser);
+        setsProgressBar.setProgress((int)(timerUser - timerCurrent));
         updateSetsDisplay();
         updateTimerDisplay();
         updateTimerUserDisplay();
@@ -430,6 +426,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerUser = timer;
         Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
         timerProgressBar.setMax((int)timerUser);
+        setsProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setMax((int)timerUser);
         updateTimerDisplay();
         timerPickerDone = true;
@@ -455,6 +452,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerTextView.setText(timeString);
         timerProgressBar.setMax((int)timerUser);
         timerProgressBar.setProgress((int)timerCurrent);
+        setsProgressBar.setMax((int)timerUser);
+        setsProgressBar.setProgress((int)(timerUser - timerCurrent));
         timerReadyProgressBar.setMax((int)timerUser);
         if(!timerGetReadyEnable || timerCurrent <= timerGetReady) {
             timerReadyProgressBar.setProgress(0);
@@ -481,9 +480,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateSetsDisplay() {
-        String setsString = String.format(Locale.US, "x%d", setsCurrent);
-        Log.d(TAG, "updateSetsDisplay: setsString='" + setsString + "'");
-        setsTextView.setText(setsString);
+        String setsCurrentString = String.format(Locale.US, "%d", setsCurrent);
+        String setsNextString = String.format(Locale.US, "%d", setsCurrent + 1);
+        Log.d(TAG, "updateSetsDisplay: setsCurrentString='" + setsCurrentString + "', setsNextString='" + setsNextString + "'");
+        setsCurrentTextView.setText(setsCurrentString);
+        setsNextTextView.setText(setsNextString);
     }
 
     private void updateTimerUserDisplay() {
@@ -542,6 +543,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         setsUser = sets;
 
         timerProgressBar.setMax((int)timerUser);
+        setsProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         updateSetsDisplay();
@@ -902,30 +904,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateSetsButtons() {
-        // TODO: clean up
-        // Also update the next set button
-//        if ((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && setsCurrent > 1) {
-//            imageButtonSetsMinus.setEnabled(true);
-//            imageButtonSetsMinus.setAlpha(ALPHA_ENABLED);
-//            updateButton(imageButtonRight, ButtonAction.NEXT_SET_START);
-//        } else {
-            imageButtonSetsMinus.setEnabled(false);
-            imageButtonSetsMinus.setAlpha(ALPHA_DISABLED);
-            updateButton(imageButtonRight, ButtonAction.NEXT_SET_START_DISABLED);
-//        }
-//        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED && setsCurrent < setsUser - 1) {
-//            imageButtonSetsPlus.setEnabled(true);
-//            imageButtonSetsPlus.setAlpha(ALPHA_ENABLED);
-//        } else {
-            imageButtonSetsPlus.setEnabled(false);
-            imageButtonSetsPlus.setAlpha(ALPHA_DISABLED);
-//        }
         if((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && setsCurrent < setsUser - 1) {
-            updateButton(imageButtonRight, ButtonAction.NEXT_SET_START);
+            updateButton(imageButtonRight, ButtonAction.NEXT_SET);
         }
         else {
-            // TODO: add button reset
-            updateButton(imageButtonRight, ButtonAction.NEXT_SET_START_DISABLED);
+            updateButton(imageButtonRight, ButtonAction.NEXT_SET_DISABLED);
         }
     }
 
@@ -997,24 +980,24 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             ButtonAction nextStep;
             switch (layout) {
                 case WAITING:
-                    updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.INPUT, ButtonAction.NEXT_SET_START_DISABLED);
+                    updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
                     break;
                 case WAITING_SETS:
-                    updateButtons(ButtonAction.CLEAR, ButtonAction.INPUT, ButtonAction.NEXT_SET_START_DISABLED);
+                    updateButtons(ButtonAction.CLEAR, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
                     break;
                 case READY:
-                    updateButtons(ButtonAction.CLEAR, ButtonAction.START, ButtonAction.NEXT_SET_START_DISABLED);
+                    updateButtons(ButtonAction.CLEAR, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                     break;
                 case RUNNING:
-                    nextStep = (setsCurrent < setsUser - 1)? ButtonAction.NEXT_SET_START : ButtonAction.NEXT_SET_START_DISABLED;
+                    nextStep = (setsCurrent < setsUser - 1)? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
                     updateButtons(ButtonAction.RESET, ButtonAction.PAUSE, nextStep);
                     break;
                 case PAUSED:
-                    nextStep = (setsCurrent < setsUser - 1)? ButtonAction.NEXT_SET_START : ButtonAction.NEXT_SET_START_DISABLED;
+                    nextStep = (setsCurrent < setsUser - 1)? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
                     updateButtons(ButtonAction.RESET, ButtonAction.RESUME, nextStep);
                     break;
                 case STOPPED:
-                    updateButtons(ButtonAction.RESET, ButtonAction.START, ButtonAction.NEXT_SET_START_DISABLED);
+                    updateButtons(ButtonAction.RESET, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                     break;
                 default:
                     Log.e(TAG, "updateButtonsLayout: impossible layout=" + layout.toString());
@@ -1095,6 +1078,20 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             case CLEAR_DISABLED:
                 button.setEnabled(false);
                 button.setImageResource(R.drawable.ic_delete_black_48dp);
+                button.setAlpha(ALPHA_DISABLED);
+                return true;
+            case NEXT_SET:
+                button.setEnabled(true);
+                button.setImageResource(R.drawable.ic_chevron_right_black_48dp);
+                button.setAlpha(ALPHA_ENABLED);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.NEXT_SET)); }
+                });
+                return true;
+            case NEXT_SET_DISABLED:
+                button.setEnabled(false);
+                button.setImageResource(R.drawable.ic_chevron_right_black_48dp);
                 button.setAlpha(ALPHA_DISABLED);
                 return true;
             case NEXT_SET_START:

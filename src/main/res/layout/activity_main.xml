@@ -198,49 +198,48 @@
             </RelativeLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center"
             android:weightSum="3" >
 
-            <ImageButton
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:paddingLeft="16dp"
-                android:scaleType="fitEnd"
-                android:adjustViewBounds="true"
-                android:padding="0dp"
-                android:id="@+id/imageButtonSetsPlus"
-                android:src="@drawable/ic_chevron_left_black_48dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="x12"
+                android:text="12"
                 android:fontFamily="sans-serif-light"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:textSize="30sp"
-                android:id="@+id/textViewSets"
+                android:id="@+id/textViewSetsCurrent"
                 android:gravity="center"
                 android:layout_weight="1" />
 
-            <ImageButton
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:paddingRight="16dp"
-                android:scaleType="fitStart"
-                android:adjustViewBounds="true"
-                android:padding="0dp"
-                android:id="@+id/imageButtonSetsMinus"
-                android:src="@drawable/ic_chevron_right_black_48dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:layout_gravity="center_horizontal"
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/progressBarSets"
+                android:max="100"
+                android:progress="45"
+                android:gravity="center"
                 android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="13"
+                android:fontFamily="sans-serif-light"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="30sp"
+                android:id="@+id/textViewSetsNext"
+                android:gravity="center"
+                android:layout_weight="1" />
+
         </LinearLayout>
 
         <LinearLayout
