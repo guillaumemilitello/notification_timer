@@ -410,6 +410,7 @@ public class InteractiveNotification extends Notification {
 
     private void updateTimerTextView() {
         switch (buttonsLayout) {
+            case NO_LAYOUT:
             case READY:
             case PAUSED:
             case RUNNING:
@@ -426,6 +427,7 @@ public class InteractiveNotification extends Notification {
     private void updateSetsTextView() {
         switch (buttonsLayout) {
             // TODO: first, second, etc...
+            case NO_LAYOUT:
             case READY:
                 if (setsUser == MainActivity.SETS_INFINITY) {
                     setsString = String.format(context.getString(R.string.total_sets_infinity), setsCurrent);
