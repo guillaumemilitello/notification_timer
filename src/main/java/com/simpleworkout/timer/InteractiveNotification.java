@@ -174,16 +174,8 @@ public class InteractiveNotification extends Notification {
                     notificationBuilder.setOngoing(false);
                     break;
                 case RUNNING:
-                    if(timerCurrent > timerMinus) {
-                        button2 = ButtonAction.NEXT_SET;
-                        button1 = ButtonAction.TIMER_MINUS;
-                    }
-                    else {
-                        button2 = ButtonAction.NO_ACTION;
-                        button1 = ButtonAction.NEXT_SET;
-                    }
-                    if(setsCurrent < setsUser - 1)
-                        button2 = ButtonAction.NEXT_SET_START;
+                    button2 = ButtonAction.NEXT_SET;
+                    button1 = ButtonAction.TIMER_MINUS;
                     button0 = ButtonAction.PAUSE;
                     notificationBuilder.setOngoing(true);
                     break;
@@ -200,9 +192,9 @@ public class InteractiveNotification extends Notification {
                     notificationBuilder.setOngoing(false);
                     break;
                 case ALL_SETS_DONE:
-                    button2 = ButtonAction.EXTRA_SET;
-                    button1 = ButtonAction.DISMISS;
-                    button0 = ButtonAction.RESET;
+                    button2 = ButtonAction.DISMISS;
+                    button1 = ButtonAction.RESET;
+                    button0 = ButtonAction.EXTRA_SET;
                     notificationBuilder.setOngoing(false);
                     break;
                 default:

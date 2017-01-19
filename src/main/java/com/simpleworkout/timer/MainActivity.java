@@ -751,6 +751,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     protected void timerMinus() {
         timerCurrent -= timerMinus;
+        if (timerCurrent <= 0) {
+            timerCurrent = 1;
+        }
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
 
         updateTimerDisplay();
@@ -927,7 +930,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateTimerButtons() {
-        if((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && timerCurrent >= timerMinus){
+        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED){
             imageButtonTimerMinus.setEnabled(true);
             imageButtonTimerMinus.setAlpha(ALPHA_ENABLED);
         } else {
