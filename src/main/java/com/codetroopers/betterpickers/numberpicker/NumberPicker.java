@@ -41,7 +41,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     private CheckBox mCheckbox;
     private boolean mChecked;
     private boolean mInfinity;
-    private NumberPickerErrorTextView mError;
     private int mSign;
     private String mLabelText = "";
     private String mCheckboxLabelText = "";
@@ -154,7 +153,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         super.onFinishInflate();
 
         mDivider = findViewById(R.id.divider);
-        mError = (NumberPickerErrorTextView) findViewById(R.id.error);
 
         for (int i = 0; i < mInput.length; i++) {
             mInput[i] = -1;
@@ -275,15 +273,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             mDelete.setEnabled(enabled);
             mDelete.setAlpha(enabled? (float) 1: (float) 0.3);
         }
-    }
-
-    /**
-     * Expose the NumberView in order to set errors
-     *
-     * @return the NumberView
-     */
-    public NumberPickerErrorTextView getErrorView() {
-        return mError;
     }
 
     @Override
