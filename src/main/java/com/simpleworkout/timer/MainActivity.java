@@ -704,6 +704,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout();
         updateTimerUserDisplay();
         updateSetsUserDisplay();
+        updateSetsDisplay();
     }
 
     protected void reset() {
