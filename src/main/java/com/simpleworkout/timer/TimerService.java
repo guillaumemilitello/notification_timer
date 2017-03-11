@@ -474,10 +474,10 @@ public class TimerService extends Service {
             updateTimerIntent(timerCurrent);
         }
 
-        if(timerCurrent == timerGetReady && timerGetReadyEnable) {
+        if(timerGetReadyEnable && timerCurrent == timerGetReady) {
             interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.LIGHT_SOUND_SHORT_VIBRATE);
         }
-        else if(timerCurrent < timerGetReady && timerGetReadyEnable) {
+        else if(timerGetReadyEnable && timerCurrent < timerGetReady) {
             interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.LIGHT_ONLY);
         }
         else {
@@ -521,10 +521,13 @@ public class TimerService extends Service {
         alarmManager.cancel(pendingIntentAlarm);
         long time = System.currentTimeMillis();
         long timerApprox = 7;
-        if(timerCurrent - timerGetReady > timerApprox)
-            time += TimeUnit.SECONDS.toMillis(timerUser - timerGetReady - timerApprox);
-        else if (timerCurrent > timerGetReady)
+
+        if ((timerGetReadyEnable && (timerCurrent - timerGetReady) > timerApprox) || timerCurrent > timerApprox) {
+            time += TimeUnit.SECONDS.toMillis(timerCurrent - timerGetReady - timerApprox);
+        } else if ((timerGetReadyEnable && timerCurrent > timerApprox) || timerCurrent > 0) {
             time += TimeUnit.SECONDS.toMillis(timerUser - timerGetReady);
+        }
+
         Log.d(TAG, "setupAlarmManager: wakeup the device at time=" + (time - System.currentTimeMillis())/1000 + ", timerCurrent=" + timerCurrent);
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntentAlarm);
     }
@@ -532,8 +535,8 @@ public class TimerService extends Service {
     protected void acquireWakeLock() {
         if(wakeLock != null) {
             if (!wakeLock.isHeld()) {
-                if (timerCurrent <= timerGetReady)
-                    Log.e(TAG, "acquireWakeLock: timerGetReady=" + timerGetReady + " is passed timerCurrent=" + timerCurrent);
+                if ((timerGetReadyEnable && timerCurrent <= timerGetReady) || timerCurrent <= 0)
+                    Log.e(TAG, "acquireWakeLock: timerGetReadyEnable=" + timerGetReadyEnable + ", timerGetReady=" + timerGetReady + " is passed timerCurrent=" + timerCurrent);
                 else
                     Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
                 wakeLock.acquire();

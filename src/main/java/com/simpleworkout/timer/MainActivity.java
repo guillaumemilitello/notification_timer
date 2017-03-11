@@ -1238,52 +1238,47 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         String color, uri;
 
         if (key.equals(getString(R.string.pref_timer_minus))) {
-            timerMinus = Long.parseLong(sharedPreferences.getString("timerMinus", "30"));
+            timerMinus = Long.parseLong(sharedPreferences.getString(key, "30"));
             if (timerServiceBound) {
                 timerService.setTimerMinus(timerMinus);
             }
         }
         else if (key.equals(getString(R.string.pref_timer_plus))) {
-            timerPlus = Long.parseLong(sharedPreferences.getString("timerPlus", "30"));
+            timerPlus = Long.parseLong(sharedPreferences.getString(key, "30"));
             if (timerServiceBound) {
                 timerService.setTimerPlus(timerPlus);
             }
         }
         else if (key.equals(getString(R.string.pref_picker_init_zero))) {
-            initPickerZero = sharedPreferences.getBoolean("pickerInitZero", true);
+            initPickerZero = sharedPreferences.getBoolean(key, true);
         }
         else if (key.equals(getString(R.string.pref_vibrate))) {
-            vibrationEnable = sharedPreferences.getBoolean("vibrationEnable", true);
+            vibrationEnable = sharedPreferences.getBoolean(key, true);
             if(timerServiceBound) {
                 timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
             }
         }
         else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
-            vibrationReadyEnable = sharedPreferences.getBoolean("vibrationReadyEnable", true);
+            vibrationReadyEnable = sharedPreferences.getBoolean(key, true);
             if(timerServiceBound) {
                 timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
             }
         }
         else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
-            timerGetReadyEnable = sharedPreferences.getBoolean("timerGetReadyEnable", true);
+            timerGetReadyEnable = sharedPreferences.getBoolean(key, true);
             if(timerServiceBound) {
                 timerService.setTimerGetReadyEnable(timerGetReadyEnable);
             }
         }
         else if (key.equals(getString(R.string.pref_timer_get_ready))) {
-            if(timerGetReadyEnable) {
-                timerGetReady = Integer.parseInt(sharedPreferences.getString("timerGetReady", "15"));
-            }
-            else {
-                timerGetReady = -1;
-            }
+            timerGetReady = Integer.parseInt(sharedPreferences.getString(key, "15"));
             if(timerServiceBound) {
                 timerService.setTimerGetReady(timerGetReady);
             }
         }
         else if (key.equals(getString(R.string.pref_light_color))) {
             int lightColor;
-            color = sharedPreferences.getString("lightColor", "green");
+            color = sharedPreferences.getString(key, "green");
             switch (color) {
                 case "none":
                     lightColor = InteractiveNotification.COLOR_NONE;
@@ -1301,7 +1296,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
         else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
             int lightReadyColor;
-            color = sharedPreferences.getString("lightReadyColor", "yellow");
+            color = sharedPreferences.getString(key, "yellow");
             switch (color) {
                 case "none":
                     lightReadyColor = InteractiveNotification.COLOR_NONE;
@@ -1318,14 +1313,14 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             }
         }
         else if (key.equals(getString(R.string.pref_ringtone_uri))) {
-            uri = sharedPreferences.getString("ringtoneUri", "default");
+            uri = sharedPreferences.getString(key, "default");
             ringtone = Uri.parse(uri);
             if(timerServiceBound) {
                 timerService.interactiveNotification.setRingtone(ringtone);
             }
         }
         else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
-            uri = sharedPreferences.getString("ringtoneUriReady", "default");
+            uri = sharedPreferences.getString(key, "default");
             ringtoneReady = Uri.parse(uri);
             if (timerServiceBound) {
                 timerService.interactiveNotification.setRingtoneReady(ringtoneReady);
