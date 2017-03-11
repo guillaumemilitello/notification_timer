@@ -117,8 +117,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         if (preferences != null) {
             for (Map.Entry<String, ?> preference : preferences.entrySet()) {
                 String key = preference.getKey();
-                Log.d(TAG, "updateSummaries: key=" + key);
-                updateSummary(settingsFragment.findPreference(key));
+                if (!key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))) {
+                    Log.d(TAG, "updateSummaries: key=" + key);
+                    updateSummary(settingsFragment.findPreference(key));
+                }
             }
         }
     }
@@ -144,8 +146,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                // avoid checking for preset timer keys
-                if(!key.contains("presetArray_")) {
+                if (!key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))) {
                     // preferenceChangeListener implementation
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
