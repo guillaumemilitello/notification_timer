@@ -49,12 +49,12 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements MsPickerDialogFragment.MsPickerDialogHandlerV2,
-NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
+        NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private static final String TAG = "MainActivity";
 
     private boolean mainActivityVisible;
-    
+
     private MainActivityReceiver mainActivityReceiver;
 
     private TimerService timerService;
@@ -98,7 +98,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private int setsUser;
 
     // Settings
-    protected static final long[] vibrationPattern = { 0, 400, 200, 400, };
+    protected static final long[] vibrationPattern = {0, 400, 200, 400,};
 
     // User preferences
     private long timerMinus;
@@ -111,7 +111,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private boolean vibrationReadyEnable;
     private Uri ringtoneReady;
 
-    public static boolean getInitPickerZero() { return initPickerZero; }
+    public static boolean getInitPickerZero() {
+        return initPickerZero;
+    }
 
     public SharedPreferences sharedPreferences;
 
@@ -133,6 +135,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         NEXT_SET_START_DISABLED("next_set_start_disabled");
 
         private String action;
+
         ButtonAction(String action) {
             this.action = action;
         }
@@ -155,6 +158,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         STOPPED("stopped");
 
         private String layout;
+
         ButtonsLayout(String layout) {
             this.layout = layout;
         }
@@ -224,7 +228,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
         imageButtonRight = (ImageButton) findViewById(R.id.imageButtonRight);
 
-        spinnerPresetsArray =  new ArrayList<String>();
+        spinnerPresetsArray = new ArrayList<String>();
         spinnerPresets = (PresetSpinner) findViewById(R.id.spinnerPresets);
         imageButtonPresets = (ImageButton) findViewById(R.id.imageButtonPresets);
         spinnerUserInteraction = false;
@@ -234,8 +238,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 Log.d(TAG, "spinnerPresets.onItemSelected: position=" + position + ", spinnerUserInteraction=" + spinnerUserInteraction);
                 if (spinnerUserInteraction) {
                     inputPreset(position);
-                }
-                else {
+                } else {
                     spinnerUserInteraction = true;
                 }
             }
@@ -250,11 +253,15 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
         imageButtonTimerMinus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { sendBroadcast(new Intent(IntentAction.TIMER_MINUS)); }
+            public void onClick(View v) {
+                sendBroadcast(new Intent(IntentAction.TIMER_MINUS));
+            }
         });
         imageButtonTimerPlus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { sendBroadcast(new Intent(IntentAction.TIMER_PLUS)); }
+            public void onClick(View v) {
+                sendBroadcast(new Intent(IntentAction.TIMER_PLUS));
+            }
         });
 
         timerPickerDone = false;
@@ -298,7 +305,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        if(!timerServiceIsRunning()) {
+        if (!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");
             startService(new Intent(getBaseContext(), TimerService.class));
         }
@@ -335,7 +342,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         setsUser = 0;
         timerState = TimerService.State.WAITING;
 
-        if(timerServiceBound) {
+        if (timerServiceBound) {
             getTimerServiceContext();
             updateUserInterface();
         }
@@ -353,16 +360,16 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateUserInterface() {
-        if(timerServiceBound) {
+        if (timerServiceBound) {
             timerService.setMainActivityVisible(mainActivityVisible);
             timerService.updateNotificationVisibility(!mainActivityVisible);
         }
-        timerProgressBar.setMax((int)timerUser);
-        timerProgressBar.setProgress((int)timerCurrent);
-        timerReadyProgressBar.setMax((int)timerUser);
-        timerReadyProgressBar.setProgress(timerGetReadyEnable? timerGetReady : 0);
-        setsProgressBar.setMax((int)timerUser);
-        setsProgressBar.setProgress((int)(timerUser - timerCurrent));
+        timerProgressBar.setMax((int) timerUser);
+        timerProgressBar.setProgress((int) timerCurrent);
+        timerReadyProgressBar.setMax((int) timerUser);
+        timerReadyProgressBar.setProgress(timerGetReadyEnable ? timerGetReady : 0);
+        setsProgressBar.setMax((int) timerUser);
+        setsProgressBar.setProgress((int) (timerUser - timerCurrent));
         updateSetsDisplay();
         updateTimerDisplay();
         updateTimerUserDisplay();
@@ -373,7 +380,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private boolean timerServiceIsRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         // Loop through the running services
-        for(ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
             if (TimerService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
@@ -397,9 +404,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         timerCurrent = timer;
         timerUser = timer;
         Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
-        timerProgressBar.setMax((int)timerUser);
-        setsProgressBar.setMax((int)timerUser);
-        timerReadyProgressBar.setMax((int)timerUser);
+        timerProgressBar.setMax((int) timerUser);
+        setsProgressBar.setMax((int) timerUser);
+        timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         timerPickerDone = true;
         inputPickers();
@@ -408,7 +415,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber, boolean checked) {
         int sets = number.intValue();
-        setsInit = checked? 0 : 1;
+        setsInit = checked ? 0 : 1;
         setsCurrent = setsInit;
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
@@ -422,29 +429,25 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         String timeString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
         Log.d(TAG, "updateTimerDisplay: timeString='" + timeString + "'");
         timerTextView.setText(timeString);
-        timerProgressBar.setMax((int)timerUser);
-        timerProgressBar.setProgress((int)timerCurrent);
-        setsProgressBar.setMax((int)timerUser);
-        setsProgressBar.setProgress((int)(timerUser - timerCurrent));
-        timerReadyProgressBar.setMax((int)timerUser);
-        if(!timerGetReadyEnable || timerCurrent <= timerGetReady) {
+        timerProgressBar.setMax((int) timerUser);
+        timerProgressBar.setProgress((int) timerCurrent);
+        setsProgressBar.setMax((int) timerUser);
+        setsProgressBar.setProgress((int) (timerUser - timerCurrent));
+        timerReadyProgressBar.setMax((int) timerUser);
+        if (!timerGetReadyEnable || timerCurrent <= timerGetReady) {
             timerReadyProgressBar.setProgress(0);
-        }
-        else {
+        } else {
             timerReadyProgressBar.setProgress(timerGetReady);
         }
 
         int color;
-        if(timerCurrent == 0) {
+        if (timerCurrent == 0) {
             color = Color.GRAY;
-        }
-        else if(timerGetReadyEnable && timerCurrent <= timerGetReady) {
+        } else if (timerGetReadyEnable && timerCurrent <= timerGetReady) {
             color = Color.RED;
-        }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             color = getColor(R.color.colorPrimary);
-        }
-        else {
+        } else {
             color = getResources().getColor(R.color.colorPrimary);
         }
         timerTextView.setTextColor(color);
@@ -472,8 +475,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         String setsInfoString = "-";
         if (setsUser == SETS_INFINITY) {
             setsInfoString = String.format(Locale.US, "%d→∞", setsInit);
-        }
-        else if (setsUser > 0) {
+        } else if (setsUser > 0) {
             setsInfoString = String.format(Locale.US, "%d→%d", setsInit, setsUser);
         }
         Log.d(TAG, "updateSetsInfo: setsInfoString='" + setsInfoString + "'");
@@ -486,10 +488,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     protected void inputPickers() {
         Log.d(TAG, "inputPickers: timerPickerDone=" + timerPickerDone + ", setPickerDone=" + setsPickerDone);
-        if(!timerPickerDone) {
+        if (!timerPickerDone) {
             timerPickerBuilder.show();
-        }
-        else if(!setsPickerDone) {
+        } else if (!setsPickerDone) {
             updateButtonsLayout(ButtonsLayout.WAITING_SETS);
             setsPickerBuilder.show();
         } else {
@@ -514,8 +515,8 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         setsCurrent = init;
         setsUser = sets;
 
-        timerProgressBar.setMax((int)timerUser);
-        setsProgressBar.setMax((int)timerUser);
+        timerProgressBar.setMax((int) timerUser);
+        setsProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         updateSetsDisplay();
@@ -531,7 +532,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateInputTimerService() {
-        if(timerServiceBound) {
+        if (timerServiceBound) {
             timerService.setState(timerState);
             timerService.setTimerCurrent(timerCurrent);
             timerService.setTimerUser(timerUser);
@@ -556,11 +557,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private String presetToString(long timer, int sets, int init) {
         String preset = "-";
-        if(timer > 0 && sets > 0) {
+        if (timer > 0 && sets > 0) {
             if (sets == SETS_INFINITY) {
                 preset = String.format(Locale.US, "%d:%02d x∞(%d)", timer / 60, timer % 60, init);
-            }
-            else {
+            } else {
                 preset = String.format(Locale.US, "%d:%02d x%d(%d)", timer / 60, timer % 60, sets, init);
             }
         }
@@ -638,7 +638,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void start() {
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
-        // Give the user the possibility to save a timer only once
+        // Gives the user the possibility to save a timer only once
         timerPickerDone = false;
         setsPickerDone = false;
         updateButtonsLayout();
@@ -659,10 +659,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void stop() {
         timerState = TimerService.State.STOPPED;
         Log.d(TAG, "stop: timerState=" + timerState + ", setsCurrent=" + setsCurrent);
-        if(setsCurrent > 1) {
+        if (setsCurrent > 1) {
             updateButtonsLayout();
-        }
-        else {
+        } else {
             updateButtonsLayout(ButtonsLayout.READY);
         }
     }
@@ -670,7 +669,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void nextSet() {
         stop();
         // Going to nextSet on the last set is allowed from the notification
-        if(++setsCurrent < setsUser) {
+        if (++setsCurrent < setsUser) {
             Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
         }
         updateSetsDisplay();
@@ -679,10 +678,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void nextSetStart() {
         stop();
         // Going to nextSet on the last set is allowed from the notification
-        if(++setsCurrent < setsUser) {
+        if (++setsCurrent < setsUser) {
             Log.d(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
-        }
-        else {
+        } else {
             Log.e(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
         }
         updateSetsDisplay();
@@ -757,7 +755,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     protected void updateTimerState(TimerService.State state) {
-        if(timerState != state) {
+        if (timerState != state) {
             timerState = state;
             Log.d(TAG, "updateTimerState: synchronising timerState=" + timerState);
             updateButtonsLayout();
@@ -766,7 +764,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     protected void setsUpdate(int sets) {
         Log.d(TAG, "setsUpdate: sets=" + sets + ", setsCurrent=" + setsCurrent);
-        if(setsCurrent != sets) {
+        if (setsCurrent != sets) {
             setsCurrent = sets;
             updateSetsDisplay();
             updateSetsButtons();
@@ -775,11 +773,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     protected void timerUpdate(long time) {
         Log.d(TAG, "timerUpdate: time=" + time + ", timerCurrent=" + timerCurrent);
-        if(timerCurrent != time) {
+        if (timerCurrent != time) {
             timerCurrent = time;
             updateTimerDisplay();
             updateTimerButtons();
-            if(time == timerGetReady && timerGetReadyEnable && mainActivityVisible) {
+            if (time == timerGetReady && timerGetReadyEnable && mainActivityVisible) {
                 ring(ringtoneReady);
                 vibrate();
             }
@@ -788,7 +786,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     protected void done() {
         // The timer will be stopped from the alerts
-        if(++setsCurrent < setsUser) {
+        if (++setsCurrent < setsUser) {
             Log.d(TAG, "done: setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
                 vibrate();
@@ -797,8 +795,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             }
             updateButtonsLayout(ButtonsLayout.STOPPED);
             updateSetsDisplay();
-        }
-        else {
+        } else {
             Log.d(TAG, "done: all sets done, setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
                 vibrate();
@@ -824,27 +821,24 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         int id = item.getItemId();
         int requestCode = 1;
 
-        if(id == R.id.preferences) {
+        if (id == R.id.preferences) {
             Log.d(TAG, "onOptionsItemSelected: item.id=settings");
             startActivityForResult(new Intent(this, PreferencesActivity.class), requestCode);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             return true;
-        }
-        else if(id == R.id.feedback) {
+        } else if (id == R.id.feedback) {
             Intent sendEmail = new Intent(Intent.ACTION_SEND);
             sendEmail.setType("text/email");
-            sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[] { "guillaume.militello@gmail.com" });
+            sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"guillaume.militello@gmail.com"});
             sendEmail.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name) + " feedback");
             startActivity(Intent.createChooser(sendEmail, "Send Feedback:"));
             return true;
-        }
-        else if(id == R.id.about) {
+        } else if (id == R.id.about) {
             Log.d(TAG, "onOptionsItemSelected: item.id=about");
             startActivityForResult(new Intent(this, AboutActivity.class), requestCode);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             return true;
-        }
-        else {
+        } else {
             return super.onOptionsItemSelected(item);
         }
     }
@@ -853,13 +847,13 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1){
+        if (requestCode == 1) {
             Log.d(TAG, "onActivityResult: resultCode=" + resultCode);
         }
     }
 
     private void vibrate() {
-        if(vibrationEnable) {
+        if (vibrationEnable) {
             Log.i(TAG, "vibrate");
             Vibrator vibrator;
             vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -874,23 +868,22 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateSetsButtons() {
-        if((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && setsCurrent < setsUser - 1) {
+        if ((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && setsCurrent < setsUser - 1) {
             updateButton(imageButtonRight, ButtonAction.NEXT_SET);
-        }
-        else {
+        } else {
             updateButton(imageButtonRight, ButtonAction.NEXT_SET_DISABLED);
         }
     }
 
     private void updateTimerButtons() {
-        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED){
+        if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
             imageButtonTimerMinus.setEnabled(true);
             imageButtonTimerMinus.setAlpha(ALPHA_ENABLED);
         } else {
             imageButtonTimerMinus.setEnabled(false);
             imageButtonTimerMinus.setAlpha(ALPHA_DISABLED);
         }
-        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
+        if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
             imageButtonTimerPlus.setEnabled(true);
             imageButtonTimerPlus.setAlpha(ALPHA_ENABLED);
         } else {
@@ -901,20 +894,17 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private void updatePresetsButton() {
         Log.d(TAG, "updatePresetsButton: state=" + timerState + ", inputFromPickers=" + inputFromPickers());
-        if(buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
             updatePresetsButtonAdd(false);
             spinnerPresets.setEnabled(true);
-        }
-        else if(buttonsLayout == ButtonsLayout.READY) {
-            if(inputFromPickers() && !presetExists(timerUser, setsUser, setsInit)) {
+        } else if (buttonsLayout == ButtonsLayout.READY) {
+            if (inputFromPickers() && !presetExists(timerUser, setsUser, setsInit)) {
                 updatePresetsButtonAdd(true);
-            }
-            else {
+            } else {
                 updatePresetsButtonDelete(true);
             }
             spinnerPresets.setEnabled(true);
-        }
-        else {
+        } else {
             updatePresetsButtonAdd(false);
             spinnerPresets.setEnabled(false);
         }
@@ -923,20 +913,24 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private void updatePresetsButtonAdd(boolean enable) {
         imageButtonPresets.setImageResource(R.drawable.ic_add_circle_black_48dp);
         imageButtonPresets.setEnabled(enable);
-        imageButtonPresets.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
+        imageButtonPresets.setAlpha(enable ? ALPHA_ENABLED : ALPHA_DISABLED);
         imageButtonPresets.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { addPreset(); }
+            public void onClick(View v) {
+                addPreset();
+            }
         });
     }
 
     private void updatePresetsButtonDelete(boolean enable) {
         imageButtonPresets.setImageResource(R.drawable.ic_delete_black_48dp);
         imageButtonPresets.setEnabled(enable);
-        imageButtonPresets.setAlpha(enable? ALPHA_ENABLED : ALPHA_DISABLED);
+        imageButtonPresets.setAlpha(enable ? ALPHA_ENABLED : ALPHA_DISABLED);
         imageButtonPresets.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { deletePreset(); }
+            public void onClick(View v) {
+                deletePreset();
+            }
         });
     }
 
@@ -946,7 +940,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void updateButtonsLayout(ButtonsLayout layout) {
-        if(buttonsLayout != layout) {
+        if (buttonsLayout != layout) {
             ButtonAction nextStep;
             switch (layout) {
                 case WAITING:
@@ -959,11 +953,11 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                     updateButtons(ButtonAction.CLEAR, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                     break;
                 case RUNNING:
-                    nextStep = (setsCurrent < setsUser - 1)? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
+                    nextStep = (setsCurrent < setsUser - 1) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
                     updateButtons(ButtonAction.RESET, ButtonAction.PAUSE, nextStep);
                     break;
                 case PAUSED:
-                    nextStep = (setsCurrent < setsUser - 1)? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
+                    nextStep = (setsCurrent < setsUser - 1) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
                     updateButtons(ButtonAction.RESET, ButtonAction.RESUME, nextStep);
                     break;
                 case STOPPED:
@@ -982,13 +976,13 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private void updateButtons(ButtonAction left, ButtonAction center, ButtonAction right) {
 
-        if(left != buttonLeftAction && updateButton(imageButtonLeft, left)) {
+        if (left != buttonLeftAction && updateButton(imageButtonLeft, left)) {
             buttonLeftAction = left;
         }
-        if(center != buttonCenterAction && updateButton(imageButtonCenter, center)) {
+        if (center != buttonCenterAction && updateButton(imageButtonCenter, center)) {
             buttonCenterAction = center;
         }
-        if(right != buttonRightAction && updateButton(imageButtonRight, right)) {
+        if (right != buttonRightAction && updateButton(imageButtonRight, right)) {
             buttonRightAction = right;
         }
         Log.d(TAG, "updateButtons: left=" + buttonLeftAction.toString() +
@@ -1006,7 +1000,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { inputPickers(); }
+                    public void onClick(View v) {
+                        inputPickers();
+                    }
                 });
                 return true;
             case START:
@@ -1015,7 +1011,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.START)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.START));
+                    }
                 });
                 return true;
             case PAUSE:
@@ -1024,7 +1022,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.PAUSE)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.PAUSE));
+                    }
                 });
                 return true;
             case RESUME:
@@ -1033,7 +1033,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.RESUME)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.RESUME));
+                    }
                 });
                 return true;
             case CLEAR:
@@ -1042,7 +1044,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.CLEAR)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.CLEAR));
+                    }
                 });
                 return true;
             case CLEAR_DISABLED:
@@ -1056,7 +1060,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.NEXT_SET)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.NEXT_SET));
+                    }
                 });
                 return true;
             case NEXT_SET_DISABLED:
@@ -1070,7 +1076,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.NEXT_SET_START)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.NEXT_SET_START));
+                    }
                 });
                 return true;
             case NEXT_SET_START_DISABLED:
@@ -1084,7 +1092,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) { sendBroadcast(new Intent(IntentAction.RESET)); }
+                    public void onClick(View v) {
+                        sendBroadcast(new Intent(IntentAction.RESET));
+                    }
                 });
                 return true;
             case RESET_DISABLED:
@@ -1109,7 +1119,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                 "Main Page",
                 Uri.parse("http://host/path"),
                 Uri.parse("android-app://com.simpleworkout.timer/http/host/path")
-                );
+        );
         AppIndex.AppIndexApi.end(client, viewAction);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -1122,7 +1132,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         Log.d(TAG, "onPause");
         mainActivityVisible = false;
 
-        if(timerServiceBound) {
+        if (timerServiceBound) {
             timerService.setMainActivityVisible(false);
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
@@ -1130,11 +1140,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         }
 
         // Complete ongoing pop-up action
-        if(alertSetDone.isShowing()) {
+        if (alertSetDone.isShowing()) {
             sendBroadcast(new Intent(new Intent(IntentAction.STOP)));
             alertSetDone.dismiss();
-        }
-        else if(alertAllSetsDone.isShowing()) {
+        } else if (alertAllSetsDone.isShowing()) {
             sendBroadcast(new Intent(new Intent(IntentAction.CLEAR)));
             alertAllSetsDone.dismiss();
         }
@@ -1146,11 +1155,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         Log.d(TAG, "onResume: timerServiceBound=" + timerServiceBound);
         mainActivityVisible = true;
         updateUserInterface();
-        if(timerServiceBound) {
+        if (timerServiceBound) {
             timerService.setMainActivityVisible(true);
             timerService.updateNotificationVisibility(false);
-        }
-        else {
+        } else {
             Intent intent = new Intent(this, TimerService.class);
             startService(intent);
             bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
@@ -1162,7 +1170,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
 
-        if(timerServiceBound) {
+        if (timerServiceBound) {
             timerService.setMainActivityVisible(false);
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
@@ -1230,7 +1238,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private void updatePreference(String key) {
 
-        if(key.contains(getString(R.string.pref_preset_array)) || key.contains(getString(R.string.pref_timer_service))) {
+        if (key.contains(getString(R.string.pref_preset_array)) || key.contains(getString(R.string.pref_timer_service))) {
             return;
         }
 
@@ -1242,41 +1250,34 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
             if (timerServiceBound) {
                 timerService.setTimerMinus(timerMinus);
             }
-        }
-        else if (key.equals(getString(R.string.pref_timer_plus))) {
+        } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, "30"));
             if (timerServiceBound) {
                 timerService.setTimerPlus(timerPlus);
             }
-        }
-        else if (key.equals(getString(R.string.pref_picker_init_zero))) {
+        } else if (key.equals(getString(R.string.pref_picker_init_zero))) {
             initPickerZero = sharedPreferences.getBoolean(key, true);
-        }
-        else if (key.equals(getString(R.string.pref_vibrate))) {
+        } else if (key.equals(getString(R.string.pref_vibrate))) {
             vibrationEnable = sharedPreferences.getBoolean(key, true);
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
             }
-        }
-        else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
             vibrationReadyEnable = sharedPreferences.getBoolean(key, true);
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
             }
-        }
-        else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
             timerGetReadyEnable = sharedPreferences.getBoolean(key, true);
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.setTimerGetReadyEnable(timerGetReadyEnable);
             }
-        }
-        else if (key.equals(getString(R.string.pref_timer_get_ready))) {
+        } else if (key.equals(getString(R.string.pref_timer_get_ready))) {
             timerGetReady = Integer.parseInt(sharedPreferences.getString(key, "15"));
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.setTimerGetReady(timerGetReady);
             }
-        }
-        else if (key.equals(getString(R.string.pref_light_color))) {
+        } else if (key.equals(getString(R.string.pref_light_color))) {
             int lightColor;
             color = sharedPreferences.getString(key, "green");
             switch (color) {
@@ -1290,11 +1291,10 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                     lightColor = Color.parseColor(color);
                     break;
             }
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.interactiveNotification.setLightColor(lightColor);
             }
-        }
-        else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
             int lightReadyColor;
             color = sharedPreferences.getString(key, "yellow");
             switch (color) {
@@ -1308,18 +1308,16 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
                     lightReadyColor = Color.parseColor(color);
                     break;
             }
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.interactiveNotification.setLightReadyColor(lightReadyColor);
             }
-        }
-        else if (key.equals(getString(R.string.pref_ringtone_uri))) {
+        } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
             uri = sharedPreferences.getString(key, "default");
             ringtone = Uri.parse(uri);
-            if(timerServiceBound) {
+            if (timerServiceBound) {
                 timerService.interactiveNotification.setRingtone(ringtone);
             }
-        }
-        else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
             uri = sharedPreferences.getString(key, "default");
             ringtoneReady = Uri.parse(uri);
             if (timerServiceBound) {

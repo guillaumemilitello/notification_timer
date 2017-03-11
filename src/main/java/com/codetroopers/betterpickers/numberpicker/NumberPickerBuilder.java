@@ -174,7 +174,10 @@ public class NumberPickerBuilder {
     }
 
     /**
-     * TODO: comments
+     * Set the label to be displayed by the checkbox.
+     *
+     * @param labelText the String text to be shown
+     * @return the current Builder object
      */
     public NumberPickerBuilder setCheckboxLabelText(String labelText) {
         this.checkboxLabelText = labelText;

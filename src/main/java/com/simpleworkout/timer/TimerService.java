@@ -28,7 +28,10 @@ public class TimerService extends Service {
     private CountDownPauseTimer countDownPauseTimer;
 
     private boolean mainActivityVisible = true;
-    public void setMainActivityVisible(boolean mainActivityVisible) { this.mainActivityVisible = mainActivityVisible; }
+
+    public void setMainActivityVisible(boolean mainActivityVisible) {
+        this.mainActivityVisible = mainActivityVisible;
+    }
 
     private AlarmManager alarmManager;
     private PendingIntent pendingIntentAlarm;
@@ -43,6 +46,7 @@ public class TimerService extends Service {
     public void setInteractiveNotificationAlert(boolean interactiveNotificationAlert) {
         this.interactiveNotificationAlert = interactiveNotificationAlert;
     }
+
     public void setInteractiveNotificationRebuild(boolean interactiveNotificationRebuild) {
         this.interactiveNotificationRebuild = interactiveNotificationRebuild;
     }
@@ -55,13 +59,34 @@ public class TimerService extends Service {
     private int setsUser = 1;
     private State state = State.WAITING;
 
-    public long getTimerCurrent() { return timerCurrent; }
-    public long getTimerUser() { return timerUser; }
-    public int getSetsInit() { return setsInit; }
-    public int getSetsCurrent() { return setsCurrent; }
-    public int getSetsUser() { return setsUser; }
-    public State getState() { return state; }
-    public void setState(State state) { this.state = state; saveContextPreferences(); }
+    public long getTimerCurrent() {
+        return timerCurrent;
+    }
+
+    public long getTimerUser() {
+        return timerUser;
+    }
+
+    public int getSetsInit() {
+        return setsInit;
+    }
+
+    public int getSetsCurrent() {
+        return setsCurrent;
+    }
+
+    public int getSetsUser() {
+        return setsUser;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        saveContextPreferences();
+    }
 
     // Settings
     private boolean timerGetReadyEnable = true;
@@ -69,10 +94,21 @@ public class TimerService extends Service {
     private long timerMinus = 30;
     private long timerPlus = 30;
 
-    public void setTimerGetReadyEnable(boolean timerGetReadyEnable) { this.timerGetReadyEnable = timerGetReadyEnable; }
-    public void setTimerGetReady(int timerGetReady) { this.timerGetReady = timerGetReady; }
-    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus;}
-    public void setTimerPlus(long timerPlus) { this.timerPlus = timerPlus; }
+    public void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
+        this.timerGetReadyEnable = timerGetReadyEnable;
+    }
+
+    public void setTimerGetReady(int timerGetReady) {
+        this.timerGetReady = timerGetReady;
+    }
+
+    public void setTimerMinus(long timerMinus) {
+        this.timerMinus = timerMinus;
+    }
+
+    public void setTimerPlus(long timerPlus) {
+        this.timerPlus = timerPlus;
+    }
 
     public enum State {
 
@@ -83,6 +119,7 @@ public class TimerService extends Service {
         STOPPED("stopped");
 
         private String state;
+
         State(String state) {
             this.state = state;
         }
@@ -140,20 +177,19 @@ public class TimerService extends Service {
 
     protected void updateNotificationVisibilityScreenLocked() {
         Log.d(TAG, "updateNotificationVisibilityScreenLocked: interactiveNotificationAlert=" + interactiveNotificationAlert);
-        if(interactiveNotificationRebuild && interactiveNotificationAlert)
+        if (interactiveNotificationRebuild && interactiveNotificationAlert)
             updateNotificationVisibility(true);
     }
 
     public void updateNotificationVisibility(boolean visible) {
         Log.d(TAG, "updateNotificationVisibility: visible=" + visible);
-        if(!isWaiting()) {
+        if (!isWaiting()) {
             if (visible) {
                 Log.d(TAG, "updateNotificationVisibility: startForeground");
                 startForeground(interactiveNotification.ID, interactiveNotification.getNotification());
                 interactiveNotification.setVisible();
                 interactiveNotificationRebuild = true;
-            }
-            else {
+            } else {
                 Log.d(TAG, "updateNotificationVisibility: stopForeground");
                 stopForeground(true);
                 interactiveNotification.dismiss();
@@ -166,7 +202,7 @@ public class TimerService extends Service {
 
     private void updateStateIntent(State state) {
         this.state = state;
-        if(mainActivityVisible) {
+        if (mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_STATE).putExtra("state", state.toString()));
         }
     }
@@ -175,13 +211,13 @@ public class TimerService extends Service {
      * Send information to the MainActivity
      */
     private void updateTimerIntent(long time) {
-        if(mainActivityVisible) {
+        if (mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time));
         }
     }
 
     private void updateTimerIntent(long time, int sets) {
-        if(mainActivityVisible) {
+        if (mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_UPDATE).putExtra("time", time).putExtra("sets", sets));
         }
     }
@@ -206,7 +242,7 @@ public class TimerService extends Service {
     }
 
     protected void pause() {
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             Log.d(TAG, "pause");
 
             countDownPauseTimer.pause();
@@ -231,8 +267,8 @@ public class TimerService extends Service {
     }
 
     protected void resume() {
-        if(state == State.PAUSED) {
-            Log.d(TAG,"resume");
+        if (state == State.PAUSED) {
+            Log.d(TAG, "resume");
 
             countDownPauseTimer.resume();
             updateStateIntent(State.RUNNING);
@@ -244,11 +280,11 @@ public class TimerService extends Service {
     }
 
     protected void stop() {
-        Log.d(TAG,"stop: setCurrent=" + setsCurrent);
+        Log.d(TAG, "stop: setCurrent=" + setsCurrent);
 
         timerCurrent = timerUser;
 
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             cancelCountDown();
         }
         updateStateIntent(State.STOPPED);
@@ -260,10 +296,10 @@ public class TimerService extends Service {
     }
 
     private void done() {
-        Log.d(TAG, "done: setsCurrent=" + setsCurrent );
+        Log.d(TAG, "done: setsCurrent=" + setsCurrent);
 
         // The timer will be stopped from the alerts
-        if(mainActivityVisible) {
+        if (mainActivityVisible) {
             getApplicationContext().sendBroadcast(new Intent(IntentAction.TIMER_DONE));
         }
 
@@ -276,9 +312,9 @@ public class TimerService extends Service {
     }
 
     protected void nextSet() {
-        Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent );
+        Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
 
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             cancelCountDown();
         }
 
@@ -313,7 +349,7 @@ public class TimerService extends Service {
 
         timerCurrent = timerUser;
 
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             cancelCountDown();
         }
         startCountDown(timerUser);
@@ -332,7 +368,7 @@ public class TimerService extends Service {
 
         timerCurrent = timerUser;
 
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             cancelCountDown();
         }
         startCountDown(timerUser);
@@ -350,7 +386,7 @@ public class TimerService extends Service {
         setsCurrent = setsInit;
         timerCurrent = timerUser;
 
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             cancelCountDown();
         }
 
@@ -366,7 +402,7 @@ public class TimerService extends Service {
 
     protected void clear() {
         Log.d(TAG, "clear");
-        if(state == State.RUNNING) {
+        if (state == State.RUNNING) {
             cancelCountDown();
         }
 
@@ -407,7 +443,7 @@ public class TimerService extends Service {
     }
 
     protected void setsMinus() {
-        if(setsCurrent <= 1) {
+        if (setsCurrent <= 1) {
             Log.e(TAG, "sets minus setsCurrent=" + setsCurrent);
             return;
         }
@@ -426,15 +462,14 @@ public class TimerService extends Service {
 
     public void setTimer(long time) {
         Log.d(TAG, "setTimer");
-        if(time >= 0) {
+        if (time >= 0) {
             timerUpdate(time);
-            if(!isRunning())
+            if (!isRunning())
                 timerUser = time;
             else
                 updateCountDown(TimeUnit.SECONDS.toMillis(time));
             Log.d(TAG, "setTimer: timerUser=" + timerUser + ", timerCurrent=" + timerCurrent);
-        }
-        else
+        } else
             Log.e(TAG, "setTimer with time=" + time);
     }
 
@@ -469,41 +504,37 @@ public class TimerService extends Service {
     protected void timerUpdate(long time) {
         Log.d(TAG, "timerUpdate: time=" + time + ", timerCurrent=" + timerCurrent);
 
-        if(timerCurrent != time) {
+        if (timerCurrent != time) {
             timerCurrent = time;
             updateTimerIntent(timerCurrent);
         }
 
-        if(timerGetReadyEnable && timerCurrent == timerGetReady) {
+        if (timerGetReadyEnable && timerCurrent == timerGetReady) {
             interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.LIGHT_SOUND_SHORT_VIBRATE);
-        }
-        else if(timerGetReadyEnable && timerCurrent < timerGetReady) {
+        } else if (timerGetReadyEnable && timerCurrent < timerGetReady) {
             interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.LIGHT_ONLY);
-        }
-        else {
+        } else {
             interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.UPDATE);
         }
     }
 
     private void notificationDeleted() {
         interactiveNotificationAlert = false;
-        if(isPaused()) {
+        if (isPaused()) {
             Log.d(TAG, "notificationDeleted");
             interactiveNotification.dismiss();
-        }
-        else if(setsCurrent >= 1) {
+        } else if (setsCurrent >= 1) {
             Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent);
             interactiveNotification.dismiss();
-            if(mainActivityVisible) {
+            if (mainActivityVisible) {
                 Log.d(TAG, "notificationDeleted: sending STOP action");
                 getBaseContext().sendBroadcast(new Intent(IntentAction.STOP));
             }
             stop();
-        }
-        else {
+        } else {
             Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent);
             interactiveNotification.dismiss();
-            if(mainActivityVisible) {
+            if (mainActivityVisible) {
                 Log.d(TAG, "notificationDeleted: sending CLEAR action");
                 getBaseContext().sendBroadcast(new Intent(IntentAction.CLEAR));
             }
@@ -511,11 +542,17 @@ public class TimerService extends Service {
         }
     }
 
-    private boolean isRunning() { return (state == State.RUNNING || state == State.PAUSED) ; }
+    private boolean isRunning() {
+        return (state == State.RUNNING || state == State.PAUSED);
+    }
 
-    private boolean isPaused() { return state == State.PAUSED; }
+    private boolean isPaused() {
+        return state == State.PAUSED;
+    }
 
-    private boolean isWaiting() { return state == State.WAITING; }
+    private boolean isWaiting() {
+        return state == State.WAITING;
+    }
 
     private void setupAlarmManager() {
         alarmManager.cancel(pendingIntentAlarm);
@@ -528,12 +565,12 @@ public class TimerService extends Service {
             time += TimeUnit.SECONDS.toMillis(timerUser - timerGetReady);
         }
 
-        Log.d(TAG, "setupAlarmManager: wakeup the device at time=" + (time - System.currentTimeMillis())/1000 + ", timerCurrent=" + timerCurrent);
+        Log.d(TAG, "setupAlarmManager: wakeup the device at time=" + (time - System.currentTimeMillis()) / 1000 + ", timerCurrent=" + timerCurrent);
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntentAlarm);
     }
 
     protected void acquireWakeLock() {
-        if(wakeLock != null) {
+        if (wakeLock != null) {
             if (!wakeLock.isHeld()) {
                 if ((timerGetReadyEnable && timerCurrent <= timerGetReady) || timerCurrent <= 0)
                     Log.e(TAG, "acquireWakeLock: timerGetReadyEnable=" + timerGetReadyEnable + ", timerGetReady=" + timerGetReady + " is passed timerCurrent=" + timerCurrent);
@@ -546,7 +583,7 @@ public class TimerService extends Service {
     }
 
     private void releaseWakeLock() {
-        if(wakeLock != null && wakeLock.isHeld()) {
+        if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
     }
@@ -606,15 +643,14 @@ public class TimerService extends Service {
         state = State.valueOf(sharedPreferences.getString(getString(R.string.pref_timer_service_state), state.toString()).toUpperCase(Locale.US));
         mainActivityVisible = sharedPreferences.getBoolean(getString(R.string.pref_timer_service_main_activity_visible), mainActivityVisible);
 
-        if(state == State.RUNNING){
+        if (state == State.RUNNING) {
             timerCurrent = TimeUnit.MILLISECONDS.toSeconds(timerEnd - System.currentTimeMillis());
             startContextPreferences();
-        }
-        else if(state == State.PAUSED) {
+        } else if (state == State.PAUSED) {
             pauseContextPreference();
         }
 
-        if(!mainActivityVisible) {
+        if (!mainActivityVisible) {
             updateNotificationVisibility(true);
             switch (state) {
                 case RUNNING:
@@ -635,7 +671,7 @@ public class TimerService extends Service {
             interactiveNotification.updateTimerCurrent(timerCurrent, InteractiveNotification.NotificationMode.UPDATE);
         }
         Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
-            + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+                + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
     }
 
     public class TimerBinder extends Binder {

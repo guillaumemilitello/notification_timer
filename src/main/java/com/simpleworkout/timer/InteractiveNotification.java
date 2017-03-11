@@ -25,7 +25,9 @@ public class InteractiveNotification extends Notification {
     private NotificationManager notificationManager;
     private NotificationCompat.Builder notificationBuilder;
 
-    public Notification getNotification() { return notificationBuilder.build(); }
+    public Notification getNotification() {
+        return notificationBuilder.build();
+    }
 
     // Timer service related
     private long timerCurrent;
@@ -35,12 +37,29 @@ public class InteractiveNotification extends Notification {
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
 
-    public void setVibrationEnable(boolean vibrationEnable) { this.vibrationEnable = vibrationEnable; }
-    public void setVibrationReadyEnable(boolean vibrationReadyEnable) { this.vibrationReadyEnable = vibrationReadyEnable; }
-    public void setLightColor(int lightColor) { this.lightColor = lightColor; }
-    public void setLightReadyColor(int lightReadyColor) { this.lightReadyColor = lightReadyColor; }
-    public void setRingtone(Uri ringtone) { this.ringtone = ringtone; }
-    public void setRingtoneReady(Uri ringtoneReady) { this.ringtoneReady = ringtoneReady; }
+    public void setVibrationEnable(boolean vibrationEnable) {
+        this.vibrationEnable = vibrationEnable;
+    }
+
+    public void setVibrationReadyEnable(boolean vibrationReadyEnable) {
+        this.vibrationReadyEnable = vibrationReadyEnable;
+    }
+
+    public void setLightColor(int lightColor) {
+        this.lightColor = lightColor;
+    }
+
+    public void setLightReadyColor(int lightReadyColor) {
+        this.lightReadyColor = lightReadyColor;
+    }
+
+    public void setRingtone(Uri ringtone) {
+        this.ringtone = ringtone;
+    }
+
+    public void setRingtoneReady(Uri ringtoneReady) {
+        this.ringtoneReady = ringtoneReady;
+    }
 
     // Settings options
     private boolean vibrationEnable;
@@ -91,6 +110,7 @@ public class InteractiveNotification extends Notification {
         ALL_SETS_DONE("all_sets_done");
 
         private String layout;
+
         ButtonsLayout(String layout) {
             this.layout = layout;
         }
@@ -160,8 +180,8 @@ public class InteractiveNotification extends Notification {
     }
 
     protected void updateButtonsLayout(ButtonsLayout layout, NotificationMode notificationMode) {
-        Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() +", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
-        if(buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
+        Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+        if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
                     button2 = ButtonAction.NO_ACTION;
@@ -275,22 +295,20 @@ public class InteractiveNotification extends Notification {
 
         RemoteViews remoteView;
 
-        if(button2 != ButtonAction.NO_ACTION) {
+        if (button2 != ButtonAction.NO_ACTION) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3_buttons);
             updateButton(remoteView, R.id.notification3Buttons2, button2);
             updateButton(remoteView, R.id.notification3Buttons1, button1);
             updateButton(remoteView, R.id.notification3Buttons0, button0);
             remoteView.setTextViewText(R.id.textView3NotificationTimer, timerString);
             remoteView.setTextViewText(R.id.textView3NotificationSets, setsString);
-        }
-        else if(button1 != ButtonAction.NO_ACTION) {
+        } else if (button1 != ButtonAction.NO_ACTION) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons);
             updateButton(remoteView, R.id.notification2Buttons1, button1);
             updateButton(remoteView, R.id.notification2Buttons0, button0);
             remoteView.setTextViewText(R.id.textView2NotificationTimer, timerString);
             remoteView.setTextViewText(R.id.textView2NotificationSets, setsString);
-        }
-        else {
+        } else {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button);
             updateButton(remoteView, R.id.notification1Button0, button0);
             remoteView.setTextViewText(R.id.textView1NotificationTimer, timerString);
@@ -301,7 +319,7 @@ public class InteractiveNotification extends Notification {
     }
 
     protected void build(NotificationMode notificationMode) {
-        if(restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
+        if (restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
 
             RemoteViews remoteView = createRemoteView();
             notificationBuilder.setContent(remoteView);
@@ -332,28 +350,27 @@ public class InteractiveNotification extends Notification {
                 case LIGHT_ONLY:
                     notificationBuilder.setVibrate(null);
                     notificationBuilder.setSound(null);
-                    if(lightReadyColor != -1) {
+                    if (lightReadyColor != -1) {
                         notificationBuilder.setLights(lightReadyColor, 500, 600);
                     }
                     break;
                 case LIGHT_SOUND_SHORT_VIBRATE:
-                    if(vibrationReadyEnable) {
+                    if (vibrationReadyEnable) {
                         notificationBuilder.setVibrate(MainActivity.vibrationPattern);
-                    }
-                    else {
+                    } else {
                         notificationBuilder.setVibrate(null);
                     }
                     notificationBuilder.setSound(ringtoneReady);
-                    if(lightReadyColor != COLOR_NONE) {
+                    if (lightReadyColor != COLOR_NONE) {
                         notificationBuilder.setLights(lightReadyColor, 500, 600);
                     }
                     break;
                 case LIGHT_SOUND_LONG_VIBRATE:
-                    if(vibrationEnable) {
+                    if (vibrationEnable) {
                         notificationBuilder.setVibrate(MainActivity.vibrationPattern);
                     }
                     notificationBuilder.setSound(ringtone);
-                    if(lightColor != COLOR_NONE) {
+                    if (lightColor != COLOR_NONE) {
                         notificationBuilder.setLights(lightColor, 1000, 1000);
                     }
                     break;
@@ -419,11 +436,9 @@ public class InteractiveNotification extends Notification {
             case READY:
                 if (setsUser == MainActivity.SETS_INFINITY) {
                     setsString = String.format(context.getString(R.string.total_sets_infinity), setsCurrent);
-                }
-                else if (setsUser > 1) {
+                } else if (setsUser > 1) {
                     setsString = String.format(context.getString(R.string.total_sets), setsUser, setsCurrent);
-                }
-                else {
+                } else {
                     setsString = String.format(context.getString(R.string.total_set), setsUser, setsCurrent);
                 }
                 break;
@@ -431,11 +446,9 @@ public class InteractiveNotification extends Notification {
             case RUNNING:
                 if (setsUser == MainActivity.SETS_INFINITY) {
                     setsString = String.format(context.getString(R.string.next_sets_infinity), setsCurrent + 1);
-                }
-                else if(setsUser > 1) {
+                } else if (setsUser > 1) {
                     setsString = String.format(context.getString(R.string.next_sets), setsCurrent + 1, setsUser);
-                }
-                else {
+                } else {
                     setsString = String.format(context.getString(R.string.next_set), setsCurrent + 1, setsUser);
                 }
                 break;
@@ -445,10 +458,9 @@ public class InteractiveNotification extends Notification {
                     break;
                 }
             case ALL_SETS_DONE:
-                if(setsUser > 1) {
+                if (setsUser > 1) {
                     setsString = String.format(context.getString(R.string.current_sets), setsCurrent, setsUser);
-                }
-                else {
+                } else {
                     setsString = String.format(context.getString(R.string.current_set), setsCurrent, setsUser);
                 }
                 break;
@@ -457,7 +469,7 @@ public class InteractiveNotification extends Notification {
     }
 
     protected void dismiss() {
-        if(restTimerNotificationVisible) {
+        if (restTimerNotificationVisible) {
             notificationManager.cancel(ID);
             restTimerNotificationVisible = false;
             Log.d(TAG, "dismissed");
