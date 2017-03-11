@@ -462,7 +462,7 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private void updateTimerUserDisplay() {
         String timerInfoString = "-";
         if (timerUser > 0) {
-            timerInfoString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
+            timerInfoString = String.format(Locale.US, "%d:%02d", timerUser / 60, timerUser % 60);
         }
         Log.d(TAG, "updateTimerInfo: timerInfoString='" + timerInfoString + "'");
         timerUserTextView.setText(timerInfoString);
