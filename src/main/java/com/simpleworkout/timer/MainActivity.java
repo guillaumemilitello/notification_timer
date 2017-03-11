@@ -48,34 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * TODO:  --> UI update
- * TODO: remove errors logs
- * TODO: clean code -> first github release : get a  LICENSE
- * TODO: add memorized setup + UI icons on top
- * TODO: finalize UI : main activity
- * TODO: finalize UI : text messages
- * TODO: finalize UI : status bar color at launch
- *
- * TODO: option screen on
- * TODO: about screen
- * TODO: merge request on pickers
- */
-
-/**
- * Icons list:
- * add alarm
- * thicker chevrons
- * delete pickers ?
- * APPLICATION ICON
- */
-
-/**
- * Bug list:
- * random crashes
- * bluetooth out on mainactivity
- */
-
 public class MainActivity extends AppCompatActivity implements MsPickerDialogFragment.MsPickerDialogHandlerV2,
 NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
