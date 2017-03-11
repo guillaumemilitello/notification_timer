@@ -84,7 +84,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         updateSummaries(sharedPreferences.getAll());
-        updateExtraNotificationEnable();
+        updateGetReadyPreferences();
     }
 
     @Override
@@ -104,12 +104,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
-    private void updateExtraNotificationEnable() {
-        boolean timerGetReadyEnable = sharedPreferences.getBoolean("timerGetReadyEnable", true);
-        settingsFragment.findPreference("timerGetReady").setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference("vibrationReadyEnable").setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference("ringtoneUriReady").setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference("lightReadyColor").setEnabled(timerGetReadyEnable);
+    private void updateGetReadyPreferences() {
+        boolean timerGetReadyEnable = sharedPreferences.getBoolean(getString(R.string.pref_timer_get_ready_enable), true);
+        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)).setEnabled(timerGetReadyEnable);
+        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_vibrate)).setEnabled(timerGetReadyEnable);
+        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_ringtone_uri)).setEnabled(timerGetReadyEnable);
+        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_light_color)).setEnabled(timerGetReadyEnable);
     }
 
     private void updateSummaries(Map<String, ?> preferences) {
@@ -150,8 +150,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
 
-                    if (key.equals("timerGetReadyEnable"))
-                        updateExtraNotificationEnable();
+                    if (key.equals("timerGetReadyEnable")) {
+                        updateGetReadyPreferences();
+                    }
                 }
             }
         };

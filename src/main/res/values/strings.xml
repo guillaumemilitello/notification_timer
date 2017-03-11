@@ -70,11 +70,19 @@
     <string name="pref_timer_get_ready_enable" translatable="false">timerGetReadyEnable</string>
     <string name="pref_timer_get_ready" translatable="false">timerGetReady</string>
     <string name="pref_timer_get_ready_vibrate" translatable="false">timerGetReadyVibrate</string>
-    <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyVibrate</string>
+    <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyRingtone</string>
     <string name="pref_timer_get_ready_light_color" translatable="false">timerGetReadyLightColor</string>
-    <string name="pref_preset_array">presetArray_</string>
+    <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>
     <string name="pref_preset_array_init" translatable="false">presetArray_%1$d_init</string>
-    <string name="pref_timer_service">timerService_</string>
+    <string name="pref_timer_service" translatable="false">timerService_</string>
+    <string name="pref_timer_service_timer_end" translatable="false">timerService_timerEnd</string>
+    <string name="pref_timer_service_timer_current" translatable="false">timerService_timerCurrent</string>
+    <string name="pref_timer_service_timer_user" translatable="false">timerService_timerUser</string>
+    <string name="pref_timer_service_sets_init" translatable="false">timerService_setsInit</string>
+    <string name="pref_timer_service_sets_current" translatable="false">timerService_setsCurrent</string>
+    <string name="pref_timer_service_sets_user" translatable="false">timerService_setUser</string>
+    <string name="pref_timer_service_state" translatable="false">timerService_state</string>
+    <string name="pref_timer_service_main_activity_visible" translatable="false">timerService_mainActivityVisible</string>
 </resources>

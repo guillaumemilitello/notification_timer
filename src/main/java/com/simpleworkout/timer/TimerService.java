@@ -582,26 +582,26 @@ public class TimerService extends Service {
         Log.d(TAG, "saveContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
                 + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.putLong("timerService_timerEnd", System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timerCurrent));
-        sharedPreferencesEditor.putLong("timerService_timerCurrent", timerCurrent);
-        sharedPreferencesEditor.putLong("timerService_timerUser", timerUser);
-        sharedPreferencesEditor.putInt("timerService_setsInit", setsInit);
-        sharedPreferencesEditor.putInt("timerService_setsCurrent", setsCurrent);
-        sharedPreferencesEditor.putInt("timerService_setsUser", setsUser);
-        sharedPreferencesEditor.putString("timerService_state", state.toString());
-        sharedPreferencesEditor.putBoolean("timerService_mainActivityVisible", mainActivityVisible);
+        sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_end), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timerCurrent));
+        sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_current), timerCurrent);
+        sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_user), timerUser);
+        sharedPreferencesEditor.putInt(getString(R.string.pref_timer_service_sets_init), setsInit);
+        sharedPreferencesEditor.putInt(getString(R.string.pref_timer_service_sets_current), setsCurrent);
+        sharedPreferencesEditor.putInt(getString(R.string.pref_timer_service_sets_user), setsUser);
+        sharedPreferencesEditor.putString(getString(R.string.pref_timer_service_state), state.toString());
+        sharedPreferencesEditor.putBoolean(getString(R.string.pref_timer_service_main_activity_visible), mainActivityVisible);
         sharedPreferencesEditor.apply();
     }
 
     private void loadContextPreferences() {
-        long timerEnd = sharedPreferences.getLong("timerService_timerEnd", System.currentTimeMillis());
-        timerCurrent = sharedPreferences.getLong("timerService_timerCurrent", timerCurrent);
-        timerUser = sharedPreferences.getLong("timerService_timerUser", timerUser);
-        setsInit = sharedPreferences.getInt("timerService_setsInit", setsInit);
-        setSetsCurrent(sharedPreferences.getInt("timerService_setsCurrent", setsCurrent));
-        setSetsUser(sharedPreferences.getInt("timerService_setsUser", setsUser));
-        state = State.valueOf(sharedPreferences.getString("timerService_state", state.toString()).toUpperCase(Locale.US));
-        mainActivityVisible = sharedPreferences.getBoolean("timerService_mainActivityVisible", mainActivityVisible);
+        long timerEnd = sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_end), System.currentTimeMillis());
+        timerCurrent = sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_current), timerCurrent);
+        timerUser = sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_user), timerUser);
+        setsInit = sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_init), setsInit);
+        setSetsCurrent(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_current), setsCurrent));
+        setSetsUser(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_user), setsUser));
+        state = State.valueOf(sharedPreferences.getString(getString(R.string.pref_timer_service_state), state.toString()).toUpperCase(Locale.US));
+        mainActivityVisible = sharedPreferences.getBoolean(getString(R.string.pref_timer_service_main_activity_visible), mainActivityVisible);
 
         if(state == State.RUNNING){
             timerCurrent = TimeUnit.MILLISECONDS.toSeconds(timerEnd - System.currentTimeMillis());

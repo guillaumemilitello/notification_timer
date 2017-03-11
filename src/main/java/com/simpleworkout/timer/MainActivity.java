@@ -1230,108 +1230,108 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private void updatePreference(String key) {
 
-        if(key.contains("presetArray_") || key.contains("timerService_"))
+        if(key.contains(getString(R.string.pref_preset_array)) || key.contains(getString(R.string.pref_timer_service))) {
             return;
+        }
 
         Log.d(TAG, "updatePreference: key=" + key);
         String color, uri;
 
-        // TODO: keys to strings resources
-        switch(key) {
-            case "timerMinus":
-                timerMinus = Long.parseLong(sharedPreferences.getString("timerMinus", "30"));
-                if(timerServiceBound) {
-                    timerService.setTimerMinus(timerMinus);
-                }
-                break;
-            case "timerPlus":
-                timerPlus = Long.parseLong(sharedPreferences.getString("timerPlus", "30"));
-                if(timerServiceBound) {
-                    timerService.setTimerPlus(timerPlus);
-                }
-                break;
-            case "pickerInitZero":
-                initPickerZero = sharedPreferences.getBoolean("pickerInitZero", true);
-                break;
-            case "vibrationEnable":
-                vibrationEnable = sharedPreferences.getBoolean("vibrationEnable", true);
-                if(timerServiceBound) {
-                    timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
-                }
-                break;
-            case "vibrationReadyEnable":
-                vibrationReadyEnable = sharedPreferences.getBoolean("vibrationReadyEnable", true);
-                if(timerServiceBound) {
-                    timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
-                }
-                break;
-            case "timerGetReadyEnable":
-                timerGetReadyEnable = sharedPreferences.getBoolean("timerGetReadyEnable", true);
-                if(timerServiceBound) {
-                    timerService.setTimerGetReadyEnable(timerGetReadyEnable);
-                }
-                break;
-            case "timerGetReady":
-                if(timerGetReadyEnable) {
-                    timerGetReady = Integer.parseInt(sharedPreferences.getString("timerGetReady", "15"));
-                }
-                else {
-                    timerGetReady = -1;
-                }
-                if(timerServiceBound) {
-                    timerService.setTimerGetReady(timerGetReady);
-                }
-                break;
-            case "lightColor":
-                int lightColor;
-                color = sharedPreferences.getString("lightColor", "green");
-                switch (color) {
-                    case "none":
-                        lightColor = InteractiveNotification.COLOR_NONE;
-                        break;
-                    case "default":
-                        lightColor = InteractiveNotification.COLOR_DEFAULT;
-                        break;
-                    default:
-                        lightColor = Color.parseColor(color);
-                        break;
-                }
-                if(timerServiceBound) {
-                    timerService.interactiveNotification.setLightColor(lightColor);
-                }
-                break;
-            case "lightReadyColor":
-                int lightReadyColor;
-                color = sharedPreferences.getString("lightReadyColor", "yellow");
-                switch (color) {
-                    case "none":
-                        lightReadyColor = InteractiveNotification.COLOR_NONE;
-                        break;
-                    case "default":
-                        lightReadyColor = InteractiveNotification.COLOR_DEFAULT;
-                        break;
-                    default:
-                        lightReadyColor = Color.parseColor(color);
-                        break;
-                }
-                if(timerServiceBound) {
-                    timerService.interactiveNotification.setLightReadyColor(lightReadyColor);
-                }
-                break;
-            case "ringtoneUri":
-                uri = sharedPreferences.getString("ringtoneUri", "default");
-                ringtone = Uri.parse(uri);
-                if(timerServiceBound)
-                    timerService.interactiveNotification.setRingtone(ringtone);
-                break;
-            case "ringtoneUriReady":
-                uri = sharedPreferences.getString("ringtoneUriReady", "default");
-                ringtoneReady = Uri.parse(uri);
-                if(timerServiceBound)
-                    timerService.interactiveNotification.setRingtoneReady(ringtoneReady);
-                break;
-            default:
-                Log.e(TAG, "updatePreference: not supported preference key=" + key);
+        if (key.equals(getString(R.string.pref_timer_minus))) {
+            timerMinus = Long.parseLong(sharedPreferences.getString("timerMinus", "30"));
+            if (timerServiceBound) {
+                timerService.setTimerMinus(timerMinus);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_timer_plus))) {
+            timerPlus = Long.parseLong(sharedPreferences.getString("timerPlus", "30"));
+            if (timerServiceBound) {
+                timerService.setTimerPlus(timerPlus);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_picker_init_zero))) {
+            initPickerZero = sharedPreferences.getBoolean("pickerInitZero", true);
+        }
+        else if (key.equals(getString(R.string.pref_vibrate))) {
+            vibrationEnable = sharedPreferences.getBoolean("vibrationEnable", true);
+            if(timerServiceBound) {
+                timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+            vibrationReadyEnable = sharedPreferences.getBoolean("vibrationReadyEnable", true);
+            if(timerServiceBound) {
+                timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
+            timerGetReadyEnable = sharedPreferences.getBoolean("timerGetReadyEnable", true);
+            if(timerServiceBound) {
+                timerService.setTimerGetReadyEnable(timerGetReadyEnable);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_timer_get_ready))) {
+            if(timerGetReadyEnable) {
+                timerGetReady = Integer.parseInt(sharedPreferences.getString("timerGetReady", "15"));
+            }
+            else {
+                timerGetReady = -1;
+            }
+            if(timerServiceBound) {
+                timerService.setTimerGetReady(timerGetReady);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_light_color))) {
+            int lightColor;
+            color = sharedPreferences.getString("lightColor", "green");
+            switch (color) {
+                case "none":
+                    lightColor = InteractiveNotification.COLOR_NONE;
+                    break;
+                case "default":
+                    lightColor = InteractiveNotification.COLOR_DEFAULT;
+                    break;
+                default:
+                    lightColor = Color.parseColor(color);
+                    break;
+            }
+            if(timerServiceBound) {
+                timerService.interactiveNotification.setLightColor(lightColor);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
+            int lightReadyColor;
+            color = sharedPreferences.getString("lightReadyColor", "yellow");
+            switch (color) {
+                case "none":
+                    lightReadyColor = InteractiveNotification.COLOR_NONE;
+                    break;
+                case "default":
+                    lightReadyColor = InteractiveNotification.COLOR_DEFAULT;
+                    break;
+                default:
+                    lightReadyColor = Color.parseColor(color);
+                    break;
+            }
+            if(timerServiceBound) {
+                timerService.interactiveNotification.setLightReadyColor(lightReadyColor);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_ringtone_uri))) {
+            uri = sharedPreferences.getString("ringtoneUri", "default");
+            ringtone = Uri.parse(uri);
+            if(timerServiceBound) {
+                timerService.interactiveNotification.setRingtone(ringtone);
+            }
+        }
+        else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
+            uri = sharedPreferences.getString("ringtoneUriReady", "default");
+            ringtoneReady = Uri.parse(uri);
+            if (timerServiceBound) {
+                timerService.interactiveNotification.setRingtoneReady(ringtoneReady);
+            }
+        } else {
+            Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
     }
 
