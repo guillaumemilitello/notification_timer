@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="default_timer_minus">20</integer>
+    <integer name="default_timer_plus">20</integer>
+    <bool name="default_picker_init_zero">false</bool>
+    <bool name="default_vibrate">true</bool>
+    <string name="default_light_color" translatable="false">green</string>
+    <bool name="default_timer_get_ready_enable">false</bool>
+    <integer name="default_timer_get_ready">15</integer>
+    <bool name="default_timer_get_ready_vibrate">true</bool>
+    <string name="default_timer_get_ready_light_color" translatable="false">yellow</string>
+</resources>

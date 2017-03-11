@@ -101,15 +101,15 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     protected static final long[] vibrationPattern = { 0, 400, 200, 400, };
 
     // User preferences
-    private boolean timerGetReadyEnable = true;
-    private int timerGetReady = 15;
-    private long timerMinus = 30;
-    private long timerPlus = 30;
-    private static boolean initPickerZero = false;
-    private boolean vibrationEnable = false;
-    private boolean vibrationReadyEnable = false;
-    private Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    private Uri ringtoneReady = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    private long timerMinus;
+    private long timerPlus;
+    private static boolean initPickerZero;
+    private boolean vibrationEnable;
+    private Uri ringtone;
+    private boolean timerGetReadyEnable;
+    private int timerGetReady;
+    private boolean vibrationReadyEnable;
+    private Uri ringtoneReady;
 
     public static boolean getInitPickerZero() { return initPickerZero; }
 
@@ -502,9 +502,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     }
 
     private void inputPreset(int position) {
-        long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
-        int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
-        int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
+        long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
+        int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
+        int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
 
         Log.d(TAG, "inputPreset: position=" + position + ", timerUser=" + timer + ", setsUser=" + sets + ", setsInit=" + init);
 
@@ -544,9 +544,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
     private void updatePresetsArray() {
         while (true) {
             int position = spinnerPresetsArray.size();
-            long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
-            int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
-            int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
+            long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
+            int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
+            int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
             if (timer < 0 || sets < 0 || (init != 0 && init != 1)) {
                 break;
             }
@@ -580,12 +580,12 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         for (int i = position; i < spinnerPresetsArray.size(); ++i) {
-            long timer = sharedPreferences.getLong(String.format(Locale.US, "presetArray_%d_timer", i + 1), -1);
-            int sets = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_sets", i + 1), -1);
-            int init = sharedPreferences.getInt(String.format(Locale.US, "presetArray_%d_init", i + 1), -1);
-            sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", i), timer);
-            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", i), sets);
-            sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", i), init);
+            long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), i + 1), -1);
+            int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), i + 1), -1);
+            int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), i + 1), -1);
+            sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), i), timer);
+            sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), i), sets);
+            sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), i), init);
         }
         sharedPreferencesEditor.apply();
         updatePresetsSpinner();
@@ -604,10 +604,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         int position = spinnerPresetsArray.size();
         Log.d(TAG, "addPreset: position=" + position + ", timerUser=" + timerUser + ", setsUser=" + setsUser + ", setsInit=" + setsInit);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        // TODO: keys to strings resources
-        sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), timerUser);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), setsUser);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", position), setsInit);
+        sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), timerUser);
+        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), setsUser);
+        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), setsInit);
         sharedPreferencesEditor.apply();
         addPresetArray(timerUser, setsUser, setsInit);
         updatePresetsButtonDelete(true);
@@ -617,10 +616,9 @@ NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
         int position = spinnerPresets.getSelectedItemPosition();
         Log.d(TAG, "deletePreset: position=" + position);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        // TODO: keys to strings resources
-        sharedPreferencesEditor.putLong(String.format(Locale.US, "presetArray_%d_timer", position), -1);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_sets", position), -1);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, "presetArray_%d_init", position), -1);
+        sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
+        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
+        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
         sharedPreferencesEditor.apply();
         deletePresetArray(position);
         updatePresetsButtonAdd(true);

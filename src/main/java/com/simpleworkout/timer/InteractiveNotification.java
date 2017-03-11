@@ -6,8 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -37,7 +35,6 @@ public class InteractiveNotification extends Notification {
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
 
-    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus; }
     public void setVibrationEnable(boolean vibrationEnable) { this.vibrationEnable = vibrationEnable; }
     public void setVibrationReadyEnable(boolean vibrationReadyEnable) { this.vibrationReadyEnable = vibrationReadyEnable; }
     public void setLightColor(int lightColor) { this.lightColor = lightColor; }
@@ -46,13 +43,12 @@ public class InteractiveNotification extends Notification {
     public void setRingtoneReady(Uri ringtoneReady) { this.ringtoneReady = ringtoneReady; }
 
     // Settings options
-    private long timerMinus = 30;
-    private boolean vibrationEnable = true;
-    private boolean vibrationReadyEnable = true;
-    private int lightColor = Color.GREEN;
-    private int lightReadyColor = Color.YELLOW;
-    private Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    private Uri ringtoneReady = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    private boolean vibrationEnable;
+    private boolean vibrationReadyEnable;
+    private int lightColor;
+    private int lightReadyColor;
+    private Uri ringtone;
+    private Uri ringtoneReady;
 
     public final static int COLOR_NONE = -1;
 

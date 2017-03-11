@@ -71,7 +71,7 @@ public class TimerService extends Service {
 
     public void setTimerGetReadyEnable(boolean timerGetReadyEnable) { this.timerGetReadyEnable = timerGetReadyEnable; }
     public void setTimerGetReady(int timerGetReady) { this.timerGetReady = timerGetReady; }
-    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus; interactiveNotification.setTimerMinus(timerMinus);}
+    public void setTimerMinus(long timerMinus) { this.timerMinus = timerMinus;}
     public void setTimerPlus(long timerPlus) { this.timerPlus = timerPlus; }
 
     public enum State {
