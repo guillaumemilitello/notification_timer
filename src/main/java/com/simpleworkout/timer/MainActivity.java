@@ -427,7 +427,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     private void updateTimerDisplay() {
         String timeString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
-        Log.d(TAG, "updateTimerDisplay: timeString='" + timeString + "'");
         timerTextView.setText(timeString);
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) timerCurrent);
@@ -773,7 +772,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     protected void timerUpdate(long time) {
-        Log.d(TAG, "timerUpdate: time=" + time + ", timerCurrent=" + timerCurrent);
         if (timerCurrent != time) {
             timerCurrent = time;
             updateTimerDisplay();

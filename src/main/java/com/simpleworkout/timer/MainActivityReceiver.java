@@ -14,8 +14,6 @@ public class MainActivityReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "received a notification intent action=" + intent.getAction());
-
         switch (intent.getAction()) {
             case IntentAction.START:
                 ((MainActivity)context).start();

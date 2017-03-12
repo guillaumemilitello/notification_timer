@@ -385,7 +385,6 @@ public class InteractiveNotification extends Notification {
     }
 
     protected void updateTimerCurrent(long timer, NotificationMode notificationMode) {
-        Log.d(TAG, "updateTimerCurrent: timerCurrent=" + timer);
         timerCurrent = timer;
         updateTimerTextView();
         build(notificationMode);
@@ -426,7 +425,6 @@ public class InteractiveNotification extends Notification {
                 timerString = String.format(context.getString(R.string.time_is_up));
                 break;
         }
-        Log.d(TAG, "updateTimerCurrent: timerString='" + timerString + "'");
     }
 
     private void updateSetsTextView() {
