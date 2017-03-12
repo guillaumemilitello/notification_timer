@@ -82,6 +82,7 @@ public abstract class CountDownPauseTimer {
         // An extra second is added to match com.simpleworkout.timer's behavior
         mMillisInFuture = millisInFuture + 900;
         mCountdownInterval = countDownInterval;
+        mTimeLeft = mMillisInFuture;
     }
 
     /**
@@ -117,7 +118,7 @@ public abstract class CountDownPauseTimer {
         millis += 900;
         mStopTimeInFuture += (millis - mTimeLeft);
         mTimeLeft = millis;
-	if(!mPaused) {
+	    if(!mPaused) {
             mHandler.removeMessages(MSG);
             mHandler.sendMessage(mHandler.obtainMessage(MSG));
         }        
