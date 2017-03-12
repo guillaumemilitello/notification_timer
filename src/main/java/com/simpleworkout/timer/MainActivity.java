@@ -575,7 +575,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void deletePresetArray(int position) {
-        spinnerPresetsArray.remove(position);
+        if (position < spinnerPresetsArray.size()) {
+            spinnerPresetsArray.remove(position);
+        } else {
+            Log.e(TAG, "deletePresetArray: position=" + position + ", array size=" + spinnerPresetsArray.size());
+        }
         Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         for (int i = position; i < spinnerPresetsArray.size(); ++i) {
@@ -908,10 +912,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (buttonsLayout == ButtonsLayout.READY) {
             if (inputFromPickers() && !presetExists(timerUser, setsUser, setsInit)) {
                 updatePresetsButtonAdd(true);
+                spinnerPresets.setEnabled(true);
             } else {
-                updatePresetsButtonDelete(true);
+                boolean enable = !spinnerPresetsArray.isEmpty();
+                updatePresetsButtonDelete(enable);
+                spinnerPresets.setEnabled(enable);
             }
-            spinnerPresets.setEnabled(true);
         } else {
             updatePresetsButtonAdd(false);
             spinnerPresets.setEnabled(false);
