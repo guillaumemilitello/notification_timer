@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/imageViewNotificationIcon1"
+            android:id="@+id/imageViewIconNotif1"
             android:scaleType="fitStart"
             android:src="@drawable/ic_app_notification" />
     </LinearLayout>
@@ -38,7 +38,7 @@
             android:textSize="16sp"
             android:textColor="@android:color/black"
             android:text="23:59"
-            android:id="@+id/textView1NotificationTimer" />
+            android:id="@+id/textViewTimerNotif1" />
 
         <TextView
             android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:textSize="14sp"
             android:text="3 more timers"
             android:textColor="@color/darkGrayNotification"
-            android:id="@+id/textView1NotificationSets" />
+            android:id="@+id/textViewSetDoneNotif1" />
 
     </LinearLayout>
 
@@ -64,7 +64,7 @@
             android:src="@drawable/ic_refresh_black_48dp"
             android:scaleType="fitCenter"
             android:background="@null"
-            android:id="@+id/notification1Button0"
+            android:id="@+id/button0Notif1"
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>

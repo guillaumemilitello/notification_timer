@@ -466,6 +466,7 @@ public class TimerService extends Service {
             timerUpdate(time);
             if (!isRunning()) {
                 timerUser = time;
+                interactiveNotification.updateTimerUser(timerUser);
                 saveContextPreferences(CONTEXT_PREFERENCE_TIMER_USER);
             }
             else {
@@ -500,6 +501,7 @@ public class TimerService extends Service {
     public void setTimerUser(long timer) {
         Log.d(TAG, "setTimerUser: timerUser=" + timer);
         timerUser = timer;
+        interactiveNotification.updateTimerUser(timerUser);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_USER);
     }
 
@@ -708,6 +710,7 @@ public class TimerService extends Service {
                     break;
             }
             interactiveNotification.updateSetsCurrent(setsCurrent);
+            interactiveNotification.updateTimerUser(timerUser);
             notificationUpdateTimerCurrent(timerCurrent);
         }
         Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
