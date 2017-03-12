@@ -8,8 +8,8 @@
         android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="com.android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -46,9 +46,9 @@
              ATTENTION: This was auto-generated to add Google Play services to your project for
                App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
-        <meta-data
+        <!-- <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version" /> -->
 
         <activity
             android:name=".PreferencesActivity"

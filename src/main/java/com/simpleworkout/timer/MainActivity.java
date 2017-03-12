@@ -36,9 +36,6 @@ import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
 import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
 import com.codetroopers.betterpickers.numberpicker.NumberPickerBuilder;
 import com.codetroopers.betterpickers.numberpicker.NumberPickerDialogFragment;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.simpleworkout.timer.TimerService.TimerBinder;
 
 import java.math.BigDecimal;
@@ -108,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private Uri ringtoneUri;
     private boolean timerGetReadyEnable;
     private int timerGetReady;
-    private boolean vibrationReadyEnable;
     private Uri ringtoneUriReady;
 
     public static boolean getInitPickerZero() {
@@ -169,12 +165,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
     @Override
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
         imageButtonRight = (ImageButton) findViewById(R.id.imageButtonRight);
 
-        spinnerPresetsArray = new ArrayList<String>();
+        spinnerPresetsArray = new ArrayList<>();
         spinnerPresets = (PresetSpinner) findViewById(R.id.spinnerPresets);
         imageButtonPresets = (ImageButton) findViewById(R.id.imageButtonPresets);
         spinnerUserInteraction = false;
@@ -311,27 +301,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
 
         updatePresetsArray();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW,
-                "Main Page",
-                Uri.parse("http://host/path"),
-                Uri.parse("android-app://com.simpleworkout.timer/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
 
         mainActivityVisible = true;
 
@@ -598,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private void updatePresetsSpinner() {
         Log.d(TAG, "updatePresetsSpinner: spinnerUserInteraction=false");
         spinnerUserInteraction = false;
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerPresetsArray);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerPresetsArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPresets.setAdapter(adapter);
     }
@@ -1126,18 +1100,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop");
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW,
-                "Main Page",
-                Uri.parse("http://host/path"),
-                Uri.parse("android-app://com.simpleworkout.timer/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
     }
 
     @Override
@@ -1296,8 +1258,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 timerService.setTimerGetReady(timerGetReady);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
-            vibrationReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
             if (timerServiceBound) {
+                boolean vibrationReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
                 timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
@@ -1316,12 +1278,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private int getColorInt(String color) {
-        if (color.equals("none")) {
-            return InteractiveNotification.COLOR_NONE;
-        } else if (color.equals("default")) {
-            return InteractiveNotification.COLOR_DEFAULT;
-        } else {
-            return Color.parseColor(color);
+        switch (color) {
+            case "none":
+                return InteractiveNotification.COLOR_NONE;
+            case "default":
+                return InteractiveNotification.COLOR_DEFAULT;
+            default:
+                return Color.parseColor(color);
         }
     }
 
