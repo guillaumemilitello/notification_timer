@@ -198,7 +198,7 @@ public class TimerService extends Service {
         if (!isWaiting()) {
             if (visible) {
                 Log.d(TAG, "updateNotificationVisibility: startForeground");
-                startForeground(interactiveNotification.ID, interactiveNotification.getNotification());
+                startForeground(interactiveNotification.getId(), interactiveNotification.getNotification());
                 notificationUpdateTimerCurrent(timerCurrent);
                 interactiveNotification.setVisible();
                 interactiveNotificationRebuild = true;

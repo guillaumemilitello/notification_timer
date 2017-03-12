@@ -18,7 +18,11 @@ public class InteractiveNotification extends Notification {
 
     private final static String TAG = "InteractiveNotification";
 
-    public final static int ID = 52;
+    private final static int ID = 52;
+
+    public int getId() {
+        return ID;
+    }
 
     private boolean restTimerNotificationVisible;
 

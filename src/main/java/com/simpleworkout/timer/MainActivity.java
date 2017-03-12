@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private static final float ALPHA_DISABLED = (float) 0.3;
 
     // Sets number for infinity
-    public static final int SETS_INFINITY = 999999;
+    public static final int SETS_INFINITY = Integer.MAX_VALUE;
 
     // Main user interface
     private TextView timerTextView, setsCurrentTextView, setsNextTextView, timerUserTextView, setsUserTextView;
@@ -694,6 +694,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     protected void extraSet() {
         Log.d(TAG, "extraSet: setsCurrent=" + setsCurrent);
 
+        updateSetsDisplay();
         updateButtonsLayout(ButtonsLayout.RUNNING);
     }
 
