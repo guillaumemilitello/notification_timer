@@ -35,13 +35,13 @@
         android:key="@string/pref_ringtone_uri"
         android:title="@string/ringtone"
         android:ringtoneType="notification"
-        android:defaultValue="content://settings/system/notification_sound"
+        android:defaultValue="@string/default_ringtone_uri"
         android:showDefault="true"
         android:showSilent="true"/>
     <ListPreference
         android:key="@string/pref_light_color"
         android:title="@string/light_color"
-        android:defaultValue="@string/pref_light_color"
+        android:defaultValue="@string/default_light_color"
         android:entries="@array/lightColor"
         android:entryValues="@array/lightColorValues"/>
 
@@ -58,7 +58,7 @@
         android:key="@string/pref_timer_get_ready"
         android:title="@string/get_ready_time"
         android:summary="@string/get_ready_time_summary"
-        android:defaultValue="@string/pref_timer_get_ready"
+        android:defaultValue="@string/default_timer_get_ready"
         android:entries="@array/timerGetReady"
         android:entryValues="@array/timerGetReadyValues"/>
     <SwitchPreference
@@ -70,13 +70,13 @@
         android:key="@string/pref_timer_get_ready_ringtone_uri"
         android:title="@string/ringtone"
         android:ringtoneType="notification"
-        android:defaultValue="content://settings/system/notification_sound"
+        android:defaultValue="@string/default_timer_get_ready_ringtone_uri"
         android:showDefault="true"
         android:showSilent="true"/>
     <ListPreference
         android:key="@string/pref_timer_get_ready_light_color"
         android:title="@string/light_color"
-        android:defaultValue="@string/pref_timer_get_ready_light_color"
+        android:defaultValue="@string/default_timer_get_ready_light_color"
         android:entries="@array/lightColor"
         android:entryValues="@array/lightColorValues"/>
 

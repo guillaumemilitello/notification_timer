@@ -1270,13 +1270,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
             }
         } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
-            ringtoneUri = Uri.parse(sharedPreferences.getString(key, getString(R.string.pref_ringtone_uri)));
+            ringtoneUri = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_ringtone_uri)));
             if (timerServiceBound) {
                 timerService.interactiveNotification.setRingtone(ringtoneUri);
             }
         } else if (key.equals(getString(R.string.pref_light_color))) {
             if (timerServiceBound) {
-                int color = getColorInt(sharedPreferences.getString(key, getString(R.string.pref_light_color)));
+                int color = getColorInt(sharedPreferences.getString(key, getString(R.string.default_light_color)));
                 timerService.interactiveNotification.setLightReadyColor(color);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
@@ -1296,11 +1296,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
             if (timerServiceBound) {
-                int color = getColorInt(sharedPreferences.getString(key, getString(R.string.pref_timer_get_ready_light_color)));
+                int color = getColorInt(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_light_color)));
                 timerService.interactiveNotification.setLightReadyColor(color);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
-            ringtoneUriReady = Uri.parse(sharedPreferences.getString(key, getString(R.string.pref_timer_get_ready_ringtone_uri)));
+            ringtoneUriReady = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_ringtone_uri)));
             if (timerServiceBound) {
                 timerService.interactiveNotification.setRingtoneReady(ringtoneUriReady);
             }
