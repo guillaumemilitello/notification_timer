@@ -317,7 +317,7 @@ public class InteractiveNotification extends Notification {
                     remoteView.setTextViewText(R.id.textViewSetsNextNotifPB3, setsNextString);
                     remoteView.setProgressBar(R.id.progressBarNotifPB3, (int) timerUser, (int) (timerUser - timerCurrent), false);
                 } else if (button1 != ButtonAction.NO_ACTION) {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons);
+                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons_progressbar);
                     updateButton(remoteView, R.id.button1NotifPB2, button1);
                     updateButton(remoteView, R.id.button0NotifPB2, button0);
                     remoteView.setTextViewText(R.id.textViewTimerNotifPB2, timerString);
@@ -325,7 +325,7 @@ public class InteractiveNotification extends Notification {
                     remoteView.setTextViewText(R.id.textViewSetsNextNotifPB2, setsNextString);
                     remoteView.setProgressBar(R.id.progressBarNotifPB2, (int) timerUser, (int) (timerUser - timerCurrent), false);
                 } else {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button);
+                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button_progressbar);
                     updateButton(remoteView, R.id.button0NotifPB1, button0);
                     remoteView.setTextViewText(R.id.textViewTimerNotifPB1, timerString);
                     remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB1, setsCurrentString);
