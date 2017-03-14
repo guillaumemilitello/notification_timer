@@ -418,7 +418,10 @@ public class InteractiveNotification extends Notification {
                     break;
             }
             notificationManager.notify(ID, notificationBuilder.build());
-            Log.d(TAG, "build: notificationMode=" + notificationMode);
+
+            if (notificationMode != NotificationMode.UPDATE) {
+                Log.d(TAG, "build: notificationMode=" + notificationMode);
+            }
         }
     }
 

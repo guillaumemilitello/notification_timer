@@ -732,6 +732,7 @@ public class TimerService extends Service {
         interactiveNotification.dismiss();
         releaseWakeLock();
         unregisterReceiver(timerServiceReceiver);
+        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
     @Override
