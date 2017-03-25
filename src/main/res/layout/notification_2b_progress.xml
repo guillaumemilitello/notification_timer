@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="20dp"
+            android:layout_gravity="center" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:text="37:43"
+                android:id="@+id/textViewTimer_2b_p" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:textColor="@color/darkerGrayNotification"
+                android:text="v0.15 template"
+                android:id="@+id/textViewSets_2b_p" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:paddingTop="5.5dp"
+            android:maxHeight="10dip"
+            android:minHeight="10dip"
+            android:progress="80"
+            android:max="100"
+            android:id="@+id/progressBarTimer_2b_p" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0" >
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="fill_parent"
+            android:src="@drawable/ic_close_black_48dp"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            android:id="@+id/button1_2b_p"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_pause_black_48dp"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            android:id="@+id/button0_2b_p"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+</LinearLayout>

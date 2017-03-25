@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#3b457b</color>
     <color name="textColorPrimary">@android:color/white</color>
     <color name="darkGrayNotification">#616161</color>
+    <color name="darkerGrayNotification">#6d6d6d</color>
     <color name="mainBackground">#4d000000</color>
 
     <color name="default_text_color_holo_dark">#ffffffff</color>

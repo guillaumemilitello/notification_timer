@@ -7,7 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
+import android.os.Build;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -27,7 +27,7 @@ public class InteractiveNotification extends Notification {
     private boolean restTimerNotificationVisible;
 
     private NotificationManager notificationManager;
-    private NotificationCompat.Builder notificationBuilder;
+    private Notification.Builder notificationBuilder;
 
     public Notification getNotification() {
         return notificationBuilder.build();
@@ -145,19 +145,22 @@ public class InteractiveNotification extends Notification {
         // pending intent when the notification is deleted
         PendingIntent pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Default configurations
-        RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button);
-        contentView.setImageViewResource(R.id.button0Notif1, R.drawable.ic_play_arrow_black_48dp);
-
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
         // prepare Notification Builder
-        notificationBuilder = new NotificationCompat.Builder(context)
+        notificationBuilder = new Notification.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .setDeleteIntent(pendingIntentDeleted)
-                .setContent(contentView)
                 .setPriority(PRIORITY_MAX);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            notificationBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
+            notificationBuilder.setCustomContentView(new RemoteViews(context.getPackageName(), R.layout.notification_1b));
+        }
+        else {
+            notificationBuilder.setContent(new RemoteViews(context.getPackageName(), R.layout.notification_1b));
+        }
+
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         timerString = "";
         setDoneString = "";
@@ -297,66 +300,122 @@ public class InteractiveNotification extends Notification {
         build(NotificationMode.UPDATE);
     }
 
+    // TODO: wrap in a class
     private RemoteViews createRemoteView() {
 
         RemoteViews remoteView;
 
-        switch (buttonsLayout) {
-            default:
-            case NO_LAYOUT:
-            case READY:
-            case PAUSED:
-            case RUNNING:
-                if (button2 != ButtonAction.NO_ACTION) {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3_buttons_progressbar);
-                    updateButton(remoteView, R.id.button2NotifPB3, button2);
-                    updateButton(remoteView, R.id.button1NotifPB3, button1);
-                    updateButton(remoteView, R.id.button0NotifPB3, button0);
-                    remoteView.setTextViewText(R.id.textViewTimerNotifPB3, timerString);
-                    remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB3, setsCurrentString);
-                    remoteView.setTextViewText(R.id.textViewSetsNextNotifPB3, setsNextString);
-                    remoteView.setProgressBar(R.id.progressBarNotifPB3, (int) timerUser, (int) (timerUser - timerCurrent), false);
-                } else if (button1 != ButtonAction.NO_ACTION) {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons_progressbar);
-                    updateButton(remoteView, R.id.button1NotifPB2, button1);
-                    updateButton(remoteView, R.id.button0NotifPB2, button0);
-                    remoteView.setTextViewText(R.id.textViewTimerNotifPB2, timerString);
-                    remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB2, setsCurrentString);
-                    remoteView.setTextViewText(R.id.textViewSetsNextNotifPB2, setsNextString);
-                    remoteView.setProgressBar(R.id.progressBarNotifPB2, (int) timerUser, (int) (timerUser - timerCurrent), false);
-                } else {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button_progressbar);
-                    updateButton(remoteView, R.id.button0NotifPB1, button0);
-                    remoteView.setTextViewText(R.id.textViewTimerNotifPB1, timerString);
-                    remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB1, setsCurrentString);
-                    remoteView.setTextViewText(R.id.textViewSetsNextNotifPB1, setsNextString);
-                    remoteView.setProgressBar(R.id.progressBarNotifPB1, (int) timerUser, (int) (timerUser - timerCurrent), false);
-                }
-                break;
-            case SET_DONE:
-            case ALL_SETS_DONE:
-                if (button2 != ButtonAction.NO_ACTION) {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3_buttons);
-                    updateButton(remoteView, R.id.button2Notif3, button2);
-                    updateButton(remoteView, R.id.button1Notif3, button1);
-                    updateButton(remoteView, R.id.button0Notif3, button0);
-                    remoteView.setTextViewText(R.id.textViewTimerNotif3, timerString);
-                    remoteView.setTextViewText(R.id.textViewSetDoneNotif3, setDoneString);
-                } else if (button1 != ButtonAction.NO_ACTION) {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons);
-                    updateButton(remoteView, R.id.button1Notif2, button1);
-                    updateButton(remoteView, R.id.button0Notif2, button0);
-                    remoteView.setTextViewText(R.id.textViewTimerNotif2, timerString);
-                    remoteView.setTextViewText(R.id.textViewSetDoneNotif2, setDoneString);
-                } else {
-                    remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button);
-                    updateButton(remoteView, R.id.button0Notif1, button0);
-                    remoteView.setTextViewText(R.id.textViewTimerNotif1, timerString);
-                    remoteView.setTextViewText(R.id.textViewSetDoneNotif1, setDoneString);
-                }
-                break;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            switch (buttonsLayout) {
+                default:
+                case NO_LAYOUT:
+                case PAUSED:
+                case RUNNING:
+                    if (button2 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3b_progress);
+                        updateButton(remoteView, R.id.button2_3b_p, button2);
+                        updateButton(remoteView, R.id.button1_3b_p, button1);
+                        updateButton(remoteView, R.id.button0_3b_p, button0);
+                        remoteView.setTextViewText(R.id.textViewTimer_3b_p, timerString);
+                        remoteView.setTextViewText(R.id.textViewSets_3b_p, setDoneString);
+                        remoteView.setProgressBar(R.id.progressBarTimer_3b_p, (int) timerUser, (int) (timerUser - timerCurrent), false);
+                    } else if (button1 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2b_progress);
+                        updateButton(remoteView, R.id.button1_2b_p, button1);
+                        updateButton(remoteView, R.id.button0_2b_p, button0);
+                        remoteView.setTextViewText(R.id.textViewTimer_2b_p, timerString);
+                        remoteView.setTextViewText(R.id.textViewSets_2b_p, setDoneString);
+                        remoteView.setProgressBar(R.id.progressBarTimer_2b_p, (int) timerUser, (int) (timerUser - timerCurrent), false);
+                    } else {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1b_progress);
+                        updateButton(remoteView, R.id.button0_1b_p, button0);
+                        remoteView.setTextViewText(R.id.textViewTimer_1b_p, timerString);
+                        remoteView.setTextViewText(R.id.textViewSets_1b_p, setDoneString);
+                        remoteView.setProgressBar(R.id.progressBarTimer_1b_p, (int) timerUser, (int) (timerUser - timerCurrent), false);
+                    }
+                    break;
+                case READY:
+                case SET_DONE:
+                case ALL_SETS_DONE:
+                    if (button2 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3b);
+                        updateButton(remoteView, R.id.button2_3b, button2);
+                        updateButton(remoteView, R.id.button1_3b, button1);
+                        updateButton(remoteView, R.id.button0_3b, button0);
+                        remoteView.setTextViewText(R.id.textViewTimer_3b, timerString);
+                        remoteView.setTextViewText(R.id.textViewSets_3b, setDoneString);
+                    } else if (button1 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2b);
+                        updateButton(remoteView, R.id.button1_2b, button1);
+                        updateButton(remoteView, R.id.button0_2b, button0);
+                        remoteView.setTextViewText(R.id.textViewTimer_2b, timerString);
+                        remoteView.setTextViewText(R.id.textViewSets_2b, setDoneString);
+                    } else {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1b);
+                        updateButton(remoteView, R.id.button0_1b, button0);
+                        remoteView.setTextViewText(R.id.textViewTimer_1b, timerString);
+                        remoteView.setTextViewText(R.id.textViewSets_1b, setDoneString);
+                    }
+                    break;
+            }
         }
-
+        else {
+            switch (buttonsLayout) {
+                default:
+                case NO_LAYOUT:
+                case PAUSED:
+                case RUNNING:
+                    if (button2 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3_buttons_progressbar);
+                        updateButton(remoteView, R.id.button2NotifPB3, button2);
+                        updateButton(remoteView, R.id.button1NotifPB3, button1);
+                        updateButton(remoteView, R.id.button0NotifPB3, button0);
+                        remoteView.setTextViewText(R.id.textViewTimerNotifPB3, timerString);
+                        remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB3, setsCurrentString);
+                        remoteView.setTextViewText(R.id.textViewSetsNextNotifPB3, setsNextString);
+                        remoteView.setProgressBar(R.id.progressBarNotifPB3, (int) timerUser, (int) (timerUser - timerCurrent), false);
+                    } else if (button1 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons_progressbar);
+                        updateButton(remoteView, R.id.button1NotifPB2, button1);
+                        updateButton(remoteView, R.id.button0NotifPB2, button0);
+                        remoteView.setTextViewText(R.id.textViewTimerNotifPB2, timerString);
+                        remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB2, setsCurrentString);
+                        remoteView.setTextViewText(R.id.textViewSetsNextNotifPB2, setsNextString);
+                        remoteView.setProgressBar(R.id.progressBarNotifPB2, (int) timerUser, (int) (timerUser - timerCurrent), false);
+                    } else {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button_progressbar);
+                        updateButton(remoteView, R.id.button0NotifPB1, button0);
+                        remoteView.setTextViewText(R.id.textViewTimerNotifPB1, timerString);
+                        remoteView.setTextViewText(R.id.textViewSetsCurrentNotifPB1, setsCurrentString);
+                        remoteView.setTextViewText(R.id.textViewSetsNextNotifPB1, setsNextString);
+                        remoteView.setProgressBar(R.id.progressBarNotifPB1, (int) timerUser, (int) (timerUser - timerCurrent), false);
+                    }
+                    break;
+                case READY:
+                case SET_DONE:
+                case ALL_SETS_DONE:
+                    if (button2 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_3_buttons);
+                        updateButton(remoteView, R.id.button2Notif3, button2);
+                        updateButton(remoteView, R.id.button1Notif3, button1);
+                        updateButton(remoteView, R.id.button0Notif3, button0);
+                        remoteView.setTextViewText(R.id.textViewTimerNotif3, timerString);
+                        remoteView.setTextViewText(R.id.textViewSetDoneNotif3, setDoneString);
+                    } else if (button1 != ButtonAction.NO_ACTION) {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_2_buttons);
+                        updateButton(remoteView, R.id.button1Notif2, button1);
+                        updateButton(remoteView, R.id.button0Notif2, button0);
+                        remoteView.setTextViewText(R.id.textViewTimerNotif2, timerString);
+                        remoteView.setTextViewText(R.id.textViewSetDoneNotif2, setDoneString);
+                    } else {
+                        remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_1_button);
+                        updateButton(remoteView, R.id.button0Notif1, button0);
+                        remoteView.setTextViewText(R.id.textViewTimerNotif1, timerString);
+                        remoteView.setTextViewText(R.id.textViewSetDoneNotif1, setDoneString);
+                    }
+                    break;
+            }
+        }
         return remoteView;
     }
 
@@ -364,7 +423,12 @@ public class InteractiveNotification extends Notification {
         if (restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
 
             RemoteViews remoteView = createRemoteView();
-            notificationBuilder.setContent(remoteView);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                notificationBuilder.setCustomContentView(remoteView);
+            } else {
+                notificationBuilder.setContent(remoteView);
+            }
 
             // pending intent to go back to the main activity from the notification
             Intent notificationIntent = new Intent(context, MainActivity.class);
@@ -372,15 +436,6 @@ public class InteractiveNotification extends Notification {
 
             // pending intent when the notification is deleted
             PendingIntent pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationCompat.Builder notificationBuilder;
-            // prepare Notification Builder
-            notificationBuilder = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentIntent(pendingIntent)
-                    .setDeleteIntent(pendingIntentDeleted)
-                    .setContent(remoteView)
-                    .setPriority(PRIORITY_MAX);
 
             switch (notificationMode) {
                 default:
@@ -479,23 +534,34 @@ public class InteractiveNotification extends Notification {
     private void updateSetsTextView() {
         switch (buttonsLayout) {
             case NO_LAYOUT:
-            case READY:
             case PAUSED:
             case RUNNING:
-                setsCurrentString = String.valueOf(setsCurrent);
-                setsNextString = String.valueOf(setsCurrent + 1);
-                Log.d(TAG, "updateSetsTextView: setsCurrentString='" + setsCurrentString + "', setsNextString='" + setsNextString + "'");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    if (setsUser == MainActivity.SETS_INFINITY) {
+                        setDoneString = String.format(context.getString(R.string.next_set_infinity), setsCurrent + 1);
+                    } else {
+                        setDoneString = String.format(context.getString(R.string.next_set), setsCurrent + 1, setsUser);
+                    }
+                    Log.d(TAG, "updateSetsTextView: setDoneString='" + setDoneString + "'");
+                } else {
+                    setsCurrentString = String.valueOf(setsCurrent);
+                    setsNextString = String.valueOf(setsCurrent + 1);
+                    Log.d(TAG, "updateSetsTextView: setsCurrentString='" + setsCurrentString + "', setsNextString='" + setsNextString + "'");
+                }
                 break;
+            case READY:
             case SET_DONE:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setDoneString = String.format(context.getString(R.string.current_sets_infinity), setsCurrent);
-                    break;
-                }
-            case ALL_SETS_DONE:
-                if (setsUser > 1) {
-                    setDoneString = String.format(context.getString(R.string.current_sets), setsCurrent, setsUser);
+                    setDoneString = String.format(context.getString(R.string.current_set_infinity), setsCurrent);
                 } else {
                     setDoneString = String.format(context.getString(R.string.current_set), setsCurrent, setsUser);
+                }
+                break;
+            case ALL_SETS_DONE:
+                if (setsUser > 1) {
+                    setDoneString = String.format(context.getString(R.string.total_sets), setsCurrent);
+                } else {
+                    setDoneString = String.format(context.getString(R.string.total_set), setsCurrent);
                 }
                 Log.d(TAG, "updateSetsTextView: setDoneString='" + setDoneString + "'");
                 break;

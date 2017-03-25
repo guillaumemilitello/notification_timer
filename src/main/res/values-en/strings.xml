@@ -27,17 +27,13 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="current_set">Current %1$d/%2$d set</string>
-    <string name="current_sets">Current %1$d/%2$d sets</string>
-    <string name="current_sets_infinity">Current %1$d</string>
-    <string name="next_set">Next %1$d/%2$d set</string>
-    <string name="next_sets">Next %1$d/%2$d sets</string>
-    <string name="next_sets_infinity">Next %1$d</string>
-    <string name="total_set">%1$d set - starting at %2$d</string>
-    <string name="total_sets">%1$d sets - starting at %2$d</string>
-    <string name="total_sets_infinity">Starting at %1$d</string>
-    <string name="all_sets_done">All sets done</string>
-    <string name="time_is_up">Time is up</string>
+    <string name="current_set">Current set is %1$d of %2$d total</string>
+    <string name="current_set_infinity">Current set is %1$d</string>
+    <string name="next_set">Next set is %1$d of %2$d total</string>
+    <string name="next_set_infinity">Next set is %1$d</string>
+    <string name="total_set">%1$d total set</string>
+    <string name="total_sets">%1$d total sets</string>
+    <string name="time_is_up">Timer done</string>
     <!-- Settings -->
     <string name="timer">Timer</string>
     <string name="notification">Notification</string>
