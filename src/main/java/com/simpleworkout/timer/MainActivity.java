@@ -1246,7 +1246,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (key.equals(getString(R.string.pref_light_color))) {
             if (timerServiceBound) {
                 int color = getColorInt(sharedPreferences.getString(key, getString(R.string.default_light_color)));
-                timerService.interactiveNotification.setLightReadyColor(color);
+                timerService.interactiveNotification.setLightColor(color);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
             timerGetReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_enable));
