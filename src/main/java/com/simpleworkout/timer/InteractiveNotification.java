@@ -36,7 +36,7 @@ class InteractiveNotification extends Notification {
     // Timer service related
     private long timerCurrent, timerUser;
     private int setsCurrent, setsUser;
-    private String timerString, setDoneString, setsCurrentString, setsNextString;
+    private String timerString, setsString;
 
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
@@ -77,8 +77,17 @@ class InteractiveNotification extends Notification {
 
     private Context context;
 
-    private static int[][] remoteViewLayouts;
-    private static int[][][] remoteViewResources;
+    private static int [][] remoteViewLayouts = new int[][]
+    {{ R.layout.notification_1b, R.layout.notification_2b, R.layout.notification_3b },
+     { R.layout.notification_1b_progress, R.layout.notification_2b_progress, R.layout.notification_3b_progress }};
+
+    private static int[][][] remoteViewResources = new int[][][]
+    {{{ R.id.textViewTimer_1b, R.id.textViewSets_1b, R.id.button0_1b, R.id.unused_button, R.id.unused_button},
+      { R.id.textViewTimer_2b, R.id.textViewSets_2b, R.id.button0_2b, R.id.button1_2b,    R.id.unused_button},
+      { R.id.textViewTimer_3b, R.id.textViewSets_3b, R.id.button0_3b, R.id.button1_3b,    R.id.button2_3b}},
+     {{ R.id.textViewTimer_1b_p, R.id.textViewSets_1b_p, R.id.button0_1b_p, R.id.unused_button, R.id.unused_button, R.id.progressBarTimer_1b_p},
+      { R.id.textViewTimer_2b_p, R.id.textViewSets_2b_p, R.id.button0_2b_p, R.id.button1_2b_p,  R.id.unused_button, R.id.progressBarTimer_2b_p},
+      { R.id.textViewTimer_3b_p, R.id.textViewSets_3b_p, R.id.button0_3b_p, R.id.button1_3b_p,  R.id.button2_3b_p,  R.id.progressBarTimer_3b_p}}};
 
     private enum ButtonAction {
 
@@ -167,35 +176,8 @@ class InteractiveNotification extends Notification {
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            remoteViewLayouts = new int[][]
-                {{ R.layout.notification_1b, R.layout.notification_2b, R.layout.notification_3b },
-                 { R.layout.notification_1b_progress, R.layout.notification_2b_progress, R.layout.notification_3b_progress }};
-            remoteViewResources = new int[][][]
-                {{{ R.id.textViewTimer_1b, R.id.textViewSets_1b, R.id.button0_1b, R.id.unused_button, R.id.unused_button},
-                  { R.id.textViewTimer_2b, R.id.textViewSets_2b, R.id.button0_2b, R.id.button1_2b,    R.id.unused_button},
-                  { R.id.textViewTimer_3b, R.id.textViewSets_3b, R.id.button0_3b, R.id.button1_3b,    R.id.button2_3b}},
-                 {{ R.id.textViewTimer_1b_p, R.id.textViewSets_1b_p, R.id.button0_1b_p, R.id.unused_button, R.id.unused_button, R.id.progressBarTimer_1b_p},
-                  { R.id.textViewTimer_2b_p, R.id.textViewSets_2b_p, R.id.button0_2b_p, R.id.button1_2b_p,  R.id.unused_button, R.id.progressBarTimer_2b_p},
-                  { R.id.textViewTimer_3b_p, R.id.textViewSets_3b_p, R.id.button0_3b_p, R.id.button1_3b_p,  R.id.button2_3b_p,  R.id.progressBarTimer_3b_p}}};
-        } else {
-            remoteViewLayouts = new int[][]
-                {{ R.layout.notification_1b, R.layout.notification_2b, R.layout.notification_3b },
-                 { R.layout.notification_1b_progress, R.layout.notification_2b_progress, R.layout.notification_3b_progress }};
-            remoteViewResources = new int[][][]
-                {{{ R.id.textViewTimerNotif1, R.id.textViewSetDoneNotif1, R.id.button0Notif1, R.id.unused_button, R.id.unused_button},
-                  { R.id.textViewTimerNotif2, R.id.textViewSetDoneNotif2, R.id.button0Notif2, R.id.button1Notif2, R.id.unused_button},
-                  { R.id.textViewTimerNotif3, R.id.textViewSetDoneNotif3, R.id.button0Notif3, R.id.button1Notif3, R.id.button2Notif3}},
-                 {{ R.id.textViewTimerNotifPB1, R.id.textViewSetsCurrentNotifPB1, R.id.button0NotifPB1, R.id.unused_button,   R.id.unused_button,   R.id.progressBarNotifPB1},
-                  { R.id.textViewTimerNotifPB2, R.id.textViewSetsCurrentNotifPB2, R.id.button0NotifPB2, R.id.button1NotifPB2, R.id.unused_button,   R.id.progressBarNotifPB2},
-                  { R.id.textViewTimerNotifPB3, R.id.textViewSetsCurrentNotifPB3, R.id.button0NotifPB3, R.id.button1NotifPB3, R.id.button2NotifPB3, R.id.progressBarNotifPB3}}};
-        }
-
         timerString = "";
-        setDoneString = "";
-        setsCurrentString = "";
-        setsNextString = "";
+        setsString = "";
         timerCurrent = 0;
         setsCurrent = 1;
         setsUser = 1;
@@ -340,10 +322,10 @@ class InteractiveNotification extends Notification {
         RemoteViews remoteView = new RemoteViews(context.getPackageName(), remoteViewLayouts[progressBarId][remoteViewId]);
 
         remoteView.setTextViewText(remoteViewResources[progressBarId][remoteViewId][0], timerString);
-        remoteView.setTextViewText(remoteViewResources[progressBarId][remoteViewId][1], setDoneString);
-        updateButton(remoteView,   remoteViewResources[progressBarId][remoteViewId][2], button0);
-        updateButton(remoteView,   remoteViewResources[progressBarId][remoteViewId][3], button1);
-        updateButton(remoteView,   remoteViewResources[progressBarId][remoteViewId][4], button2);
+        remoteView.setTextViewText(remoteViewResources[progressBarId][remoteViewId][1], setsString);
+        updateButton(remoteView, remoteViewResources[progressBarId][remoteViewId][2], button0);
+        updateButton(remoteView, remoteViewResources[progressBarId][remoteViewId][3], button1);
+        updateButton(remoteView, remoteViewResources[progressBarId][remoteViewId][4], button2);
 
         if (progressBarId == 1) {
             remoteView.setProgressBar(remoteViewResources[1][remoteViewId][5], (int) timerUser, (int) (timerUser - timerCurrent), false);
@@ -475,32 +457,35 @@ class InteractiveNotification extends Notification {
             case RUNNING:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if (setsUser == MainActivity.SETS_INFINITY) {
-                        setDoneString = String.format(context.getString(R.string.next_set_infinity), setsCurrent + 1);
+                        setsString = String.format(context.getString(R.string.next_set_infinity), setsCurrent + 1);
                     } else {
-                        setDoneString = String.format(context.getString(R.string.next_set), setsCurrent + 1, setsUser);
+                        setsString = String.format(context.getString(R.string.next_set), setsCurrent + 1, setsUser);
                     }
-                    Log.d(TAG, "updateSetsTextView: setDoneString='" + setDoneString + "'");
                 } else {
-                    setsCurrentString = String.valueOf(setsCurrent);
-                    setsNextString = String.valueOf(setsCurrent + 1);
-                    Log.d(TAG, "updateSetsTextView: setsCurrentString='" + setsCurrentString + "', setsNextString='" + setsNextString + "'");
+                    if (setsUser == MainActivity.SETS_INFINITY) {
+                        setsString = String.format(context.getString(R.string.next_set_infinity_short), setsCurrent + 1);
+                    } else {
+                        setsString = String.format(context.getString(R.string.next_set_short), setsCurrent + 1, setsUser);
+                    }
+
                 }
+                Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
                 break;
             case READY:
             case SET_DONE:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setDoneString = String.format(context.getString(R.string.current_set_infinity), setsCurrent);
+                    setsString = String.format(context.getString(R.string.current_set_infinity), setsCurrent);
                 } else {
-                    setDoneString = String.format(context.getString(R.string.current_set), setsCurrent, setsUser);
+                    setsString = String.format(context.getString(R.string.current_set), setsCurrent, setsUser);
                 }
                 break;
             case ALL_SETS_DONE:
                 if (setsUser > 1) {
-                    setDoneString = String.format(context.getString(R.string.total_sets), setsCurrent);
+                    setsString = String.format(context.getString(R.string.total_sets), setsCurrent);
                 } else {
-                    setDoneString = String.format(context.getString(R.string.total_set), setsCurrent);
+                    setsString = String.format(context.getString(R.string.total_set), setsCurrent);
                 }
-                Log.d(TAG, "updateSetsTextView: setDoneString='" + setDoneString + "'");
+                Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
                 break;
         }
     }
