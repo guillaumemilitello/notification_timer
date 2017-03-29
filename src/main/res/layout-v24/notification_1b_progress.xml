@@ -43,12 +43,10 @@
         </LinearLayout>
 
         <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
+            style="@style/notificationButton"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:paddingTop="5.5dp"
-            android:maxHeight="10dip"
-            android:minHeight="10dip"
             android:progress="80"
             android:max="100"
             android:id="@+id/progressBarTimer_1b_p" />

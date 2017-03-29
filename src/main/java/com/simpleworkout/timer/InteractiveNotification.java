@@ -168,6 +168,7 @@ class InteractiveNotification extends Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             notificationBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
             notificationBuilder.setCustomContentView(new RemoteViews(context.getPackageName(), R.layout.notification_1b));
+            notificationBuilder.setColor(context.getColor(R.color.colorPrimary));
         }
         else {
             //noinspection deprecation

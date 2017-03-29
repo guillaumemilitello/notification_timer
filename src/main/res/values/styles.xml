@@ -135,4 +135,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="notificationButton" parent="@android:style/Widget.Material.ProgressBar.Horizontal" >
+        <item name="android:progressBackgroundTintMode">src_in</item>
+        <item name="android:progressBackgroundTint">@color/colorPrimaryLight</item>
+        <item name="android:progressTintMode">src_in</item>
+        <item name="android:progressTint">@color/colorPrimary</item>
+    </style>
 </resources>
