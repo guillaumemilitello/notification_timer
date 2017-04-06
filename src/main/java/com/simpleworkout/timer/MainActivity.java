@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,11 +28,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
 import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
@@ -40,8 +41,6 @@ import com.simpleworkout.timer.TimerService.TimerBinder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public static final int SETS_INFINITY = Integer.MAX_VALUE;
 
     // Main user interface
-    private TextView timerTextView, setsCurrentTextView, setsNextTextView, timerUserTextView, setsUserTextView;
+    private TextView timerTextView, setsCurrentTextView, setsNextTextView;
     private ProgressBar timerProgressBar, timerReadyProgressBar, setsProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -80,11 +79,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private NumberPickerBuilder setsPickerBuilder;
     private boolean timerPickerDone, setsPickerDone;
 
-    // Presets Timers
-    private PresetSpinner spinnerPresets;
-    private List<String> spinnerPresetsArray;
-    private ImageButton imageButtonPresets;
-    private boolean spinnerUserInteraction;
+    // Preset Timers Fragment
+    private FragmentPresetCards fragmentPresetCards;
 
     // Timer service related
     private TimerService.State timerState;
@@ -187,11 +183,16 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                     getResources().getColor(R.color.colorPrimary)));
         }
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerPresetCards);
+        if (fragment == null) {
+            fragmentPresetCards = new FragmentPresetCards();
+            fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, fragmentPresetCards).commit();
+        }
+
         timerTextView = (TextView) findViewById(R.id.textViewTimer);
         setsCurrentTextView = (TextView) findViewById(R.id.textViewSetsCurrent);
         setsNextTextView = (TextView) findViewById(R.id.textViewSetsNext);
-        timerUserTextView = (TextView) findViewById(R.id.textViewInfoTimer);
-        setsUserTextView = (TextView) findViewById(R.id.textViewInfoSets);
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
@@ -218,27 +219,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
         imageButtonRight = (ImageButton) findViewById(R.id.imageButtonRight);
 
-        spinnerPresetsArray = new ArrayList<>();
-        spinnerPresets = (PresetSpinner) findViewById(R.id.spinnerPresets);
-        imageButtonPresets = (ImageButton) findViewById(R.id.imageButtonPresets);
-        spinnerUserInteraction = false;
-        spinnerPresets.setOnItemSelectedEvenIfUnchangedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                Log.d(TAG, "spinnerPresets.onItemSelected: position=" + position + ", spinnerUserInteraction=" + spinnerUserInteraction);
-                if (spinnerUserInteraction) {
-                    inputPreset(position);
-                } else {
-                    spinnerUserInteraction = true;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                Log.d(TAG, "spinnerPresets.onNothingSelected");
-            }
-        });
-
         imageButtonTimerMinus = (ImageButton) findViewById(R.id.imageButtonTimerMinus);
         imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
         imageButtonTimerMinus.setOnClickListener(new View.OnClickListener() {
@@ -253,9 +233,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 sendBroadcast(new Intent(IntentAction.TIMER_PLUS));
             }
         });
-
-        timerPickerDone = false;
-        setsPickerDone = false;
 
         buttonLeftAction = ButtonAction.NO_ACTION;
         buttonCenterAction = ButtonAction.NO_ACTION;
@@ -300,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             startService(new Intent(getBaseContext(), TimerService.class));
         }
 
-        updatePresetsArray();
+        getPreferencesPresets();
     }
 
     @Override
@@ -315,6 +292,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsCurrent = 0;
         setsUser = 0;
         timerState = TimerService.State.WAITING;
+
+        timerPickerDone = false;
+        setsPickerDone = false;
 
         if (timerServiceBound) {
             getTimerServiceContext();
@@ -346,8 +326,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsProgressBar.setProgress((int) (timerUser - timerCurrent));
         updateSetsDisplay();
         updateTimerDisplay();
-        updateTimerUserDisplay();
-        updateSetsUserDisplay();
         updateButtonsLayout();
     }
 
@@ -435,26 +413,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsNextTextView.setText(setsNextString);
     }
 
-    private void updateTimerUserDisplay() {
-        String timerInfoString = "-";
-        if (timerUser > 0) {
-            timerInfoString = String.format(Locale.US, "%d:%02d", timerUser / 60, timerUser % 60);
-        }
-        Log.d(TAG, "updateTimerInfo: timerInfoString='" + timerInfoString + "'");
-        timerUserTextView.setText(timerInfoString);
-    }
-
-    private void updateSetsUserDisplay() {
-        String setsInfoString = "-";
-        if (setsUser == SETS_INFINITY) {
-            setsInfoString = String.format(Locale.US, "%d→∞", setsInit);
-        } else if (setsUser > 0) {
-            setsInfoString = String.format(Locale.US, "%d→%d", setsInit, setsUser);
-        }
-        Log.d(TAG, "updateSetsInfo: setsInfoString='" + setsInfoString + "'");
-        setsUserTextView.setText(setsInfoString);
-    }
-
     private boolean inputFromPickers() {
         return timerPickerDone && setsPickerDone;
     }
@@ -470,17 +428,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerState = TimerService.State.READY;
             updateInputTimerService();
             updateButtonsLayout();
-            updateTimerUserDisplay();
-            updateSetsUserDisplay();
         }
     }
 
-    private void inputPreset(int position) {
+    public void inputPreset(int position) {
         long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
         int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
         int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
 
         Log.d(TAG, "inputPreset: position=" + position + ", timerUser=" + timer + ", setsUser=" + sets + ", setsInit=" + init);
+
+        timerService.stopCountDown();
 
         timerCurrent = timer;
         timerUser = timer;
@@ -488,20 +446,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsCurrent = init;
         setsUser = sets;
 
+        timerPickerDone = true;
+        setsPickerDone = true;
+
         timerProgressBar.setMax((int) timerUser);
         setsProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         updateSetsDisplay();
 
-        timerPickerDone = false;
-        setsPickerDone = false;
-
         timerState = TimerService.State.READY;
         updateInputTimerService();
         updateButtonsLayout();
-        updateTimerUserDisplay();
-        updateSetsUserDisplay();
     }
 
     private void updateInputTimerService() {
@@ -515,109 +471,67 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private void updatePresetsArray() {
+    private void getPreferencesPresets() {
+        int position = 0;
         while (true) {
-            int position = spinnerPresetsArray.size();
             long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
             int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
             int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
             if (timer < 0 || sets < 0 || (init != 0 && init != 1)) {
                 break;
             }
-            addPresetArray(timer, sets, init);
+            fragmentPresetCards.addPresetCard(position, new Preset(timer, sets, init));
+            position++;
         }
     }
 
-    private String presetToString(long timer, int sets, int init) {
-        String preset = "-";
-        if (timer > 0 && sets > 0) {
-            if (sets == SETS_INFINITY) {
-                preset = String.format(Locale.US, "%d:%02d x∞(%d)", timer / 60, timer % 60, init);
+    public void addPreset() {
+        if (!inputFromPickers()) {
+            Toast.makeText(this, "Finish the picker selection", Toast.LENGTH_SHORT).show();
+        } else {
+            final Preset preset = new Preset(timerUser, setsUser, setsInit);
+            if (fragmentPresetCards.presetCardExists(preset)) {
+                Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
             } else {
-                preset = String.format(Locale.US, "%d:%02d x%d(%d)", timer / 60, timer % 60, sets, init);
+                savePreset(preset);
+                fragmentPresetCards.addPresetCard(0, preset);
             }
         }
-        Log.d(TAG, "presetToString: preset='" + preset + "'");
+    }
+
+    private void savePreset(final Preset preset) {
+        for (int position = fragmentPresetCards.getPresetCount(); position >= 0; --position) {
+            Preset presetTmp = loadPreset(position - 1);
+            savePreset(position, presetTmp);
+        }
+        savePreset(0, preset);
+    }
+
+    private void savePreset(int position, final Preset preset){
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), preset.getTimer());
+        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), preset.getSets());
+        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), preset.getInit());
+        sharedPreferencesEditor.apply();
+        Log.d(TAG, "savePreset: position=" + position + ", preset='" + preset + "'");
+    }
+
+    private Preset loadPreset(int position) {
+        long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
+        int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
+        int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
+        Preset preset = new Preset(timer, sets, init);
+        Log.d(TAG, "loadPreset: position=" + position + ", preset='" + preset + "'");
         return preset;
     }
 
-    private void addPresetArray(long timer, int sets, int init) {
-        spinnerPresetsArray.add(presetToString(timer, sets, init));
-        Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
-        updatePresetsSpinner();
-        spinnerPresets.setSelection(spinnerPresetsArray.size() - 1);
-    }
-
-    private void deletePresetArray(int position) {
-        if (position < spinnerPresetsArray.size()) {
-            spinnerPresetsArray.remove(position);
-        } else {
-            Log.e(TAG, "deletePresetArray: position=" + position + ", array size=" + spinnerPresetsArray.size());
-        }
-        Log.d(TAG, "addPresetArray: spinnerPresetsArray=" + spinnerPresetsArray.toString());
-        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        for (int i = position; i < spinnerPresetsArray.size(); ++i) {
-            long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), i + 1), -1);
-            int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), i + 1), -1);
-            int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), i + 1), -1);
-            sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), i), timer);
-            sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), i), sets);
-            sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), i), init);
-        }
-        sharedPreferencesEditor.apply();
-        updatePresetsSpinner();
-        spinnerPresets.setSelection(0);
-    }
-
-    private void updatePresetsSpinner() {
-        Log.d(TAG, "updatePresetsSpinner: spinnerUserInteraction=false");
-        spinnerUserInteraction = false;
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerPresetsArray);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPresets.setAdapter(adapter);
-    }
-
-    private void addPreset() {
-        int position = spinnerPresetsArray.size();
-        Log.d(TAG, "addPreset: position=" + position + ", timerUser=" + timerUser + ", setsUser=" + setsUser + ", setsInit=" + setsInit);
-        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), timerUser);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), setsUser);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), setsInit);
-        sharedPreferencesEditor.apply();
-        addPresetArray(timerUser, setsUser, setsInit);
-        updatePresetsButtonDelete(true);
-    }
-
-    private void deletePreset() {
-        int position = spinnerPresets.getSelectedItemPosition();
-        Log.d(TAG, "deletePreset: position=" + position);
-        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
-        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
-        sharedPreferencesEditor.apply();
-        deletePresetArray(position);
-        updatePresetsButtonAdd(true);
-    }
-
-    private boolean presetExists(long timer, int sets, int init) {
-        String preset = presetToString(timer, sets, init);
-        for (int position = 0; position < spinnerPresetsArray.size(); ++position) {
-            if (spinnerPresetsArray.get(position).equals(preset)) {
-                spinnerPresets.setSelection(position);
-                return true;
-            }
-        }
-        return false;
+    public void deletePreset(int position) {
+        savePreset(position, new Preset());
     }
 
     protected void start() {
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
-        // Gives the user the possibility to save a timer only once
-        timerPickerDone = false;
-        setsPickerDone = false;
         updateButtonsLayout();
     }
 
@@ -679,8 +593,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsPickerDone = false;
 
         updateButtonsLayout();
-        updateTimerUserDisplay();
-        updateSetsUserDisplay();
         updateSetsDisplay();
     }
 
@@ -879,50 +791,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private void updatePresetsButton() {
-        Log.d(TAG, "updatePresetsButton: state=" + timerState + ", inputFromPickers=" + inputFromPickers());
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            updatePresetsButtonAdd(false);
-            spinnerPresets.setEnabled(true);
-        } else if (buttonsLayout == ButtonsLayout.READY) {
-            if (inputFromPickers() && !presetExists(timerUser, setsUser, setsInit)) {
-                updatePresetsButtonAdd(true);
-                spinnerPresets.setEnabled(true);
-            } else {
-                boolean enable = !spinnerPresetsArray.isEmpty();
-                updatePresetsButtonDelete(enable);
-                spinnerPresets.setEnabled(enable);
-            }
-        } else {
-            updatePresetsButtonAdd(false);
-            spinnerPresets.setEnabled(false);
-        }
-    }
-
-    private void updatePresetsButtonAdd(boolean enable) {
-        imageButtonPresets.setImageResource(R.drawable.ic_add_circle_black_48dp);
-        imageButtonPresets.setEnabled(enable);
-        imageButtonPresets.setAlpha(enable ? ALPHA_ENABLED : ALPHA_DISABLED);
-        imageButtonPresets.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addPreset();
-            }
-        });
-    }
-
-    private void updatePresetsButtonDelete(boolean enable) {
-        imageButtonPresets.setImageResource(R.drawable.ic_delete_black_48dp);
-        imageButtonPresets.setEnabled(enable);
-        imageButtonPresets.setAlpha(enable ? ALPHA_ENABLED : ALPHA_DISABLED);
-        imageButtonPresets.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deletePreset();
-            }
-        });
-    }
-
     private void updateButtonsLayout() {
         ButtonsLayout layout = ButtonsLayout.valueOf(timerState.toString().toUpperCase(Locale.US));
         updateButtonsLayout(layout);
@@ -960,7 +828,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
         updateSetsButtons();
         updateTimerButtons();
-        updatePresetsButton();
     }
 
     private void updateButtons(ButtonAction left, ButtonAction center, ButtonAction right) {

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_view"
+    android:layout_width="wrap_content"
+    android:layout_height="56dp"
+    android:layout_marginTop="7dp"
+    android:layout_marginLeft="5dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewCardTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:gravity="center|start"
+                    android:textSize="30sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:text="10:00"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/textViewCardSets"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|start"
+                    android:textSize="26sp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@android:color/darker_gray"
+                    android:text="12 sets" />
+
+            </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|right"
+            android:orientation="horizontal">
+            <ImageButton
+                style="?android:attr/borderlessButtonStyle"
+                android:id="@+id/imageButtonCard"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_delete_black_48dp" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

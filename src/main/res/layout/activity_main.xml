@@ -19,106 +19,23 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBar"
         android:gravity="bottom"
-        android:weightSum="1">
+        android:weightSum="4">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:weightSum="3">
-
-            <com.simpleworkout.timer.PresetSpinner
-                android:layout_width="96dp"
-                android:layout_height="match_parent"
-                android:id="@+id/spinnerPresets"
-                android:layout_weight="1"/>
-
-            <ImageButton
-                android:id="@+id/imageButtonPresets"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:scaleType="center"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_delete_black_48dp"
-                android:background="?selectableItemBackgroundBorderless" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="72dp"
-                android:layout_height="match_parent"
-                android:gravity="bottom"
-                android:weightSum="2">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:weightSum="2">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_stopwatch_add_black_48dp"
-                        android:layout_weight="1"/>
-
-                    <TextView
-                        android:id="@+id/textViewInfoTimer"
-                        android:layout_width="48dp"
-                        android:layout_height="match_parent"
-                        android:gravity="start|center_vertical"
-                        android:textAlignment="gravity"
-                        android:text="0:01"
-                        android:fontFamily="sans-serif-light"
-                        android:textStyle="bold"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:weightSum="2">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_stopwatch_add_black_48dp"
-                        android:layout_weight="1"/>
-
-                    <TextView
-                        android:id="@+id/textViewInfoSets"
-                        android:layout_width="48dp"
-                        android:layout_height="match_parent"
-                        android:gravity="start|center_vertical"
-                        android:textAlignment="gravity"
-                        android:text="1→∞"
-                        android:fontFamily="sans-serif-light"
-                        android:textStyle="bold"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/fragmentContainerPresetCards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTintMode="screen"
+            android:background="@color/presetFragmentBackground"
+            tools:context=".MainActivity"
+            android:layout_weight="1">
+        </FrameLayout>
 
         <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
-                android:layout_weight="0.53"
+                android:layout_weight="1"
                 android:layout_marginTop="12dp" >
 
                 <ProgressBar
@@ -155,53 +72,56 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentStart="true" />
 
-                <LinearLayout
-                    android:orientation="vertical"
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/imageButtonTimerPlus"
+                    android:src="@drawable/ic_stopwatch_add_black_48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:layout_weight="1" />
+
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="91:24"
+                    android:fontFamily="sans-serif-light"
+                    android:textStyle="bold"
+                    android:textSize="52sp"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/textViewTimer"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal" />
 
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleType="centerInside"
-                        android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        android:id="@+id/imageButtonTimerPlus"
-                        android:src="@drawable/ic_stopwatch_add_black_48dp"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="91:24"
-                        android:fontFamily="sans-serif-light"
-                        android:textStyle="bold"
-                        android:textSize="52sp"
-                        android:textColor="@color/colorPrimary"
-                        android:id="@+id/textViewTimer"
-                        android:gravity="center"
-                        android:layout_gravity="center_horizontal" />
-
-                    <ImageButton
-                        android:id="@+id/imageButtonTimerMinus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:scaleType="centerInside"
-                        android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/ic_stopwatch_remove_black_48dp"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:layout_weight="1" />
-                </LinearLayout>
-            </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/imageButtonTimerMinus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/ic_stopwatch_remove_black_48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:weightSum="3" >
 
             <TextView
@@ -248,6 +168,7 @@
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:layout_weight="1"
             android:weightSum="3">
 
             <ImageButton

@@ -284,9 +284,8 @@ public class TimerService extends Service {
 
         timerCurrent = timerUser;
 
-        if (state == State.RUNNING) {
-            cancelCountDown();
-        }
+        stopCountDown();
+
         updateStateIntent(State.STOPPED);
         updateTimerIntent(timerCurrent, setsCurrent);
 
@@ -314,9 +313,7 @@ public class TimerService extends Service {
     protected void nextSet() {
         Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
 
-        if (state == State.RUNNING) {
-            cancelCountDown();
-        }
+        stopCountDown();
 
         setsCurrent++;
         timerCurrent = timerUser;
@@ -349,9 +346,8 @@ public class TimerService extends Service {
 
         timerCurrent = timerUser;
 
-        if (state == State.RUNNING) {
-            cancelCountDown();
-        }
+        stopCountDown();
+
         startCountDown(timerUser);
         updateTimerIntent(timerUser, setsCurrent);
         updateStateIntent(State.RUNNING);
@@ -368,9 +364,8 @@ public class TimerService extends Service {
 
         timerCurrent = timerUser;
 
-        if (state == State.RUNNING) {
-            cancelCountDown();
-        }
+        stopCountDown();
+
         startCountDown(timerUser);
         updateTimerIntent(timerUser, setsCurrent);
         updateStateIntent(State.RUNNING);
@@ -386,9 +381,7 @@ public class TimerService extends Service {
         setsCurrent = setsInit;
         timerCurrent = timerUser;
 
-        if (state == State.RUNNING) {
-            cancelCountDown();
-        }
+        stopCountDown();
 
         interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
 
@@ -402,9 +395,8 @@ public class TimerService extends Service {
 
     protected void clear() {
         Log.d(TAG, "clear");
-        if (state == State.RUNNING) {
-            cancelCountDown();
-        }
+
+        stopCountDown();
 
         timerCurrent = 0;
         timerUser = 0;
@@ -569,6 +561,12 @@ public class TimerService extends Service {
 
     private boolean isWaiting() {
         return state == State.WAITING;
+    }
+
+    public void stopCountDown(){
+        if (state == State.RUNNING) {
+            cancelCountDown();
+        }
     }
 
     private void setupAlarmManager() {
