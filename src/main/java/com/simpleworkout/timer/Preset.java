@@ -33,7 +33,11 @@ class Preset {
     }
 
     String getSetsString() {
-        return String.format(Locale.US, (sets > 1)? "%d sets" : "%d set", sets);
+        if (sets == MainActivity.SETS_INFINITY) {
+            return String.format(Locale.US, "%d...", init);
+        } else {
+            return String.format(Locale.US, "%d..%d", init, sets);
+        }
     }
 
     public long getTimer() {

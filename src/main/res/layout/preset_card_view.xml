@@ -2,14 +2,16 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="wrap_content"
-    android:layout_height="56dp"
-    android:layout_marginTop="7dp"
-    android:layout_marginLeft="5dp">
+    android:layout_height="@dimen/preset_card_height"
+    android:layout_marginTop="@dimen/preset_card_margin_height"
+    android:layout_marginBottom="@dimen/preset_card_margin_height"
+    android:layout_marginStart="@dimen/preset_card_margin_start">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:baselineAligned="false"
         android:weightSum="2">
 
             <LinearLayout
@@ -22,11 +24,11 @@
                     android:id="@+id/textViewCardTimer"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
+                    android:paddingLeft="@dimen/preset_card_timer_padding_left"
+                    android:paddingRight="@dimen/preset_card_timer_padding_right"
                     android:gravity="center|start"
-                    android:textSize="30sp"
-                    android:textColor="@android:color/darker_gray"
+                    android:textSize="@dimen/preset_card_timer_font_size"
+                    android:textColor="@color/preset_card_timer_font_color"
                     android:text="10:00"
                     android:textStyle="bold"/>
 
@@ -35,26 +37,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center|start"
-                    android:textSize="26sp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:textColor="@android:color/darker_gray"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textSize="@dimen/preset_card_timer_font_size"
+                    android:paddingRight="@dimen/preset_card_sets_padding_right"
+                    android:textColor="@color/preset_card_sets_font_color"
                     android:text="12 sets" />
 
             </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center|right"
+            android:gravity="center|end"
             android:orientation="horizontal">
+
             <ImageButton
                 style="?android:attr/borderlessButtonStyle"
                 android:id="@+id/imageButtonCard"
-                android:layout_width="48dp"
+                android:layout_width="@dimen/preset_card_icon_size"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_delete_black_48dp" />
+
         </LinearLayout>
+
     </LinearLayout>
+
 </android.support.v7.widget.CardView>
