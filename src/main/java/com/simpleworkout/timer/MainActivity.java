@@ -293,9 +293,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
         timerState = TimerService.State.WAITING;
 
-        timerPickerDone = false;
-        setsPickerDone = false;
-
         if (timerServiceBound) {
             getTimerServiceContext();
             updateUserInterface();
@@ -486,8 +483,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     public void addPreset() {
-        if (!inputFromPickers()) {
-            Toast.makeText(this, "Finish the picker selection", Toast.LENGTH_SHORT).show();
+        if (!timerPickerDone) {
+            Toast.makeText(this, getString(R.string.picker_toast_all), Toast.LENGTH_SHORT).show();
+        } else if (!setsPickerDone) {
+            Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
         } else {
             final Preset preset = new Preset(timerUser, setsUser, setsInit);
             if (fragmentPresetCards.presetCardExists(preset)) {
