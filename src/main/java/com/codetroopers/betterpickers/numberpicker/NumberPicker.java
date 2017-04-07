@@ -438,8 +438,9 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     private void onLeftClicked() {
         mInfinity = true;
         reset();
-        for (int i = 0; i < 6; ++i) {
-            mInput[i] = 9;
+        int[] intMaxValueArray = new int[] {7,4,6,3,8,4,7,4,1,2};
+        for (int i = 0; i < intMaxValueArray.length; ++i) {
+            mInput[i] = intMaxValueArray[i];
             mInputPointer++;
         }
         updateNumber();
