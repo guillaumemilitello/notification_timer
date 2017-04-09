@@ -490,6 +490,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else {
             final Preset preset = new Preset(timerUser, setsUser, setsInit);
             if (fragmentPresetCards.presetCardExists(preset)) {
+                fragmentPresetCards.showPresetCard(preset);
                 Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
             } else {
                 savePreset(preset);

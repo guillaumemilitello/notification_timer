@@ -49,6 +49,11 @@ public class FragmentPresetCards extends Fragment {
         return presetCards.contains(preset);
     }
 
+    public void showPresetCard(Preset preset) {
+        int position = presetCards.indexOf(preset);
+        linearLayoutManager.scrollToPosition(position + 1);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
