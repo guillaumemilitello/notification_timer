@@ -4,7 +4,7 @@
     <!-- Preset card -->
     <dimen name="preset_card_height">56dp</dimen>
     <dimen name="preset_card_margin_height">10dp</dimen>
-    <dimen name="preset_card_margin_start">8dp</dimen>
+    <dimen name="preset_card_margin_side">8dp</dimen>
     <dimen name="preset_card_timer_padding_left">10dp</dimen>
     <dimen name="preset_card_timer_padding_right">8dp</dimen>
     <dimen name="preset_card_sets_padding_right">8dp</dimen>

@@ -5,7 +5,7 @@
     android:layout_height="@dimen/preset_card_height"
     android:layout_marginTop="@dimen/preset_card_margin_height"
     android:layout_marginBottom="@dimen/preset_card_margin_height"
-    android:layout_marginStart="@dimen/preset_card_margin_start">
+    android:layout_marginEnd="@dimen/preset_card_margin_side">
 
     <LinearLayout
         android:layout_width="wrap_content"
