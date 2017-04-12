@@ -410,19 +410,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsNextTextView.setText(setsNextString);
     }
 
-    private boolean inputFromPickers() {
-        return timerPickerDone && setsPickerDone;
-    }
-
-    protected void inputPickers() {
+    private void inputPickers() {
         Log.d(TAG, "inputPickers: timerPickerDone=" + timerPickerDone + ", setPickerDone=" + setsPickerDone);
         if (!timerPickerDone) {
             timerPickerBuilder.show();
+            fragmentPresetCards.setAddPreset(false);
         } else if (!setsPickerDone) {
             updateButtonsLayout(ButtonsLayout.WAITING_SETS);
             setsPickerBuilder.show();
+            fragmentPresetCards.setAddPreset(false);
         } else {
             timerState = TimerService.State.READY;
+            fragmentPresetCards.setAddPreset(true);
             updateInputTimerService();
             updateButtonsLayout();
         }
@@ -443,8 +442,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsCurrent = init;
         setsUser = sets;
 
+        // TODO : group pickers variables
         timerPickerDone = true;
         setsPickerDone = true;
+        fragmentPresetCards.setAddPreset(true);
 
         timerProgressBar.setMax((int) timerUser);
         setsProgressBar.setMax((int) timerUser);
@@ -608,6 +609,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         timerPickerDone = false;
         setsPickerDone = false;
+        fragmentPresetCards.setAddPreset(false);
 
         updateButtonsLayout();
         updateSetsDisplay();

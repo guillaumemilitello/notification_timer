@@ -24,6 +24,7 @@ public class FragmentPresetCards extends Fragment {
     private RecycleViewAdapter adapter;
 
     private ArrayList<Preset> presetCards = new ArrayList<>();
+    private boolean addPreset;
 
     public void addPresetCard(int position, Preset preset) {
         Log.d(TAG, "addPresetCard: preset='" + preset.toString() + "'");
@@ -54,11 +55,19 @@ public class FragmentPresetCards extends Fragment {
         linearLayoutManager.scrollToPosition(position + 1);
     }
 
+    public void setAddPreset(boolean enable) {
+        addPreset = enable;
+        if (adapter != null) {
+            adapter.notifyItemChanged(0);
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         adapter = new RecycleViewAdapter();
+        addPreset = false;
     }
 
     @Override
@@ -160,6 +169,10 @@ public class FragmentPresetCards extends Fragment {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
                 presetViewHolder.textViewCardTimer.setText(presetCards.get(position - 1).getTimerString());
                 presetViewHolder.textViewCardSets.setText(presetCards.get(position - 1).getSetsString());
+                Log.d(TAG, "onBindViewHolder: position=" + position);
+            } else {
+                AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
+                addPresetViewHolder.imageButtonCard.setAlpha(addPreset? 1.f : 0.3f); // TODO: use global alpha values
                 Log.d(TAG, "onBindViewHolder: position=" + position);
             }
         }
