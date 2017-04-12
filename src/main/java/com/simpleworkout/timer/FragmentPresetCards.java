@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +21,9 @@ public class FragmentPresetCards extends Fragment {
 
     LinearLayoutManager linearLayoutManager;
     RecyclerView recyclerView;
+    private RecycleViewAdapter adapter;
 
     private ArrayList<Preset> presetCards = new ArrayList<>();
-
-    private MyAdapter adapter;
 
     public void addPresetCard(int position, Preset preset) {
         Log.d(TAG, "addPresetCard: preset='" + preset.toString() + "'");
@@ -58,7 +58,7 @@ public class FragmentPresetCards extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
-        adapter = new MyAdapter();
+        adapter = new RecycleViewAdapter();
     }
 
     @Override
@@ -73,10 +73,12 @@ public class FragmentPresetCards extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
-        Log.d(TAG, "onCreateView: adapter itemCount=" + adapter.getItemCount());
-
         recyclerView.invalidate();
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        ItemTouchHelper.Callback callback = new PresetTouchHelper();
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
 
         return view;
     }
@@ -86,8 +88,54 @@ public class FragmentPresetCards extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
+    private class PresetTouchHelper extends ItemTouchHelper.SimpleCallback {
 
-    public class MyAdapter extends RecyclerView.Adapter {
+        PresetTouchHelper() {
+            super(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+            if (source.getItemViewType() != target.getItemViewType()) {
+                Log.d(TAG, "onMove: different item view type");
+                return true;
+            }
+
+            int sourcePosition = source.getAdapterPosition();
+            int targetPosition = target.getAdapterPosition();
+
+            if (targetPosition == 0) {
+                Log.e(TAG, "onMove: targetAdapterPosition=0");
+            } else {
+                adapter.onItemMove(sourcePosition, targetPosition);
+                adapter.notifyItemMoved(sourcePosition, targetPosition);
+            }
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isItemViewSwipeEnabled() {
+            return false;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            int dragFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            return makeMovementFlags(dragFlags, 0);
+        }
+    }
+
+
+    public class RecycleViewAdapter extends RecyclerView.Adapter {
 
         @Override
         public int getItemViewType(int position) {
@@ -120,50 +168,57 @@ public class FragmentPresetCards extends Fragment {
         public int getItemCount() {
             return presetCards.size() + 1;
         }
+
+        void onItemMove(int fromPosition, int toPosition) {
+            fromPosition -= 1;
+            toPosition -= 1;
+            Log.d(TAG, "onItemMove: fromPosition=" + fromPosition + ", toPosition=" + toPosition);
+            Log.d(TAG, "onItemMove: before=" + presetCards.toString());
+            Preset preset = presetCards.get(fromPosition);
+            presetCards.remove(fromPosition);
+            presetCards.add(toPosition, preset);
+            Log.d(TAG, "onItemMove: after=" + presetCards.toString());
+            ((MainActivity)getActivity()).movePreset(fromPosition, toPosition);
+        }
     }
 
-    public class PresetViewHolder extends RecyclerView.ViewHolder {
+    private class PresetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView textViewCardTimer, textViewCardSets;
+        private TextView textViewCardTimer, textViewCardSets;
         private ImageButton imageButtonCard;
 
         private void inputPreset(int position) {
             ((MainActivity)getActivity()).inputPreset(position);
         }
 
-        PresetViewHolder(View view) {
+        PresetViewHolder(final View view) {
             super(view);
             textViewCardTimer = (TextView) view.findViewById(R.id.textViewCardTimer);
             textViewCardSets = (TextView) view.findViewById(R.id.textViewCardSets);
             imageButtonCard = (ImageButton) view.findViewById(R.id.imageButtonCard);
 
-            imageButtonCard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition() - 1;
-                    Log.d(TAG, "OnClick: delete preset position=" + position);
-                    deletePresetCard(position);
-                    ((MainActivity)getActivity()).deletePreset(position);
-                }
-            });
+            textViewCardTimer.setOnClickListener(this);
+            textViewCardSets.setOnClickListener(this);
+            imageButtonCard.setOnClickListener(this);
+        }
 
-            textViewCardTimer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    inputPreset(getAdapterPosition() - 1);
-                }
-            });
+        @Override
+        public void onClick(View view) {
 
-            textViewCardSets.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    inputPreset(getAdapterPosition() - 1);
-                }
-            });
+            if (view.getId() == textViewCardTimer.getId() || view.getId() == textViewCardSets.getId()){
+                Log.d(TAG, "selectPreset: position=" + (getAdapterPosition() - 1));
+                inputPreset(getAdapterPosition() - 1);
+            }
+            else if (view.getId() == imageButtonCard.getId()) {
+                int position = getAdapterPosition() - 1;
+                Log.d(TAG, "setOnClick: delete preset position=" + position);
+                ((MainActivity)getActivity()).removePreset(position);
+                deletePresetCard(position);
+            }
         }
     }
 
-    public class AddPresetViewHolder extends RecyclerView.ViewHolder {
+    private class AddPresetViewHolder extends RecyclerView.ViewHolder {
 
         private ImageButton imageButtonCard;
 

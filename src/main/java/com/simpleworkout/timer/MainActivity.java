@@ -493,18 +493,35 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 fragmentPresetCards.showPresetCard(preset);
                 Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
             } else {
-                savePreset(preset);
+                addPreset(0, preset);
                 fragmentPresetCards.addPresetCard(0, preset);
             }
         }
     }
 
-    private void savePreset(final Preset preset) {
-        for (int position = fragmentPresetCards.getPresetCount(); position >= 0; --position) {
-            Preset presetTmp = loadPreset(position - 1);
-            savePreset(position, presetTmp);
+    public void removePreset(int position) {
+        Log.d(TAG, "removePreset: position=" + position);
+        int presetNumber = fragmentPresetCards.getPresetCount();
+        for (int positionList = position; positionList < presetNumber - 1; ++positionList) {
+            savePreset(positionList, loadPreset(positionList + 1));
         }
-        savePreset(0, preset);
+        erasePreset(presetNumber);
+    }
+
+    public void movePreset(int beforePosition, int afterPosition) {
+        Log.d(TAG, "movePreset: beforePosition=" + beforePosition + ", afterPosition=" + afterPosition);
+        Preset preset = loadPreset(beforePosition);
+        removePreset(beforePosition);
+        addPreset(afterPosition, preset);
+        erasePreset(fragmentPresetCards.getPresetCount());
+    }
+
+    private void addPreset(int position, final Preset preset) {
+        Log.d(TAG, "addPreset: position=" + position);
+        for (int positionList = fragmentPresetCards.getPresetCount(); positionList > position; --positionList) {
+            savePreset(positionList, loadPreset(positionList - 1));
+        }
+        savePreset(position, preset);
     }
 
     private void savePreset(int position, final Preset preset){
@@ -525,7 +542,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return preset;
     }
 
-    public void deletePreset(int position) {
+    private void erasePreset(int position) {
         savePreset(position, new Preset());
     }
 

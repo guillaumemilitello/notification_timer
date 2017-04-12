@@ -53,7 +53,7 @@ class Preset {
     }
 
     public String toString() {
-        return "timer=" + timer + ", sets=" + sets + ", init=" + init;
+        return "t=" + timer + "|s=" + sets + "|i=" + init;
     }
 
     @Override
