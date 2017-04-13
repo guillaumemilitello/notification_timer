@@ -55,8 +55,25 @@ public class FragmentPresetCards extends Fragment {
         linearLayoutManager.scrollToPosition(position + 1);
     }
 
-    public void setAddPreset(boolean enable) {
+    public void updateAddPresetCard(boolean enable) {
         addPreset = enable;
+        if (adapter != null) {
+            adapter.notifyItemChanged(0);
+        }
+        if (enable) {
+            linearLayoutManager.scrollToPosition(0);
+        }
+    }
+
+    public void updateAddPresetCard(Preset preset) {
+        if (presetCardExists(preset)) {
+            addPreset = false;
+            showPresetCard(preset);
+        }
+        else {
+            addPreset = true;
+            linearLayoutManager.scrollToPosition(0);
+        }
         if (adapter != null) {
             adapter.notifyItemChanged(0);
         }
@@ -227,6 +244,7 @@ public class FragmentPresetCards extends Fragment {
                 Log.d(TAG, "setOnClick: delete preset position=" + position);
                 ((MainActivity)getActivity()).removePreset(position);
                 deletePresetCard(position);
+                ((MainActivity)getActivity()).updateAddPresetButton();
             }
         }
     }

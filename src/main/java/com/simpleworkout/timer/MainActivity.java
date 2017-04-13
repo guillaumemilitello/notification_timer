@@ -358,7 +358,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         timerPickerDone = true;
-        inputPickers();
+        updateButtonsLayout(ButtonsLayout.WAITING_SETS);
+        setsPickerBuilder.show();
     }
 
     @Override
@@ -370,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         updateSetsDisplay();
         setsPickerDone = true;
-        inputPickers();
+        terminatePickers();
     }
 
     @SuppressWarnings("deprecation")
@@ -410,20 +411,19 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsNextTextView.setText(setsNextString);
     }
 
-    private void inputPickers() {
-        Log.d(TAG, "inputPickers: timerPickerDone=" + timerPickerDone + ", setPickerDone=" + setsPickerDone);
-        if (!timerPickerDone) {
+    private void terminatePickers() {
+        timerState = TimerService.State.READY;
+        updateInputTimerService();
+        updateButtonsLayout();
+    }
+
+    private void launchPickers() {
+        if (buttonsLayout == ButtonsLayout.WAITING) {
             timerPickerBuilder.show();
-            fragmentPresetCards.setAddPreset(false);
-        } else if (!setsPickerDone) {
-            updateButtonsLayout(ButtonsLayout.WAITING_SETS);
+        } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
             setsPickerBuilder.show();
-            fragmentPresetCards.setAddPreset(false);
         } else {
-            timerState = TimerService.State.READY;
-            fragmentPresetCards.setAddPreset(true);
-            updateInputTimerService();
-            updateButtonsLayout();
+            Log.e(TAG, "launchPickers: buttonsLayout=" + buttonsLayout);
         }
     }
 
@@ -442,20 +442,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsCurrent = init;
         setsUser = sets;
 
-        // TODO : group pickers variables
-        timerPickerDone = true;
-        setsPickerDone = true;
-        fragmentPresetCards.setAddPreset(true);
-
         timerProgressBar.setMax((int) timerUser);
         setsProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         updateSetsDisplay();
 
-        timerState = TimerService.State.READY;
-        updateInputTimerService();
-        updateButtonsLayout();
+        terminatePickers();
     }
 
     private void updateInputTimerService() {
@@ -496,6 +489,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             } else {
                 addPreset(0, preset);
                 fragmentPresetCards.addPresetCard(0, preset);
+                updateAddPresetButton();
             }
         }
     }
@@ -606,10 +600,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsInit = 0;
         setsCurrent = 0;
         setsUser = 0;
-
-        timerPickerDone = false;
-        setsPickerDone = false;
-        fragmentPresetCards.setAddPreset(false);
 
         updateButtonsLayout();
         updateSetsDisplay();
@@ -810,6 +800,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
+    protected void updateAddPresetButton() {
+        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            fragmentPresetCards.updateAddPresetCard(false);
+        } else {
+            fragmentPresetCards.updateAddPresetCard(new Preset(timerUser, setsUser, setsInit));
+        }
+    }
+
     private void updateButtonsLayout() {
         ButtonsLayout layout = ButtonsLayout.valueOf(timerState.toString().toUpperCase(Locale.US));
         updateButtonsLayout(layout);
@@ -847,6 +845,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
         updateSetsButtons();
         updateTimerButtons();
+        updateAddPresetButton();
     }
 
     private void updateButtons(ButtonAction left, ButtonAction center, ButtonAction right) {
@@ -876,7 +875,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        inputPickers();
+                        launchPickers();
                     }
                 });
                 return true;
