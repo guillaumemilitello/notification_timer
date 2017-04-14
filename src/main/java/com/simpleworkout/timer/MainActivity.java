@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private AlertDialog alertSetDone, alertAllSetsDone;
 
     // MainActivity user interface
-    private static final float ALPHA_ENABLED = (float) 1.0;
-    private static final float ALPHA_DISABLED = (float) 0.3;
+    public static final float ALPHA_ENABLED = (float) 1.0;
+    public static final float ALPHA_DISABLED = (float) 0.2;
 
     // Sets number for infinity
     public static final int SETS_INFINITY = Integer.MAX_VALUE;
@@ -77,9 +77,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
     private NumberPickerBuilder setsPickerBuilder;
-    private boolean timerPickerDone, setsPickerDone;
 
-    // Preset Timers Fragment
+    // Preset Timers
     private FragmentPresetCards fragmentPresetCards;
 
     // Timer service related
@@ -183,13 +182,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                     getResources().getColor(R.color.colorPrimary)));
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerPresetCards);
-        if (fragment == null) {
-            fragmentPresetCards = new FragmentPresetCards();
-            fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, fragmentPresetCards).commit();
-        }
-
         timerTextView = (TextView) findViewById(R.id.textViewTimer);
         setsCurrentTextView = (TextView) findViewById(R.id.textViewSetsCurrent);
         setsNextTextView = (TextView) findViewById(R.id.textViewSetsNext);
@@ -272,12 +264,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerPresetCards);
+        if (fragment == null) {
+            fragmentPresetCards = new FragmentPresetCards();
+            fragmentPresetCards.createPresetsList(this, sharedPreferences);
+            fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, fragmentPresetCards).commit();
+        }
+
         if (!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");
             startService(new Intent(getBaseContext(), TimerService.class));
         }
-
-        getPreferencesPresets();
     }
 
     @Override
@@ -357,7 +355,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
-        timerPickerDone = true;
         updateButtonsLayout(ButtonsLayout.WAITING_SETS);
         setsPickerBuilder.show();
     }
@@ -370,7 +367,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         updateSetsDisplay();
-        setsPickerDone = true;
         terminatePickers();
     }
 
@@ -427,20 +423,16 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    public void inputPreset(int position) {
-        long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
-        int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
-        int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
-
-        Log.d(TAG, "inputPreset: position=" + position + ", timerUser=" + timer + ", setsUser=" + sets + ", setsInit=" + init);
+    public void inputPreset(Preset preset) {
+        Log.d(TAG, "inputPreset: preset=" + preset);
 
         timerService.stopCountDown();
 
-        timerCurrent = timer;
-        timerUser = timer;
-        setsInit = init;
-        setsCurrent = init;
-        setsUser = sets;
+        timerCurrent = preset.getTimer();
+        timerUser = timerCurrent;
+        setsInit = preset.getInit();
+        setsCurrent = setsInit;
+        setsUser = preset.getSets();
 
         timerProgressBar.setMax((int) timerUser);
         setsProgressBar.setMax((int) timerUser);
@@ -462,83 +454,16 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private void getPreferencesPresets() {
-        int position = 0;
-        while (true) {
-            long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
-            int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
-            int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
-            if (timer < 0 || sets < 0 || (init != 0 && init != 1)) {
-                break;
-            }
-            fragmentPresetCards.addPresetCard(position, new Preset(timer, sets, init));
-            position++;
-        }
-    }
-
     public void addPreset() {
-        if (!timerPickerDone) {
+        if (buttonsLayout == ButtonsLayout.WAITING) {
             Toast.makeText(this, getString(R.string.picker_toast_all), Toast.LENGTH_SHORT).show();
-        } else if (!setsPickerDone) {
+        } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
             Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
         } else {
-            final Preset preset = new Preset(timerUser, setsUser, setsInit);
-            if (fragmentPresetCards.presetCardExists(preset)) {
-                fragmentPresetCards.showPresetCard(preset);
+            if (!fragmentPresetCards.addPreset(new Preset(timerUser, setsUser, setsInit))) {
                 Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
-            } else {
-                addPreset(0, preset);
-                fragmentPresetCards.addPresetCard(0, preset);
-                updateAddPresetButton();
             }
         }
-    }
-
-    public void removePreset(int position) {
-        Log.d(TAG, "removePreset: position=" + position);
-        int presetNumber = fragmentPresetCards.getPresetCount();
-        for (int positionList = position; positionList < presetNumber - 1; ++positionList) {
-            savePreset(positionList, loadPreset(positionList + 1));
-        }
-        erasePreset(presetNumber);
-    }
-
-    public void movePreset(int beforePosition, int afterPosition) {
-        Log.d(TAG, "movePreset: beforePosition=" + beforePosition + ", afterPosition=" + afterPosition);
-        Preset preset = loadPreset(beforePosition);
-        removePreset(beforePosition);
-        addPreset(afterPosition, preset);
-        erasePreset(fragmentPresetCards.getPresetCount());
-    }
-
-    private void addPreset(int position, final Preset preset) {
-        Log.d(TAG, "addPreset: position=" + position);
-        for (int positionList = fragmentPresetCards.getPresetCount(); positionList > position; --positionList) {
-            savePreset(positionList, loadPreset(positionList - 1));
-        }
-        savePreset(position, preset);
-    }
-
-    private void savePreset(int position, final Preset preset){
-        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.putLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), preset.getTimer());
-        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), preset.getSets());
-        sharedPreferencesEditor.putInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), preset.getInit());
-        sharedPreferencesEditor.apply();
-        Log.d(TAG, "savePreset: position=" + position + ", preset='" + preset + "'");
-    }
-
-    private Preset loadPreset(int position) {
-        long timer = sharedPreferences.getLong(String.format(Locale.US, getString(R.string.pref_preset_array_timer), position), -1);
-        int sets = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_sets), position), -1);
-        int init = sharedPreferences.getInt(String.format(Locale.US, getString(R.string.pref_preset_array_init), position), -1);
-        Preset preset = new Preset(timer, sets, init);
-        Log.d(TAG, "loadPreset: position=" + position + ", preset='" + preset + "'");
-        return preset;
-    }
-
-    private void erasePreset(int position) {
-        savePreset(position, new Preset());
     }
 
     protected void start() {
@@ -802,7 +727,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     protected void updateAddPresetButton() {
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            fragmentPresetCards.updateAddPresetCard(false);
+            fragmentPresetCards.disableAddPresetButton();
         } else {
             fragmentPresetCards.updateAddPresetCard(new Preset(timerUser, setsUser, setsInit));
         }

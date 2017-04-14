@@ -56,6 +56,10 @@ class Preset {
         return "t=" + timer + "|s=" + sets + "|i=" + init;
     }
 
+    public boolean isValid() {
+        return this.timer > 0 && this.sets > 0 && (this.init == 0 || this.init == 1);
+    }
+
     @Override
     public boolean equals(Object object)
     {

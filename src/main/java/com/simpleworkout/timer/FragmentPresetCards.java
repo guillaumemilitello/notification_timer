@@ -1,5 +1,7 @@
 package com.simpleworkout.timer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,69 +16,73 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
 
 public class FragmentPresetCards extends Fragment {
 
     private static final String TAG = "FragmentPresetCards";
 
+    private PresetList presetsList;
+
     LinearLayoutManager linearLayoutManager;
     RecyclerView recyclerView;
     private RecycleViewAdapter adapter;
+    private boolean addPresetButton;
 
-    private ArrayList<Preset> presetCards = new ArrayList<>();
-    private boolean addPreset;
-
-    public void addPresetCard(int position, Preset preset) {
-        Log.d(TAG, "addPresetCard: preset='" + preset.toString() + "'");
-        presetCards.add(position, preset);
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
+    public boolean addPreset(Preset preset) {
+        Log.d(TAG, "addPreset: preset='" + preset.toString() + "'");
+        int index = presetsList.indexOf(preset);
+        if (index == -1) {
+            presetsList.addPreset(0, preset);
+            disableAddPresetButton();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+            return true;
         }
+        linearLayoutManager.scrollToPosition(index + 1);
+        return false;
     }
 
-    public void deletePresetCard(int position) {
-        presetCards.remove(position);
+    private void removePreset(int position) {
+        presetsList.removePreset(position);
         if (adapter != null) {
             adapter.notifyItemRemoved(position + 1);
             adapter.notifyItemRangeChanged(position + 1, adapter.getItemCount());
         }
     }
 
-    public int getPresetCount() {
-        return presetCards.size();
-    }
-
-    public boolean presetCardExists(Preset preset) {
-        return presetCards.contains(preset);
-    }
-
-    public void showPresetCard(Preset preset) {
-        int position = presetCards.indexOf(preset);
-        linearLayoutManager.scrollToPosition(position + 1);
-    }
-
-    public void updateAddPresetCard(boolean enable) {
-        addPreset = enable;
-        if (adapter != null) {
+    public void disableAddPresetButton() {
+        if (adapter != null && addPresetButton) {
+            addPresetButton = false;
             adapter.notifyItemChanged(0);
         }
-        if (enable) {
-            linearLayoutManager.scrollToPosition(0);
+    }
+
+    private void enableAddPresetButton() {
+        if (adapter != null && !addPresetButton) {
+            addPresetButton = true;
+            adapter.notifyItemChanged(0);
         }
     }
 
     public void updateAddPresetCard(Preset preset) {
-        if (presetCardExists(preset)) {
-            addPreset = false;
-            showPresetCard(preset);
-        }
-        else {
-            addPreset = true;
+        int index = presetsList.indexOf(preset);
+        if (index == -1) {
+            enableAddPresetButton();
             linearLayoutManager.scrollToPosition(0);
+        } else {
+            disableAddPresetButton();
+            linearLayoutManager.scrollToPosition(index + 1);
         }
-        if (adapter != null) {
-            adapter.notifyItemChanged(0);
-        }
+    }
+
+    public void createPresetsList(Context context, SharedPreferences sharedPreferences){
+        presetsList = new PresetList();
+        presetsList.context = context;
+        presetsList.sharedPreferences = sharedPreferences;
+        presetsList.initPresets();
     }
 
     @Override
@@ -84,7 +90,7 @@ public class FragmentPresetCards extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         adapter = new RecycleViewAdapter();
-        addPreset = false;
+        addPresetButton = false;
     }
 
     @Override
@@ -184,31 +190,26 @@ public class FragmentPresetCards extends Fragment {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == 1) {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
-                presetViewHolder.textViewCardTimer.setText(presetCards.get(position - 1).getTimerString());
-                presetViewHolder.textViewCardSets.setText(presetCards.get(position - 1).getSetsString());
+                presetViewHolder.textViewCardTimer.setText(presetsList.getPreset(position - 1).getTimerString());
+                presetViewHolder.textViewCardSets.setText(presetsList.getPreset(position - 1).getSetsString());
                 Log.d(TAG, "onBindViewHolder: position=" + position);
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
-                addPresetViewHolder.imageButtonCard.setAlpha(addPreset? 1.f : 0.3f); // TODO: use global alpha values
+                addPresetViewHolder.imageButtonCard.setAlpha(addPresetButton? 1.f : MainActivity.ALPHA_DISABLED);
                 Log.d(TAG, "onBindViewHolder: position=" + position);
             }
         }
 
         @Override
         public int getItemCount() {
-            return presetCards.size() + 1;
+            return presetsList.getSize() + 1;
         }
 
         void onItemMove(int fromPosition, int toPosition) {
             fromPosition -= 1;
             toPosition -= 1;
             Log.d(TAG, "onItemMove: fromPosition=" + fromPosition + ", toPosition=" + toPosition);
-            Log.d(TAG, "onItemMove: before=" + presetCards.toString());
-            Preset preset = presetCards.get(fromPosition);
-            presetCards.remove(fromPosition);
-            presetCards.add(toPosition, preset);
-            Log.d(TAG, "onItemMove: after=" + presetCards.toString());
-            ((MainActivity)getActivity()).movePreset(fromPosition, toPosition);
+            presetsList.swapPreset(fromPosition, toPosition);
         }
     }
 
@@ -218,7 +219,7 @@ public class FragmentPresetCards extends Fragment {
         private ImageButton imageButtonCard;
 
         private void inputPreset(int position) {
-            ((MainActivity)getActivity()).inputPreset(position);
+            ((MainActivity)getActivity()).inputPreset(presetsList.getPreset(position));
         }
 
         PresetViewHolder(final View view) {
@@ -242,9 +243,8 @@ public class FragmentPresetCards extends Fragment {
             else if (view.getId() == imageButtonCard.getId()) {
                 int position = getAdapterPosition() - 1;
                 Log.d(TAG, "setOnClick: delete preset position=" + position);
-                ((MainActivity)getActivity()).removePreset(position);
-                deletePresetCard(position);
-                ((MainActivity)getActivity()).updateAddPresetButton();
+                removePreset(getAdapterPosition() - 1);
+                enableAddPresetButton();
             }
         }
     }
@@ -264,6 +264,93 @@ public class FragmentPresetCards extends Fragment {
                     ((MainActivity)getActivity()).addPreset();
                 }
             });
+        }
+    }
+
+    private class PresetList {
+
+        private ArrayList<Preset> list = new ArrayList<>();
+
+        SharedPreferences sharedPreferences;
+        Context context;
+
+        void addPreset(int index, Preset preset) {
+            Log.d(TAG, "addPreset: index=" + index + ", preset='" + preset.toString() + "'");
+            list.add(index, preset);
+            for (int p = getSize(); p > index; --p) {
+                savePreset(p, loadPreset(p - 1));
+            }
+            savePreset(index, preset);
+        }
+
+        void removePreset(int index) {
+            Log.d(TAG, "removePreset: index=" + index);
+            list.remove(index);
+            for (int p = index; p < getSize(); ++p) {
+                savePreset(p, loadPreset(p + 1));
+            }
+            erasePreset(getSize());
+        }
+
+        void swapPreset(int fromIndex, int toIndex) {
+            Log.d(TAG, "movePreset: fromIndex=" + fromIndex + ", toIndex=" + toIndex);
+            Collections.swap(list, fromIndex, toIndex);
+            Preset preset = loadPreset(fromIndex);
+            removePreset(fromIndex);
+            addPreset(toIndex, preset);
+        }
+
+        int indexOf(Preset preset) {
+            return list.indexOf(preset);
+        }
+
+        Preset getPreset(int index) {
+            return list.get(index);
+        }
+
+        private int getSize() {
+            return list.size();
+        }
+
+        private void savePreset(int index, final Preset preset) {
+            if (sharedPreferences != null) {
+                SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                sharedPreferencesEditor.putLong(String.format(Locale.US, context.getString(R.string.pref_preset_array_timer), index), preset.getTimer());
+                sharedPreferencesEditor.putInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_sets), index), preset.getSets());
+                sharedPreferencesEditor.putInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_init), index), preset.getInit());
+                sharedPreferencesEditor.apply();
+                Log.d(TAG, "savePreset: index=" + index + ", preset='" + preset + "'");
+            }
+        }
+
+        private Preset loadPreset(int index) {
+            if (sharedPreferences != null) {
+                long timer = sharedPreferences.getLong(String.format(Locale.US, context.getString(R.string.pref_preset_array_timer), index), -1);
+                int sets = sharedPreferences.getInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_sets), index), -1);
+                int init = sharedPreferences.getInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_init), index), -1);
+                Preset preset = new Preset(timer, sets, init);
+                Log.d(TAG, "loadPreset: index=" + index + ", preset='" + preset + "'");
+                return preset;
+            } else {
+                return new Preset();
+            }
+        }
+
+        private void erasePreset(int index) {
+            savePreset(index, new Preset());
+        }
+
+        private void initPresets() {
+            Log.d(TAG, "initPresets");
+            int index = 0;
+            while (true) {
+                Preset preset = loadPreset(index);
+                if (preset.isValid()) {
+                    list.add(index++, preset);
+                } else {
+                    break;
+                }
+            }
         }
     }
 }
