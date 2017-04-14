@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private NumberPickerBuilder setsPickerBuilder;
 
     // Preset Timers
-    private FragmentPresetCards fragmentPresetCards;
+    private PresetCardsList presetCardsList;
 
     // Timer service related
     private TimerService.State timerState;
@@ -267,9 +267,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerPresetCards);
         if (fragment == null) {
-            fragmentPresetCards = new FragmentPresetCards();
-            fragmentPresetCards.createPresetsList(this, sharedPreferences);
-            fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, fragmentPresetCards).commit();
+            presetCardsList = new PresetCardsList();
+            presetCardsList.createPresetsList(this, sharedPreferences);
+            fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, presetCardsList).commit();
         }
 
         if (!timerServiceIsRunning()) {
@@ -460,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
             Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
         } else {
-            if (!fragmentPresetCards.addPreset(new Preset(timerUser, setsUser, setsInit))) {
+            if (!presetCardsList.addPreset(new Preset(timerUser, setsUser, setsInit))) {
                 Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
             }
         }
@@ -727,9 +727,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     protected void updateAddPresetButton() {
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            fragmentPresetCards.disableAddPresetButton();
+            presetCardsList.disableAddPresetButton();
         } else {
-            fragmentPresetCards.updateAddPresetCard(new Preset(timerUser, setsUser, setsInit));
+            presetCardsList.updateAddPresetCard(new Preset(timerUser, setsUser, setsInit));
         }
     }
 
