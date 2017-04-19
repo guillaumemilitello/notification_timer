@@ -499,19 +499,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         // Going to nextSet on the last set is allowed from the notification
         if (++setsCurrent < setsUser) {
             Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
+        } else {
+            Log.e(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
         }
         updateSetsDisplay();
     }
 
     protected void nextSetStart() {
-        stop();
-        // Going to nextSet on the last set is allowed from the notification
-        if (++setsCurrent < setsUser) {
-            Log.d(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
-        } else {
-            Log.e(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
-        }
-        updateSetsDisplay();
+        nextSet();
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "nextSetStart: timerState=" + timerState);
         updateButtonsLayout();
