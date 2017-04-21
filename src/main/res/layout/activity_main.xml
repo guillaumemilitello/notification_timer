@@ -19,155 +19,166 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBar"
         android:gravity="bottom"
-        android:weightSum="3">
+        android:weightSum="1">
 
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/fragmentContainerPresetCards"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/preset_card_total_height"
             android:backgroundTintMode="screen"
             android:background="@color/preset_fragment_background"
             tools:context=".MainActivity">
         </FrameLayout>
 
         <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingBottom="10dp"
+            android:layout_weight="1">
+
+            <ProgressBar
+                android:id="@+id/timerProgressBar"
+                android:scaleType="center"
+                android:padding="@dimen/timer_progressbar_padding"
                 android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_weight="1"
-                android:layout_marginTop="12dp" >
+                android:layout_height="wrap_content"
+                android:rotation="-90"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/round_progressbar"
+                android:progress="50"
+                android:max="100"
+                android:indeterminate="false"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true" />
 
-                <ProgressBar
-                    android:id="@+id/timerProgressBar"
-                    android:scaleType="center"
-                    android:padding="60dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:rotation="-90"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:progressDrawable="@drawable/round_progressbar"
-                    android:progress="60"
-                    android:max="100"
-                    android:indeterminate="false"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="true" />
+            <ProgressBar
+                android:id="@+id/timerReadyProgressBar"
+                android:scaleType="center"
+                android:padding="@dimen/timer_progressbar_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:rotation="-90"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/round_progressbar_ready"
+                android:progress="15"
+                android:max="100"
+                android:indeterminate="false"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true" />
 
-                <ProgressBar
-                    android:id="@+id/timerReadyProgressBar"
-                    android:scaleType="center"
-                    android:padding="60dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:rotation="-90"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:progressDrawable="@drawable/round_progressbar_ready"
-                    android:progress="15"
-                    android:max="100"
-                    android:indeterminate="false"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="true" />
-
-            <LinearLayout
+            <RelativeLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:weightSum="3"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true">
-
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:scaleType="centerInside"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:id="@+id/imageButtonTimerPlus"
-                    android:src="@drawable/ic_stopwatch_add_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:layout_weight="1" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="91:24"
+                    android:text="12"
                     android:fontFamily="sans-serif-light"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textSize="30sp"
+                    android:id="@+id/textViewSetsCurrent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_above="@+id/textViewTimer" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="15:00"
+                    android:fontFamily="sans-serif-condensed"
                     android:textStyle="bold"
-                    android:textSize="52sp"
+                    android:textSize="@dimen/timer_text_size"
                     android:textColor="@color/colorPrimary"
                     android:id="@+id/textViewTimer"
                     android:gravity="center"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:layout_centerInParent="true"/>
 
-                <ImageButton
-                    android:id="@+id/imageButtonTimerMinus"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scaleType="centerInside"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/ic_stopwatch_remove_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                    android:layout_weight="1">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true">
+
+                    <ImageButton
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:scaleType="centerInside"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:id="@+id/imageButtonTimerPlus"
+                        android:src="@drawable/ic_stopwatch_add_black_48dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:layout_weight="1"
+                        android:alpha="0.4"/>
+
+                    <View
+                        android:layout_width="68dp"
+                        android:layout_height="68dp"
+                        android:layout_weight="1"/>
+
+                    <ImageButton
+                        android:id="@+id/imageButtonTimerMinus"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:scaleType="centerInside"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_stopwatch_remove_black_48dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:layout_weight="1"
+                        android:alpha="0.4"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="13"
+                    android:fontFamily="sans-serif-light"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textSize="30sp"
+                    android:id="@+id/textViewSetsNext"
+                    android:gravity="center"
+                    android:layout_below="@+id/textViewTimer"
+                    android:layout_alignParentStart="true"
+                    android:layout_above="@+id/linearLayout" />
+
+            </RelativeLayout>
         </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:weightSum="3" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="12"
-                android:fontFamily="sans-serif-light"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textSize="30sp"
-                android:id="@+id/textViewSetsCurrent"
-                android:gravity="center"
-                android:layout_weight="1" />
-
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/progressBarSets"
-                android:max="100"
-                android:progress="45"
-                android:gravity="center"
-                android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="13"
-                android:fontFamily="sans-serif-light"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textSize="30sp"
-                android:id="@+id/textViewSetsNext"
-                android:gravity="center"
-                android:layout_weight="1" />
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="8dp"
             android:weightSum="3">
 
             <ImageButton
@@ -175,7 +186,6 @@
                 android:layout_height="48dp"
                 android:scaleType="centerInside"
                 android:adjustViewBounds="true"
-                android:padding="0dp"
                 android:id="@+id/imageButtonLeft"
                 android:src="@drawable/ic_refresh_black_48dp"
                 android:background="?selectableItemBackgroundBorderless"
@@ -186,7 +196,6 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="68dp"
                 android:layout_height="68dp"
-                android:padding="0dp"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="false"
                 android:layout_gravity="center"
@@ -200,7 +209,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:padding="0dp"
                 android:id="@+id/imageButtonRight"
                 android:src="@drawable/ic_chevron_right_double_black_48dp"
                 android:scaleType="centerInside"

@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // Main user interface
     private TextView timerTextView, setsCurrentTextView, setsNextTextView;
-    private ProgressBar timerProgressBar, timerReadyProgressBar, setsProgressBar;
+    private ProgressBar timerProgressBar, timerReadyProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
@@ -205,7 +206,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         timerProgressBar = (ProgressBar) findViewById(R.id.timerProgressBar);
         timerReadyProgressBar = (ProgressBar) findViewById(R.id.timerReadyProgressBar);
-        setsProgressBar = (ProgressBar) findViewById(R.id.progressBarSets);
+
+        int padding;
+        if (!ViewConfiguration.get(this).hasPermanentMenuKey()) {
+            padding = (int) getResources().getDimension(R.dimen.timer_progressbar_padding_soft_key);
+        } else {
+            padding = (int) getResources().getDimension(R.dimen.timer_progressbar_padding);
+        }
+        timerProgressBar.setPadding(padding, padding, padding, padding);
+        timerReadyProgressBar.setPadding(padding, padding, padding, padding);
 
         imageButtonLeft = (ImageButton) findViewById(R.id.imageButtonLeft);
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
@@ -317,8 +326,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setProgress((int) timerCurrent);
         timerReadyProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setProgress(timerGetReadyEnable ? timerGetReady : 0);
-        setsProgressBar.setMax((int) timerUser);
-        setsProgressBar.setProgress((int) (timerUser - timerCurrent));
         updateSetsDisplay();
         updateTimerDisplay();
         updateButtonsLayout();
@@ -352,7 +359,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerUser = timer;
         Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
         timerProgressBar.setMax((int) timerUser);
-        setsProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         updateButtonsLayout(ButtonsLayout.WAITING_SETS);
@@ -376,8 +382,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerTextView.setText(timeString);
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) timerCurrent);
-        setsProgressBar.setMax((int) timerUser);
-        setsProgressBar.setProgress((int) (timerUser - timerCurrent));
         timerReadyProgressBar.setMax((int) timerUser);
         if (!timerGetReadyEnable || timerCurrent <= timerGetReady) {
             timerReadyProgressBar.setProgress(0);
@@ -435,7 +439,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = preset.getSets();
 
         timerProgressBar.setMax((int) timerUser);
-        setsProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateTimerDisplay();
         updateSetsDisplay();

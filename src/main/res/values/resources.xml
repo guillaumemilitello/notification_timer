@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Primary colors -->
+    <color name="primary">#7986cb</color>
+    <color name="primary_light">#9fa8da</color>
+    <color name="primary_extra_light">#b0bec5</color>
+
     <!-- Preset card -->
     <dimen name="preset_card_height">56dp</dimen>
     <dimen name="preset_card_margin_height">10dp</dimen>
+    <dimen name="preset_card_total_height">76dp</dimen>
     <dimen name="preset_card_margin_side">8dp</dimen>
     <dimen name="preset_card_timer_padding_left">10dp</dimen>
     <dimen name="preset_card_timer_padding_right">8dp</dimen>
@@ -14,4 +20,18 @@
     <color name="preset_card_timer_font_color">#757575</color>
     <color name="preset_card_sets_font_color">#9e9e9e</color>
     <color name="preset_fragment_background">#9fa8da</color>
+
+    <!-- Timer progressbar -->
+    <dimen name="timer_progressbar_thickness">20dp</dimen>
+    <dimen name="timer_progressbar_thickness_ready">26dp</dimen>
+    <dimen name="timer_progressbar_thickness_background">8dp</dimen>
+    <item name="timer_progressbar_inner_radius" format="float" type="dimen">2.0</item>
+    <item name="timer_progressbar_inner_radius_ready" format="float" type="dimen">2.0515</item>
+    <item name="timer_progressbar_inner_radius_background" format="float" type="dimen">1.906</item>
+    <dimen name="timer_progressbar_padding">40dp</dimen>
+    <dimen name="timer_progressbar_padding_soft_key">50dp</dimen>
+    <dimen name="timer_progressbar_text_size">90sp</dimen>
+    <color name="timer_progressbar">@color/primary</color>
+    <color name="timer_progressbar_ready">@android:color/holo_red_light</color>
+    <color name="timer_progressbar_background">#eaeaea</color>
 </resources>
