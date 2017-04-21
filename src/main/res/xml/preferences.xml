@@ -73,12 +73,6 @@
         android:defaultValue="@string/default_timer_get_ready_ringtone_uri"
         android:showDefault="true"
         android:showSilent="true"/>
-    <ListPreference
-        android:key="@string/pref_timer_get_ready_light_color"
-        android:title="@string/light_color"
-        android:defaultValue="@string/default_timer_get_ready_light_color"
-        android:entries="@array/lightColor"
-        android:entryValues="@array/lightColorValues"/>
 
     </PreferenceCategory>
 </PreferenceScreen>

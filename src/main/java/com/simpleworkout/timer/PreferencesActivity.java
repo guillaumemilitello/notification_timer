@@ -109,7 +109,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)).setEnabled(timerGetReadyEnable);
         settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_vibrate)).setEnabled(timerGetReadyEnable);
         settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_ringtone_uri)).setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_light_color)).setEnabled(timerGetReadyEnable);
     }
 
     private void updateSummaries(Map<String, ?> preferences) {

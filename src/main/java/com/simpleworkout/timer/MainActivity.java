@@ -1068,11 +1068,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 boolean vibrationReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
                 timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
             }
-        } else if (key.equals(getString(R.string.pref_timer_get_ready_light_color))) {
-            if (timerServiceBound) {
-                int color = getColorInt(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_light_color)));
-                timerService.interactiveNotification.setLightReadyColor(color);
-            }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
             ringtoneUriReady = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_ringtone_uri)));
             if (timerServiceBound) {

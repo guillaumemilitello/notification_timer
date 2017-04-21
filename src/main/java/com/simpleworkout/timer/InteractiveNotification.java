@@ -53,10 +53,6 @@ class InteractiveNotification extends Notification {
         this.lightColor = lightColor;
     }
 
-    void setLightReadyColor(int lightReadyColor) {
-        this.lightReadyColor = lightReadyColor;
-    }
-
     void setRingtone(Uri ringtone) {
         this.ringtone = ringtone;
     }
@@ -69,7 +65,6 @@ class InteractiveNotification extends Notification {
     private boolean vibrationEnable;
     private boolean vibrationReadyEnable;
     private int lightColor;
-    private int lightReadyColor;
     private Uri ringtone;
     private Uri ringtoneReady;
 
@@ -141,8 +136,7 @@ class InteractiveNotification extends Notification {
 
         NO_NOTIFICATION,
         UPDATE,
-        LIGHT_ONLY,
-        LIGHT_SOUND_SHORT_VIBRATE,
+        SOUND_SHORT_VIBRATE,
         LIGHT_SOUND_LONG_VIBRATE
     }
 
@@ -360,28 +354,12 @@ class InteractiveNotification extends Notification {
                     notificationBuilder.setSound(null);
                     notificationBuilder.setLights(COLOR_DEFAULT, 0, 0);
                     break;
-                case LIGHT_ONLY:
-                    notificationBuilder.setVibrate(null);
-                    notificationBuilder.setSound(null);
-                    if (lightReadyColor != -1) {
-                        notificationBuilder.setLights(lightReadyColor, 500, 600);
-                    }
-                    break;
-                case LIGHT_SOUND_SHORT_VIBRATE:
-                    if (vibrationReadyEnable) {
-                        notificationBuilder.setVibrate(MainActivity.vibrationPattern);
-                    } else {
-                        notificationBuilder.setVibrate(null);
-                    }
+                case SOUND_SHORT_VIBRATE:
+                    notificationBuilder.setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null);
                     notificationBuilder.setSound(ringtoneReady);
-                    if (lightReadyColor != COLOR_NONE) {
-                        notificationBuilder.setLights(lightReadyColor, 500, 600);
-                    }
                     break;
                 case LIGHT_SOUND_LONG_VIBRATE:
-                    if (vibrationEnable) {
-                        notificationBuilder.setVibrate(MainActivity.vibrationPattern);
-                    }
+                    notificationBuilder.setVibrate(vibrationEnable ? MainActivity.vibrationPattern : null);
                     notificationBuilder.setSound(ringtone);
                     if (lightColor != COLOR_NONE) {
                         notificationBuilder.setLights(lightColor, 1000, 1000);

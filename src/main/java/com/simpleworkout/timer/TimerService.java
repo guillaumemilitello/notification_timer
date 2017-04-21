@@ -506,9 +506,7 @@ public class TimerService extends Service {
 
     private void notificationUpdateTimerCurrent(long time) {
         if (timerGetReadyEnable && time == timerGetReady) {
-            interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.LIGHT_SOUND_SHORT_VIBRATE);
-        } else if (timerGetReadyEnable && time < timerGetReady) {
-            interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.LIGHT_ONLY);
+            interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.SOUND_SHORT_VIBRATE);
         } else {
             interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.UPDATE);
         }
