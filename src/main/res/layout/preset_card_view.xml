@@ -24,8 +24,8 @@
                     android:id="@+id/textViewCardTimer"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:paddingLeft="@dimen/preset_card_timer_padding_left"
-                    android:paddingRight="@dimen/preset_card_timer_padding_right"
+                    android:paddingStart="@dimen/preset_card_timer_padding_left"
+                    android:paddingEnd="@dimen/preset_card_timer_padding_right"
                     android:gravity="center|start"
                     android:textSize="@dimen/preset_card_timer_font_size"
                     android:textColor="@color/preset_card_timer_font_color"
@@ -39,9 +39,9 @@
                     android:gravity="center|start"
                     android:fontFamily="sans-serif-condensed"
                     android:textSize="@dimen/preset_card_timer_font_size"
-                    android:paddingRight="@dimen/preset_card_sets_padding_right"
+                    android:paddingEnd="@dimen/preset_card_sets_padding_right"
                     android:textColor="@color/preset_card_sets_font_color"
-                    android:text="12 sets" />
+                    android:text="x12!" />
 
             </LinearLayout>
 

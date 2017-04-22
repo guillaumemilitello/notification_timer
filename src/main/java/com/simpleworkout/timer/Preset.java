@@ -33,11 +33,9 @@ class Preset {
     }
 
     String getSetsString() {
-        if (sets == MainActivity.SETS_INFINITY) {
-            return String.format(Locale.US, "%d...", init);
-        } else {
-            return String.format(Locale.US, "%d..%d", init, sets);
-        }
+        String initString = (init == 0)? "!" : "";
+        String setsString = (sets == MainActivity.SETS_INFINITY)? "" : String.format(Locale.US, "x%d", sets);
+        return setsString + initString;
     }
 
     public long getTimer() {
@@ -53,10 +51,10 @@ class Preset {
     }
 
     public String toString() {
-        return "t=" + timer + "|s=" + sets + "|i=" + init;
+        return String.format(Locale.US, "%s %s", getTimerString(), getSetsString());
     }
 
-    public boolean isValid() {
+    boolean isValid() {
         return this.timer > 0 && this.sets > 0 && (this.init == 0 || this.init == 1);
     }
 

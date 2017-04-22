@@ -2,6 +2,7 @@ package com.simpleworkout.timer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -223,6 +224,10 @@ public class PresetCardsList extends Fragment {
             textViewCardTimer = (TextView) view.findViewById(R.id.textViewCardTimer);
             textViewCardSets = (TextView) view.findViewById(R.id.textViewCardSets);
             imageButtonCard = (ImageButton) view.findViewById(R.id.imageButtonCard);
+
+            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
+            textViewCardTimer.setTypeface(typeface);
+            textViewCardSets.setTypeface(typeface);
 
             textViewCardTimer.setOnClickListener(this);
             textViewCardSets.setOnClickListener(this);

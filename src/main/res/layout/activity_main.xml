@@ -40,13 +40,13 @@
             <ProgressBar
                 android:id="@+id/timerProgressBar"
                 android:scaleType="center"
-                android:padding="@dimen/timer_progressbar_padding"
+                android:padding="@dimen/timer_progressbar_padding_soft_key"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:progressDrawable="@drawable/round_progressbar"
-                android:progress="50"
+                android:progress="90"
                 android:max="100"
                 android:indeterminate="false"
                 android:layout_alignParentBottom="true"
@@ -57,13 +57,13 @@
             <ProgressBar
                 android:id="@+id/timerReadyProgressBar"
                 android:scaleType="center"
-                android:padding="@dimen/timer_progressbar_padding"
+                android:padding="@dimen/timer_progressbar_padding_soft_key"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:rotation="-90"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:progressDrawable="@drawable/round_progressbar_ready"
-                android:progress="15"
+                android:progress="20"
                 android:max="100"
                 android:indeterminate="false"
                 android:layout_alignParentBottom="true"
@@ -80,19 +80,37 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="12"
-                    android:fontFamily="sans-serif-light"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textSize="30sp"
-                    android:id="@+id/textViewSetsCurrent"
                     android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_above="@+id/textViewTimer" />
+                    android:orientation="horizontal"
+                    android:layout_above="@+id/textViewTimer">
+
+                    <TextView
+                        android:id="@+id/textViewTimerUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|start"
+                        android:textSize="@dimen/preset_card_timer_font_size"
+                        android:textColor="@color/preset_card_timer_font_color"
+                        android:text="15:00"
+                        android:paddingStart="@dimen/preset_card_timer_padding_left"
+                        android:paddingEnd="@dimen/preset_card_timer_padding_right"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/textViewSetsUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|start"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textSize="@dimen/preset_card_timer_font_size"
+                        android:textColor="@color/preset_card_sets_font_color"
+                        android:text="x12!"
+                        android:paddingEnd="@dimen/preset_card_sets_padding_right"/>
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -100,20 +118,20 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="15:00"
                     android:fontFamily="sans-serif-condensed"
-                    android:textStyle="bold"
                     android:textSize="@dimen/timer_text_size"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/timer_text_color"
+                    android:textStyle="bold"
                     android:id="@+id/textViewTimer"
                     android:gravity="center"
                     android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:layout_centerInParent="true"/>
+                    android:layout_centerInParent="true"
+                    android:layout_marginBottom="@dimen/timer_text_margin_bottom"
+                    android:layout_marginTop="@dimen/timer_text_margin_top"/>
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_height="wrap_content">
 
                 </LinearLayout>
 
@@ -161,15 +179,14 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="13"
-                    android:fontFamily="sans-serif-light"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textSize="30sp"
-                    android:id="@+id/textViewSetsNext"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/sets_text_size"
+                    android:textColor="@color/sets_text_color"
+                    android:id="@+id/textViewSets"
                     android:gravity="center"
                     android:layout_below="@+id/textViewTimer"
-                    android:layout_alignParentStart="true"
-                    android:layout_above="@+id/linearLayout" />
+                    android:layout_alignParentStart="true" />
 
             </RelativeLayout>
         </RelativeLayout>

@@ -22,16 +22,20 @@
     <color name="preset_fragment_background">#9fa8da</color>
 
     <!-- Timer progressbar -->
-    <dimen name="timer_progressbar_thickness">20dp</dimen>
-    <dimen name="timer_progressbar_thickness_ready">26dp</dimen>
-    <dimen name="timer_progressbar_thickness_background">8dp</dimen>
+    <dimen name="timer_progressbar_thickness">10dp</dimen>
+    <dimen name="timer_progressbar_thickness_ready">10dp</dimen>
+    <dimen name="timer_progressbar_thickness_background">10dp</dimen>
     <item name="timer_progressbar_inner_radius" format="float" type="dimen">2.0</item>
-    <item name="timer_progressbar_inner_radius_ready" format="float" type="dimen">2.0515</item>
-    <item name="timer_progressbar_inner_radius_background" format="float" type="dimen">1.906</item>
+    <item name="timer_progressbar_inner_radius_ready" format="float" type="dimen">1.8715</item>
     <dimen name="timer_progressbar_padding">40dp</dimen>
     <dimen name="timer_progressbar_padding_soft_key">50dp</dimen>
-    <dimen name="timer_progressbar_text_size">90sp</dimen>
     <color name="timer_progressbar">@color/primary</color>
     <color name="timer_progressbar_ready">@android:color/holo_red_light</color>
     <color name="timer_progressbar_background">#eaeaea</color>
+    <dimen name="timer_text_size">90sp</dimen>
+    <dimen name="timer_text_margin_bottom">0dp</dimen>
+    <dimen name="timer_text_margin_top">0dp</dimen>
+    <color name="timer_text_color">@color/primary</color>
+    <dimen name="sets_text_size">45sp</dimen>
+    <color name="sets_text_color">@color/primary_light</color>
 </resources>
