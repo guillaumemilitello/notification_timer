@@ -20,6 +20,9 @@ public class TimerService extends Service {
 
     public static final String TAG = "TimerService";
 
+    // margin for not missing the notification
+    private static final long WAKELOCK_TIME_APPROX = 3;
+
     private boolean running = false;
 
     private final IBinder binder = new TimerBinder();
@@ -97,6 +100,7 @@ public class TimerService extends Service {
 
     public void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
         this.timerGetReadyEnable = timerGetReadyEnable;
+        setupAlarmManager();
     }
 
     public void setTimerGetReady(int timerGetReady) {
@@ -252,7 +256,7 @@ public class TimerService extends Service {
         if (state == State.RUNNING) {
             Log.d(TAG, "pause");
 
-            countDownPauseTimer.pause();
+            pauseCountDown();
             updateStateIntent(State.PAUSED);
 
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED, InteractiveNotification.NotificationMode.UPDATE);
@@ -265,14 +269,14 @@ public class TimerService extends Service {
         Log.d(TAG, "pauseContextPreference: timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
 
         startCountDown(timerCurrent);
-        countDownPauseTimer.pause();
+        pauseCountDown();
     }
 
     protected void resume() {
         if (state == State.PAUSED) {
             Log.d(TAG, "resume");
 
-            countDownPauseTimer.resume();
+            resumeCountDown();
             updateStateIntent(State.RUNNING);
 
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
@@ -417,7 +421,7 @@ public class TimerService extends Service {
     }
 
     protected void timerMinus() {
-        timerCurrent -= timerMinus;
+        timerCurrent = Math.max(timerCurrent - timerMinus, 0);
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         notificationUpdateTimerCurrent(timerCurrent);
@@ -524,6 +528,10 @@ public class TimerService extends Service {
                 timerCurrentSaving = time / TIMER_CURRENT_SAVING_INTERVAL;
                 saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
             }
+            if (timerGetReadyEnable && timerCurrent == timerGetReady) {
+                releaseWakeLock();
+                setupAlarmManager();
+            }
         }
     }
 
@@ -568,29 +576,36 @@ public class TimerService extends Service {
     }
 
     private void setupAlarmManager() {
-        alarmManager.cancel(pendingIntentAlarm);
-        long time = System.currentTimeMillis();
-        long timerApprox = 7;
+        long time = 0;
 
-        if ((timerGetReadyEnable && (timerCurrent - timerGetReady) > timerApprox) || timerCurrent > timerApprox) {
-            time += TimeUnit.SECONDS.toMillis(timerCurrent - timerGetReady - timerApprox);
-        } else if ((timerGetReadyEnable && timerCurrent > timerApprox) || timerCurrent > 0) {
-            time += TimeUnit.SECONDS.toMillis(timerUser - timerGetReady);
+        if (timerGetReadyEnable && timerCurrent - WAKELOCK_TIME_APPROX > timerGetReady) {
+            time = TimeUnit.SECONDS.toMillis(timerCurrent - WAKELOCK_TIME_APPROX - timerGetReady);
+        } else if (timerGetReadyEnable && timerCurrent > timerGetReady) {
+            time = TimeUnit.SECONDS.toMillis(timerCurrent - timerGetReady);
+        } else if (timerCurrent - WAKELOCK_TIME_APPROX > 0) {
+            time = TimeUnit.SECONDS.toMillis(timerCurrent - WAKELOCK_TIME_APPROX);
+        } else if (timerCurrent > 0){
+            time = TimeUnit.SECONDS.toMillis(timerCurrent);
         }
 
-        Log.d(TAG, "setupAlarmManager: wakeup the device at time=" + (time - System.currentTimeMillis()) / 1000 + ", timerCurrent=" + timerCurrent);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntentAlarm);
+        if (time > 0){
+            cancelAlarmManager();
+            Log.d(TAG, "setupAlarmManager: wakeup the device in=" + (time / 1000) + ", at=" + (timerCurrent - (time / 1000)));
+            time += System.currentTimeMillis();
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntentAlarm);
+        }
+    }
+
+    private void cancelAlarmManager() {
+        alarmManager.cancel(pendingIntentAlarm);
+        releaseWakeLock();
+        Log.d(TAG, "cancelAlarmManager: canceling alarm");
     }
 
     protected void acquireWakeLock() {
         if (wakeLock != null) {
             if (!wakeLock.isHeld()) {
-                if ((timerGetReadyEnable && timerCurrent <= timerGetReady) || timerCurrent <= 0) {
-                    Log.e(TAG, "acquireWakeLock: timerGetReadyEnable=" + timerGetReadyEnable + ", timerGetReady=" + timerGetReady + " is passed timerCurrent=" + timerCurrent);
-                }
-                else {
-                    Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
-                }
+                Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
                 wakeLock.acquire();
             } else {
                 Log.e(TAG, "acquireWakeLock: wakeLock isHeld=true");
@@ -599,8 +614,11 @@ public class TimerService extends Service {
     }
 
     private void releaseWakeLock() {
-        if (wakeLock != null && wakeLock.isHeld()) {
-            wakeLock.release();
+        if (wakeLock != null) {
+          if (wakeLock.isHeld()) {
+              Log.d(TAG, "releaseWakeLock: timerCurrent=" + timerCurrent);
+              wakeLock.release();
+          }
         }
     }
 
@@ -628,10 +646,19 @@ public class TimerService extends Service {
         countDownPauseTimer.update(time);
     }
 
+    private void pauseCountDown() {
+        cancelAlarmManager();
+        countDownPauseTimer.pause();
+    }
+
+    private void resumeCountDown() {
+        setupAlarmManager();
+        countDownPauseTimer.resume();
+    }
+
     private void cancelCountDown() {
+        cancelAlarmManager();
         countDownPauseTimer.cancel();
-        Log.d(TAG, "cancelCountDown: canceling alarms");
-        alarmManager.cancel(pendingIntentAlarm);
     }
 
     private void saveContextPreferences(int flags) {

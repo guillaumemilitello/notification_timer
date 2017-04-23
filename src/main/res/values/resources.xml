@@ -32,6 +32,7 @@
     <color name="timer_progressbar">@color/primary</color>
     <color name="timer_progressbar_ready">@android:color/holo_red_light</color>
     <color name="timer_progressbar_background">#eaeaea</color>
+    <color name="timer_progressbar_waiting">@android:color/darker_gray</color>
     <dimen name="timer_text_size">90sp</dimen>
     <dimen name="timer_text_margin_bottom">0dp</dimen>
     <dimen name="timer_text_margin_top">0dp</dimen>

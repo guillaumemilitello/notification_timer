@@ -391,8 +391,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     private void updateTimerDisplay() {
         // TODO : merge with Preset class
-        String timeString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
-        timerTextView.setText(timeString);
+        timerTextView.setText(String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60));
         timerProgressBar.setMax((int)timerUser);
         timerReadyProgressBar.setMax((int)timerUser);
 
@@ -406,29 +405,39 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerReadyProgressBar.setProgress((int)timerCurrent);
         }
 
-        int color;
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            color = Color.GRAY;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            color = getColor(R.color.primary);
+        int colorResource = R.color.timer_progressbar;
+        int colorResourceReady = R.color.timer_progressbar_ready;
+        if (buttonsLayout == ButtonsLayout.WAITING) {
+            colorResource = R.color.timer_progressbar_background;
+        } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            colorResource = R.color.timer_progressbar_waiting;
+            colorResourceReady = colorResource;
+        }
+        int color, colorReady;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            color = getColor(colorResource);
+            colorReady = getColor(colorResourceReady);
         } else {
-            color = getResources().getColor(R.color.primary);
+            color = getResources().getColor(colorResource);
+            colorReady = getResources().getColor(colorResourceReady);
         }
         timerTextView.setTextColor(color);
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(color));
+        timerReadyProgressBar.setProgressTintList(ColorStateList.valueOf(colorReady));
     }
 
     private void updateSetsDisplay() {
-        String setsString = String.format(Locale.US, "%d", setsCurrent);
-        setsTextView.setText(setsString);
-
-        int color;
+        int color = Color.GRAY;
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            color = Color.GRAY;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            color = getColor(R.color.primary_light);
+            setsTextView.setText("");
         } else {
-            color = getResources().getColor(R.color.primary_light);
+            // TODO : merge with Preset class
+            setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                color = getColor(R.color.primary_light);
+            } else {
+                color = getResources().getColor(R.color.primary_light);
+            }
         }
         setsTextView.setTextColor(color);
     }
@@ -448,6 +457,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.READY;
         updateInputTimerService();
         updateButtonsLayout();
+        updateTimerDisplay();
+        updateSetsDisplay();
+        updatePresetDisplay();
     }
 
     private void launchPickers() {
@@ -474,9 +486,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         terminatePickers();
-        updateTimerDisplay();
-        updateSetsDisplay();
-        updatePresetDisplay();
     }
 
     private void updateInputTimerService() {
@@ -506,6 +515,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
         updateButtonsLayout();
+        updateSetsDisplay();
     }
 
     protected void pause() {
@@ -528,6 +538,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else {
             updateButtonsLayout(ButtonsLayout.READY);
         }
+        updateSetsDisplay();
     }
 
     protected void nextSet() {
@@ -558,6 +569,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
 
         updateButtonsLayout();
+        updateTimerDisplay();
         updateSetsDisplay();
         updatePresetDisplay();
     }
@@ -650,7 +662,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 alertSetDone.show();
             }
             updateButtonsLayout(ButtonsLayout.STOPPED);
-            updateSetsDisplay();
         } else {
             Log.d(TAG, "done: all sets done, setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
