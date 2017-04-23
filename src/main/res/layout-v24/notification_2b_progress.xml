@@ -46,6 +46,7 @@
             style="@style/notificationButton"
             android:layout_width="match_parent"
             android:layout_height="20dp"
+            android:paddingEnd="10dp"
             android:paddingTop="5.5dp"
             android:progress="80"
             android:max="100"
