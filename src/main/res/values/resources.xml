@@ -22,11 +22,12 @@
     <color name="preset_fragment_background">#9fa8da</color>
 
     <!-- Timer progressbar -->
+    <dimen name="timer_progressbar_width">360dp</dimen>
     <dimen name="timer_progressbar_thickness">10dp</dimen>
     <dimen name="timer_progressbar_thickness_ready">10dp</dimen>
     <dimen name="timer_progressbar_thickness_background">10dp</dimen>
     <item name="timer_progressbar_inner_radius" format="float" type="dimen">2.0</item>
-    <item name="timer_progressbar_inner_radius_ready" format="float" type="dimen">1.8715</item>
+    <item name="timer_progressbar_inner_radius_ready" format="float" type="dimen">1.875</item>
     <dimen name="timer_progressbar_padding">40dp</dimen>
     <dimen name="timer_progressbar_padding_soft_key">50dp</dimen>
     <color name="timer_progressbar">@color/primary</color>

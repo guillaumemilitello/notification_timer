@@ -33,7 +33,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:paddingBottom="10dp"
             android:layout_weight="1">
 
@@ -41,35 +41,29 @@
                 android:id="@+id/timerProgressBar"
                 android:scaleType="center"
                 android:padding="@dimen/timer_progressbar_padding_soft_key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/timer_progressbar_width"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
                 android:rotation="-90"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:progressDrawable="@drawable/round_progressbar"
                 android:progress="90"
                 android:max="100"
-                android:indeterminate="false"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true" />
+                android:indeterminate="false"/>
 
             <ProgressBar
                 android:id="@+id/timerReadyProgressBar"
                 android:scaleType="center"
                 android:padding="@dimen/timer_progressbar_padding_soft_key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/timer_progressbar_width"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
                 android:rotation="-90"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:progressDrawable="@drawable/round_progressbar_ready"
                 android:progress="20"
                 android:max="100"
-                android:indeterminate="false"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true" />
+                android:indeterminate="false"/>
 
             <RelativeLayout
                 android:orientation="vertical"

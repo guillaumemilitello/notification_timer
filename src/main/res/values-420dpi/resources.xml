@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Timer progressbar -->
+    <dimen name="timer_progressbar_width">412dp</dimen>
     <dimen name="timer_text_size">135sp</dimen>
     <dimen name="sets_text_size">45sp</dimen>
     <dimen name="timer_progressbar_padding">30dp</dimen>
