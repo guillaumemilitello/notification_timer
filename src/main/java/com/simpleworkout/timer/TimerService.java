@@ -332,7 +332,7 @@ public class TimerService extends Service {
     }
 
     private void doneInteractiveNotification(InteractiveNotification.NotificationMode notificationMode) {
-        if (setsCurrent < setsUser) {
+        if (setsCurrent <= setsUser) {
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.SET_DONE);
         } else {
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.ALL_SETS_DONE);
@@ -477,6 +477,7 @@ public class TimerService extends Service {
     public void setSetsInit(int sets) {
         Log.d(TAG, "setSetsInit: setsInit=" + sets);
         setsInit = sets;
+        interactiveNotification.updateSetsInit(setsInit);
         saveContextPreferences(CONTEXT_PREFERENCE_SETS_INIT);
     }
 
@@ -540,7 +541,7 @@ public class TimerService extends Service {
         Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " isPaused=" + isPaused());
         if (isPaused()) {
             interactiveNotification.dismiss();
-        } else if (setsCurrent < setsUser) {
+        } else if (setsCurrent <= setsUser) {
             interactiveNotification.dismiss();
             if (mainActivityVisible) {
                 Log.d(TAG, "notificationDeleted: sending STOP action");

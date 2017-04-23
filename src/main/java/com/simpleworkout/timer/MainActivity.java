@@ -544,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     protected void nextSet() {
         stop();
         // Going to nextSet on the last set is allowed from the notification
-        if (++setsCurrent < setsUser) {
+        if (++setsCurrent <= setsUser) {
             Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
         } else {
             Log.e(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
@@ -654,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     protected void done() {
         // The timer will be stopped from the alerts
-        if (++setsCurrent < setsUser) {
+        if (++setsCurrent <= setsUser) {
             Log.d(TAG, "done: setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
                 vibrate();
@@ -744,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateSetsButtons() {
-        if ((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && setsCurrent < setsUser - 1) {
+        if ((buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) && setsCurrent < setsUser) {
             updateButton(imageButtonRight, ButtonAction.NEXT_SET);
         } else {
             updateButton(imageButtonRight, ButtonAction.NEXT_SET_DISABLED);
@@ -795,11 +795,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                     updateButtons(ButtonAction.CLEAR, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                     break;
                 case RUNNING:
-                    nextStep = (setsCurrent < setsUser - 1) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
+                    nextStep = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
                     updateButtons(ButtonAction.RESET, ButtonAction.PAUSE, nextStep);
                     break;
                 case PAUSED:
-                    nextStep = (setsCurrent < setsUser - 1) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
+                    nextStep = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
                     updateButtons(ButtonAction.RESET, ButtonAction.RESUME, nextStep);
                     break;
                 case STOPPED:

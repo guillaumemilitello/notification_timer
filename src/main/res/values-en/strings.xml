@@ -29,12 +29,12 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="current_set">Current set is %1$d of %2$d total</string>
-    <string name="current_set_infinity">Current set is %1$d</string>
-    <string name="next_set">Next set is %1$d of %2$d total</string>
-    <string name="next_set_infinity">Next set is %1$d</string>
-    <string name="total_set">%1$d total set</string>
-    <string name="total_sets">%1$d total sets</string>
+    <string name="sets">Timer %1$d of %2$d total</string>
+    <string name="sets_infinity">Timer %1$d</string>
+    <string name="sets_timer_ready">%1$d timer starting at %2$d</string>
+    <string name="sets_timers_ready">%1$d timers starting at %2$d</string>
+    <string name="sets_infinity_ready">Timers starting at %1$d</string>
+    <string name="total_sets">%1$d total starting at %2$d</string>
     <string name="time_is_up">Timer done</string>
     <!-- Settings -->
     <string name="timer">Timer</string>

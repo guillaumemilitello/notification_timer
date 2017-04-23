@@ -35,7 +35,7 @@ class InteractiveNotification extends Notification {
 
     // Timer service related
     private long timerCurrent, timerUser;
-    private int setsCurrent, setsUser;
+    private int setsCurrent, setsUser, setsInit;
     private String timerString, setsString;
 
     private ButtonsLayout buttonsLayout;
@@ -174,8 +174,9 @@ class InteractiveNotification extends Notification {
         timerString = "";
         setsString = "";
         timerCurrent = 0;
-        setsCurrent = 1;
-        setsUser = 1;
+        setsCurrent = 0;
+        setsUser = 0;
+        setsInit = 0;
 
         button2 = ButtonAction.NO_ACTION;
         button1 = ButtonAction.NO_ACTION;
@@ -403,15 +404,15 @@ class InteractiveNotification extends Notification {
         build(notificationMode);
     }
 
-//    void updateSetsUser(int sets) {
-//        updateSetsUser(sets, NotificationMode.NO_NOTIFICATION);
-//    }
-
     void updateSetsUser(int sets, NotificationMode notificationMode) {
         Log.d(TAG, "updateSetsUser: setsUser=" + sets);
         setsUser = sets;
         updateSetsTextView();
         build(notificationMode);
+    }
+
+    void updateSetsInit(int sets) {
+        setsInit = sets;
     }
 
     private void updateTimerTextView() {
@@ -434,39 +435,33 @@ class InteractiveNotification extends Notification {
             case NO_LAYOUT:
             case PAUSED:
             case RUNNING:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    if (setsUser == MainActivity.SETS_INFINITY) {
-                        setsString = String.format(context.getString(R.string.next_set_infinity), setsCurrent + 1);
-                    } else {
-                        setsString = String.format(context.getString(R.string.next_set), setsCurrent + 1, setsUser);
-                    }
+                if (setsUser == MainActivity.SETS_INFINITY) {
+                    setsString = String.format(context.getString(R.string.sets_infinity), setsCurrent);
                 } else {
-                    if (setsUser == MainActivity.SETS_INFINITY) {
-                        setsString = String.format(context.getString(R.string.next_set_infinity_short), setsCurrent + 1);
-                    } else {
-                        setsString = String.format(context.getString(R.string.next_set_short), setsCurrent + 1, setsUser);
-                    }
-
+                    setsString = String.format(context.getString(R.string.sets), setsCurrent, setsUser);
                 }
-                Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
                 break;
             case READY:
+                if (setsUser == MainActivity.SETS_INFINITY) {
+                    setsString = String.format(context.getString(R.string.sets_infinity_ready), setsInit);
+                } else if (setsUser > 1){
+                    setsString = String.format(context.getString(R.string.sets_timers_ready), setsUser, setsInit);
+                } else {
+                    setsString = String.format(context.getString(R.string.sets_timer_ready), setsUser, setsInit);
+                }
+                break;
             case SET_DONE:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.current_set_infinity), setsCurrent);
+                    setsString = String.format(context.getString(R.string.sets_infinity), setsCurrent - 1);
                 } else {
-                    setsString = String.format(context.getString(R.string.current_set), setsCurrent, setsUser);
+                    setsString = String.format(context.getString(R.string.sets), setsCurrent - 1, setsUser);
                 }
                 break;
             case ALL_SETS_DONE:
-                if (setsUser > 1) {
-                    setsString = String.format(context.getString(R.string.total_sets), setsCurrent);
-                } else {
-                    setsString = String.format(context.getString(R.string.total_set), setsCurrent);
-                }
-                Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
+                setsString = String.format(context.getString(R.string.total_sets), setsCurrent - 1, setsInit);
                 break;
         }
+        Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
     }
 
     void dismiss() {
