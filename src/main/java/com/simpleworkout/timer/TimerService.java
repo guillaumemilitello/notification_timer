@@ -199,7 +199,9 @@ public class TimerService extends Service {
     }
 
     public void updateNotificationVisibility(boolean visible) {
+        Log.d(TAG, "updateNotificationVisibility: visible=" + visible + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
         if (!isWaiting()) {
+            setMainActivityVisible(!visible);
             if (visible) {
                 updateNotificationForeground(true);
                 notificationUpdateTimerCurrent(timerCurrent);
@@ -217,7 +219,7 @@ public class TimerService extends Service {
 
     private void updateNotificationForeground(boolean enable) {
         if (!mainActivityVisible) {
-            if (enable && state == State.RUNNING) {
+            if (enable) {
                 Log.d(TAG, "updateNotificationForeground: startForeground");
                 startForeground(interactiveNotification.getId(), interactiveNotification.getNotification());
             } else {
@@ -256,7 +258,6 @@ public class TimerService extends Service {
         updateStateIntent(State.RUNNING);
 
         interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
-        updateNotificationForeground(true);
     }
 
     private void startContextPreferences() {
@@ -272,7 +273,6 @@ public class TimerService extends Service {
             updateStateIntent(State.PAUSED);
 
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED, InteractiveNotification.NotificationMode.UPDATE);
-            updateNotificationForeground(false);
 
             saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
         }
@@ -293,7 +293,6 @@ public class TimerService extends Service {
             updateStateIntent(State.RUNNING);
 
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
-            updateNotificationForeground(true);
         }
     }
 
@@ -308,7 +307,6 @@ public class TimerService extends Service {
         updateTimerIntent(timerCurrent, setsCurrent);
 
         interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
-        updateNotificationForeground(false);
 
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
@@ -323,7 +321,6 @@ public class TimerService extends Service {
 
         setsCurrent++;
         doneInteractiveNotification(InteractiveNotification.NotificationMode.LIGHT_SOUND_LONG_VIBRATE);
-        updateNotificationForeground(false);
 
         releaseWakeLock();
 
@@ -356,7 +353,6 @@ public class TimerService extends Service {
         notificationUpdateTimerCurrent(timerCurrent);
         interactiveNotification.updateSetsCurrent(setsCurrent, notificationMode);
         interactiveNotificationAlert = true;
-        updateNotificationForeground(false);
         Log.d(TAG, "doneInteractiveNotification: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser);
     }
 
@@ -767,8 +763,9 @@ public class TimerService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.v(TAG, "onDestroy");
         super.onDestroy();
+        Log.v(TAG, "onDestroy");
+
         stopForeground(true);
         interactiveNotification.dismiss();
         releaseWakeLock();
@@ -793,5 +790,11 @@ public class TimerService extends Service {
     public boolean onUnbind(Intent intent) {
         Log.v(TAG, "onUnbind");
         return true;
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent){
+        Log.v(TAG, "onTaskRemoved");
+        super.onTaskRemoved(rootIntent);
     }
 }

@@ -96,7 +96,8 @@ class InteractiveNotification extends Notification {
         NEXT_SET_START("next_set_start"),
         EXTRA_SET("extra_set"),
         TIMER_MINUS("timer_minus"),
-        TIMER_PLUS("timer_plus");
+        TIMER_PLUS("timer_plus"),
+        DISMISS("dismiss");
 
         private String action;
 
@@ -201,28 +202,28 @@ class InteractiveNotification extends Notification {
             switch (layout) {
                 case READY:
                     button2 = ButtonAction.NO_ACTION;
-                    button1 = ButtonAction.NO_ACTION;
-                    button0 = ButtonAction.START;
+                    button1 = ButtonAction.START;
+                    button0 = ButtonAction.DISMISS;
                     break;
                 case RUNNING:
-                    button2 = ButtonAction.NEXT_SET;
-                    button1 = ButtonAction.TIMER_MINUS;
-                    button0 = ButtonAction.PAUSE;
+                    button2 = ButtonAction.TIMER_MINUS;
+                    button1 = ButtonAction.PAUSE;
+                    button0 = ButtonAction.NEXT_SET;
                     break;
                 case PAUSED:
-                    button2 = ButtonAction.NO_ACTION;
-                    button1 = ButtonAction.NEXT_SET;
-                    button0 = ButtonAction.RESUME;
+                    button2 = ButtonAction.NEXT_SET;
+                    button1 = ButtonAction.RESUME;
+                    button0 = ButtonAction.DISMISS;
                     break;
                 case SET_DONE:
                     button2 = ButtonAction.NO_ACTION;
-                    button1 = ButtonAction.NO_ACTION;
-                    button0 = ButtonAction.START;
+                    button1 = ButtonAction.START;
+                    button0 = ButtonAction.DISMISS;
                     break;
                 case ALL_SETS_DONE:
-                    button2 = ButtonAction.NO_ACTION;
-                    button1 = ButtonAction.RESET;
-                    button0 = ButtonAction.EXTRA_SET;
+                    button2 = ButtonAction.RESET;
+                    button1 = ButtonAction.EXTRA_SET;
+                    button0 = ButtonAction.DISMISS;
                     break;
                 default:
                     Log.e(TAG, "updateButtonsLayout: layout=" + layout.toString());
@@ -285,6 +286,10 @@ class InteractiveNotification extends Notification {
             case RESET:
                 iconId = R.drawable.ic_refresh_black_48dp;
                 intent = new Intent().setAction(IntentAction.RESET);
+                break;
+            case DISMISS:
+                iconId = R.drawable.ic_close_black_48dp;
+                intent = new Intent().setAction(IntentAction.NOTIFICATION_DISMISS);
                 break;
             default:
                 Log.e(TAG, "updateButton: undefined action=" + action);

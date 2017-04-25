@@ -328,6 +328,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void updateUserInterface() {
         if (timerServiceBound) {
+            Log.d(TAG, "updateUserInterface: mainActivityVisible=" + mainActivityVisible);
             timerService.setMainActivityVisible(mainActivityVisible);
             timerService.updateNotificationVisibility(!mainActivityVisible);
         }
@@ -356,7 +357,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "timerServiceRebind");
         timerServiceBound = true;
         // Rebind occurs only when relaunching the mainActivity
-        timerService.setMainActivityVisible(true);
         timerService.updateNotificationVisibility(false);
         getTimerServiceContext();
         updateUserInterface();
@@ -963,7 +963,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         mainActivityVisible = false;
 
         if (timerServiceBound) {
-            timerService.setMainActivityVisible(false);
+            Log.d(TAG, "onPause goto updateNotificationVisibility");
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
             timerServiceBound = false;
@@ -986,7 +986,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         mainActivityVisible = true;
         updateUserInterface();
         if (timerServiceBound) {
-            timerService.setMainActivityVisible(true);
             timerService.updateNotificationVisibility(false);
         } else {
             Intent intent = new Intent(this, TimerService.class);
@@ -997,11 +996,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         Log.d(TAG, "onDestroy");
+        super.onDestroy();
 
         if (timerServiceBound) {
-            timerService.setMainActivityVisible(false);
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
             timerServiceBound = false;
