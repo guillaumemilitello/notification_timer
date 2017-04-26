@@ -87,9 +87,10 @@ public class TimerService extends Service {
         return state;
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setReadyState() {
+        this.state = State.READY;
         saveContextPreferences(CONTEXT_PREFERENCE_STATE);
+        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
     }
 
     // Settings

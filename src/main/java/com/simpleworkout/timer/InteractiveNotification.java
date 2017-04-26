@@ -431,29 +431,26 @@ class InteractiveNotification extends Notification {
             case PAUSED:
             case RUNNING:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.sets_infinity), setsCurrent);
+                    setsString = String.format(context.getString(R.string.sets_infinity_running), setsCurrent);
                 } else {
-                    setsString = String.format(context.getString(R.string.sets), setsCurrent, setsUser);
+                    setsString = String.format(context.getString(R.string.sets_running), setsCurrent, setsUser);
                 }
                 break;
             case READY:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.sets_infinity_ready), setsInit);
-                } else if (setsUser > 1){
-                    setsString = String.format(context.getString(R.string.sets_timers_ready), setsUser, setsInit);
-                } else {
+                    setsString = String.format(context.getString(R.string.sets_infinity_ready), setsCurrent);
+                } else if (setsUser == 1){
                     setsString = String.format(context.getString(R.string.sets_timer_ready), setsUser, setsInit);
+                } else {
+                    setsString = String.format(context.getString(R.string.sets_timers_ready), setsUser, setsInit);
                 }
                 break;
             case SET_DONE:
-                if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.sets_infinity), setsCurrent - 1);
-                } else {
-                    setsString = String.format(context.getString(R.string.sets), setsCurrent - 1, setsUser);
-                }
-                break;
             case ALL_SETS_DONE:
-                setsString = String.format(context.getString(R.string.total_sets), setsCurrent - 1, setsInit);
+                // TODO : merge with Preset class
+                String timerUserString = String.format(Locale.US, "%d:%02d", timerUser / 60, timerUser % 60);
+                String setsCurrentString = String.format(Locale.US, "x%d", setsCurrent - 1);
+                setsString = String.format(context.getString(R.string.sets_done), timerUserString, setsCurrentString, setsInit);
                 break;
         }
         Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
