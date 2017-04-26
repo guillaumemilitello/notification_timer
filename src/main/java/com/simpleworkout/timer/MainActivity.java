@@ -373,6 +373,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout(ButtonsLayout.WAITING_SETS);
         updateTimerDisplay();
         updatePresetDisplay();
+        updateInputTimerService();
         setsPickerBuilder.show();
     }
 
@@ -778,6 +779,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void updateButtonsLayout() {
         ButtonsLayout layout = ButtonsLayout.valueOf(timerState.toString().toUpperCase(Locale.US));
+        if (layout == ButtonsLayout.WAITING && timerUser > 0) {
+            layout = ButtonsLayout.WAITING_SETS;
+        }
         updateButtonsLayout(layout);
     }
 

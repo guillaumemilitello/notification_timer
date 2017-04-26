@@ -200,7 +200,7 @@ public class TimerService extends Service {
 
     public void updateNotificationVisibility(boolean visible) {
         Log.d(TAG, "updateNotificationVisibility: visible=" + visible + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
-        if (!isWaiting()) {
+        if (state != State.WAITING) {
             setMainActivityVisible(!visible);
             if (visible) {
                 updateNotificationForeground(true);
@@ -473,7 +473,7 @@ public class TimerService extends Service {
         Log.d(TAG, "setTimer");
         if (time >= 0) {
             timerUpdate(time);
-            if (!isRunning()) {
+            if (state != State.RUNNING && state != State.PAUSED) {
                 timerUser = time;
                 interactiveNotification.updateTimerUser(timerUser);
                 saveContextPreferences(CONTEXT_PREFERENCE_TIMER_USER);
@@ -551,8 +551,8 @@ public class TimerService extends Service {
 
     private void notificationDeleted() {
         interactiveNotificationAlert = false;
-        Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " isPaused=" + isPaused());
-        if (isPaused()) {
+        Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " state=" + state);
+        if (state == State.PAUSED) {
             interactiveNotification.dismiss();
         } else if (setsCurrent <= setsUser) {
             interactiveNotification.dismiss();
@@ -569,18 +569,6 @@ public class TimerService extends Service {
             }
             reset();
         }
-    }
-
-    private boolean isRunning() {
-        return (state == State.RUNNING || state == State.PAUSED);
-    }
-
-    private boolean isPaused() {
-        return state == State.PAUSED;
-    }
-
-    private boolean isWaiting() {
-        return state == State.WAITING;
     }
 
     public void stopCountDown(){
@@ -794,7 +782,10 @@ public class TimerService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent){
-        Log.v(TAG, "onTaskRemoved");
         super.onTaskRemoved(rootIntent);
+        Log.v(TAG, "onTaskRemoved: state=" + state);
+        if (state == State.WAITING) {
+            clear();
+        }
     }
 }
