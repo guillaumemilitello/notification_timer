@@ -206,9 +206,9 @@ class InteractiveNotification extends Notification {
                     button0 = ButtonAction.DISMISS;
                     break;
                 case RUNNING:
-                    button2 = ButtonAction.TIMER_MINUS;
+                    button2 = ButtonAction.NEXT_SET;
                     button1 = ButtonAction.PAUSE;
-                    button0 = ButtonAction.NEXT_SET;
+                    button0 = ButtonAction.TIMER_MINUS;
                     break;
                 case PAUSED:
                     button2 = ButtonAction.NEXT_SET;
