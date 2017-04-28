@@ -499,12 +499,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void updateServiceState() {
         if (timerServiceBound) {
-            timerService.setReadyState();
             timerService.setTimerCurrent(timerCurrent);
             timerService.setTimerUser(timerUser);
             timerService.setSetsInit(setsInit);
             timerService.setSetsCurrent(setsCurrent);
             timerService.setSetsUser(setsUser);
+            timerService.setReadyState();
         }
     }
 

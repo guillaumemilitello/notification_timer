@@ -187,9 +187,9 @@ class InteractiveNotification extends Notification {
     }
 
     protected void update(int setsCurrent, long timerCurrent, ButtonsLayout layout, NotificationMode notificationMode) {
-        updateButtonsLayout(layout);
         updateTimerCurrent(timerCurrent);
-        updateSetsCurrent(setsCurrent, notificationMode);
+        updateSetsCurrent(setsCurrent);
+        updateButtonsLayout(layout, notificationMode);
     }
 
     void updateButtonsLayout(ButtonsLayout layout) {
@@ -198,10 +198,10 @@ class InteractiveNotification extends Notification {
 
     void updateButtonsLayout(ButtonsLayout layout, NotificationMode notificationMode) {
         Log.d(TAG, "updateButtonsLayout: layout=" + layout.toString() + ", buttonsLayout=" + buttonsLayout.toString() + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
-        if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
+        if (buttonsLayout == ButtonsLayout.READY || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
-                    button2 = (setsCurrent == setsInit)? ButtonAction.NO_ACTION : ButtonAction.RESET;
+                    button2 = (setsCurrent > setsInit)? ButtonAction.RESET : ButtonAction.NO_ACTION;
                     button1 = ButtonAction.START;
                     button0 = ButtonAction.DISMISS;
                     break;
@@ -462,13 +462,13 @@ class InteractiveNotification extends Notification {
     private String getSetString(int sets) {
         String string = String.format(Locale.US, "%d", sets);
         if (sets >= 11 && sets <= 30) {
-            return  string += "th";
+            return string + "th";
         }
         switch (sets % 10) {
-            case 1:  return string += "st";
-            case 2:  return string += "nd";
-            case 3:  return string += "rd";
-            default: return string += "th";
+            case 1:  return string + "st";
+            case 2:  return string + "nd";
+            case 3:  return string + "rd";
+            default: return string + "th";
         }
     }
 

@@ -346,16 +346,16 @@ public class TimerService extends Service {
     }
 
     private void doneInteractiveNotification(InteractiveNotification.NotificationMode notificationMode) {
-        if (state == State.READY) {
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
-        } else if (setsCurrent <= setsUser) {
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.SET_DONE);
-        } else {
-            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.ALL_SETS_DONE);
-        }
         notificationUpdateTimerCurrent(timerCurrent);
-        interactiveNotification.updateSetsCurrent(setsCurrent, notificationMode);
+        interactiveNotification.updateSetsCurrent(setsCurrent);
         interactiveNotificationAlert = true;
+        if (state == State.READY) {
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY, notificationMode);
+        } else if (setsCurrent <= setsUser) {
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.SET_DONE, notificationMode);
+        } else {
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.ALL_SETS_DONE, notificationMode);
+        }
         Log.d(TAG, "doneInteractiveNotification: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", state=" + state);
     }
 
