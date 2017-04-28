@@ -29,13 +29,10 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="sets_running">Timer %1$d of %2$d</string>
-    <string name="sets_infinity_running">Timer %1$d</string>
-    <string name="sets_timer_ready">%1$d timer starting at %2$d</string>
-    <string name="sets_timers_ready">%1$d timers starting at %2$d</string>
-    <string name="sets_infinity_ready">Timers starting at %1$d</string>
-    <string name="sets_done">%1$s %2$s started at %3$d</string>
-    <string name="time_is_up">Timer done</string>
+    <string name="notif_timer_number">%1$s timer</string>
+    <string name="notif_timer_info">%1$s timer, %2$d to %3$d total</string>
+    <string name="notif_timer_info_infinity">%1$s timer, from %2$d</string>
+    <string name="notif_timer_done">Timer Done !</string>
     <!-- Settings -->
     <string name="timer">Timer</string>
     <string name="notification">Notification</string>

@@ -427,6 +427,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerReadyProgressBar.setProgressTintList(ColorStateList.valueOf(colorReady));
     }
 
+    @SuppressWarnings("deprecation")
     private void updateSetsDisplay() {
         int color = Color.GRAY;
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
@@ -539,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     protected void stop() {
-        timerState = TimerService.State.STOPPED;
+        timerState = TimerService.State.READY;
         Log.d(TAG, "stop: timerState=" + timerState + ", setsCurrent=" + setsCurrent);
         if (setsCurrent > 1) {
             updateButtonsLayout();
@@ -789,6 +790,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (layout == ButtonsLayout.WAITING && timerUser > 0) {
             layout = ButtonsLayout.WAITING_SETS;
         }
+        if (timerState != TimerService.State.WAITING && timerCurrent == 0 && setsCurrent ==0) {
+            Log.e(TAG, "updateButtonsLayout: wrong layout timerState=" + timerState + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+        }
+
         updateButtonsLayout(layout);
     }
 

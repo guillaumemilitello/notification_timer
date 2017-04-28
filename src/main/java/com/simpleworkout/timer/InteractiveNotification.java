@@ -201,7 +201,7 @@ class InteractiveNotification extends Notification {
         if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
-                    button2 = ButtonAction.NO_ACTION;
+                    button2 = (setsCurrent == setsInit)? ButtonAction.NO_ACTION : ButtonAction.RESET;
                     button1 = ButtonAction.START;
                     button0 = ButtonAction.DISMISS;
                     break;
@@ -420,7 +420,7 @@ class InteractiveNotification extends Notification {
                 break;
             case SET_DONE:
             case ALL_SETS_DONE:
-                timerString = context.getString(R.string.time_is_up);
+                timerString = context.getString(R.string.notif_timer_done);
                 break;
         }
     }
@@ -430,30 +430,46 @@ class InteractiveNotification extends Notification {
             case NO_LAYOUT:
             case PAUSED:
             case RUNNING:
-                if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.sets_infinity_running), setsCurrent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    if (setsUser == MainActivity.SETS_INFINITY) {
+                        setsString = String.format(context.getString(R.string.notif_timer_info_infinity), getSetString(setsCurrent), setsInit);
+                    } else {
+                        setsString = String.format(context.getString(R.string.notif_timer_info), getSetString(setsCurrent), setsInit, setsUser);
+                    }
                 } else {
-                    setsString = String.format(context.getString(R.string.sets_running), setsCurrent, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_number), getSetString(setsCurrent));
                 }
                 break;
             case READY:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.sets_infinity_ready), setsCurrent);
-                } else if (setsUser == 1){
-                    setsString = String.format(context.getString(R.string.sets_timer_ready), setsUser, setsInit);
+                    setsString = String.format(context.getString(R.string.notif_timer_info_infinity), getSetString(setsCurrent), setsInit);
                 } else {
-                    setsString = String.format(context.getString(R.string.sets_timers_ready), setsUser, setsInit);
+                    setsString = String.format(context.getString(R.string.notif_timer_info), getSetString(setsCurrent), setsInit, setsUser);
                 }
                 break;
-            case SET_DONE:
             case ALL_SETS_DONE:
-                // TODO : merge with Preset class
-                String timerUserString = String.format(Locale.US, "%d:%02d", timerUser / 60, timerUser % 60);
-                String setsCurrentString = String.format(Locale.US, "x%d", setsCurrent - 1);
-                setsString = String.format(context.getString(R.string.sets_done), timerUserString, setsCurrentString, setsInit);
+            case SET_DONE:
+                if (setsUser == MainActivity.SETS_INFINITY) {
+                    setsString = String.format(context.getString(R.string.notif_timer_info_infinity), getSetString(setsCurrent - 1), setsInit);
+                } else {
+                    setsString = String.format(context.getString(R.string.notif_timer_info), getSetString(setsCurrent - 1), setsInit, setsUser);
+                }
                 break;
         }
         Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
+    }
+
+    private String getSetString(int sets) {
+        String string = String.format(Locale.US, "%d", sets);
+        if (sets >= 11 && sets <= 30) {
+            return  string += "th";
+        }
+        switch (sets % 10) {
+            case 1:  return string += "st";
+            case 2:  return string += "nd";
+            case 3:  return string += "rd";
+            default: return string += "th";
+        }
     }
 
     void dismiss() {

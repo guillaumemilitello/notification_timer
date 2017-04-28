@@ -133,8 +133,7 @@ public class TimerService extends Service {
         WAITING("waiting"),
         READY("ready"),
         RUNNING("running"),
-        PAUSED("paused"),
-        STOPPED("stopped");
+        PAUSED("paused");
 
         private String state;
 
@@ -304,7 +303,7 @@ public class TimerService extends Service {
 
         stopCountDown();
 
-        updateStateIntent(State.STOPPED);
+        updateStateIntent(State.READY);
         updateTimerIntent(timerCurrent, setsCurrent);
 
         interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
@@ -313,7 +312,7 @@ public class TimerService extends Service {
     }
 
     private void done() {
-        Log.d(TAG, "done: setsCurrent=" + setsCurrent);
+        Log.d(TAG, "done: setsCurrent=" + setsCurrent + ", state=" + state);
 
         // The timer will be stopped from the alerts
         if (mainActivityVisible) {
@@ -335,10 +334,11 @@ public class TimerService extends Service {
 
         setsCurrent++;
         timerCurrent = timerUser;
-        doneInteractiveNotification(InteractiveNotification.NotificationMode.UPDATE);
 
-        updateStateIntent(State.STOPPED);
+        updateStateIntent(State.READY);
         updateTimerIntent(timerUser, setsCurrent);
+
+        doneInteractiveNotification(InteractiveNotification.NotificationMode.UPDATE);
 
         releaseWakeLock();
 
@@ -346,7 +346,9 @@ public class TimerService extends Service {
     }
 
     private void doneInteractiveNotification(InteractiveNotification.NotificationMode notificationMode) {
-        if (setsCurrent <= setsUser) {
+        if (state == State.READY) {
+            interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
+        } else if (setsCurrent <= setsUser) {
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.SET_DONE);
         } else {
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.ALL_SETS_DONE);
@@ -354,7 +356,7 @@ public class TimerService extends Service {
         notificationUpdateTimerCurrent(timerCurrent);
         interactiveNotification.updateSetsCurrent(setsCurrent, notificationMode);
         interactiveNotificationAlert = true;
-        Log.d(TAG, "doneInteractiveNotification: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser);
+        Log.d(TAG, "doneInteractiveNotification: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", state=" + state);
     }
 
     protected void nextSetStart() {
@@ -727,7 +729,6 @@ public class TimerService extends Service {
                 case PAUSED:
                     interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.PAUSED);
                     break;
-                case STOPPED:
                 case READY:
                     interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY);
                     break;
