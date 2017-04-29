@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber, boolean checked) {
         int sets = number.intValue();
-        setsInit = checked ? 0 : 1;
+        setsInit = (checked && sets != SETS_INFINITY)? 0 : 1;
         setsCurrent = setsInit;
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);

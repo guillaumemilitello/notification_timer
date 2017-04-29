@@ -433,44 +433,37 @@ class InteractiveNotification extends Notification {
             case RUNNING:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if (setsUser == MainActivity.SETS_INFINITY) {
-                        setsString = String.format(context.getString(R.string.notif_timer_info_infinity), getSetString(setsCurrent), setsInit);
+                        setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
+                    } else if (setsInit == 1) {
+                        setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
                     } else {
-                        setsString = String.format(context.getString(R.string.notif_timer_info), getSetString(setsCurrent), setsInit, setsUser);
+                        setsString = String.format(context.getString(R.string.notif_timer_info_start0), setsCurrent, setsUser);
                     }
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), getSetString(setsCurrent));
+                    setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
                 }
                 break;
             case READY:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.notif_timer_info_infinity), getSetString(setsCurrent), setsInit);
+                    setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
+                } else if (setsInit == 1) {
+                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), getSetString(setsCurrent), setsInit, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_info_start0), setsCurrent, setsUser);
                 }
                 break;
             case ALL_SETS_DONE:
             case SET_DONE:
                 if (setsUser == MainActivity.SETS_INFINITY) {
-                    setsString = String.format(context.getString(R.string.notif_timer_info_infinity), getSetString(setsCurrent - 1), setsInit);
+                    setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent - 1);
+                } else if (setsInit == 1) {
+                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent - 1, setsUser);
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), getSetString(setsCurrent - 1), setsInit, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_info_start0), setsCurrent - 1, setsUser);
                 }
                 break;
         }
         Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
-    }
-
-    private String getSetString(int sets) {
-        String string = String.format(Locale.US, "%d", sets);
-        if (sets >= 11 && sets <= 30) {
-            return string + "th";
-        }
-        switch (sets % 10) {
-            case 1:  return string + "st";
-            case 2:  return string + "nd";
-            case 3:  return string + "rd";
-            default: return string + "th";
-        }
     }
 
     void dismiss() {

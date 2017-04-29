@@ -11,7 +11,7 @@
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Sets</string>
-    <string name="picker_checkbox">Start the timer before the first set</string>
+    <string name="picker_checkbox">Start the timer at set 0</string>
     <string name="picker_cancel">CANCEL</string>
     <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
@@ -29,9 +29,9 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="notif_timer_number">%1$s timer</string>
-    <string name="notif_timer_info">%1$s timer, %2$d to %3$d total</string>
-    <string name="notif_timer_info_infinity">%1$s timer, from %2$d</string>
+    <string name="notif_timer_number">Timer %1$d</string>
+    <string name="notif_timer_info">Timer %1$d of %2$d total</string>
+    <string name="notif_timer_info_start0">Timer %1$d of %2$d! total</string>
     <string name="notif_timer_done">Timer Done !</string>
     <!-- Settings -->
     <string name="timer">Timer</string>

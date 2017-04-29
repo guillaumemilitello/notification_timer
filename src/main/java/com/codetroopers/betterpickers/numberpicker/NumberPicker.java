@@ -387,6 +387,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             mNumbers[i].setEnabled(enable);
         }
         mLeft.setEnabled(enable);
+        mCheckbox.setEnabled(enable);
     }
 
     // Update the number displayed in the picker:
