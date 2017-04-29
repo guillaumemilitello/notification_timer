@@ -346,8 +346,6 @@ class InteractiveNotification extends Notification {
 
             switch (notificationMode) {
                 case UPDATE:
-                    notificationBuilder.setVibrate(null);
-                    notificationBuilder.setSound(null);
                     notificationBuilder.setLights(COLOR_DEFAULT, 0, 0);
                     break;
                 case SOUND_SHORT_VIBRATE:
@@ -367,6 +365,9 @@ class InteractiveNotification extends Notification {
                     break;
             }
             notificationManager.notify(ID, notificationBuilder.build());
+
+            notificationBuilder.setSound(null);
+            notificationBuilder.setVibrate(null);
 
             if (notificationMode != NotificationMode.UPDATE) {
                 Log.d(TAG, "build: notificationMode=" + notificationMode);

@@ -337,9 +337,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerReadyProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setProgress(timerGetReadyEnable ? timerGetReady : 0);
         updateButtonsLayout();
-        updateTimerDisplay();
-        updateSetsDisplay();
-        updatePresetDisplay();
     }
 
     private boolean timerServiceIsRunning() {
@@ -371,8 +368,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setMax((int) timerUser);
         updateButtonsLayout(ButtonsLayout.WAITING_SETS);
-        updateTimerDisplay();
-        updatePresetDisplay();
         updateServiceTimers();
         setsPickerBuilder.show();
     }
@@ -459,9 +454,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.READY;
         updateServiceState();
         updateButtonsLayout();
-        updateTimerDisplay();
-        updateSetsDisplay();
-        updatePresetDisplay();
     }
 
     private void launchPickers() {
@@ -524,7 +516,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
         updateButtonsLayout();
-        updateSetsDisplay();
     }
 
     protected void pause() {
@@ -542,23 +533,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     protected void stop() {
         timerState = TimerService.State.READY;
         Log.d(TAG, "stop: timerState=" + timerState + ", setsCurrent=" + setsCurrent);
-        if (setsCurrent > 1) {
-            updateButtonsLayout();
-        } else {
-            updateButtonsLayout(ButtonsLayout.READY);
-        }
-        updateSetsDisplay();
+        updateButtonsLayout(ButtonsLayout.READY);
     }
 
     protected void nextSet() {
-        stop();
         // Going to nextSet on the last set is allowed from the notification
         if (++setsCurrent <= setsUser) {
             Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
         } else {
             Log.e(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
         }
-        updateSetsDisplay();
+        stop();
     }
 
     protected void nextSetStart() {
@@ -578,23 +563,19 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
 
         updateButtonsLayout();
-        updateTimerDisplay();
-        updateSetsDisplay();
-        updatePresetDisplay();
     }
 
     protected void reset() {
         timerState = TimerService.State.READY;
         Log.d(TAG, "reset: timerState=" + timerState);
 
-        updateButtonsLayout();
+        updateButtonsLayout(ButtonsLayout.READY);
     }
 
     protected void extraSet() {
         Log.d(TAG, "extraSet: setsCurrent=" + setsCurrent);
 
         updateButtonsLayout(ButtonsLayout.RUNNING);
-        updateSetsDisplay();
     }
 
     protected void timerMinus() {
@@ -644,8 +625,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "setsUpdate: sets=" + sets + ", setsCurrent=" + setsCurrent);
         if (setsCurrent != sets) {
             setsCurrent = sets;
-            updateSetsDisplay();
-            updateSetsButtons();
+            updateButtonsLayout();
         }
     }
 
@@ -792,43 +772,45 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
         if (timerState != TimerService.State.WAITING && timerCurrent == 0 && setsCurrent ==0) {
             Log.e(TAG, "updateButtonsLayout: wrong layout timerState=" + timerState + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+            layout = ButtonsLayout.WAITING;
         }
-
         updateButtonsLayout(layout);
     }
 
     private void updateButtonsLayout(ButtonsLayout layout) {
-        if (buttonsLayout != layout) {
-            ButtonAction nextStep;
-            switch (layout) {
-                case WAITING:
-                    updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
-                    break;
-                case WAITING_SETS:
-                    updateButtons(ButtonAction.CLEAR, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
-                    break;
-                case READY:
-                    updateButtons(ButtonAction.CLEAR, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
-                    break;
-                case RUNNING:
-                    nextStep = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
-                    updateButtons(ButtonAction.RESET, ButtonAction.PAUSE, nextStep);
-                    break;
-                case PAUSED:
-                    nextStep = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
-                    updateButtons(ButtonAction.RESET, ButtonAction.RESUME, nextStep);
-                    break;
-                case STOPPED:
-                    updateButtons(ButtonAction.RESET, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
-                    break;
-                default:
-                    Log.e(TAG, "updateButtonsLayout: impossible layout=" + layout.toString());
-            }
-            buttonsLayout = layout;
-            Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
+        ButtonAction buttonAction;
+        switch (layout) {
+            case WAITING:
+                updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
+                break;
+            case WAITING_SETS:
+                updateButtons(ButtonAction.CLEAR, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
+                break;
+            case READY:
+                buttonAction = (setsCurrent > setsInit)? ButtonAction.RESET : ButtonAction.CLEAR;
+                updateButtons(buttonAction, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
+                break;
+            case RUNNING:
+                buttonAction = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
+                updateButtons(ButtonAction.RESET, ButtonAction.PAUSE, buttonAction);
+                break;
+            case PAUSED:
+                buttonAction = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
+                updateButtons(ButtonAction.RESET, ButtonAction.RESUME, buttonAction);
+                break;
+            case STOPPED:
+                updateButtons(ButtonAction.RESET, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
+                break;
+            default:
+                Log.e(TAG, "updateButtonsLayout: impossible layout=" + layout.toString());
         }
+        buttonsLayout = layout;
+        Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
         updateSetsButtons();
         updateTimerButtons();
+        updateTimerDisplay();
+        updateSetsDisplay();
+        updatePresetDisplay();
         updateAddPresetButton();
     }
 
@@ -979,7 +961,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         mainActivityVisible = false;
 
         if (timerServiceBound) {
-            Log.d(TAG, "onPause goto updateNotificationVisibility");
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
             timerServiceBound = false;
