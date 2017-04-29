@@ -1117,7 +1117,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 timerService.interactiveNotification.setRingtoneReady(ringtoneUriReady);
             }
         } else {
-            Log.e(TAG, "updatePreference: not supported preference key");
+            Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
     }
 
