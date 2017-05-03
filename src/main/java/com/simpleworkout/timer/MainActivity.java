@@ -108,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return initPickerZero;
     }
 
+    public Preset getPresetUser() {
+        return new Preset(timerUser, setsUser, setsInit);
+    }
+
     public SharedPreferences sharedPreferences;
 
     // Button actions available for this activity
@@ -761,7 +765,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
             presetCardsList.disableAddPresetButton();
         } else {
-            presetCardsList.updateAddPresetCard(new Preset(timerUser, setsUser, setsInit));
+            presetCardsList.updateAddPresetCard();
         }
     }
 

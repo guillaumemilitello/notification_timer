@@ -64,9 +64,11 @@ public class PresetCardsList extends Fragment {
         }
     }
 
-    public void updateAddPresetCard(Preset preset) {
+    public void updateAddPresetCard() {
+        Preset preset = ((MainActivity)getActivity()).getPresetUser();
         int index = presetsList.indexOf(preset);
-        if (index == -1) {
+        Log.d(TAG, "updateAddPresetCard: preset=" + preset + ", index=" + index);
+        if (index == -1 && preset.isValid()) {
             enableAddPresetButton();
             linearLayoutManager.scrollToPosition(0);
         } else {
@@ -245,7 +247,7 @@ public class PresetCardsList extends Fragment {
                 int position = getAdapterPosition() - 1;
                 Log.d(TAG, "setOnClick: delete preset position=" + position);
                 removePreset(getAdapterPosition() - 1);
-                enableAddPresetButton();
+                updateAddPresetCard();
             }
         }
     }
