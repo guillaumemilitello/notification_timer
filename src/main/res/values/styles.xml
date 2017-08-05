@@ -142,4 +142,8 @@
         <item name="android:progressTintMode">src_in</item>
         <item name="android:progressTint">@color/colorPrimary</item>
     </style>
+
+    <style name="notificationImageButton" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlHighlight">#40000000</item>
+    </style>
 </resources>

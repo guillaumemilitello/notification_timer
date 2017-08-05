@@ -5,7 +5,8 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:paddingLeft="12dp"
-    android:paddingRight="12dp" >
+    android:paddingRight="12dp"
+    android:background="@android:color/transparent" >
 
     <!-- Icon aera -->
     <LinearLayout
@@ -63,7 +64,9 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_refresh_black_48dp"
             android:scaleType="fitCenter"
-            android:background="@null"
+            android:clickable="true"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button0_1b"
             android:layout_gravity="center_vertical" />
 

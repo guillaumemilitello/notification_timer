@@ -5,7 +5,8 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:paddingLeft="12dp"
-    android:paddingRight="12dp" >
+    android:paddingRight="12dp"
+    android:background="@android:color/transparent">
 
     <!-- Icon aera -->
     <LinearLayout
@@ -29,7 +30,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:layout_weight="1" >
+        android:layout_weight="1">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -76,14 +77,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="0" >
+        android:layout_weight="0">
 
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
             android:src="@drawable/ic_refresh_black_48dp"
             android:scaleType="fitCenter"
-            android:background="@null"
+            android:clickable="true"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button2_3b_p"
             android:layout_gravity="center_vertical" />
 
@@ -92,7 +95,9 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_refresh_black_48dp"
             android:scaleType="fitCenter"
-            android:background="@null"
+            android:clickable="true"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button1_3b_p"
             android:layout_gravity="center_vertical" />
 
@@ -101,7 +106,9 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_refresh_black_48dp"
             android:scaleType="fitCenter"
-            android:background="@null"
+            android:clickable="true"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button0_3b_p"
             android:layout_gravity="center_vertical" />
 
