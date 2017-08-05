@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import java.util.Locale;
@@ -71,18 +72,6 @@ class InteractiveNotification extends Notification {
     final static int COLOR_NONE = -1;
 
     private Context context;
-
-    private static int [][] remoteViewLayouts = new int[][]
-    {{ R.layout.notification_1b, R.layout.notification_2b, R.layout.notification_3b },
-     { R.layout.notification_1b_progress, R.layout.notification_2b_progress, R.layout.notification_3b_progress }};
-
-    private static int[][][] remoteViewResources = new int[][][]
-    {{{ R.id.textViewTimer_1b, R.id.textViewSets_1b, R.id.button0_1b, R.id.unused_button, R.id.unused_button},
-      { R.id.textViewTimer_2b, R.id.textViewSets_2b, R.id.button0_2b, R.id.button1_2b,    R.id.unused_button},
-      { R.id.textViewTimer_3b, R.id.textViewSets_3b, R.id.button0_3b, R.id.button1_3b,    R.id.button2_3b}},
-     {{ R.id.textViewTimer_1b_p, R.id.textViewSets_1b_p, R.id.button0_1b_p, R.id.unused_button, R.id.unused_button, R.id.progressBarTimer_1b_p},
-      { R.id.textViewTimer_2b_p, R.id.textViewSets_2b_p, R.id.button0_2b_p, R.id.button1_2b_p,  R.id.unused_button, R.id.progressBarTimer_2b_p},
-      { R.id.textViewTimer_3b_p, R.id.textViewSets_3b_p, R.id.button0_3b_p, R.id.button1_3b_p,  R.id.button2_3b_p,  R.id.progressBarTimer_3b_p}}};
 
     private enum ButtonAction {
 
@@ -161,12 +150,12 @@ class InteractiveNotification extends Notification {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             notificationBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
-            notificationBuilder.setCustomContentView(new RemoteViews(context.getPackageName(), R.layout.notification_1b));
+            notificationBuilder.setCustomContentView(new RemoteViews(context.getPackageName(), R.layout.notification));
             notificationBuilder.setColor(context.getColor(R.color.colorPrimary));
         }
         else {
             //noinspection deprecation
-            notificationBuilder.setContent(new RemoteViews(context.getPackageName(), R.layout.notification_1b));
+            notificationBuilder.setContent(new RemoteViews(context.getPackageName(), R.layout.notification));
         }
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -201,29 +190,29 @@ class InteractiveNotification extends Notification {
         if (buttonsLayout == ButtonsLayout.READY || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
-                    button2 = (setsCurrent > setsInit)? ButtonAction.RESET : ButtonAction.NO_ACTION;
-                    button1 = ButtonAction.START;
-                    button0 = ButtonAction.DISMISS;
+                    button2 = (setsCurrent > setsInit)? ButtonAction.DISMISS : ButtonAction.NO_ACTION;
+                    button1 = (setsCurrent > setsInit)? ButtonAction.RESET   : ButtonAction.DISMISS;
+                    button0 = ButtonAction.START;
                     break;
                 case RUNNING:
-                    button2 = ButtonAction.NEXT_SET;
-                    button1 = ButtonAction.PAUSE;
-                    button0 = ButtonAction.TIMER_MINUS;
+                    button2 = ButtonAction.TIMER_MINUS;
+                    button1 = ButtonAction.NEXT_SET;
+                    button0 = ButtonAction.PAUSE;
                     break;
                 case PAUSED:
-                    button2 = ButtonAction.NEXT_SET;
-                    button1 = ButtonAction.RESUME;
-                    button0 = ButtonAction.DISMISS;
+                    button2 = ButtonAction.DISMISS;
+                    button1 = ButtonAction.NEXT_SET;
+                    button0 = ButtonAction.RESUME;
                     break;
                 case SET_DONE:
-                    button2 = ButtonAction.NO_ACTION;
-                    button1 = ButtonAction.START;
-                    button0 = ButtonAction.DISMISS;
+                    button2 = ButtonAction.DISMISS;
+                    button1 = ButtonAction.RESET;
+                    button0 = ButtonAction.START;
                     break;
                 case ALL_SETS_DONE:
-                    button2 = ButtonAction.RESET;
-                    button1 = ButtonAction.EXTRA_SET;
-                    button0 = ButtonAction.DISMISS;
+                    button2 = ButtonAction.DISMISS;
+                    button1 = ButtonAction.RESET;
+                    button0 = ButtonAction.EXTRA_SET;
                     break;
                 default:
                     Log.e(TAG, "updateButtonsLayout: layout=" + layout.toString());
@@ -245,6 +234,17 @@ class InteractiveNotification extends Notification {
 
         int iconId;
         Intent intent;
+
+        if (action != ButtonAction.NO_ACTION)
+        {
+            remoteView.setBoolean(id, "setEnabled", true);
+            remoteView.setViewVisibility(id, View.VISIBLE);
+        }
+        else
+        {
+            remoteView.setBoolean(id, "setEnabled", false);
+            remoteView.setViewVisibility(id, View.INVISIBLE);
+        }
 
         switch (action) {
             case START:
@@ -291,6 +291,8 @@ class InteractiveNotification extends Notification {
                 iconId = R.drawable.ic_close_black_48dp;
                 intent = new Intent().setAction(IntentAction.NOTIFICATION_DISMISS);
                 break;
+            case NO_ACTION:
+                return;
             default:
                 Log.e(TAG, "updateButton: undefined action=" + action);
                 return;
@@ -307,21 +309,25 @@ class InteractiveNotification extends Notification {
     }
 
     private RemoteViews createRemoteView() {
-        int remoteViewId = (button2 != ButtonAction.NO_ACTION)? 2 : (button1 != ButtonAction.NO_ACTION)? 1 : 0;
-        int progressBarId = drawProgressBar()? 1 : 0;
+        RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
 
-        RemoteViews remoteView = new RemoteViews(context.getPackageName(), remoteViewLayouts[progressBarId][remoteViewId]);
+        remoteView.setTextViewText(R.id.textViewTimer, timerString);
+        updateButton(remoteView, R.id.button0, button0);
+        updateButton(remoteView, R.id.button1, button1);
+        updateButton(remoteView, R.id.button2, button2);
 
-        remoteView.setTextViewText(remoteViewResources[progressBarId][remoteViewId][0], timerString);
-        remoteView.setTextViewText(remoteViewResources[progressBarId][remoteViewId][1], setsString);
-        updateButton(remoteView, remoteViewResources[progressBarId][remoteViewId][2], button0);
-        updateButton(remoteView, remoteViewResources[progressBarId][remoteViewId][3], button1);
-        updateButton(remoteView, remoteViewResources[progressBarId][remoteViewId][4], button2);
-
-        if (progressBarId == 1) {
-            remoteView.setProgressBar(remoteViewResources[1][remoteViewId][5], (int) timerUser, (int) (timerUser - timerCurrent), false);
+        if (drawProgressBar()) {
+            remoteView.setTextViewText(R.id.textViewSets, "");
+            remoteView.setTextViewText(R.id.textViewSets_short, setsString);
+            remoteView.setViewVisibility(R.id.progressBarTimer, View.VISIBLE);
+            remoteView.setProgressBar(R.id.progressBarTimer, (int) timerUser, (int) (timerUser - timerCurrent), false);
         }
-
+        else
+        {
+            remoteView.setTextViewText(R.id.textViewSets, setsString);
+            remoteView.setTextViewText(R.id.textViewSets_short, "");
+            remoteView.setViewVisibility(R.id.progressBarTimer, View.INVISIBLE);
+        }
         return remoteView;
     }
 
