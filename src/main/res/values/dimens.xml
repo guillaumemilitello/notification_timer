@@ -85,6 +85,13 @@
     <dimen name="bp_material_button_textsize">14sp</dimen>
     <dimen name="bp_material_button_minwidth">64dp</dimen>
     <dimen name="bp_material_button_textpadding_horizontal">8dp</dimen>
+
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="notification_content_margin_bottom">16dp</dimen>
+    <dimen name="notification_content_margin_end">16dp</dimen>
+    <dimen name="notification_content_margin_start">16dp</dimen>
+    <dimen name="notification_content_margin_top">37.5dp</dimen>
+
+    <dimen name="notification_text_margin_top">0.5dp</dimen>
+
 </resources>

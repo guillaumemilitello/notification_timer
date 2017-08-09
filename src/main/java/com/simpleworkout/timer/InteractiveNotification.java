@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -41,6 +42,8 @@ class InteractiveNotification extends Notification {
 
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
+    private ButtonAction currentButton0, currentButton1, currentButton2;
+    private RemoteViews remoteView;
 
     void setVibrationEnable(boolean vibrationEnable) {
         this.vibrationEnable = vibrationEnable;
@@ -146,16 +149,12 @@ class InteractiveNotification extends Notification {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .setDeleteIntent(pendingIntentDeleted)
+                .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setPriority(PRIORITY_MAX);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            notificationBuilder.setStyle(new Notification.DecoratedCustomViewStyle());
-            notificationBuilder.setCustomContentView(new RemoteViews(context.getPackageName(), R.layout.notification));
+            notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
             notificationBuilder.setColor(context.getColor(R.color.colorPrimary));
-        }
-        else {
-            //noinspection deprecation
-            notificationBuilder.setContent(new RemoteViews(context.getPackageName(), R.layout.notification));
         }
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -227,7 +226,7 @@ class InteractiveNotification extends Notification {
         }
     }
 
-    private void updateButton(RemoteViews remoteView, int id, ButtonAction action) {
+    private void updateButton(int id, ButtonAction action) {
         if (id == R.id.unused_button) {
             return;
         }
@@ -308,13 +307,25 @@ class InteractiveNotification extends Notification {
         build(NotificationMode.UPDATE);
     }
 
-    private RemoteViews createRemoteView() {
-        RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
+    private void updateRemoteView() {
+        if (remoteView == null) {
+            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
+        }
 
         remoteView.setTextViewText(R.id.textViewTimer, timerString);
-        updateButton(remoteView, R.id.button0, button0);
-        updateButton(remoteView, R.id.button1, button1);
-        updateButton(remoteView, R.id.button2, button2);
+
+        if (button0 != currentButton0) {
+            currentButton0 = button0;
+            updateButton(R.id.button0, button0);
+        }
+        if (button1 != currentButton1) {
+            currentButton1 = button1;
+            updateButton(R.id.button1, button1);
+        }
+        if (button2 != currentButton2) {
+            currentButton2 = button2;
+            updateButton(R.id.button2, button2);
+        }
 
         if (drawProgressBar()) {
             remoteView.setTextViewText(R.id.textViewSets, "");
@@ -328,7 +339,6 @@ class InteractiveNotification extends Notification {
             remoteView.setTextViewText(R.id.textViewSets_short, "");
             remoteView.setViewVisibility(R.id.progressBarTimer, View.INVISIBLE);
         }
-        return remoteView;
     }
 
     private boolean drawProgressBar() {
@@ -341,10 +351,15 @@ class InteractiveNotification extends Notification {
     private void build(NotificationMode notificationMode) {
         if (restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
 
-            RemoteViews remoteView = createRemoteView();
+            updateRemoteView();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                notificationBuilder.setCustomContentView(remoteView);
+                if (notificationMode == NotificationMode.UPDATE) {
+                    notificationBuilder.setCustomContentView(remoteView);
+                }
+                else {
+                    notificationBuilder.setCustomHeadsUpContentView(remoteView);
+                }
             } else {
                 //noinspection deprecation
                 notificationBuilder.setContent(remoteView);
