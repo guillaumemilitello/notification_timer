@@ -25,30 +25,33 @@ class PresetsList {
         this.context = context;
     }
 
-    void addPreset(int index, Preset preset) {
+    int addPreset(int index, Preset preset) {
         Log.d(TAG, "addPreset: index=" + index + ", preset='" + preset.toString() + "'");
         list.add(index, preset);
         for (int p = getSize(); p > index; --p) {
             savePreset(p, loadPreset(p - 1));
         }
         savePreset(index, preset);
+        return getSize();
     }
 
-    void removePreset(int index) {
+    int removePreset(int index) {
         Log.d(TAG, "removePreset: index=" + index);
         list.remove(index);
         for (int p = index; p < getSize(); ++p) {
             savePreset(p, loadPreset(p + 1));
         }
         erasePreset(getSize());
+        return getSize();
     }
 
-    void swapPreset(int fromIndex, int toIndex) {
+    int swapPreset(int fromIndex, int toIndex) {
         Log.d(TAG, "movePreset: fromIndex=" + fromIndex + ", toIndex=" + toIndex);
         Collections.swap(list, fromIndex, toIndex);
         Preset preset = loadPreset(fromIndex);
         removePreset(fromIndex);
         addPreset(toIndex, preset);
+        return getSize();
     }
 
     int indexOf(Preset preset) {
@@ -89,7 +92,7 @@ class PresetsList {
         savePreset(index, new Preset());
     }
 
-    void initPresets() {
+    int initPresets() {
         Log.d(TAG, "initPresets");
         int index = 0;
         while (true) {
@@ -100,5 +103,6 @@ class PresetsList {
                 break;
             }
         }
+        return getSize();
     }
 }

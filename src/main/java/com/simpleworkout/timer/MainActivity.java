@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -287,12 +286,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerPresetCards);
-        if (fragment == null) {
-            presetCardsList = new PresetCardsList();
-            presetCardsList.createPresetsList(this, sharedPreferences);
-            fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, presetCardsList).commit();
-        }
+        presetCardsList = new PresetCardsList();
+        presetCardsList.createPresetsList(this, sharedPreferences);
+        fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, presetCardsList).commit();
 
         if (!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");

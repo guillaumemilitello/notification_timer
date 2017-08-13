@@ -21,6 +21,7 @@ public class PresetCardsList extends Fragment {
     private static final String TAG = "PresetCardsList";
 
     private PresetsList presetsList;
+    private int presetsListSize = 0;
 
     LinearLayoutManager linearLayoutManager;
     RecyclerView recyclerView;
@@ -31,7 +32,7 @@ public class PresetCardsList extends Fragment {
         Log.d(TAG, "addPreset: preset='" + preset.toString() + "'");
         int index = presetsList.indexOf(preset);
         if (index == -1) {
-            presetsList.addPreset(0, preset);
+            presetsListSize = presetsList.addPreset(0, preset);
             disableAddPresetButton();
             if (adapter != null) {
                 adapter.notifyDataSetChanged();
@@ -43,7 +44,7 @@ public class PresetCardsList extends Fragment {
     }
 
     private void removePreset(int position) {
-        presetsList.removePreset(position);
+        presetsListSize = presetsList.removePreset(position);
         if (adapter != null) {
             adapter.notifyItemRemoved(position + 1);
             adapter.notifyItemRangeChanged(position + 1, adapter.getItemCount());
@@ -78,10 +79,11 @@ public class PresetCardsList extends Fragment {
     }
 
     public void createPresetsList(Context context, SharedPreferences sharedPreferences){
+        Log.d(TAG, "createPresetsList");
         presetsList = new PresetsList();
         presetsList.setContext(context);
         presetsList.setSharedPreferences(sharedPreferences);
-        presetsList.initPresets();
+        presetsListSize = presetsList.initPresets();
     }
 
     @Override
@@ -201,14 +203,14 @@ public class PresetCardsList extends Fragment {
 
         @Override
         public int getItemCount() {
-            return presetsList.getSize() + 1;
+            return presetsListSize + 1;
         }
 
         void onItemMove(int fromPosition, int toPosition) {
             fromPosition -= 1;
             toPosition -= 1;
             Log.d(TAG, "onItemMove: fromPosition=" + fromPosition + ", toPosition=" + toPosition);
-            presetsList.swapPreset(fromPosition, toPosition);
+            presetsListSize = presetsList.swapPreset(fromPosition, toPosition);
         }
     }
 
