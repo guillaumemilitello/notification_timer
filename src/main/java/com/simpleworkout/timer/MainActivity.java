@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public static final int SETS_INFINITY = Integer.MAX_VALUE;
 
     // Main user interface
+    private static boolean presetsWasExtendedInMultiScreenMode = false;
+    private Menu toolbarMenu;
     private TextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
     private ProgressBar timerProgressBar, timerReadyProgressBar;
     private ButtonsLayout buttonsLayout;
@@ -288,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         FragmentManager fragmentManager = getSupportFragmentManager();
         presetCardsList = new PresetCardsList();
         presetCardsList.createPresetsList(this, sharedPreferences);
-        fragmentManager.beginTransaction().add(R.id.fragmentContainerPresetCards, presetCardsList).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragmentContainerPresetCards, presetCardsList).commit();
 
         if (!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");
@@ -337,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerReadyProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setProgress(timerGetReadyEnable ? timerGetReady : 0);
         updateButtonsLayout();
+        updatePresetsFrameLayout();
     }
 
     private boolean timerServiceIsRunning() {
@@ -666,6 +670,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_favorites, menu);
+        toolbarMenu = menu;
+        updatePresetsFrameLayout();
         return true;
     }
 
@@ -693,6 +699,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "onOptionsItemSelected: item.id=about");
             startActivityForResult(new Intent(this, AboutActivity.class), requestCode);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            return true;
+        } else if (id == R.id.presets_display) {
+            Log.d(TAG, "onOptionsItemSelected: item.id=presets_display");
+            changePresetsFrameLayout();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -762,6 +772,51 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             presetCardsList.disableAddPresetButton();
         } else {
             presetCardsList.updateAddPresetCard();
+        }
+    }
+
+    private void changePresetsFrameLayout() {
+        FrameLayout presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
+        if (presetsFrameLayout != null) {
+            if (presetsFrameLayout.getVisibility() == View.GONE) {
+                Log.d(TAG, "changePresetsFrameLayout: setVisibility=visible");
+                presetsFrameLayout.setVisibility(View.VISIBLE);
+                updatePresetsExpandButton(true);
+                presetsWasExtendedInMultiScreenMode = true;
+            } else {
+                Log.d(TAG, "changePresetsFrameLayout: setVisibility=invisible");
+                presetsFrameLayout.setVisibility(View.GONE);
+                updatePresetsExpandButton(false);
+                presetsWasExtendedInMultiScreenMode = false;
+            }
+        }
+    }
+
+    private void updatePresetsFrameLayout() {
+        boolean isInMultiWindowMode = isInMultiWindowMode();
+        Log.d(TAG, "updatePresetsFrameLayout: isInMultiWindowMode=" + isInMultiWindowMode + ", presetsWasExtendedInMultiScreenMode:" + presetsWasExtendedInMultiScreenMode);
+
+        // Reset the option when going back to full screen mode
+        if (!isInMultiWindowMode) {
+            presetsWasExtendedInMultiScreenMode = false;
+        }
+        boolean expand = !isInMultiWindowMode || presetsWasExtendedInMultiScreenMode;
+
+        FrameLayout presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
+        if (presetsFrameLayout != null) {
+            presetsFrameLayout.setVisibility(expand ? View.VISIBLE : View.GONE);
+        }
+        if (toolbarMenu != null) {
+            toolbarMenu.getItem(0).setVisible(isInMultiWindowMode);
+            updatePresetsExpandButton(expand);
+        }
+    }
+
+    private void updatePresetsExpandButton(boolean expand) {
+        if (expand) {
+            toolbarMenu.getItem(0).setIcon(getDrawable(R.drawable.ic_chevron_right_black_48dp));
+        } else {
+            toolbarMenu.getItem(0).setIcon(getDrawable(R.drawable.ic_chevron_left_black_48dp));
         }
     }
 
@@ -835,16 +890,28 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 button.setEnabled(false);
                 return true;
             case INPUT:
-                button.setEnabled(true);
                 button.setImageResource(R.drawable.ic_add_circle_black_48dp);
-                button.setAlpha(ALPHA_ENABLED);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        launchPickers();
-                    }
-                });
-                return true;
+                button.setEnabled(true);
+                if (isInMultiWindowMode()) {
+                    button.setAlpha(ALPHA_DISABLED);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.picker_split_screen), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return true;
+                }
+                else {
+                    button.setAlpha(ALPHA_ENABLED);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            launchPickers();
+                        }
+                    });
+                    return true;
+                }
             case START:
                 button.setEnabled(true);
                 button.setImageResource(R.drawable.ic_play_circle_filled_black_48dp);

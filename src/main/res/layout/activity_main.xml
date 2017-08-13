@@ -8,11 +8,11 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/actionBar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
         android:minHeight="?attr/actionBarSize"
-        android:elevation="4dp" />
+        android:elevation="4dp"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -25,6 +25,7 @@
             android:id="@+id/fragmentContainerPresetCards"
             android:layout_width="match_parent"
             android:layout_height="@dimen/preset_card_total_height"
+            android:visibility="visible"
             android:backgroundTintMode="screen"
             android:background="@color/preset_fragment_background"
             tools:context=".MainActivity">

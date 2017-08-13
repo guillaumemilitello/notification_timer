@@ -2,6 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- Preset folding display option -->
+    <item
+        android:id="@+id/presets_display"
+        android:icon="@drawable/ic_chevron_left_black_48dp"
+        android:title="Preset show/hide"
+        android:visible="true"
+        app:showAsAction="always"/>
+
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
         android:id="@+id/preferences"

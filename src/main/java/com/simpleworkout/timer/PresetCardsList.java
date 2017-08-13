@@ -23,8 +23,8 @@ public class PresetCardsList extends Fragment {
     private PresetsList presetsList;
     private int presetsListSize = 0;
 
-    LinearLayoutManager linearLayoutManager;
-    RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private RecyclerView recyclerView;
     private RecycleViewAdapter adapter;
     private boolean addPresetButton;
 
@@ -178,6 +178,7 @@ public class PresetCardsList extends Fragment {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
+            Log.d(TAG, "onCreateViewHolder: viewType=" + viewType);
             if (viewType == 1) {
                 return new PresetViewHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.preset_card_view, parent, false));
@@ -196,7 +197,7 @@ public class PresetCardsList extends Fragment {
                 Log.d(TAG, "onBindViewHolder: position=" + position);
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
-                addPresetViewHolder.imageButtonCard.setAlpha(addPresetButton? 1.f : MainActivity.ALPHA_DISABLED);
+                addPresetViewHolder.imageButtonCard.setAlpha(addPresetButton? MainActivity.ALPHA_ENABLED : MainActivity.ALPHA_DISABLED);
                 Log.d(TAG, "onBindViewHolder: position=" + position);
             }
         }
@@ -258,7 +259,7 @@ public class PresetCardsList extends Fragment {
 
         private ImageButton imageButtonCard;
 
-        AddPresetViewHolder(View view) {
+        AddPresetViewHolder(final View view) {
             super(view);
             imageButtonCard = (ImageButton) view.findViewById(R.id.imageButtonAddCard);
 

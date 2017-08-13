@@ -16,6 +16,7 @@
     <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
+    <string name="picker_split_screen">Exit split screen mode to add a preset</string>
     <!-- Alerts -->
     <string name="add_preset">Update the preset setting with the current timer ?</string>
     <string name="delete_preset">Delete the preset setting ?</string>
