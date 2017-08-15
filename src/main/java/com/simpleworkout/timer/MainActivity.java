@@ -1019,12 +1019,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause");
         mainActivityVisible = false;
 
         if (timerServiceBound) {
@@ -1041,6 +1035,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             sendBroadcast(new Intent(new Intent(IntentAction.CLEAR)));
             alertAllSetsDone.dismiss();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
     }
 
     @Override
