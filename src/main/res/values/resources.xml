@@ -40,4 +40,5 @@
     <color name="timer_text_color">@color/primary</color>
     <dimen name="sets_text_size">45sp</dimen>
     <color name="sets_text_color">@color/primary_light</color>
+    <dimen name="center_button_width">68dp</dimen>
 </resources>

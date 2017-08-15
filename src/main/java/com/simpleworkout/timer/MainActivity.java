@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public static final int SETS_INFINITY = Integer.MAX_VALUE;
 
     // Main user interface
-    private static boolean presetsWasExtendedInMultiScreenMode = false;
     private Menu toolbarMenu;
     private TextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
     private ProgressBar timerProgressBar, timerReadyProgressBar;
@@ -77,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus;
+
+    private boolean inMultiWindowMode;
+    private static boolean presetsWasExtendedInMultiScreenMode = false;
 
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
@@ -172,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: isInMultiWindowMode=" + inMultiWindowMode);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate");
 
         // Update system color bar and icon for the system
         setSupportActionBar((Toolbar) findViewById(R.id.actionBar));
@@ -297,6 +299,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "onCreate: starting service TimerService");
             startService(new Intent(getBaseContext(), TimerService.class));
         }
+
+        inMultiWindowMode = isInMultiWindowMode();
+        Log.d(TAG, "onCreate: inMultiWindowMode=" + inMultiWindowMode);
     }
 
     @Override
@@ -340,7 +345,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerReadyProgressBar.setMax((int) timerUser);
         timerReadyProgressBar.setProgress(timerGetReadyEnable ? timerGetReady : 0);
         updateButtonsLayout();
-        updatePresetsFrameLayout();
     }
 
     private boolean timerServiceIsRunning() {
@@ -793,21 +797,20 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updatePresetsFrameLayout() {
-        boolean isInMultiWindowMode = isInMultiWindowMode();
-        Log.d(TAG, "updatePresetsFrameLayout: isInMultiWindowMode=" + isInMultiWindowMode + ", presetsWasExtendedInMultiScreenMode:" + presetsWasExtendedInMultiScreenMode);
+        Log.d(TAG, "updatePresetsFrameLayout: inMultiWindowMode=" + inMultiWindowMode + ", presetsWasExtendedInMultiScreenMode:" + presetsWasExtendedInMultiScreenMode);
 
         // Reset the option when going back to full screen mode
-        if (!isInMultiWindowMode) {
+        if (!inMultiWindowMode) {
             presetsWasExtendedInMultiScreenMode = false;
         }
-        boolean expand = !isInMultiWindowMode || presetsWasExtendedInMultiScreenMode;
+        boolean expand = !inMultiWindowMode || presetsWasExtendedInMultiScreenMode;
 
         FrameLayout presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
         if (presetsFrameLayout != null) {
             presetsFrameLayout.setVisibility(expand ? View.VISIBLE : View.GONE);
         }
         if (toolbarMenu != null) {
-            toolbarMenu.getItem(0).setVisible(isInMultiWindowMode);
+            toolbarMenu.getItem(0).setVisible(inMultiWindowMode);
             updatePresetsExpandButton(expand);
         }
     }
@@ -892,7 +895,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             case INPUT:
                 button.setImageResource(R.drawable.ic_add_circle_black_48dp);
                 button.setEnabled(true);
-                if (isInMultiWindowMode()) {
+                if (inMultiWindowMode) {
                     button.setAlpha(ALPHA_DISABLED);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1096,6 +1099,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 break;
         }
         Log.d(TAG, "onTrimMemory: level=" + str);
+    }
+
+    @Override
+    public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode);
+        inMultiWindowMode = isInMultiWindowMode;
+        Log.d(TAG, "onMultiWindowModeChanged: inMultiWindowMode=" + inMultiWindowMode);
+        updatePresetsFrameLayout();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {

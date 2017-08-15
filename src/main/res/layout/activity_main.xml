@@ -25,7 +25,7 @@
             android:id="@+id/fragmentContainerPresetCards"
             android:layout_width="match_parent"
             android:layout_height="@dimen/preset_card_total_height"
-            android:visibility="visible"
+            android:visibility="gone"
             android:backgroundTintMode="screen"
             android:background="@color/preset_fragment_background"
             tools:context=".MainActivity">
@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:weightSum="5">
+            android:weightSum="4">
 
             <ProgressBar
                 android:id="@+id/timerProgressBar"
@@ -68,8 +68,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -81,6 +81,7 @@
                     android:textSize="@dimen/preset_card_timer_font_size"
                     android:textColor="@color/preset_card_timer_font_color"
                     android:text="15:00"
+                    android:maxLines="1"
                     android:paddingStart="@dimen/preset_card_timer_padding_left"
                     android:paddingEnd="@dimen/preset_card_timer_padding_right"
                     android:textStyle="bold"/>
@@ -94,17 +95,19 @@
                     android:textSize="@dimen/preset_card_timer_font_size"
                     android:textColor="@color/preset_card_sets_font_color"
                     android:text="x12!"
+                    android:maxLines="1"
                     android:paddingEnd="@dimen/preset_card_sets_padding_right"/>
 
             </LinearLayout>
 
             <com.simpleworkout.timer.AutoResizeTextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:textSize="@dimen/timer_text_size"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="15:00"
+                android:maxLines="1"
                 android:fontFamily="sans-serif-condensed"
                 android:textColor="@color/timer_text_color"
                 android:textStyle="bold"
@@ -112,11 +115,12 @@
                 android:gravity="center"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/timer_text_margin_bottom"
-                android:layout_marginTop="@dimen/timer_text_margin_top"/>
+                android:layout_marginTop="@dimen/timer_text_margin_top"
+                android:background="@android:color/transparent"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_gravity="bottom"
                 android:layout_weight="1"
                 android:orientation="horizontal"
@@ -125,6 +129,7 @@
                 <ImageButton
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:minHeight="48dp"
                     android:scaleType="centerInside"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
@@ -135,28 +140,19 @@
                     android:alpha="0.4"/>
 
                 <com.simpleworkout.timer.AutoResizeTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="@dimen/center_button_width"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="13"
+                    android:maxLines="1"
+                    android:textSize="@dimen/sets_text_size"
                     android:fontFamily="sans-serif-condensed"
                     android:textStyle="bold"
                     android:textColor="@color/sets_text_color"
                     android:id="@+id/textViewSets"
                     android:layout_weight="1"
                     android:gravity="center"/>
-
-<!--                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="13"
-                    android:fontFamily="sans-serif-condensed"
-                    android:textStyle="bold"
-                    android:textColor="@color/sets_text_color"
-                    android:id="@+id/textViewSets"
-                    android:layout_weight="1"
-                    android:gravity="center" />-->
 
                 <ImageButton
                     android:id="@+id/imageButtonTimerMinus"
@@ -195,7 +191,7 @@
 
             <ImageButton
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="68dp"
+                android:layout_width="@dimen/center_button_width"
                 android:layout_height="68dp"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="false"
