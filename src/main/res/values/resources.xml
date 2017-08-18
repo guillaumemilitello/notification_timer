@@ -32,7 +32,10 @@
     <dimen name="timer_progressbar_padding_soft_key">50dp</dimen>
     <color name="timer_progressbar">@color/primary</color>
     <color name="timer_progressbar_ready">@android:color/holo_red_light</color>
-    <color name="timer_progressbar_background">#eaeaea</color>
+    <color name="timer_progressbar_transparent">#807986cb</color>
+    <color name="timer_progressbar_ready_transparent">#80ff4444</color>
+    <color name="timer_progressbar_background">#c5cae9</color>
+    <color name="timer_progressbar_background_ready">#ef5350</color>
     <color name="timer_progressbar_waiting">@android:color/darker_gray</color>
     <dimen name="timer_text_size">90sp</dimen>
     <dimen name="timer_text_margin_bottom">0dp</dimen>

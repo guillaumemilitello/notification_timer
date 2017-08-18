@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -71,14 +70,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // Main user interface
     private Menu toolbarMenu;
     private TextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
-    private ProgressBar timerProgressBar, timerReadyProgressBar;
+    private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus;
 
     private boolean inMultiWindowMode;
-    private static boolean presetsWasExtendedInMultiScreenMode = false;
 
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
@@ -174,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: isInMultiWindowMode=" + inMultiWindowMode);
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
         // Update system color bar and icon for the system
@@ -190,14 +188,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                     getResources().getColor(R.color.colorPrimary)));
-        }
-
-        // check for soft keys, adjust padding timer progressbars
-        int padding;
-        if (!ViewConfiguration.get(this).hasPermanentMenuKey()) {
-            padding = (int) getResources().getDimension(R.dimen.timer_progressbar_padding_soft_key);
-        } else {
-            padding = (int) getResources().getDimension(R.dimen.timer_progressbar_padding);
         }
 
         timerTextView = (TextView) findViewById(R.id.textViewTimer);
@@ -229,9 +219,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsPickerBuilder.setCheckboxLabelText(getString(R.string.picker_checkbox));
 
         timerProgressBar = (ProgressBar) findViewById(R.id.timerProgressBar);
-        timerReadyProgressBar = (ProgressBar) findViewById(R.id.timerReadyProgressBar);
-        timerProgressBar.setPadding(padding, padding, padding, padding);
-        timerReadyProgressBar.setPadding(padding, padding, padding, padding);
 
         imageButtonLeft = (ImageButton) findViewById(R.id.imageButtonLeft);
         imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
@@ -300,8 +287,25 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             startService(new Intent(getBaseContext(), TimerService.class));
         }
 
-        inMultiWindowMode = isInMultiWindowMode();
-        Log.d(TAG, "onCreate: inMultiWindowMode=" + inMultiWindowMode);
+        // Adjust the timerProgressBar scale to fit the full main activity
+        if (timerProgressBar != null) {
+            timerProgressBar.post(new Runnable() {
+                @Override
+                public void run() {
+                    int width = timerProgressBar.getWidth();
+                    int height = timerProgressBar.getHeight();
+                    Log.d(TAG, "progressBarsLayout: width=" + width + ", height=" + height);
+                    float timerProgressBarScaleX = (float) height / width;
+                    Log.d(TAG, "progressBarsLayout: setScaleX=" + timerProgressBarScaleX + ", inMultiWindowMode=" + inMultiWindowMode);
+                    timerProgressBar.setScaleX(timerProgressBarScaleX);
+                }
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            inMultiWindowMode = isInMultiWindowMode();
+            Log.d(TAG, "onCreate: inMultiWindowMode=" + inMultiWindowMode);
+        }
     }
 
     @Override
@@ -341,9 +345,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerService.updateNotificationVisibility(!mainActivityVisible);
         }
         timerProgressBar.setMax((int) timerUser);
-        timerProgressBar.setProgress((int) timerCurrent);
-        timerReadyProgressBar.setMax((int) timerUser);
-        timerReadyProgressBar.setProgress(timerGetReadyEnable ? timerGetReady : 0);
+        timerProgressBar.setProgress((int) (timerUser - timerCurrent));
         updateButtonsLayout();
     }
 
@@ -374,7 +376,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerUser = timer;
         Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
         timerProgressBar.setMax((int) timerUser);
-        timerReadyProgressBar.setMax((int) timerUser);
         updateButtonsLayout(ButtonsLayout.WAITING_SETS);
         updateServiceTimers();
         setsPickerBuilder.show();
@@ -396,38 +397,44 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private void updateTimerDisplay() {
         // TODO : merge with Preset class
         timerTextView.setText(String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60));
-        timerProgressBar.setMax((int)timerUser);
-        timerReadyProgressBar.setMax((int)timerUser);
+        timerProgressBar.setMax((int) timerUser);
+        timerProgressBar.setProgress((int) (timerUser - timerCurrent));
 
-        timerProgressBar.setProgress((int)timerCurrent);
-
-        if (!timerGetReadyEnable) {
-            timerReadyProgressBar.setProgress(0);
-        } else if(timerCurrent > timerGetReady) {
-            timerReadyProgressBar.setProgress(timerGetReady);
-        } else {
-            timerReadyProgressBar.setProgress((int)timerCurrent);
+        int backgroundColor, progressColor, textColor;
+        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            backgroundColor = R.color.timer_progressbar_waiting;
+            progressColor = R.color.timer_progressbar_waiting;
+            textColor = R.color.bpLine_dark;
+        }
+        else if (buttonsLayout == ButtonsLayout.READY) {
+            backgroundColor = R.color.timer_progressbar_background;
+            progressColor = R.color.timer_progressbar_background;
+            textColor = R.color.bpLine_dark;
+        }
+        else if (timerCurrent > timerGetReady) {
+            backgroundColor = R.color.timer_progressbar;
+            progressColor = R.color.timer_progressbar_transparent;
+            textColor = R.color.primary;
+        }
+        else {
+            backgroundColor = R.color.timer_progressbar_ready;
+            progressColor = R.color.timer_progressbar_ready_transparent;
+            textColor = R.color.timer_progressbar_ready;
         }
 
-        int colorResource = R.color.timer_progressbar;
-        int colorResourceReady = R.color.timer_progressbar_ready;
-        if (buttonsLayout == ButtonsLayout.WAITING) {
-            colorResource = R.color.timer_progressbar_background;
-        } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            colorResource = R.color.timer_progressbar_waiting;
-            colorResourceReady = colorResource;
-        }
-        int color, colorReady;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            color = getColor(colorResource);
-            colorReady = getColor(colorResourceReady);
+            backgroundColor = getColor(backgroundColor);
+            progressColor = getColor(progressColor);
+            textColor = getColor(textColor);
         } else {
-            color = getResources().getColor(colorResource);
-            colorReady = getResources().getColor(colorResourceReady);
+            backgroundColor = getResources().getColor(backgroundColor);
+            progressColor = getResources().getColor(progressColor);
+            textColor = getResources().getColor(textColor);
         }
-        timerTextView.setTextColor(color);
-        timerProgressBar.setProgressTintList(ColorStateList.valueOf(color));
-        timerReadyProgressBar.setProgressTintList(ColorStateList.valueOf(colorReady));
+
+        timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+        timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
+        timerTextView.setTextColor(textColor);
     }
 
     @SuppressWarnings("deprecation")
@@ -462,6 +469,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.READY;
         updateServiceState();
         updateButtonsLayout();
+        if (inMultiWindowMode) {
+            changePresetsFrameLayout();
+        }
     }
 
     private void launchPickers() {
@@ -486,7 +496,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = preset.getSets();
 
         timerProgressBar.setMax((int) timerUser);
-        timerReadyProgressBar.setMax((int) timerUser);
         terminatePickers();
     }
 
@@ -786,32 +795,25 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=visible");
                 presetsFrameLayout.setVisibility(View.VISIBLE);
                 updatePresetsExpandButton(true);
-                presetsWasExtendedInMultiScreenMode = true;
             } else {
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=invisible");
                 presetsFrameLayout.setVisibility(View.GONE);
                 updatePresetsExpandButton(false);
-                presetsWasExtendedInMultiScreenMode = false;
             }
         }
     }
 
+    // TODO: rename
     private void updatePresetsFrameLayout() {
-        Log.d(TAG, "updatePresetsFrameLayout: inMultiWindowMode=" + inMultiWindowMode + ", presetsWasExtendedInMultiScreenMode:" + presetsWasExtendedInMultiScreenMode);
-
-        // Reset the option when going back to full screen mode
-        if (!inMultiWindowMode) {
-            presetsWasExtendedInMultiScreenMode = false;
-        }
-        boolean expand = !inMultiWindowMode || presetsWasExtendedInMultiScreenMode;
+        Log.d(TAG, "updatePresetsFrameLayout: inMultiWindowMode=" + inMultiWindowMode);
 
         FrameLayout presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
         if (presetsFrameLayout != null) {
-            presetsFrameLayout.setVisibility(expand ? View.VISIBLE : View.GONE);
+            presetsFrameLayout.setVisibility(inMultiWindowMode ? View.GONE : View.VISIBLE);
         }
         if (toolbarMenu != null) {
             toolbarMenu.getItem(0).setVisible(inMultiWindowMode);
-            updatePresetsExpandButton(expand);
+            updatePresetsExpandButton(!inMultiWindowMode);
         }
     }
 
@@ -1107,6 +1109,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         inMultiWindowMode = isInMultiWindowMode;
         Log.d(TAG, "onMultiWindowModeChanged: inMultiWindowMode=" + inMultiWindowMode);
         updatePresetsFrameLayout();
+        // force update center button action
+        updateButton(imageButtonCenter, buttonCenterAction);
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
