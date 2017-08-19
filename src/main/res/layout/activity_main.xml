@@ -84,7 +84,7 @@
                     android:layout_weight="1"
                     android:weightSum="3">
 
-                    <com.simpleworkout.timer.AutoResizeTextView
+                    <com.simpleworkout.timer.SingleLineFitTextView
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -95,22 +95,20 @@
                         android:text="13"
                         android:maxLines="1"
                         android:textSize="@dimen/sets_text_size"
-                        android:fontFamily="sans-serif-condensed"
                         android:textStyle="bold"
                         android:textColor="@color/sets_text_color"
                         android:id="@+id/textViewSets"
                         android:gravity="center"/>
 
-                    <com.simpleworkout.timer.AutoResizeTextView
+                    <com.simpleworkout.timer.SingleLineFitTextView
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:layout_gravity="center"
                         android:textSize="@dimen/timer_text_size"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="15:00"
+                        android:text="15:30"
                         android:maxLines="1"
-                        android:fontFamily="sans-serif-condensed"
                         android:textColor="@color/timer_text_color"
                         android:textStyle="bold"
                         android:id="@+id/textViewTimer"
@@ -124,9 +122,9 @@
                         android:layout_weight="1"
                         android:layout_marginBottom="10dp"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal" >
 
-                        <com.simpleworkout.timer.AutoResizeTextView
+                        <com.simpleworkout.timer.SingleLineFitTextView
                             android:id="@+id/textViewTimerUser"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -137,20 +135,18 @@
                             android:maxLines="1"
                             android:paddingStart="@dimen/preset_card_timer_padding_left"
                             android:paddingEnd="@dimen/preset_card_timer_padding_right"
-                            android:textStyle="bold"
-                            android:layout_weight="2" />
+                            android:textStyle="bold" />
 
-                        <com.simpleworkout.timer.AutoResizeTextView
+                        <com.simpleworkout.timer.SingleLineFitTextView
                             android:id="@+id/textViewSetsUser"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="start|center"
-                            android:fontFamily="sans-serif-condensed"
                             android:textSize="@dimen/preset_card_sets_font_size"
                             android:textColor="@color/preset_card_sets_font_color"
                             android:text="x12!"
                             android:maxLines="1"
-                            android:layout_weight="2"
+                            android:paddingStart="0dp"
                             android:paddingEnd="@dimen/preset_card_sets_padding_right"/>
 
                     </LinearLayout>

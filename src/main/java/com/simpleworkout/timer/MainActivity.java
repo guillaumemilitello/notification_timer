@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -33,7 +32,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // Main user interface
     private Menu toolbarMenu;
-    private TextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
+    private SingleLineFitTextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
     private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -193,16 +191,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                     getResources().getColor(R.color.colorPrimary)));
         }
 
-        timerTextView = (TextView) findViewById(R.id.textViewTimer);
-        setsTextView = (TextView) findViewById(R.id.textViewSets);
-        timerUserTextView = (TextView) findViewById(R.id.textViewTimerUser);
-        setsUserTextView = (TextView) findViewById(R.id.textViewSetsUser);
+        timerTextView = (SingleLineFitTextView) findViewById(R.id.textViewTimer);
+        setsTextView = (SingleLineFitTextView) findViewById(R.id.textViewSets);
+        timerUserTextView = (SingleLineFitTextView) findViewById(R.id.textViewTimerUser);
+        setsUserTextView = (SingleLineFitTextView) findViewById(R.id.textViewSetsUser);
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondBold.ttf");
-        timerTextView.setTypeface(typeface);
-        setsTextView.setTypeface(typeface);
-        timerUserTextView.setTypeface(typeface);
-        setsUserTextView.setTypeface(typeface);
+        String font = "Biryani-Regular.ttf";
+        float fontScale = 1.25f;
+        timerTextView.setFont(font, fontScale);
+        setsTextView.setFont(font, fontScale);
+        timerUserTextView.setFont(font, fontScale);
+        setsUserTextView.setFont(font, fontScale);
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
@@ -290,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             startService(new Intent(getBaseContext(), TimerService.class));
         }
 
+        // TODO: move away from onCreate
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             inMultiWindowMode = isInMultiWindowMode();
             Log.d(TAG, "onCreate: inMultiWindowMode=" + inMultiWindowMode);
