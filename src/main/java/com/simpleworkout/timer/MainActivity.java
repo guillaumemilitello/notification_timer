@@ -23,7 +23,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus;
 
     private boolean inMultiWindowMode;
+    private int timerProgressBarWidth, timerProgressBarHeight;
 
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
@@ -287,25 +290,51 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             startService(new Intent(getBaseContext(), TimerService.class));
         }
 
-        // Adjust the timerProgressBar scale to fit the full main activity
-        if (timerProgressBar != null) {
-            timerProgressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    int width = timerProgressBar.getWidth();
-                    int height = timerProgressBar.getHeight();
-                    Log.d(TAG, "progressBarsLayout: width=" + width + ", height=" + height);
-                    float timerProgressBarScaleX = (float) height / width;
-                    Log.d(TAG, "progressBarsLayout: setScaleX=" + timerProgressBarScaleX + ", inMultiWindowMode=" + inMultiWindowMode);
-                    timerProgressBar.setScaleX(timerProgressBarScaleX);
-                }
-            });
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             inMultiWindowMode = isInMultiWindowMode();
             Log.d(TAG, "onCreate: inMultiWindowMode=" + inMultiWindowMode);
         }
+    }
+
+    private void scaleProgressBar() {
+        scaleProgressBar(0);
+    }
+
+    private void scaleProgressBar(int presetsFrameLayoutHeight) {
+        int width = timerProgressBar.getWidth();
+        // Manually add presetsFrameLayoutHeight to avoid waiting for the presetFrameLayout to be gone
+        int height = timerProgressBar.getHeight() + presetsFrameLayoutHeight;
+
+        if ((width == timerProgressBarWidth && height == timerProgressBarHeight) || width == 0 || height == 0) {
+            Log.d(TAG, "scaleProgressBar: scale already properly defined");
+            return;
+        }
+        else if (isScreenInLandscape()) {
+            //noinspection SuspiciousNameCombination
+            timerProgressBarWidth = height;
+            //noinspection SuspiciousNameCombination
+            timerProgressBarHeight = width;
+        }
+        else {
+            timerProgressBarWidth = width;
+            timerProgressBarHeight = height;
+        }
+
+        float timerProgressBarScaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
+        Log.d(TAG, "scaleProgressBar: width=" + width + ", height=" + height + ", setScaleX=" + timerProgressBarScaleX + ", inMultiWindowMode=" + inMultiWindowMode);
+        timerProgressBar.setScaleX(timerProgressBarScaleX);
+    }
+
+    // Detect the screen orientation with DisplayMetrics for better support in multiWindowMode
+    private boolean isScreenInLandscape() {
+        WindowManager manager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = manager.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        Log.d(TAG, "isScreenInLandscape: width=" + width + ", height=" + height);
+        return width >= height;
     }
 
     @Override
@@ -347,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
         updateButtonsLayout();
+        scaleProgressBar();
     }
 
     private boolean timerServiceIsRunning() {
@@ -805,11 +835,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // TODO: rename
     private void updatePresetsFrameLayout() {
-        Log.d(TAG, "updatePresetsFrameLayout: inMultiWindowMode=" + inMultiWindowMode);
-
         FrameLayout presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
         if (presetsFrameLayout != null) {
+            Log.d(TAG, "updatePresetsFrameLayout: inMultiWindowMode=" + inMultiWindowMode);
             presetsFrameLayout.setVisibility(inMultiWindowMode ? View.GONE : View.VISIBLE);
+            if (inMultiWindowMode) {
+                presetsFrameLayout.setVisibility(View.GONE);
+                // Rescale the progress bar when the mainActivity is created when in multiWindowMode,
+                // prevent that the presetFrameLayout will be gone
+                scaleProgressBar(presetsFrameLayout.getHeight());
+            } else {
+                presetsFrameLayout.setVisibility(View.VISIBLE);
+            }
         }
         if (toolbarMenu != null) {
             toolbarMenu.getItem(0).setVisible(inMultiWindowMode);
