@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -32,6 +33,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // Main user interface
     private Menu toolbarMenu;
-    private SingleLineFitTextView timerTextView, setsTextView, timerUserTextView, setsUserTextView;
+    private TextView timerTextViewBold, timerTextView, setsTextView, timerUserTextView, setsUserTextView;
     private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -191,17 +193,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                     getResources().getColor(R.color.colorPrimary)));
         }
 
-        timerTextView = (SingleLineFitTextView) findViewById(R.id.textViewTimer);
-        setsTextView = (SingleLineFitTextView) findViewById(R.id.textViewSets);
-        timerUserTextView = (SingleLineFitTextView) findViewById(R.id.textViewTimerUser);
-        setsUserTextView = (SingleLineFitTextView) findViewById(R.id.textViewSetsUser);
+        timerTextViewBold = (TextView) findViewById(R.id.textViewTimerBold);
+        timerTextView = (TextView) findViewById(R.id.textViewTimer);
+        setsTextView = (TextView) findViewById(R.id.textViewSets);
+        timerUserTextView = (TextView) findViewById(R.id.textViewTimerUser);
+        setsUserTextView = (TextView) findViewById(R.id.textViewSetsUser);
 
-        String font = "Biryani-Regular.ttf";
-        float fontScale = 1.25f;
-        timerTextView.setFont(font, fontScale);
-        setsTextView.setFont(font, fontScale);
-        timerUserTextView.setFont(font, fontScale);
-        setsUserTextView.setFont(font, fontScale);
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondBold.ttf");
+        timerTextViewBold.setTypeface(typeface);
+        timerTextView.setTypeface(typeface);
+        setsTextView.setTypeface(typeface);
+        timerUserTextView.setTypeface(typeface);
+        setsUserTextView.setTypeface(typeface);
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
@@ -325,6 +328,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setScaleX(timerProgressBarScaleX);
     }
 
+    private void scaleTextSizes() {
+        float heightUnit = timerTextViewBold.getHeight() / getResources().getDisplayMetrics().density;
+        timerTextViewBold.setTextSize(heightUnit / 2.1f); // TODO: move to ressources
+        timerTextView.setTextSize(heightUnit / 8.f);
+        setsTextView.setTextSize(heightUnit / 8.f);
+        timerUserTextView.setTextSize(heightUnit / 12.f);
+        setsUserTextView.setTextSize(heightUnit / 16.f);
+    }
+
     // Detect the screen orientation with DisplayMetrics for better support in multiWindowMode
     private boolean isScreenInLandscape() {
         WindowManager manager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -377,6 +389,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
         updateButtonsLayout();
         scaleProgressBar();
+        scaleTextSizes();
     }
 
     private boolean timerServiceIsRunning() {
@@ -426,7 +439,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     private void updateTimerDisplay() {
         // TODO : merge with Preset class
-        timerTextView.setText(String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60));
+        if (timerCurrent >= 60) {
+            timerTextViewBold.setText(String.format(Locale.US, "%d ", timerCurrent / 60));
+            timerTextView.setVisibility(View.VISIBLE);
+            timerTextView.setText(String.format(Locale.US, "%02d", timerCurrent % 60));
+        } else {
+            timerTextViewBold.setText(String.format(Locale.US, "%d", timerCurrent % 60));
+            timerTextView.setVisibility(View.GONE);
+        }
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
 
@@ -465,6 +485,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
         timerTextView.setTextColor(textColor);
+        timerTextViewBold.setTextColor(textColor);
     }
 
     @SuppressWarnings("deprecation")
@@ -491,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else {
             Preset preset = new Preset(timerUser, setsUser, setsInit);
             timerUserTextView.setText(preset.getTimerString());
-            setsUserTextView.setText(preset.getSetsString());
+            setsUserTextView.setText(" " + preset.getSetsString());
         }
     }
 
@@ -844,6 +865,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 // Rescale the progress bar when the mainActivity is created when in multiWindowMode,
                 // prevent that the presetFrameLayout will be gone
                 scaleProgressBar(presetsFrameLayout.getHeight());
+                scaleTextSizes();
             } else {
                 presetsFrameLayout.setVisibility(View.VISIBLE);
             }

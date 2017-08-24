@@ -33,11 +33,11 @@
             tools:context=".MainActivity">
         </FrameLayout>
 
-        <!-- scaleX = 1.21 on nexus 6P -->
+        <!-- scaleX = 1.275 on nexus 6P -->
         <ProgressBar
             android:id="@+id/timerProgressBar"
             android:scaleY="200"
-            android:scaleX="1.21"
+            android:scaleX="1.275"
             android:rotation="90"
             android:visibility="visible"
             android:layout_width="match_parent"
@@ -57,116 +57,150 @@
             android:orientation="vertical"
             android:weightSum="1">
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <!-- Main layout -->
+            <RelativeLayout
+                android:orientation="vertical"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:weightSum="3">
+                android:layout_gravity="center">
 
-                <ImageButton
-                    android:layout_width="48dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:scaleType="centerInside"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:id="@+id/imageButtonTimerPlus"
-                    android:src="@drawable/ic_stopwatch_add_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:layout_weight="1"
-                    android:alpha="0.4"/>
-
+                <!-- User preset -->
                 <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="175dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:weightSum="3">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="center"
+                    android:elevation="2dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:background="#60ffbb33">
 
-                    <com.simpleworkout.timer.SingleLineFitTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:layout_gravity="center|center_horizontal"
-                        android:visibility="visible"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:layout_marginTop="10dp"
-                        android:text="13"
+                    <TextView
+                        android:id="@+id/textViewTimerUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end|center"
+                        android:textAlignment="center"
+                        android:textSize="@dimen/preset_card_timer_font_size"
+                        android:textColor="@color/preset_card_timer_font_color"
+                        android:text="23:00"
                         android:maxLines="1"
-                        android:textSize="@dimen/sets_text_size"
-                        android:textStyle="bold"
-                        android:textColor="@color/sets_text_color"
-                        android:id="@+id/textViewSets"
-                        android:gravity="center"/>
+                        android:textStyle="bold" />
 
-                    <com.simpleworkout.timer.SingleLineFitTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/timer_text_size"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="15:30"
-                        android:maxLines="1"
-                        android:textColor="@color/timer_text_color"
-                        android:textStyle="bold"
-                        android:id="@+id/textViewTimer"
-                        android:gravity="center"
-                        android:background="@android:color/transparent"/>
-
-                    <!-- User preset -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginBottom="10dp"
-                        android:gravity="center"
-                        android:orientation="horizontal" >
-
-                        <com.simpleworkout.timer.SingleLineFitTextView
-                            android:id="@+id/textViewTimerUser"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="end|center"
-                            android:textSize="@dimen/preset_card_timer_font_size"
-                            android:textColor="@color/preset_card_timer_font_color"
-                            android:text="23:00"
-                            android:maxLines="1"
-                            android:paddingStart="@dimen/preset_card_timer_padding_left"
-                            android:paddingEnd="@dimen/preset_card_timer_padding_right"
-                            android:textStyle="bold" />
-
-                        <com.simpleworkout.timer.SingleLineFitTextView
-                            android:id="@+id/textViewSetsUser"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="start|center"
-                            android:textSize="@dimen/preset_card_sets_font_size"
-                            android:textColor="@color/preset_card_sets_font_color"
-                            android:text="x12!"
-                            android:maxLines="1"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="@dimen/preset_card_sets_padding_right"/>
-
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/textViewSetsUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start|center"
+                        android:textAlignment="center"
+                        android:textSize="@dimen/preset_card_sets_font_size"
+                        android:textColor="@color/preset_card_sets_font_color"
+                        android:text=" x12!"
+                        android:maxLines="1"/>
 
                 </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/imageButtonTimerMinus"
-                    android:layout_width="48dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerInside"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/ic_stopwatch_remove_black_48dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:alpha="0.4"/>
+                <!-- Current timer -->
+                <LinearLayout
+                    android:id="@+id/textViewTimerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:weightSum="6">
 
-            </LinearLayout>
+                    <ImageButton
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="0dp"
+                        android:layout_weight="1"
+                        android:scaleType="centerInside"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:id="@+id/imageButtonTimerPlus"
+                        android:src="@drawable/ic_stopwatch_add_black_48dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:alpha="0.4"/>
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="4"
+                            android:layout_height="match_parent"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_centerInParent="true"
+                                android:fontFamily="sans-serif-condensed"
+                                android:textSize="200sp"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:textAlignment="center"
+                                android:text="44  "
+                                android:maxLines="1"
+                                android:textColor="@color/timer_text_color"
+                                android:textStyle="bold"
+                                android:id="@+id/textViewTimerBold"
+                                android:gravity="end|center_vertical"
+                                android:background="#6000ddff"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:elevation="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_alignEnd="@+id/textViewTimerBold"
+                                android:fontFamily="sans-serif-condensed"
+                                android:visibility="visible"
+                                android:textSize="70sp"
+                                android:textAppearance="?android:attr/textAppearanceLarge"
+                                android:text="30"
+                                android:maxLines="1"
+                                android:textColor="@color/timer_text_color"
+                                android:id="@+id/textViewTimer"
+                                android:gravity="start|center_vertical"
+                                android:background="#4033b5e5"/>
+
+                        </RelativeLayout>
+
+                    <ImageButton
+                        android:id="@+id/imageButtonTimerMinus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="8dp"
+                        android:layout_weight="1"
+                        android:scaleType="centerInside"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_stopwatch_remove_black_48dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:alpha="0.4"/>
+
+                </LinearLayout>
+
+                <!-- Current set -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:elevation="2dp"
+                    android:layout_gravity="center|center_horizontal"
+                    android:visibility="visible"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="13"
+                    android:maxLines="1"
+                    android:textSize="@dimen/sets_text_size"
+                    android:textStyle="bold"
+                    android:textColor="@color/sets_text_color"
+                    android:id="@+id/textViewSets"
+                    android:gravity="center"
+                    android:background="#6099cc00"/>
+
+            </RelativeLayout>
 
             <!-- Last buttons row -->
             <LinearLayout
