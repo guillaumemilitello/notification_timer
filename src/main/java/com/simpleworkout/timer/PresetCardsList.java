@@ -230,9 +230,10 @@ public class PresetCardsList extends Fragment {
             textViewCardSets = (TextView) view.findViewById(R.id.textViewCardSets);
             imageButtonCard = (ImageButton) view.findViewById(R.id.imageButtonCard);
 
-            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
+            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondBold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
             textViewCardTimer.setTypeface(typeface);
-            textViewCardSets.setTypeface(typeface);
+            textViewCardSets.setTypeface(typefaceLight);
 
             textViewCardTimer.setOnClickListener(this);
             textViewCardSets.setOnClickListener(this);

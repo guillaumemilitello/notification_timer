@@ -74,15 +74,16 @@
                     android:elevation="2dp"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:background="#60ffbb33">
+                    android:background="@android:color/transparent">
 
                     <TextView
                         android:id="@+id/textViewTimerUser"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="end|center"
-                        android:textAlignment="center"
+                        android:fontFamily="sans-serif-condensed"
                         android:textSize="@dimen/preset_card_timer_font_size"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="@dimen/preset_card_timer_padding_right"
                         android:textColor="@color/preset_card_timer_font_color"
                         android:text="23:00"
                         android:maxLines="1"
@@ -92,16 +93,15 @@
                         android:id="@+id/textViewSetsUser"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="start|center"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/preset_card_sets_font_size"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textSize="@dimen/preset_card_timer_font_size"
                         android:textColor="@color/preset_card_sets_font_color"
-                        android:text=" x12!"
+                        android:text="x12!"
                         android:maxLines="1"/>
 
                 </LinearLayout>
 
-                <!-- Current timer -->
+                <!-- Current timer and minus / plus buttons -->
                 <LinearLayout
                     android:id="@+id/textViewTimerLayout"
                     android:layout_width="match_parent"
@@ -124,45 +124,69 @@
                         android:background="?selectableItemBackgroundBorderless"
                         android:alpha="0.4"/>
 
+                        <!-- Current timer -->
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_weight="4"
+                            android:id="@+id/timerLayout"
                             android:layout_height="match_parent"
                             android:gravity="center">
 
                             <TextView
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:layout_centerInParent="true"
                                 android:fontFamily="sans-serif-condensed"
                                 android:textSize="200sp"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
                                 android:textAlignment="center"
-                                android:text="44  "
+                                android:text="44"
                                 android:maxLines="1"
                                 android:textColor="@color/timer_text_color"
                                 android:textStyle="bold"
                                 android:id="@+id/textViewTimerBold"
-                                android:gravity="end|center_vertical"
-                                android:background="#6000ddff"/>
+                                android:gravity="center"
+                                android:background="@android:color/transparent"/>
 
-                            <TextView
+                            <!-- Layout is gone below 60 seconds -->
+                            <RelativeLayout
                                 android:layout_width="wrap_content"
-                                android:elevation="1dp"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center_vertical"
-                                android:layout_alignEnd="@+id/textViewTimerBold"
-                                android:fontFamily="sans-serif-condensed"
-                                android:visibility="visible"
-                                android:textSize="70sp"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:text="30"
-                                android:maxLines="1"
-                                android:textColor="@color/timer_text_color"
-                                android:id="@+id/textViewTimer"
-                                android:gravity="start|center_vertical"
-                                android:background="#4033b5e5"/>
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@+id/textViewTimerBold"
+                                android:visibility="visible">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:textSize="200sp"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:text="'"
+                                    android:maxLines="1"
+                                    android:textColor="@color/timer_text_color"
+                                    android:textStyle="bold"
+                                    android:id="@+id/textViewTimerMinute"
+                                    android:gravity="center"
+                                    android:background="@android:color/transparent"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="bottom"
+                                    android:layout_alignBaseline="@+id/textViewTimerMinute"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:layout_centerInParent="true"
+                                    android:textSize="35sp"
+                                    android:text="30"
+                                    android:maxLines="1"
+                                    android:textColor="@color/timer_text_color"
+                                    android:id="@+id/textViewTimer"
+                                    android:gravity="center"
+                                    android:background="@android:color/transparent"/>
+
+
+                            </RelativeLayout>
 
                         </RelativeLayout>
 
@@ -198,7 +222,7 @@
                     android:textColor="@color/sets_text_color"
                     android:id="@+id/textViewSets"
                     android:gravity="center"
-                    android:background="#6099cc00"/>
+                    android:background="@android:color/transparent"/>
 
             </RelativeLayout>
 
