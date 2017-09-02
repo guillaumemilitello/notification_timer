@@ -71,11 +71,14 @@ public class PresetCardsList extends Fragment {
         Log.d(TAG, "updateAddPresetCard: preset=" + preset + ", index=" + index);
         if (index == -1 && preset.isValid()) {
             enableAddPresetButton();
-            linearLayoutManager.scrollToPosition(0);
         } else {
             disableAddPresetButton();
-            linearLayoutManager.scrollToPosition(index + 1);
         }
+        resetScrollPosition();
+    }
+
+    public void resetScrollPosition() {
+        linearLayoutManager.scrollToPosition(0);
     }
 
     public void createPresetsList(Context context, SharedPreferences sharedPreferences){
@@ -100,6 +103,7 @@ public class PresetCardsList extends Fragment {
 
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        linearLayoutManager.scrollToPosition(0);
 
         View view = inflater.inflate(R.layout.fragment_horizontal_preset_cards, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.cardView);
@@ -244,12 +248,13 @@ public class PresetCardsList extends Fragment {
         public void onClick(View view) {
 
             if (view.getId() == textViewCardTimer.getId() || view.getId() == textViewCardSets.getId()){
-                Log.d(TAG, "selectPreset: position=" + (getAdapterPosition() - 1));
+                Log.d(TAG, "onClick: position=" + (getAdapterPosition() - 1));
                 inputPreset(getAdapterPosition() - 1);
+                resetScrollPosition();
             }
             else if (view.getId() == imageButtonCard.getId()) {
                 int position = getAdapterPosition() - 1;
-                Log.d(TAG, "setOnClick: delete preset position=" + position);
+                Log.d(TAG, "onClick: delete preset position=" + position);
                 removePreset(getAdapterPosition() - 1);
                 updateAddPresetCard();
             }
