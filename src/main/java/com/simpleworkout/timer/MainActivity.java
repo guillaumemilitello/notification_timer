@@ -81,10 +81,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
-    private ImageButton imageButtonTimerMinus, imageButtonTimerPlus;
-    private ImageButton imageButtonAlwaysScreenOn;
-    private RelativeLayout informationLayout;
-    private LinearLayout timerLayout;
+    private ImageButton imageButtonTimerMinusMulti, imageButtonTimerPlusMulti;
+    private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonAlwaysScreenOn;
+    private LinearLayout informationLayout, fullButtonsLayout, timerButtonsMultiLayout, mainLayout, mainLayoutButton;
+    private RelativeLayout timerLayout;
     private FrameLayout presetsFrameLayout;
 
     private boolean inMultiWindowMode;
@@ -212,9 +212,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerUserTextView = (TextView) findViewById(R.id.textViewTimerUser);
         setsUserTextView = (TextView) findViewById(R.id.textViewSetsUser);
 
-        informationLayout = (RelativeLayout) findViewById(R.id.informationLayout);
-        timerLayout = (LinearLayout) findViewById(R.id.textViewTimerLayout);
+        informationLayout = (LinearLayout) findViewById(R.id.informationLayout);
         presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
+        fullButtonsLayout = (LinearLayout) findViewById(R.id.fullButtonsLayout);
+        timerLayout = (RelativeLayout) findViewById(R.id.timerLayout);
+        timerButtonsMultiLayout = (LinearLayout) findViewById(R.id.timerButtonsMulti);
+        mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
+        mainLayoutButton = (LinearLayout) findViewById(R.id.mainLayoutButtons);
 
         imageViewPreset = (ImageView) findViewById(R.id.imageViewPreset);
         imageViewCurrentSet = (ImageView) findViewById(R.id.imageViewCurrentSet);
@@ -253,6 +257,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         imageButtonTimerMinus = (ImageButton) findViewById(R.id.imageButtonTimerMinus);
         imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
+        imageButtonTimerMinusMulti = (ImageButton) findViewById(R.id.imageButtonTimerMinusMulti);
+        imageButtonTimerPlusMulti = (ImageButton) findViewById(R.id.imageButtonTimerPlusMulti);
         imageButtonTimerMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,6 +266,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         });
         imageButtonTimerPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendBroadcast(new Intent(IntentAction.TIMER_PLUS));
+            }
+        });
+        imageButtonTimerMinusMulti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendBroadcast(new Intent(IntentAction.TIMER_MINUS));
+            }
+        });
+        imageButtonTimerPlusMulti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendBroadcast(new Intent(IntentAction.TIMER_PLUS));
@@ -273,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 // TODO: call always screen on
             }
         });
+        imageButtonAlwaysScreenOn.setAlpha(ALPHA_DISABLED); // Disabled for now
 
         buttonLeftAction = ButtonAction.NO_ACTION;
         buttonCenterAction = ButtonAction.NO_ACTION;
@@ -379,57 +398,71 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         // Scale main activity components
         // Use predefined thresholds to detect the current multi-window ratio
         float density = getResources().getDisplayMetrics().density;
-        float timerLayoutHeight = timerLayout.getHeight() / density;
+        float timerLayoutHeight = timerProgressBar.getHeight() / density;
+        Log.d(TAG, "scaleLayout: timerLayoutHeight=" + timerLayoutHeight + ", density=" + density);
 
-        // Default value for the FULL layout mode
-        float timerTextViewBoldScale = 2.4f; // text views scales are ratio of the timerLayoutHeight
-        float timerTextViewScale = 11;
-        float setsTextViewScale = 6;
-        float userTextViewScale = 16;
-        float imageViewDimension = 48; // size in dp
+        // Sizes are based on the full layout height in density
+        float timerBoldTextSizeRatio, timerTextSizeRatio, layoutMarginRatio;
+        int layoutWeight;
         switch (layoutMode) {
             case ONE_THIRD:
-                imageButtonAlwaysScreenOn.setVisibility(View.GONE);
+                fullButtonsLayout.setVisibility(View.GONE);
+                timerButtonsMultiLayout.setVisibility(View.VISIBLE);
                 informationLayout.setVisibility(View.GONE);
-                timerTextViewBoldScale = 1.4f;
-                timerTextViewScale = 4;
                 // userTextViews and imageViews are not shown on this layout mode
+                timerBoldTextSizeRatio = 1.7f;
+                timerTextSizeRatio = 5.882f;
+                layoutMarginRatio = 10;
+                layoutWeight = 5;
                 break;
             case HALF:
-                imageButtonAlwaysScreenOn.setVisibility(View.GONE);
+                fullButtonsLayout.setVisibility(View.GONE);
+                timerButtonsMultiLayout.setVisibility(View.VISIBLE);
                 informationLayout.setVisibility(View.VISIBLE);
-                timerTextViewBoldScale = 1.5f;
-                timerTextViewScale = 6;
-                setsTextViewScale = 4;
-                userTextViewScale = 9;
-                imageViewDimension = 32;
+                timerBoldTextSizeRatio = 1.8f;
+                timerTextSizeRatio = 5.555f;
+                layoutMarginRatio = 7;
+                layoutWeight = 4;
                 break;
             case TWO_THIRD:
-                imageButtonAlwaysScreenOn.setVisibility(View.GONE);
+                fullButtonsLayout.setVisibility(View.GONE);
+                timerButtonsMultiLayout.setVisibility(View.VISIBLE);
                 informationLayout.setVisibility(View.VISIBLE);
-                timerTextViewBoldScale = 1.5f;
-                timerTextViewScale = 8;
-                setsTextViewScale = 5;
-                userTextViewScale = 12;
-                imageViewDimension = 40;
+                timerBoldTextSizeRatio = 1.8f;
+                timerTextSizeRatio = 5.555f;
+                layoutMarginRatio = 8;
+                layoutWeight = 4;
                 break;
             default:
             case FULL:
-                imageButtonAlwaysScreenOn.setVisibility(View.VISIBLE);
+                fullButtonsLayout.setVisibility(View.VISIBLE);
+                timerButtonsMultiLayout.setVisibility(View.GONE);
                 informationLayout.setVisibility(View.VISIBLE);
+                timerBoldTextSizeRatio = 2;
+                timerTextSizeRatio = 5;
+                layoutMarginRatio = 5;
+                layoutWeight = 3;
                 break;
         }
-        timerTextViewBold.setTextSize(timerLayoutHeight / timerTextViewBoldScale);
-        timerTextViewMinute.setTextSize(timerLayoutHeight / timerTextViewBoldScale);
-        timerTextView.setTextSize(timerLayoutHeight / timerTextViewScale);
-        setsTextView.setTextSize(timerLayoutHeight / setsTextViewScale);
-        timerUserTextView.setTextSize(timerLayoutHeight / userTextViewScale);
-        setsUserTextView.setTextSize(timerLayoutHeight / userTextViewScale);
+        Log.d(TAG, "scaleLayout: timerLayoutHeight=" + timerLayoutHeight + ", timerBoldTextSizeRatio=" + timerBoldTextSizeRatio + ", timerTextSizeRatio=" + timerTextSizeRatio);
+        timerTextViewBold.setTextSize(timerLayoutHeight / timerBoldTextSizeRatio);
+        timerTextViewMinute.setTextSize(timerLayoutHeight / timerBoldTextSizeRatio);
+        timerTextView.setTextSize(timerLayoutHeight / timerTextSizeRatio);
 
-        imageViewDimension *= density;
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) imageViewDimension, (int) imageViewDimension);
-        imageViewPreset.setLayoutParams(layoutParams);
-        imageViewCurrentSet.setLayoutParams(layoutParams);
+        Log.d(TAG, "scaleLayout: layoutMarginRatio=" + layoutMarginRatio);
+        int layoutMargin = (int)(-timerLayoutHeight / layoutMarginRatio * density);
+        int layoutMarginTop = (int)(-timerLayoutHeight * 1.1 / layoutMarginRatio * density);
+        int layoutMarginBottom = (int)(-timerLayoutHeight * 0.9 / layoutMarginRatio * density);
+
+        LinearLayout.LayoutParams timerButtonsMultiLayoutParams = (LinearLayout.LayoutParams) timerLayout.getLayoutParams();
+        timerButtonsMultiLayoutParams.setMargins(0, layoutMarginTop, 0, layoutMarginBottom);
+        timerButtonsMultiLayoutParams.weight = layoutWeight;
+
+        LinearLayout.LayoutParams mainLayoutParams = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
+        mainLayoutParams.setMargins(0, 0, 0, 2 * layoutMargin);
+
+        RelativeLayout.LayoutParams mainLayoutButtonsParams = (RelativeLayout.LayoutParams) mainLayoutButton.getLayoutParams();
+        mainLayoutButtonsParams.setMargins(0, 0, 0, 2 * layoutMargin);
     }
 
     // Detect the screen orientation with DisplayMetrics for better support in multiWindowMode
@@ -939,16 +972,24 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
             imageButtonTimerMinus.setEnabled(true);
             imageButtonTimerMinus.setAlpha(ALPHA_ENABLED);
+            imageButtonTimerMinusMulti.setEnabled(true);
+            imageButtonTimerMinusMulti.setAlpha(ALPHA_ENABLED);
         } else {
             imageButtonTimerMinus.setEnabled(false);
             imageButtonTimerMinus.setAlpha(ALPHA_DISABLED);
+            imageButtonTimerMinusMulti.setEnabled(false);
+            imageButtonTimerMinusMulti.setAlpha(ALPHA_DISABLED);
         }
         if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
             imageButtonTimerPlus.setEnabled(true);
             imageButtonTimerPlus.setAlpha(ALPHA_ENABLED);
+            imageButtonTimerPlusMulti.setEnabled(true);
+            imageButtonTimerPlusMulti.setAlpha(ALPHA_ENABLED);
         } else {
             imageButtonTimerPlus.setEnabled(false);
             imageButtonTimerPlus.setAlpha(ALPHA_DISABLED);
+            imageButtonTimerPlusMulti.setEnabled(false);
+            imageButtonTimerPlusMulti.setAlpha(ALPHA_DISABLED);
         }
     }
 
