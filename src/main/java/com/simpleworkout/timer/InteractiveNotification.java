@@ -380,8 +380,9 @@ class InteractiveNotification extends Notification {
                         notificationBuilder.setLights(lightColor, 1000, 1000);
                     }
                     break;
-                default:
                 case NO_NOTIFICATION:
+                    break;
+                default:
                     Log.e(TAG, "build: notificationMode=" + notificationMode + " not specified");
                     break;
             }

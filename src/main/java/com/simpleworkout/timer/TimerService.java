@@ -650,22 +650,30 @@ public class TimerService extends Service {
 
     private void updateCountDown(long time) {
         setupAlarmManager();
-        countDownPauseTimer.update(time);
+        if (countDownPauseTimer != null) {
+            countDownPauseTimer.update(time);
+        }
     }
 
     private void pauseCountDown() {
         cancelAlarmManager();
-        countDownPauseTimer.pause();
+        if (countDownPauseTimer != null) {
+            countDownPauseTimer.pause();
+        }
     }
 
     private void resumeCountDown() {
         setupAlarmManager();
-        countDownPauseTimer.resume();
+        if (countDownPauseTimer != null) {
+            countDownPauseTimer.resume();
+        }
     }
 
     private void cancelCountDown() {
         cancelAlarmManager();
-        countDownPauseTimer.cancel();
+        if (countDownPauseTimer != null) {
+            countDownPauseTimer.cancel();
+        }
     }
 
     private void saveContextPreferences(int flags) {
@@ -717,6 +725,11 @@ public class TimerService extends Service {
 
         if (state == State.RUNNING) {
             timerCurrent = TimeUnit.MILLISECONDS.toSeconds(timerEnd - System.currentTimeMillis());
+            // TimerService have been killed after the notification
+            if (timerCurrent == 0) {
+                reset();
+                return;
+            }
             startContextPreferences();
         } else if (state == State.PAUSED) {
             pauseContextPreference();
