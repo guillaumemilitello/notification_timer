@@ -194,8 +194,9 @@ public class TimerService extends Service {
 
     protected void updateNotificationVisibilityScreenLocked() {
         Log.d(TAG, "updateNotificationVisibilityScreenLocked: interactiveNotificationAlert=" + interactiveNotificationAlert);
-        if (interactiveNotificationRebuild && interactiveNotificationAlert)
+        if (interactiveNotificationRebuild && interactiveNotificationAlert) {
             updateNotificationVisibility(true);
+        }
     }
 
     public void updateNotificationVisibility(boolean visible) {
@@ -526,7 +527,8 @@ public class TimerService extends Service {
     }
 
     private void notificationUpdateTimerCurrent(long time) {
-        if (timerGetReadyEnable && time == timerGetReady) {
+        // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
+        if (time == timerGetReady && timerGetReady != timerUser && timerGetReadyEnable && state == State.RUNNING) {
             interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.SOUND_SHORT_VIBRATE);
         } else {
             interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.UPDATE);

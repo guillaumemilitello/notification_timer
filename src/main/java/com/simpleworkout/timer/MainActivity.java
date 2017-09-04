@@ -849,15 +849,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     protected void timerUpdate(long time) {
-        if (timerCurrent != time) {
-            if (time == timerGetReady && timerGetReadyEnable && mainActivityVisible) {
-                ring(ringtoneUriReady);
-                vibrate();
+        if (mainActivityVisible) {
+            if (timerCurrent != time) {
+                // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
+                if (time == timerGetReady && timerGetReady != timerUser && timerGetReadyEnable && timerState == TimerService.State.RUNNING) {
+                    ring(ringtoneUriReady);
+                    vibrate();
+                }
+                timerCurrent = time;
+                updateTimerDisplay();
+                updateTimerButtons();
+                updateColorLayout();
             }
-            timerCurrent = time;
-            updateTimerDisplay();
-            updateTimerButtons();
-            updateColorLayout();
         }
     }
 
@@ -1016,6 +1019,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
+    // TODO: add alwaysScreeOnMenuOption
     private void updatePresetsToolBarMenu(boolean visible) {
         if (toolbarMenu != null) {
             Log.d(TAG, "updatePresetsToolBarMenu: visible=" + visible);
