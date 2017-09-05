@@ -34,7 +34,7 @@ class Preset {
 
     String getSetsString() {
         String initString = (init == 0)? "!" : "";
-        String setsString = (sets == MainActivity.SETS_INFINITY)? "" : String.format(Locale.US, "x%d", sets);
+        String setsString = (sets == Integer.MAX_VALUE)? "" : String.format(Locale.US, "x%d", sets);
         return setsString + initString;
     }
 

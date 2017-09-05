@@ -131,13 +131,14 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar" >
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="actionOverflowButtonStyle">@style/dotsWhiteTheme</item>
     </style>
 
     <style name="notificationButton" parent="@android:style/Widget.Material.ProgressBar.Horizontal" >
@@ -149,5 +150,9 @@
 
     <style name="notificationImageButton" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorControlHighlight">#40000000</item>
+    </style>
+
+    <style name="dotsWhiteTheme" parent="@style/Widget.AppCompat.ActionButton.Overflow" >
+        <item name="android:tint">@color/bpWhite</item>
     </style>
 </resources>

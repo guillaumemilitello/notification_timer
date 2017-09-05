@@ -404,7 +404,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
                         mSign == SIGN_NEGATIVE);
             }
         } else if (split.length == 1) {
-            if (split[0].equals(String.valueOf(MainActivity.SETS_INFINITY))) {
+            if (split[0].equals(String.valueOf(Integer.MAX_VALUE))) {
                 split[0] = "∞";
             }
             mEnteredNumber.setNumber(split[0], "", containsDecimal(),

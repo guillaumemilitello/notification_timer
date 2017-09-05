@@ -454,7 +454,7 @@ class InteractiveNotification extends Notification {
             case PAUSED:
             case RUNNING:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    if (setsUser == MainActivity.SETS_INFINITY) {
+                    if (setsUser == Integer.MAX_VALUE) {
                         setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
                     } else if (setsInit == 1) {
                         setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
@@ -466,7 +466,7 @@ class InteractiveNotification extends Notification {
                 }
                 break;
             case READY:
-                if (setsUser == MainActivity.SETS_INFINITY) {
+                if (setsUser == Integer.MAX_VALUE) {
                     setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
                 } else if (setsInit == 1) {
                     setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
@@ -476,7 +476,7 @@ class InteractiveNotification extends Notification {
                 break;
             case ALL_SETS_DONE:
             case SET_DONE:
-                if (setsUser == MainActivity.SETS_INFINITY) {
+                if (setsUser == Integer.MAX_VALUE) {
                     setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent - 1);
                 } else if (setsInit == 1) {
                     setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent - 1, setsUser);

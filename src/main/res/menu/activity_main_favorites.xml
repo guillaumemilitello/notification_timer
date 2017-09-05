@@ -6,7 +6,7 @@
     <item
         android:id="@+id/presets_display"
         android:icon="@drawable/ic_chevron_left_black_48dp"
-        android:title="Preset show/hide"
+        android:title="@string/presets"
         android:visible="true"
         app:showAsAction="always"/>
 
@@ -14,8 +14,14 @@
     <item
         android:id="@+id/preferences"
         android:icon="@drawable/ic_settings_white_small_48dp"
-        android:title="Setting"
+        android:title="@string/settings"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/alwaysScreenOn"
+        android:icon="@drawable/ic_screen_lock_portrait_black_48dp"
+        android:title="@string/alwaysScreenOn"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/help"

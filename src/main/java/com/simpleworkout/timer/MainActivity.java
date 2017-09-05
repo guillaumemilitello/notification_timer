@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public static final float ALPHA_ENABLED = (float) 1.0;
     public static final float ALPHA_DISABLED = (float) 0.2;
 
-    // Sets number for infinity
-    public static final int SETS_INFINITY = Integer.MAX_VALUE;
-
     // Main user interface
     private Menu toolbarMenu;
     private TextView timerTextViewBold, timerTextViewMinute, timerTextView, setsTextView, timerUserTextView, setsUserTextView;
@@ -89,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private boolean inMultiWindowMode;
     private int timerProgressBarWidth, timerProgressBarHeight;
+
+    // Toolbar menu items index
+    private static final int TOOLBAR_MENU_PRESET_INDEX = 0;
+    private static final int TOOLBAR_MENU_ALWAYSSCREENON_INDEX = 2;
 
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
@@ -191,18 +192,25 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setContentView(R.layout.activity_main);
 
         // Update system color bar and icon for the system
-        setSupportActionBar((Toolbar) findViewById(R.id.actionBar));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.actionBar);
+        setSupportActionBar(toolbar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
             setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                     getColor(R.color.colorPrimary)));
+            if (toolbar != null) {
+                toolbar.setTitleTextColor(getColor(R.color.bpWhite));
+            }
         } else {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
             setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                     BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                     getResources().getColor(R.color.colorPrimary)));
+            if (toolbar != null) {
+                toolbar.setTitleTextColor(getResources().getColor(R.color.bpWhite));
+            }
         }
 
         timerTextViewBold = (TextView) findViewById(R.id.textViewTimerBold);
@@ -288,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         imageButtonAlwaysScreenOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: call always screen on
+                alwaysScreenOn();
             }
         });
         imageButtonAlwaysScreenOn.setAlpha(ALPHA_DISABLED); // Disabled for now
@@ -340,6 +348,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "onCreate: starting service TimerService");
             startService(new Intent(getBaseContext(), TimerService.class));
         }
+    }
+
+    private void alwaysScreenOn() {
+        // TODO: implement always screen on feature
+        // Update the icon and the toolbar menu text
     }
 
     private LayoutMode getLayoutMode(float scaleX) {
@@ -562,7 +575,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber, boolean checked) {
         int sets = number.intValue();
-        setsInit = (checked && sets != SETS_INFINITY)? 0 : 1;
+        setsInit = (checked && sets != Integer.MAX_VALUE)? 0 : 1;
         setsCurrent = setsInit;
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
@@ -904,7 +917,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         getMenuInflater().inflate(R.menu.activity_main_favorites, menu);
         toolbarMenu = menu;
         if (presetsFrameLayout != null) {
-            updatePresetsToolBarMenu(presetsFrameLayout.getVisibility() == View.GONE);
+            // fullButtonsLayout is only visible in FULL layout mode
+            updateToolBarMenuItems(fullButtonsLayout.getVisibility() == View.GONE);
         }
         return true;
     }
@@ -937,6 +951,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (id == R.id.presets_display) {
             Log.d(TAG, "onOptionsItemSelected: item.id=presets_display");
             changePresetsFrameLayout();
+            return true;
+        } else if (id == R.id.alwaysScreenOn) {
+            Log.d(TAG, "onOptionsItemSelected: item.id=alwaysScreenOn");
+            alwaysScreenOn();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -1032,12 +1050,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    // TODO: add alwaysScreeOnMenuOption
-    private void updatePresetsToolBarMenu(boolean visible) {
+    private void updateToolBarMenuItems(boolean visible) {
         if (toolbarMenu != null) {
-            Log.d(TAG, "updatePresetsToolBarMenu: visible=" + visible);
-            toolbarMenu.getItem(0).setVisible(visible);
+            Log.d(TAG, "updateToolBarMenuItems: visible=" + visible);
+            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setVisible(visible);
             updatePresetsExpandButton(!visible);
+            toolbarMenu.getItem(TOOLBAR_MENU_ALWAYSSCREENON_INDEX).setVisible(visible);
         }
     }
 
@@ -1045,15 +1063,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (presetsFrameLayout != null) {
             Log.d(TAG, "updatePresetsLayout: visible=" + visible);
             presetsFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
-            updatePresetsToolBarMenu(!visible);
+            updateToolBarMenuItems(!visible);
         }
     }
 
     private void updatePresetsExpandButton(boolean expand) {
         if (expand) {
-            toolbarMenu.getItem(0).setIcon(getDrawable(R.drawable.ic_chevron_right_black_48dp));
+            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setIcon(getDrawable(R.drawable.ic_chevron_right_black_48dp));
         } else {
-            toolbarMenu.getItem(0).setIcon(getDrawable(R.drawable.ic_chevron_left_black_48dp));
+            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setIcon(getDrawable(R.drawable.ic_chevron_left_black_48dp));
         }
     }
 
