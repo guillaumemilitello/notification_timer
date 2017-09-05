@@ -592,31 +592,39 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     private void updateColorLayout() {
         // TODO : update resources and use own colors
-        int backgroundColor, progressColor, timerTextColor, setsTextColor;
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            backgroundColor = R.color.timer_progressbar_waiting;
-            progressColor = R.color.timer_progressbar_waiting;
-            timerTextColor = R.color.bpLine_dark;
-        } else if (buttonsLayout == ButtonsLayout.READY) {
+        int userTextColor = R.color.timer_progressbar_waiting;
+        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+            userTextColor = R.color.bpLine_dark;
+        }
+
+        int setsTextColor = R.color.timer_progressbar_waiting;
+        if (buttonsLayout == ButtonsLayout.READY) {
+            setsTextColor = R.color.bpLine_dark;
+        } else if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+            if (setsCurrent == setsUser) {
+                setsTextColor = R.color.timer_progressbar_ready;
+            } else {
+                setsTextColor = R.color.primary;
+            }
+        }
+
+        int backgroundColor = R.color.timer_progressbar_waiting;
+        int progressColor= R.color.timer_progressbar_waiting;
+        int timerTextColor = R.color.timer_progressbar_waiting;;
+        if (buttonsLayout == ButtonsLayout.READY) {
             backgroundColor = R.color.timer_progressbar_background;
             progressColor = R.color.timer_progressbar_background;
             timerTextColor = R.color.bpLine_dark;
-        } else if (timerCurrent > timerGetReady) {
-            backgroundColor = R.color.timer_progressbar;
-            progressColor = R.color.timer_progressbar_transparent;
-            timerTextColor = R.color.primary;
-        } else {
-            backgroundColor = R.color.timer_progressbar_ready;
-            progressColor = R.color.timer_progressbar_ready_transparent;
-            timerTextColor = R.color.timer_progressbar_ready;
-        }
-
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS || buttonsLayout == ButtonsLayout.READY) {
-            setsTextColor = R.color.bpLine_dark;
-        } else if (setsCurrent == setsUser) {
-            setsTextColor = R.color.timer_progressbar_ready;
-        } else {
-            setsTextColor = R.color.primary;
+        } else if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+            if (timerCurrent > timerGetReady) {
+                backgroundColor = R.color.timer_progressbar;
+                progressColor = R.color.timer_progressbar_transparent;
+                timerTextColor = R.color.primary;
+            } else {
+                backgroundColor = R.color.timer_progressbar_ready;
+                progressColor = R.color.timer_progressbar_ready_transparent;
+                timerTextColor = R.color.timer_progressbar_ready;
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -624,11 +632,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             progressColor = getColor(progressColor);
             timerTextColor = getColor(timerTextColor);
             setsTextColor = getColor(setsTextColor);
+            userTextColor = getColor(userTextColor);
         } else {
             backgroundColor = getResources().getColor(backgroundColor);
             progressColor = getResources().getColor(progressColor);
             timerTextColor = getResources().getColor(timerTextColor);
             setsTextColor = getResources().getColor(setsTextColor);
+            userTextColor = getResources().getColor(userTextColor);
         }
 
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
@@ -638,29 +648,32 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerTextViewMinute.setTextColor(timerTextColor);
         setsTextView.setTextColor(setsTextColor);
         imageViewCurrentSet.setColorFilter(setsTextColor, PorterDuff.Mode.SRC_ATOP);
+        timerUserTextView.setTextColor(userTextColor);
+        setsUserTextView.setTextColor(userTextColor);
+        imageViewPreset.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
     }
 
     private void updateSetsDisplay() {
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            setsTextView.setText("");
-            imageViewCurrentSet.setVisibility(View.GONE);
-        } else {
+        //if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+        //    setsTextView.setText("");
+        //    imageViewCurrentSet.setVisibility(View.GONE);
+        //} else {
             setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
-            imageViewCurrentSet.setVisibility(View.VISIBLE);
-        }
+            //imageViewCurrentSet.setVisibility(View.VISIBLE);
+        //}
     }
 
     private void updatePresetDisplay() {
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            timerUserTextView.setText("");
-            setsUserTextView.setText("");
-            imageViewPreset.setVisibility(View.GONE);
-        } else {
+//        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+//            timerUserTextView.setText("");
+//            setsUserTextView.setText("");
+//            imageViewPreset.setVisibility(View.GONE);
+//        } else {
             Preset preset = new Preset(timerUser, setsUser, setsInit);
             timerUserTextView.setText(preset.getTimerString());
             setsUserTextView.setText(preset.getSetsString());
-            imageViewPreset.setVisibility(View.VISIBLE);
-        }
+            //imageViewPreset.setVisibility(View.VISIBLE);
+        //}
     }
 
     private void terminatePickers() {

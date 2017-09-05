@@ -78,8 +78,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:weightSum="3"
-                    android:background="#80FF00FF"
+                    android:weightSum="2"
                     tools:ignore="NestedWeights">
 
                     <!-- User preset -->
@@ -88,24 +87,21 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="0dp"
                         tools:ignore="NestedWeights">
 
                         <ImageView
-                            android:layout_width="wrap_content"
+                            android:layout_width="28dp"
                             android:layout_height="wrap_content"
                             android:scaleType="centerInside"
                             android:adjustViewBounds="true"
                             android:id="@+id/imageViewPreset"
-                            android:src="@drawable/ic_save_black_48dp"
-                            android:alpha="0.4"
-                            android:background="#FFFFFF00"/>
+                            android:src="@drawable/ic_label_outline_black_48dp"
+                            android:tint="@color/preset_card_timer_font_color"/>
 
                         <TextView
                             android:id="@+id/textViewTimerUser"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-condensed"
                             android:textSize="@dimen/preset_card_timer_font_size"
                             android:gravity="center"
@@ -119,7 +115,7 @@
                         <TextView
                             android:id="@+id/textViewSetsUser"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="center"
                             android:fontFamily="sans-serif-condensed"
                             android:textSize="@dimen/preset_card_timer_font_size"
@@ -129,19 +125,21 @@
 
                     </LinearLayout>
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
                     <!-- Current set -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="8dp">
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:scaleType="centerInside"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/ic_track_changes_black_48dp"
+                            android:id="@+id/imageViewCurrentSet"
+                            android:tint="@color/sets_text_color"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -149,20 +147,10 @@
                             android:text="13"
                             android:gravity="center"
                             android:maxLines="1"
-                            android:textSize="20sp"
+                            android:textSize="50sp"
                             android:textStyle="bold"
                             android:textColor="@color/sets_text_color"
-                            android:id="@+id/textViewSets"
-                            android:background="#FFFFFFFF"/>
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:scaleType="centerInside"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/ic_chevron_right_double_black_48dp"
-                            android:id="@+id/imageViewCurrentSet"
-                            android:background="#FFFFFF00" />
+                            android:id="@+id/textViewSets"/>
 
                     </LinearLayout>
 
@@ -176,9 +164,8 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="-50dp"
                     android:layout_marginBottom="-50dp"
-                    android:layout_weight="4"
-                    android:layout_gravity="center"
-                    android:background="#400000FF">
+                    android:layout_weight="3"
+                    android:layout_gravity="center">
 
                     <!-- Current timer -->
                     <RelativeLayout
@@ -194,7 +181,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:fontFamily="sans-serif-condensed"
-                            android:textSize="100sp"
+                            android:textSize="250sp"
                             android:text="ÉÇ"
                             android:textAlignment="center"
                             android:gravity="center"
@@ -204,8 +191,7 @@
                             android:lineSpacingExtra="0dp"
                             android:lineSpacingMultiplier="0"
                             android:textColor="@color/timer_text_color"
-                            android:id="@+id/textViewTimerBold"
-                            android:background="#4000FFFF"/>
+                            android:id="@+id/textViewTimerBold"/>
 
                         <!-- Layout is gone below 60 seconds -->
                         <RelativeLayout
@@ -218,7 +204,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-condensed"
-                                android:textSize="100sp"
+                                android:textSize="250sp"
                                 android:text="'"
                                 android:textAlignment="center"
                                 android:layout_centerInParent="true"
@@ -253,6 +239,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:gravity="center"
+                        android:visibility="gone"
                         android:weightSum="5">
 
                         <ImageButton
@@ -300,11 +287,10 @@
                     android:layout_weight="1"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_gravity="bottom"
                     android:orientation="horizontal"
-                    android:weightSum="5"
-                    android:background="#80FFFF80">
+                    android:weightSum="5">
 
                     <ImageButton
                         android:layout_width="48dp"
@@ -321,13 +307,13 @@
                     <ImageButton
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="0dp"
-                        android:layout_height="68dp"
+                        android:layout_height="48dp"
                         android:layout_weight="3"
                         android:scaleType="fitCenter"
                         android:adjustViewBounds="false"
                         android:layout_gravity="center"
                         android:id="@+id/imageButtonAlwaysScreenOn"
-                        android:src="@drawable/ic_stop_black_48dp"
+                        android:src="@drawable/ic_screen_lock_portrait_black_48dp"
                         android:background="?selectableItemBackgroundBorderless" />
 
                     <ImageButton
@@ -353,8 +339,7 @@
                 android:layout_gravity="bottom"
                 android:paddingBottom="8dp"
                 android:orientation="horizontal"
-                android:weightSum="5"
-                android:background="#80808080">
+                android:weightSum="5" >
 
                 <ImageButton
                     android:layout_width="48dp"
