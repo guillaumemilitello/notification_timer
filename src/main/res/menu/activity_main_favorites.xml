@@ -18,9 +18,9 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/alwaysScreenOn"
-        android:icon="@drawable/ic_screen_lock_portrait_black_48dp"
-        android:title="@string/alwaysScreenOn"
+        android:id="@+id/keepScreenOn"
+        android:title="@string/keepScreenOn"
+        android:checkable="true"
         app:showAsAction="never"/>
 
     <item

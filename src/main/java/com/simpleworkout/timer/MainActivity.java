@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinusMulti, imageButtonTimerPlusMulti;
-    private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonAlwaysScreenOn;
+    private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonKeepScreenOn;
     private LinearLayout informationLayout, fullButtonsLayout, timerButtonsMultiLayout, mainLayout, mainLayoutButton;
     private RelativeLayout timerLayout;
     private FrameLayout presetsFrameLayout;
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // Toolbar menu items index
     private static final int TOOLBAR_MENU_PRESET_INDEX = 0;
-    private static final int TOOLBAR_MENU_ALWAYSSCREENON_INDEX = 2;
+    private static final int TOOLBAR_MENU_KEEPSCREENON_INDEX = 2;
 
     // Timer and Sets Pickers
     private MsPickerBuilder timerPickerBuilder;
@@ -105,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private int setsInit;
     private int setsCurrent;
     private int setsUser;
+
+    private static boolean keepScreenOn = false;
 
     // Settings
     protected static final long[] vibrationPattern = {0, 400, 200, 400,};
@@ -292,14 +294,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         });
 
-        imageButtonAlwaysScreenOn = (ImageButton) findViewById(R.id.imageButtonAlwaysScreenOn);
-        imageButtonAlwaysScreenOn.setOnClickListener(new View.OnClickListener() {
+        imageButtonKeepScreenOn = (ImageButton) findViewById(R.id.imageButtonKeepScreenOn);
+        imageButtonKeepScreenOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alwaysScreenOn();
+                setKeepScreenOnStatus(!keepScreenOn);
             }
         });
-        imageButtonAlwaysScreenOn.setAlpha(ALPHA_DISABLED); // Disabled for now
 
         buttonLeftAction = ButtonAction.NO_ACTION;
         buttonCenterAction = ButtonAction.NO_ACTION;
@@ -350,9 +351,22 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private void alwaysScreenOn() {
-        // TODO: implement always screen on feature
-        // Update the icon and the toolbar menu text
+    private void setKeepScreenOnStatus(boolean enable) {
+        keepScreenOn = enable;
+        Log.d(TAG, "setKeepScreenOnStatus: keepScreenOn=" + keepScreenOn);
+        if (keepScreenOn) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            imageButtonKeepScreenOn.setImageResource(R.drawable.ic_screen_lock_portrait_black_48dp);
+            if (toolbarMenu != null) {
+                toolbarMenu.getItem(TOOLBAR_MENU_KEEPSCREENON_INDEX).setChecked(true);
+            }
+        } else {
+            getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            imageButtonKeepScreenOn.setImageResource(R.drawable.ic_stay_primary_portrait_black_48dp);
+            if (toolbarMenu != null) {
+                toolbarMenu.getItem(TOOLBAR_MENU_KEEPSCREENON_INDEX).setChecked(false);
+            }
+        }
     }
 
     private LayoutMode getLayoutMode(float scaleX) {
@@ -667,26 +681,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateSetsDisplay() {
-        //if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-        //    setsTextView.setText("");
-        //    imageViewCurrentSet.setVisibility(View.GONE);
-        //} else {
-            setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
-            //imageViewCurrentSet.setVisibility(View.VISIBLE);
-        //}
+        setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
     }
 
     private void updatePresetDisplay() {
-//        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-//            timerUserTextView.setText("");
-//            setsUserTextView.setText("");
-//            imageViewPreset.setVisibility(View.GONE);
-//        } else {
-            Preset preset = new Preset(timerUser, setsUser, setsInit);
-            timerUserTextView.setText(preset.getTimerString());
-            setsUserTextView.setText(preset.getSetsString());
-            //imageViewPreset.setVisibility(View.VISIBLE);
-        //}
+        Preset preset = new Preset(timerUser, setsUser, setsInit);
+        timerUserTextView.setText(preset.getTimerString());
+        setsUserTextView.setText(preset.getSetsString());
     }
 
     private void terminatePickers() {
@@ -913,12 +914,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        Log.d(TAG, "onCreateOptionsMenu");
+        // Inflate the menu, this adds items to the action bar if it is present
         getMenuInflater().inflate(R.menu.activity_main_favorites, menu);
         toolbarMenu = menu;
         if (presetsFrameLayout != null) {
             // fullButtonsLayout is only visible in FULL layout mode
             updateToolBarMenuItems(fullButtonsLayout.getVisibility() == View.GONE);
+            setKeepScreenOnStatus(keepScreenOn);
         }
         return true;
     }
@@ -952,9 +955,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "onOptionsItemSelected: item.id=presets_display");
             changePresetsFrameLayout();
             return true;
-        } else if (id == R.id.alwaysScreenOn) {
-            Log.d(TAG, "onOptionsItemSelected: item.id=alwaysScreenOn");
-            alwaysScreenOn();
+        } else if (id == R.id.keepScreenOn) {
+            Log.d(TAG, "onOptionsItemSelected: item.id=keepScreenOn");
+            setKeepScreenOnStatus(!keepScreenOn);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -1055,7 +1058,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "updateToolBarMenuItems: visible=" + visible);
             toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setVisible(visible);
             updatePresetsExpandButton(!visible);
-            toolbarMenu.getItem(TOOLBAR_MENU_ALWAYSSCREENON_INDEX).setVisible(visible);
+            toolbarMenu.getItem(TOOLBAR_MENU_KEEPSCREENON_INDEX).setVisible(visible);
         }
     }
 
