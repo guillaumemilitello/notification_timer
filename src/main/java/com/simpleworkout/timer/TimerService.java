@@ -715,18 +715,18 @@ public class TimerService extends Service {
 
     private void loadContextPreferences() {
         long timerEnd = sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_end), System.currentTimeMillis());
-        timerCurrent = sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_current), timerCurrent);
-        timerUser = sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_user), timerUser);
-        setsInit = sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_init), setsInit);
+        setTimerCurrent(sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_current), timerCurrent));
+        setTimerUser(sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_user), timerUser));
         setSetsCurrent(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_current), setsCurrent));
         setSetsUser(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_user), setsUser));
+        setSetsInit(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_init), setsInit));
         state = State.valueOf(sharedPreferences.getString(getString(R.string.pref_timer_service_state), state.toString()).toUpperCase(Locale.US));
         mainActivityVisible = sharedPreferences.getBoolean(getString(R.string.pref_timer_service_main_activity_visible), mainActivityVisible);
 
         if (state == State.RUNNING) {
             timerCurrent = TimeUnit.MILLISECONDS.toSeconds(timerEnd - System.currentTimeMillis());
-            // TimerService have been killed after the notification
-            if (timerCurrent == 0) {
+            // TimerService have been killed after the notification, or notification has past
+            if (timerCurrent <= 0) {
                 reset();
                 return;
             }
