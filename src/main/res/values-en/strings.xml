@@ -49,6 +49,7 @@
     <string name="vibrate_summary">Vibrate when the timer is done</string>
     <string name="ringtone">Ringtone</string>
     <string name="light_color">Light color</string>
+    <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
     <string name="get_ready_time">Get ready time</string>
     <string name="get_ready_time_summary">Amount of time to enable get ready</string>

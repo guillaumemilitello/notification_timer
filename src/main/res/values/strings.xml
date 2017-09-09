@@ -51,6 +51,7 @@
     <string name="vibrate_summary">Vibrate when the timer is done</string>
     <string name="ringtone">Ringtone</string>
     <string name="light_color">Light color</string>
+    <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
     <string name="get_ready_time">Get ready time</string>
     <string name="get_ready_time_summary">Amount of time to enable get ready</string>
@@ -65,6 +66,7 @@
     <string name="pref_vibrate" translatable="false">vibrate</string>
     <string name="pref_ringtone_uri" translatable="false">ringtoneUri</string>
     <string name="pref_light_color" translatable="false">lightColor</string>
+    <string name="pref_light_flash_rate" translatable="false">lightFlashRate</string>
     <string name="pref_timer_get_ready_enable" translatable="false">timerGetReadyEnable</string>
     <string name="pref_timer_get_ready" translatable="false">timerGetReady</string>
     <string name="pref_timer_get_ready_vibrate" translatable="false">timerGetReadyVibrate</string>

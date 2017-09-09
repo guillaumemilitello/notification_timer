@@ -44,6 +44,12 @@
         android:defaultValue="@string/default_light_color"
         android:entries="@array/lightColor"
         android:entryValues="@array/lightColorValues"/>
+    <ListPreference
+        android:key="@string/pref_light_flash_rate"
+        android:title="@string/light_flash_rate"
+        android:defaultValue="@string/default_light_flash_rate"
+        android:entries="@array/lightFlashRate"
+        android:entryValues="@array/lightFlashRateValues"/>
 
     </PreferenceCategory>
 

@@ -57,6 +57,12 @@ class InteractiveNotification extends Notification {
         this.lightColor = lightColor;
     }
 
+    void setLightFlashRate(int lightFlashRate) {
+        // No light blinking
+        this.lightFlashRateOn = (lightFlashRate == 0)? 1000 : lightFlashRate;
+        this.lightFlashRateOff = lightFlashRate;
+    }
+
     void setRingtone(Uri ringtone) {
         this.ringtone = ringtone;
     }
@@ -69,6 +75,7 @@ class InteractiveNotification extends Notification {
     private boolean vibrationEnable;
     private boolean vibrationReadyEnable;
     private int lightColor;
+    private int lightFlashRateOn, lightFlashRateOff;
     private Uri ringtone;
     private Uri ringtoneReady;
 
@@ -377,7 +384,7 @@ class InteractiveNotification extends Notification {
                     notificationBuilder.setVibrate(vibrationEnable ? MainActivity.vibrationPattern : null);
                     notificationBuilder.setSound(ringtone);
                     if (lightColor != COLOR_NONE) {
-                        notificationBuilder.setLights(lightColor, 1000, 1000);
+                        notificationBuilder.setLights(lightColor, lightFlashRateOn, lightFlashRateOff);
                     }
                     break;
                 case NO_NOTIFICATION:
