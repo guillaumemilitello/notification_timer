@@ -12,8 +12,10 @@ public class AlertBuilderSetDone extends AlertDialog.Builder {
 
     public AlertBuilderSetDone(final Context context) {
         super(context);
+        setTitle(context.getString(R.string.alert_time_out));
+        setIcon(context.getDrawable(R.drawable.ic_timer_off_black_48dp));
         setMessage(context.getString(R.string.alert_set_done));
-        setNegativeButton(context.getString(R.string.alert_stop),
+        setNegativeButton(context.getString(R.string.alert_no),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
@@ -21,7 +23,7 @@ public class AlertBuilderSetDone extends AlertDialog.Builder {
                         context.sendBroadcast(new Intent(IntentAction.STOP));
                     }
                 });
-        setPositiveButton(context.getString(R.string.alert_continue),
+        setPositiveButton(context.getString(R.string.alert_yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {

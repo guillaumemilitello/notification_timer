@@ -22,10 +22,9 @@
     <!-- Alerts -->
     <string name="add_preset">Update the preset setting with the current timer ?</string>
     <string name="delete_preset">Delete the preset setting ?</string>
-    <string name="alert_set_done">"TIME OUT!\nIt's time to do your set then select the action to do next"</string>
-    <string name="alert_all_sets_done">"TIME OUT!\nIt's time to do your last set"</string>
-    <string name="alert_stop">STOP</string>
-    <string name="alert_continue">CONTINUE</string>
+    <string name="alert_time_out">"Time out!"</string>
+    <string name="alert_set_done">"Would you like to launch the next timer?"</string>
+    <string name="alert_all_set_done">"Which action would you like to do next?"</string>
     <string name="alert_extra_set">EXTRA SET</string>
     <string name="alert_reset">RESET</string>
     <string name="alert_clear">CLEAR</string>

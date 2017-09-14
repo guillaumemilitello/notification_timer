@@ -12,7 +12,9 @@ public class AlertBuilderAllSetsDone extends AlertDialog.Builder {
 
     public AlertBuilderAllSetsDone(final Context context) {
         super(context);
-        setMessage(context.getString(R.string.alert_all_sets_done));
+        setTitle(context.getString(R.string.alert_time_out));
+        setIcon(context.getDrawable(R.drawable.ic_timer_off_black_48dp));
+        setMessage(context.getString(R.string.alert_all_set_done));
         setNeutralButton(context.getString(R.string.alert_extra_set),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
