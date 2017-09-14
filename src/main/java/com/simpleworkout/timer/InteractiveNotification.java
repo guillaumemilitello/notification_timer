@@ -40,6 +40,9 @@ class InteractiveNotification extends Notification {
     private int setsCurrent, setsUser, setsInit;
     private String timerString, setsString;
 
+    private boolean timerGetReadyEnable;
+    private int timerGetReady;
+
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
     private ButtonAction currentButton0, currentButton1, currentButton2;
@@ -51,6 +54,14 @@ class InteractiveNotification extends Notification {
 
     void setVibrationReadyEnable(boolean vibrationReadyEnable) {
         this.vibrationReadyEnable = vibrationReadyEnable;
+    }
+
+    public void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
+        this.timerGetReadyEnable = timerGetReadyEnable;
+    }
+
+    public void setTimerGetReady(int timerGetReady) {
+        this.timerGetReady = timerGetReady;
     }
 
     void setLightColor(int lightColor) {
@@ -172,6 +183,9 @@ class InteractiveNotification extends Notification {
         setsCurrent = 0;
         setsUser = 0;
         setsInit = 0;
+
+        timerGetReadyEnable = false;
+        timerGetReady = 0;
 
         button2 = ButtonAction.NO_ACTION;
         button1 = ButtonAction.NO_ACTION;
@@ -319,8 +333,6 @@ class InteractiveNotification extends Notification {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
         }
 
-        remoteView.setTextViewText(R.id.textViewTimer, timerString);
-
         if (button0 != currentButton0) {
             currentButton0 = button0;
             updateButton(R.id.button0, button0);
@@ -337,14 +349,36 @@ class InteractiveNotification extends Notification {
         if (drawProgressBar()) {
             remoteView.setTextViewText(R.id.textViewSets, "");
             remoteView.setTextViewText(R.id.textViewSets_short, setsString);
-            remoteView.setViewVisibility(R.id.progressBarTimer, View.VISIBLE);
-            remoteView.setProgressBar(R.id.progressBarTimer, (int) timerUser, (int) (timerUser - timerCurrent), false);
-        }
-        else
-        {
+
+            int timerVisibleId, timerGoneId, progressBarVisibleId, progressBarGoneId;
+
+            if (timerGetReadyEnable && timerCurrent <= timerGetReady) {
+                timerVisibleId = R.id.textViewTimerGetReady;
+                timerGoneId = R.id.textViewTimer;
+                progressBarVisibleId = R.id.progressBarTimerGetReady;
+                progressBarGoneId = R.id.progressBarTimer;
+            } else {
+                timerVisibleId = R.id.textViewTimer;
+                timerGoneId = R.id.textViewTimerGetReady;
+                progressBarVisibleId = R.id.progressBarTimer;
+                progressBarGoneId = R.id.progressBarTimerGetReady;
+            }
+            remoteView.setViewVisibility(timerVisibleId, View.VISIBLE);
+            remoteView.setTextViewText(timerVisibleId, timerString);
+            remoteView.setViewVisibility(progressBarVisibleId, View.VISIBLE);
+            remoteView.setProgressBar(progressBarVisibleId, (int) timerUser, (int) (timerUser - timerCurrent), false);
+            remoteView.setViewVisibility(timerGoneId, View.GONE);
+            remoteView.setViewVisibility(progressBarGoneId, View.GONE);
+        } else {
             remoteView.setTextViewText(R.id.textViewSets, setsString);
             remoteView.setTextViewText(R.id.textViewSets_short, "");
+
+            remoteView.setViewVisibility(R.id.textViewTimer, View.VISIBLE);
+            remoteView.setTextViewText(R.id.textViewTimer, timerString);
+            remoteView.setViewVisibility(R.id.textViewTimerGetReady, View.GONE);
+
             remoteView.setViewVisibility(R.id.progressBarTimer, View.INVISIBLE);
+            remoteView.setViewVisibility(R.id.progressBarTimerGetReady, View.INVISIBLE);
         }
     }
 

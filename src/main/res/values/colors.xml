@@ -8,6 +8,10 @@
     <color name="darkerGrayNotification">#6d6d6d</color>
     <color name="mainBackground">#4d000000</color>
 
+    <!-- Notification -->
+    <color name="progress_bar_background">#B0B0B0</color>
+    <color name="progress_bar_get_ready">#FF0000</color>
+
     <color name="default_text_color_holo_dark">#ffffffff</color>
     <color name="default_text_color_holo_dark_disabled">#ff4c4c4c</color>
     <color name="default_divider_color_dark">#28ffffff</color>

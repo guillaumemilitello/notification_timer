@@ -28,6 +28,17 @@
                 android:layout_height="20dp"
                 android:gravity="center_vertical"
                 android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/progress_bar_get_ready"
+                android:text="37:43"
+                android:id="@+id/textViewTimerGetReady" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:visibility="gone"
                 android:textColor="@android:color/black"
                 android:text="37:43"
                 android:id="@+id/textViewTimer" />
@@ -49,6 +60,21 @@
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:layout_below="@+id/textViewTimer_line"
+            android:progressBackgroundTint="@color/progress_bar_background"
+            android:progressTint="@color/progress_bar_get_ready"
+            android:paddingEnd="10dp"
+            android:paddingTop="5.5dp"
+            android:progress="80"
+            android:max="100"
+            android:id="@+id/progressBarTimerGetReady" />
+
+        <ProgressBar
+            style="@style/notificationButton"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@+id/textViewTimer_line"
+            android:visibility="gone"
+            android:progressBackgroundTint="@color/progress_bar_background"
             android:paddingEnd="10dp"
             android:paddingTop="5.5dp"
             android:progress="80"

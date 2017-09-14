@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // Main user interface
     private Menu toolbarMenu;
     private TextView timerTextViewBold, timerTextViewMinute, timerTextView, setsTextView, timerUserTextView, setsUserTextView;
-    private ImageView imageViewPreset, imageViewCurrentSet;
+    private ImageView imageViewPresetTimer, imageViewPresetSets, imageViewCurrentSet;
     private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private LinearLayout informationLayout, fullButtonsLayout, timerButtonsMultiLayout, mainLayout, mainLayoutButton;
     private RelativeLayout timerLayout;
     private FrameLayout presetsFrameLayout;
+    private Drawable setCircle;
 
     private boolean inMultiWindowMode;
     private int timerProgressBarWidth, timerProgressBarHeight;
@@ -230,8 +232,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
         mainLayoutButton = (LinearLayout) findViewById(R.id.mainLayoutButtons);
 
-        imageViewPreset = (ImageView) findViewById(R.id.imageViewPreset);
+        imageViewPresetTimer = (ImageView) findViewById(R.id.imageViewPresetTimer);
+        imageViewPresetSets = (ImageView) findViewById(R.id.imageViewPresetSets);
         imageViewCurrentSet = (ImageView) findViewById(R.id.imageViewCurrentSet);
+
+        setCircle = getResources().getDrawable(R.drawable.set_circle);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondBold.ttf");
         Typeface typefaceLight = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondLight.ttf");
@@ -677,7 +682,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         imageViewCurrentSet.setColorFilter(setsTextColor, PorterDuff.Mode.SRC_ATOP);
         timerUserTextView.setTextColor(userTextColor);
         setsUserTextView.setTextColor(userTextColor);
-        imageViewPreset.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
+        imageViewPresetTimer.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
+        imageViewPresetSets.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
+        setCircle.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
     }
 
     private void updateSetsDisplay() {
@@ -1443,11 +1450,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerGetReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_enable));
             if (timerServiceBound) {
                 timerService.setTimerGetReadyEnable(timerGetReadyEnable);
+                timerService.interactiveNotification.setTimerGetReadyEnable(timerGetReadyEnable);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready))) {
             timerGetReady = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready)));
             if (timerServiceBound) {
                 timerService.setTimerGetReady(timerGetReady);
+                timerService.interactiveNotification.setTimerGetReady(timerGetReady);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
             if (timerServiceBound) {
