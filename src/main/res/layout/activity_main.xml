@@ -45,7 +45,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:progressTint="@color/bpRed"
             android:backgroundTint="@color/colorPrimary"
-            android:progress="5"
+            android:progress="0"
             android:max="10"
             android:indeterminate="false"/>
 
@@ -76,26 +76,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="center"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:weightSum="2"
+                    android:weightSum="3"
+                    android:background="@drawable/background_gradient"
                     tools:ignore="NestedWeights">
 
                     <!-- User preset -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        tools:ignore="NestedWeights">
+                        android:gravity="end|center_vertical"
+                        tools:ignore="NestedWeights" >
 
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="wrap_content"
                             android:scaleType="centerInside"
                             android:adjustViewBounds="true"
-                            android:id="@+id/imageViewPreset"
-                            android:src="@drawable/ic_label_outline_black_48dp"
+                            android:id="@+id/imageViewPresetTimer"
+                            android:src="@drawable/ic_rotate_right_black_48dp"
                             android:tint="@color/preset_card_timer_font_color"/>
 
                         <TextView
@@ -106,11 +107,63 @@
                             android:textSize="@dimen/preset_card_timer_font_size"
                             android:gravity="center"
                             android:paddingStart="0dp"
-                            android:paddingEnd="@dimen/preset_card_timer_padding_right"
                             android:textColor="@color/preset_card_timer_font_color"
                             android:text="23:00"
                             android:maxLines="1"
                             android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Current set -->
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-20dp"
+                        android:layout_marginEnd="-20dp"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="68dp"
+                            android:layout_height="68dp"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitCenter"
+                            android:adjustViewBounds="false"
+                            android:visibility="gone"
+                            android:src="@drawable/ic_rotate_right_black_48dp"
+                            android:id="@+id/imageViewCurrentSet"
+                            android:tint="@color/sets_text_color"/>
+
+                        <TextView
+                            android:layout_width="68dp"
+                            android:layout_height="68dp"
+                            android:text="3"
+                            android:gravity="center"
+                            android:layout_centerInParent="true"
+                            android:maxLines="1"
+                            android:textSize="50sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/sets_text_color"
+                            android:id="@+id/textViewSets"/>
+
+                    </RelativeLayout>
+
+                    <!-- User preset -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="start|center_vertical"
+                        tools:ignore="NestedWeights" >
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="wrap_content"
+                            android:scaleType="centerInside"
+                            android:adjustViewBounds="true"
+                            android:id="@+id/imageViewPresetSets"
+                            android:src="@drawable/ic_track_changes_black_48dp"
+                            android:tint="@color/preset_card_timer_font_color"/>
 
                         <TextView
                             android:id="@+id/textViewSetsUser"
@@ -122,35 +175,6 @@
                             android:textColor="@color/preset_card_sets_font_color"
                             android:text="x12!"
                             android:maxLines="1"/>
-
-                    </LinearLayout>
-
-                    <!-- Current set -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
-                            android:scaleType="centerInside"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/ic_track_changes_black_48dp"
-                            android:id="@+id/imageViewCurrentSet"
-                            android:tint="@color/sets_text_color"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="13"
-                            android:gravity="center"
-                            android:maxLines="1"
-                            android:textSize="50sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/sets_text_color"
-                            android:id="@+id/textViewSets"/>
 
                     </LinearLayout>
 
@@ -182,7 +206,7 @@
                             android:layout_centerInParent="true"
                             android:fontFamily="sans-serif-condensed"
                             android:textSize="250sp"
-                            android:text="ÉÇ"
+                            android:text="5"
                             android:textAlignment="center"
                             android:gravity="center"
                             android:maxLines="1"
