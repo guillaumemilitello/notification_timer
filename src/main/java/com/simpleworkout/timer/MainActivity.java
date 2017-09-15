@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -84,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private LinearLayout informationLayout, fullButtonsLayout, timerButtonsMultiLayout, mainLayout, mainLayoutButton;
     private RelativeLayout timerLayout;
     private FrameLayout presetsFrameLayout;
-    private Drawable setCircle;
 
     private boolean inMultiWindowMode;
     private int timerProgressBarWidth, timerProgressBarHeight;
@@ -235,8 +233,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         imageViewPresetTimer = (ImageView) findViewById(R.id.imageViewPresetTimer);
         imageViewPresetSets = (ImageView) findViewById(R.id.imageViewPresetSets);
         imageViewCurrentSet = (ImageView) findViewById(R.id.imageViewCurrentSet);
-
-        setCircle = getResources().getDrawable(R.drawable.set_circle);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondBold.ttf");
         Typeface typefaceLight = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondLight.ttf");
@@ -642,7 +638,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         int backgroundColor = R.color.timer_progressbar_waiting;
         int progressColor= R.color.timer_progressbar_waiting;
-        int timerTextColor = R.color.timer_progressbar_waiting;;
+        int timerTextColor = R.color.timer_progressbar_waiting;
         if (buttonsLayout == ButtonsLayout.READY) {
             backgroundColor = R.color.timer_progressbar_background;
             progressColor = R.color.timer_progressbar_background;
@@ -684,7 +680,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUserTextView.setTextColor(userTextColor);
         imageViewPresetTimer.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
         imageViewPresetSets.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
-        setCircle.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
     }
 
     private void updateSetsDisplay() {
