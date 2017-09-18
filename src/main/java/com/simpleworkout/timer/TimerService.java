@@ -258,7 +258,7 @@ public class TimerService extends Service {
         startCountDown(timerUser);
         updateStateIntent(State.RUNNING);
 
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.update(setsCurrent, timerUser, InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
     }
 
     private void startContextPreferences() {
