@@ -1284,7 +1284,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (timerServiceBound) {
             timerService.updateNotificationVisibility(true);
-            unbindService(serviceConnection);
+            if (timerServiceBound) {
+                unbindService(serviceConnection);
+            }
             timerServiceBound = false;
         }
 
@@ -1315,7 +1317,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else {
             Intent intent = new Intent(this, TimerService.class);
             startService(intent);
-            bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+            timerServiceBound = bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+            if (!timerServiceBound) {
+                Log.e(TAG, "onResume: timerServiceBound=false");
+            }
         }
     }
 
@@ -1326,7 +1331,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (timerServiceBound) {
             timerService.updateNotificationVisibility(true);
-            unbindService(serviceConnection);
+            if (timerServiceBound) {
+                unbindService(serviceConnection);
+            }
             timerServiceBound = false;
         }
 
