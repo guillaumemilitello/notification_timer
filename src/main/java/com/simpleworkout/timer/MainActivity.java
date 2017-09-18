@@ -350,6 +350,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "onCreate: starting service TimerService");
             startService(new Intent(getBaseContext(), TimerService.class));
         }
+
+        // Detect first run
+        if (sharedPreferences.getBoolean("firstRun", true)) {
+            Log.d(TAG, "onCreate: firstRun=true");
+            // TODO: show overdraw indications
+            // sharedPreferences.edit().putBoolean("firstRun", false).apply();
+        }
     }
 
     private void setKeepScreenOnStatus(boolean enable) {
