@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private MainActivityReceiver mainActivityReceiver;
 
     private TimerService timerService;
-    private boolean timerServiceBound;
+    private static boolean timerServiceBound = false;
 
     // Timer done alerts
     private AlertDialog alertSetDone, alertAllSetsDone;
@@ -651,14 +651,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             progressColor = R.color.timer_progressbar_background;
             timerTextColor = R.color.bpLine_dark;
         } else if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
-            if (timerCurrent > timerGetReady) {
-                backgroundColor = R.color.timer_progressbar;
-                progressColor = R.color.timer_progressbar_transparent;
-                timerTextColor = R.color.primary;
-            } else {
+            if (timerCurrent <= timerGetReady && timerUser > timerGetReady && timerGetReadyEnable) {
                 backgroundColor = R.color.timer_progressbar_ready;
                 progressColor = R.color.timer_progressbar_ready_transparent;
                 timerTextColor = R.color.timer_progressbar_ready;
+            } else {
+                backgroundColor = R.color.timer_progressbar;
+                progressColor = R.color.timer_progressbar_transparent;
+                timerTextColor = R.color.primary;
             }
         }
 
@@ -888,7 +888,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (mainActivityVisible) {
             if (timerCurrent != time) {
                 // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
-                if (time == timerGetReady && timerGetReady != timerUser && timerGetReadyEnable && timerState == TimerService.State.RUNNING) {
+                if (time == timerGetReady && timerUser > timerGetReady && timerGetReadyEnable && timerState == TimerService.State.RUNNING) {
                     ring(ringtoneUriReady);
                     vibrate();
                 }
@@ -1291,9 +1291,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (timerServiceBound) {
             timerService.updateNotificationVisibility(true);
-            if (timerServiceBound) {
-                unbindService(serviceConnection);
-            }
+            unbindService(serviceConnection);
             timerServiceBound = false;
         }
 
@@ -1338,9 +1336,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (timerServiceBound) {
             timerService.updateNotificationVisibility(true);
-            if (timerServiceBound) {
-                unbindService(serviceConnection);
-            }
+            unbindService(serviceConnection);
             timerServiceBound = false;
         }
 

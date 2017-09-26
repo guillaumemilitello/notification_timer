@@ -45,8 +45,6 @@ class InteractiveNotification extends Notification {
 
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
-    private ButtonAction currentButton0, currentButton1, currentButton2;
-    private RemoteViews remoteView;
 
     void setVibrationEnable(boolean vibrationEnable) {
         this.vibrationEnable = vibrationEnable;
@@ -56,11 +54,11 @@ class InteractiveNotification extends Notification {
         this.vibrationReadyEnable = vibrationReadyEnable;
     }
 
-    public void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
+    void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
         this.timerGetReadyEnable = timerGetReadyEnable;
     }
 
-    public void setTimerGetReady(int timerGetReady) {
+    void setTimerGetReady(int timerGetReady) {
         this.timerGetReady = timerGetReady;
     }
 
@@ -93,6 +91,8 @@ class InteractiveNotification extends Notification {
     final static int COLOR_NONE = -1;
 
     private Context context;
+
+    private int headsUpUpdate;
 
     private enum ButtonAction {
 
@@ -192,6 +192,8 @@ class InteractiveNotification extends Notification {
         button0 = ButtonAction.NO_ACTION;
         buttonsLayout = ButtonsLayout.NO_LAYOUT;
 
+        headsUpUpdate = 0;
+
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
@@ -247,7 +249,7 @@ class InteractiveNotification extends Notification {
         }
     }
 
-    private void updateButton(int id, ButtonAction action) {
+    private void updateButton(RemoteViews remoteView, int id, ButtonAction action) {
         if (id == R.id.unused_button) {
             return;
         }
@@ -328,58 +330,34 @@ class InteractiveNotification extends Notification {
         build(NotificationMode.UPDATE);
     }
 
-    private void updateRemoteView() {
-        if (remoteView == null) {
+    private RemoteViews createRemoteView() {
+
+        RemoteViews remoteView;
+        boolean drawProgressBar = drawProgressBar();
+        if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady && drawProgressBar) {
+            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_getready);
+        } else {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
         }
 
-        if (button0 != currentButton0) {
-            currentButton0 = button0;
-            updateButton(R.id.button0, button0);
-        }
-        if (button1 != currentButton1) {
-            currentButton1 = button1;
-            updateButton(R.id.button1, button1);
-        }
-        if (button2 != currentButton2) {
-            currentButton2 = button2;
-            updateButton(R.id.button2, button2);
-        }
+        updateButton(remoteView, R.id.button0, button0);
+        updateButton(remoteView, R.id.button1, button1);
+        updateButton(remoteView, R.id.button2, button2);
 
         if (drawProgressBar()) {
             remoteView.setTextViewText(R.id.textViewSets, "");
             remoteView.setTextViewText(R.id.textViewSets_short, setsString);
-
-            int timerVisibleId, timerGoneId, progressBarVisibleId, progressBarGoneId;
-
-            if (timerGetReadyEnable && timerCurrent <= timerGetReady) {
-                timerVisibleId = R.id.textViewTimerGetReady;
-                timerGoneId = R.id.textViewTimer;
-                progressBarVisibleId = R.id.progressBarTimerGetReady;
-                progressBarGoneId = R.id.progressBarTimer;
-            } else {
-                timerVisibleId = R.id.textViewTimer;
-                timerGoneId = R.id.textViewTimerGetReady;
-                progressBarVisibleId = R.id.progressBarTimer;
-                progressBarGoneId = R.id.progressBarTimerGetReady;
-            }
-            remoteView.setViewVisibility(timerVisibleId, View.VISIBLE);
-            remoteView.setTextViewText(timerVisibleId, timerString);
-            remoteView.setViewVisibility(progressBarVisibleId, View.VISIBLE);
-            remoteView.setProgressBar(progressBarVisibleId, (int) timerUser, (int) (timerUser - timerCurrent), false);
-            remoteView.setViewVisibility(timerGoneId, View.GONE);
-            remoteView.setViewVisibility(progressBarGoneId, View.GONE);
+            remoteView.setTextViewText(R.id.textViewTimer, timerString);
+            remoteView.setViewVisibility(R.id.progressBarTimer, View.VISIBLE);
+            remoteView.setProgressBar(R.id.progressBarTimer, (int) timerUser, (int) (timerUser - timerCurrent), false);
         } else {
             remoteView.setTextViewText(R.id.textViewSets, setsString);
             remoteView.setTextViewText(R.id.textViewSets_short, "");
-
-            remoteView.setViewVisibility(R.id.textViewTimer, View.VISIBLE);
-            remoteView.setTextViewText(R.id.textViewTimer, timerString);
-            remoteView.setViewVisibility(R.id.textViewTimerGetReady, View.GONE);
-
             remoteView.setViewVisibility(R.id.progressBarTimer, View.INVISIBLE);
-            remoteView.setViewVisibility(R.id.progressBarTimerGetReady, View.INVISIBLE);
         }
+        remoteView.setTextViewText(R.id.textViewTimer, timerString);
+
+        return remoteView;
     }
 
     private boolean drawProgressBar() {
@@ -392,11 +370,21 @@ class InteractiveNotification extends Notification {
     private void build(NotificationMode notificationMode) {
         if (restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
 
-            updateRemoteView();
+            RemoteViews remoteView = createRemoteView();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 if (notificationMode == NotificationMode.UPDATE) {
                     notificationBuilder.setCustomContentView(remoteView);
+                    // Avoid updating the headsUpContentView when it won't be visible
+                    if (headsUpUpdate > 0) {
+                        notificationBuilder.setCustomHeadsUpContentView(remoteView);
+                        headsUpUpdate--;
+                    }
+                }
+                else if (notificationMode == NotificationMode.SOUND_SHORT_VIBRATE) {
+                    notificationBuilder.setCustomHeadsUpContentView(remoteView);
+                    // Update the next 3 seconds of the headsUpContentView when it's running
+                    headsUpUpdate = 3;
                 }
                 else {
                     notificationBuilder.setCustomHeadsUpContentView(remoteView);
@@ -427,7 +415,8 @@ class InteractiveNotification extends Notification {
                     Log.e(TAG, "build: notificationMode=" + notificationMode + " not specified");
                     break;
             }
-            notificationManager.notify(ID, notificationBuilder.build());
+            Notification notification = notificationBuilder.build();
+            notificationManager.notify(ID, notification);
 
             notificationBuilder.setSound(null);
             notificationBuilder.setVibrate(null);

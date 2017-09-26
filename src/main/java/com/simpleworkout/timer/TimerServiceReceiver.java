@@ -58,7 +58,7 @@ public class TimerServiceReceiver extends BroadcastReceiver {
             case IntentAction.NOTIFICATION_DISMISS:
                 ((TimerService)context).clear();
                 ((TimerService)context).updateNotificationVisibility(false);
-                ((TimerService)context).setInteractiveNotificationRebuild(false);
+                ((TimerService)context).setInteractiveNotificationDone(true);
                 ((TimerService)context).stopSelf();
                 break;
             case Intent.ACTION_SCREEN_ON:

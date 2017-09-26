@@ -45,14 +45,14 @@ public class TimerService extends Service {
     // Notification related
     protected InteractiveNotification interactiveNotification;
     private boolean interactiveNotificationAlert = false;
-    private boolean interactiveNotificationRebuild = true;
+    private boolean interactiveNotificationDone = false;
 
     public void setInteractiveNotificationAlert(boolean interactiveNotificationAlert) {
         this.interactiveNotificationAlert = interactiveNotificationAlert;
     }
 
-    public void setInteractiveNotificationRebuild(boolean interactiveNotificationRebuild) {
-        this.interactiveNotificationRebuild = interactiveNotificationRebuild;
+    public void setInteractiveNotificationDone(boolean interactiveNotificationDone) {
+        this.interactiveNotificationDone = interactiveNotificationDone;
     }
 
     // Running values
@@ -193,8 +193,8 @@ public class TimerService extends Service {
     }
 
     protected void updateNotificationVisibilityScreenLocked() {
-        Log.d(TAG, "updateNotificationVisibilityScreenLocked: interactiveNotificationAlert=" + interactiveNotificationAlert);
-        if (interactiveNotificationRebuild && interactiveNotificationAlert) {
+        Log.d(TAG, "updateNotificationVisibilityScreenLocked: interactiveNotificationDone=" + interactiveNotificationDone);
+        if (!interactiveNotificationDone) {
             updateNotificationVisibility(true);
         }
     }
@@ -207,11 +207,12 @@ public class TimerService extends Service {
                 updateNotificationForeground(true);
                 notificationUpdateTimerCurrent(timerCurrent);
                 interactiveNotification.setVisible();
-                interactiveNotificationRebuild = true;
+                interactiveNotificationDone = false;
             } else {
                 Log.d(TAG, "updateNotificationVisibility: stopForeground");
                 stopForeground(true);
                 interactiveNotification.dismiss();
+                interactiveNotificationDone = true;
                 if (interactiveNotificationAlert)
                     notificationDeleted();
             }
@@ -528,7 +529,7 @@ public class TimerService extends Service {
 
     private void notificationUpdateTimerCurrent(long time) {
         // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
-        if (time == timerGetReady && timerGetReady != timerUser && timerGetReadyEnable && state == State.RUNNING) {
+        if (time == timerGetReady && timerUser > timerGetReady && timerGetReadyEnable && state == State.RUNNING) {
             interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.SOUND_SHORT_VIBRATE);
         } else {
             interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.UPDATE);
