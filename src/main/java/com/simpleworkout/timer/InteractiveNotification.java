@@ -373,22 +373,20 @@ class InteractiveNotification extends Notification {
             RemoteViews remoteView = createRemoteView();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (notificationMode == NotificationMode.UPDATE) {
-                    notificationBuilder.setCustomContentView(remoteView);
+                if (notificationMode == NotificationMode.UPDATE && headsUpUpdate > 0) {
                     // Avoid updating the headsUpContentView when it won't be visible
-                    if (headsUpUpdate > 0) {
-                        notificationBuilder.setCustomHeadsUpContentView(remoteView);
-                        headsUpUpdate--;
-                    }
+                    notificationBuilder.setCustomHeadsUpContentView(remoteView);
+                    headsUpUpdate--;
                 }
                 else if (notificationMode == NotificationMode.SOUND_SHORT_VIBRATE) {
                     notificationBuilder.setCustomHeadsUpContentView(remoteView);
-                    // Update the next 3 seconds of the headsUpContentView when it's running
-                    headsUpUpdate = 3;
+                    // Update the next 2 seconds of the headsUpContentView when it's running
+                    headsUpUpdate = 2;
                 }
                 else {
                     notificationBuilder.setCustomHeadsUpContentView(remoteView);
                 }
+                notificationBuilder.setCustomContentView(remoteView);
             } else {
                 //noinspection deprecation
                 notificationBuilder.setContent(remoteView);
