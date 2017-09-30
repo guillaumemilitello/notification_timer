@@ -474,24 +474,6 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
-    public void setTimer(long time) {
-        Log.d(TAG, "setTimer");
-        if (time >= 0) {
-            timerUpdate(time);
-            if (state != State.RUNNING && state != State.PAUSED) {
-                timerUser = time;
-                interactiveNotification.updateTimerUser(timerUser);
-                saveContextPreferences(CONTEXT_PREFERENCE_TIMER_USER);
-            }
-            else {
-                updateCountDown(TimeUnit.SECONDS.toMillis(time));
-            }
-            Log.d(TAG, "setTimer: timerUser=" + timerUser + ", timerCurrent=" + timerCurrent);
-        } else {
-            Log.e(TAG, "setTimer with time=" + time);
-        }
-    }
-
     public void setSetsInit(int sets) {
         Log.d(TAG, "setSetsInit: setsInit=" + sets);
         setsInit = sets;

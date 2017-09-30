@@ -1363,7 +1363,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 break;
             case TRIM_MEMORY_UI_HIDDEN: // 20
                 str = "UI_HIDDEN";
-                // TODO: release some ressources
+                // TODO: release some resources
                 break;
         }
         Log.d(TAG, "onTrimMemory: level=" + str);
