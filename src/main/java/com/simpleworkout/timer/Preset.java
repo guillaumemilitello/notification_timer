@@ -24,10 +24,6 @@ class Preset {
         return init;
     }
 
-    public void setInit(int init) {
-        this.init = init;
-    }
-
     int getSets() {
         return sets;
     }
@@ -44,10 +40,6 @@ class Preset {
 
     String getTimerString() {
         return String.format(Locale.US, "%d:%02d", timer / 60, timer % 60);
-    }
-
-    public void setTimer(long timer) {
-        this.timer = timer;
     }
 
     public String toString() {

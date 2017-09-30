@@ -142,7 +142,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    SharedPreferences.OnSharedPreferenceChangeListener listener =
+    private final SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 if (!key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))) {

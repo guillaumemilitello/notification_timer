@@ -28,7 +28,7 @@ class InteractiveNotification extends Notification {
 
     private boolean restTimerNotificationVisible;
 
-    private NotificationManager notificationManager;
+    private final NotificationManager notificationManager;
     private Notification.Builder notificationBuilder;
 
     public Notification getNotification() {
@@ -90,7 +90,7 @@ class InteractiveNotification extends Notification {
 
     final static int COLOR_NONE = -1;
 
-    private Context context;
+    private final Context context;
 
     private int headsUpUpdate;
 
@@ -130,7 +130,7 @@ class InteractiveNotification extends Notification {
         SET_DONE("set_done"),
         ALL_SETS_DONE("all_sets_done");
 
-        private String layout;
+        private final String layout;
 
         ButtonsLayout(String layout) {
             this.layout = layout;
@@ -197,10 +197,10 @@ class InteractiveNotification extends Notification {
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
-    protected void update(int setsCurrent, long timerCurrent, ButtonsLayout layout, NotificationMode notificationMode) {
+    protected void update(int setsCurrent, long timerCurrent, ButtonsLayout layout) {
         updateTimerCurrent(timerCurrent);
         updateSetsCurrent(setsCurrent);
-        updateButtonsLayout(layout, notificationMode);
+        updateButtonsLayout(layout, NotificationMode.UPDATE);
     }
 
     void updateButtonsLayout(ButtonsLayout layout) {

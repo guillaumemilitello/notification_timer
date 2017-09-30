@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-public class AlertBuilderAllSetsDone extends AlertDialog.Builder {
+class AlertBuilderAllSetsDone extends AlertDialog.Builder {
 
     private final static String TAG = "AlertBuilderAllSetsDone";
 
-    public AlertBuilderAllSetsDone(final Context context) {
+    AlertBuilderAllSetsDone(final Context context) {
         super(context);
         setTitle(context.getString(R.string.alert_time_out));
         setIcon(context.getDrawable(R.drawable.ic_timer_off_black_48dp));

@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-public class AlertBuilderSetDone extends AlertDialog.Builder {
+class AlertBuilderSetDone extends AlertDialog.Builder {
 
     private final static String TAG = "AlertBuilderSetDone";
 

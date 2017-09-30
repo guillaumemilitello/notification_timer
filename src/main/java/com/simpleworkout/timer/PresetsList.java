@@ -12,7 +12,7 @@ class PresetsList {
 
     private static final String TAG = "PresetCardsList";
 
-    private ArrayList<Preset> list = new ArrayList<>();
+    private final ArrayList<Preset> list = new ArrayList<>();
 
     private SharedPreferences sharedPreferences;
     private Context context;

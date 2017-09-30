@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimerService extends Service {
 
-    public static final String TAG = "TimerService";
+    private static final String TAG = "TimerService";
 
     // margin for not missing the notification
     private static final long WAKELOCK_TIME_APPROX = 3;
@@ -44,11 +44,11 @@ public class TimerService extends Service {
 
     // Notification related
     protected InteractiveNotification interactiveNotification;
-    private boolean interactiveNotificationAlert = false;
+    private boolean interactiveNotificationAlertDone = false;
     private boolean interactiveNotificationDone = false;
 
-    public void setInteractiveNotificationAlert(boolean interactiveNotificationAlert) {
-        this.interactiveNotificationAlert = interactiveNotificationAlert;
+    public void setInteractiveNotificationAlertDone() {
+        interactiveNotificationAlertDone = true;
     }
 
     public void setInteractiveNotificationDone(boolean interactiveNotificationDone) {
@@ -135,7 +135,7 @@ public class TimerService extends Service {
         RUNNING("running"),
         PAUSED("paused");
 
-        private String state;
+        private final String state;
 
         State(String state) {
             this.state = state;
@@ -192,7 +192,7 @@ public class TimerService extends Service {
         return START_NOT_STICKY;
     }
 
-    protected void updateNotificationVisibilityScreenLocked() {
+    void updateNotificationVisibilityScreenLocked() {
         Log.d(TAG, "updateNotificationVisibilityScreenLocked: interactiveNotificationDone=" + interactiveNotificationDone);
         if (!interactiveNotificationDone) {
             updateNotificationVisibility(true);
@@ -204,7 +204,7 @@ public class TimerService extends Service {
         if (state != State.WAITING) {
             setMainActivityVisible(!visible);
             if (visible) {
-                updateNotificationForeground(true);
+                startNotificationForeground();
                 notificationUpdateTimerCurrent(timerCurrent);
                 interactiveNotification.setVisible();
                 interactiveNotificationDone = false;
@@ -213,21 +213,16 @@ public class TimerService extends Service {
                 stopForeground(true);
                 interactiveNotification.dismiss();
                 interactiveNotificationDone = true;
-                if (interactiveNotificationAlert)
+                if (!interactiveNotificationAlertDone)
                     notificationDeleted();
             }
         }
     }
 
-    private void updateNotificationForeground(boolean enable) {
+    private void startNotificationForeground() {
         if (!mainActivityVisible) {
-            if (enable) {
-                Log.d(TAG, "updateNotificationForeground: startForeground");
-                startForeground(interactiveNotification.getId(), interactiveNotification.getNotification());
-            } else {
-                Log.d(TAG, "updateNotificationForeground: stopForeground");
-                stopForeground(false);
-            }
+            Log.d(TAG, "startNotificationForeground: startForeground");
+            startForeground(interactiveNotification.getId(), interactiveNotification.getNotification());
         }
     }
 
@@ -259,7 +254,7 @@ public class TimerService extends Service {
         startCountDown(timerUser);
         updateStateIntent(State.RUNNING);
 
-        interactiveNotification.update(setsCurrent, timerUser, InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.update(setsCurrent, timerUser, InteractiveNotification.ButtonsLayout.RUNNING);
     }
 
     private void startContextPreferences() {
@@ -267,7 +262,7 @@ public class TimerService extends Service {
         startCountDown(timerCurrent);
     }
 
-    protected void pause() {
+    void pause() {
         if (state == State.RUNNING) {
             Log.d(TAG, "pause");
 
@@ -298,7 +293,7 @@ public class TimerService extends Service {
         }
     }
 
-    protected void stop() {
+    void stop() {
         Log.d(TAG, "stop: setCurrent=" + setsCurrent);
 
         timerCurrent = timerUser;
@@ -308,7 +303,7 @@ public class TimerService extends Service {
         updateStateIntent(State.READY);
         updateTimerIntent(timerCurrent, setsCurrent);
 
-        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY);
 
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
@@ -350,7 +345,7 @@ public class TimerService extends Service {
     private void doneInteractiveNotification(InteractiveNotification.NotificationMode notificationMode) {
         notificationUpdateTimerCurrent(timerCurrent);
         interactiveNotification.updateSetsCurrent(setsCurrent);
-        interactiveNotificationAlert = true;
+        interactiveNotificationAlertDone = false;
         if (state == State.READY) {
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY, notificationMode);
         } else if (setsCurrent <= setsUser) {
@@ -361,7 +356,7 @@ public class TimerService extends Service {
         Log.d(TAG, "doneInteractiveNotification: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", state=" + state);
     }
 
-    protected void nextSetStart() {
+    void nextSetStart() {
         Log.d(TAG, "nextSetStart: setsCurrent=" + setsCurrent);
 
         setsCurrent++;
@@ -374,7 +369,7 @@ public class TimerService extends Service {
         updateTimerIntent(timerUser, setsCurrent);
         updateStateIntent(State.RUNNING);
 
-        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING);
 
         releaseWakeLock();
 
@@ -392,12 +387,12 @@ public class TimerService extends Service {
         updateTimerIntent(timerUser, setsCurrent);
         updateStateIntent(State.RUNNING);
 
-        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING);
 
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
-    protected void reset() {
+    void reset() {
         Log.d(TAG, "reset");
 
         setsCurrent = setsInit;
@@ -405,7 +400,7 @@ public class TimerService extends Service {
 
         stopCountDown();
 
-        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.READY);
 
         updateTimerIntent(timerCurrent, setsCurrent);
         updateStateIntent(State.READY);
@@ -438,7 +433,7 @@ public class TimerService extends Service {
                 CONTEXT_PREFERENCE_SETS_CURRENT | CONTEXT_PREFERENCE_SETS_USER);
     }
 
-    protected void timerMinus() {
+    void timerMinus() {
         timerCurrent = Math.max(timerCurrent - timerMinus, 0);
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
@@ -456,7 +451,7 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
-    protected void setsMinus() {
+    void setsMinus() {
         if (setsCurrent <= 1) {
             Log.e(TAG, "sets minus setsCurrent=" + setsCurrent);
             return;
@@ -518,7 +513,7 @@ public class TimerService extends Service {
         }
     }
 
-    protected void timerUpdate(long time) {
+    private void timerUpdate(long time) {
         if (timerCurrent != time) {
             timerCurrent = time;
             if (mainActivityVisible) {
@@ -538,7 +533,7 @@ public class TimerService extends Service {
     }
 
     private void notificationDeleted() {
-        interactiveNotificationAlert = false;
+        interactiveNotificationAlertDone = true;
         Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " state=" + state);
         if (state == State.PAUSED) {
             interactiveNotification.dismiss();

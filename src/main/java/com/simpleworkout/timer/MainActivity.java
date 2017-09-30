@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private static boolean keepScreenOn = false;
 
     // Settings
-    protected static final long[] vibrationPattern = {0, 400, 200, 400,};
+    static final long[] vibrationPattern = {0, 400, 200, 400,};
 
     // User preferences
     private long timerMinus;
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         NEXT_SET_START("next_set_start"),
         NEXT_SET_START_DISABLED("next_set_start_disabled");
 
-        private String action;
+        private final String action;
 
         ButtonAction(String action) {
             this.action = action;
@@ -572,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return false;
     }
 
-    protected void timerServiceRebind() {
+    void timerServiceRebind() {
         Log.d(TAG, "timerServiceRebind");
         timerServiceBound = true;
         // Rebind occurs only when relaunching the mainActivity
@@ -769,7 +769,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout();
     }
 
-    protected void pause() {
+    void pause() {
         timerState = TimerService.State.PAUSED;
         Log.d(TAG, "pause: timerState=" + timerState);
         updateButtonsLayout();
@@ -781,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout();
     }
 
-    protected void stop() {
+    void stop() {
         timerState = TimerService.State.READY;
         Log.d(TAG, "stop: timerState=" + timerState + ", setsCurrent=" + setsCurrent);
         updateButtonsLayout(ButtonsLayout.READY);
@@ -797,7 +797,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         stop();
     }
 
-    protected void nextSetStart() {
+    void nextSetStart() {
         nextSet();
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "nextSetStart: timerState=" + timerState);
@@ -816,7 +816,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout();
     }
 
-    protected void reset() {
+    void reset() {
         timerState = TimerService.State.READY;
         Log.d(TAG, "reset: timerState=" + timerState);
 
@@ -829,7 +829,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout(ButtonsLayout.RUNNING);
     }
 
-    protected void timerMinus() {
+    void timerMinus() {
         timerCurrent -= timerMinus;
         if (timerCurrent <= 0) {
             timerCurrent = 1;
@@ -850,7 +850,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateColorLayout();
     }
 
-    protected void setsMinus() {
+    void setsMinus() {
         setsCurrent -= 1;
         Log.d(TAG, "setsMinus: setsCurrent=" + setsCurrent);
 
@@ -868,7 +868,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateColorLayout();
     }
 
-    protected void updateTimerState(TimerService.State state) {
+    void updateTimerState(TimerService.State state) {
         if (timerState != state) {
             timerState = state;
             Log.d(TAG, "updateTimerState: synchronising timerState=" + timerState);
@@ -884,7 +884,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    protected void timerUpdate(long time) {
+    void timerUpdate(long time) {
         if (mainActivityVisible) {
             if (timerCurrent != time) {
                 // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
@@ -1039,7 +1039,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    protected void updateAddPresetButton() {
+    private void updateAddPresetButton() {
         if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
             presetCardsList.disableAddPresetButton();
         } else {
@@ -1380,7 +1380,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -1489,7 +1489,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     updatePreference(key);

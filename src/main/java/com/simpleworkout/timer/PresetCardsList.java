@@ -24,7 +24,6 @@ public class PresetCardsList extends Fragment {
     private int presetsListSize = 0;
 
     private LinearLayoutManager linearLayoutManager;
-    private RecyclerView recyclerView;
     private RecycleViewAdapter adapter;
     private boolean addPresetButton;
 
@@ -106,7 +105,7 @@ public class PresetCardsList extends Fragment {
         linearLayoutManager.scrollToPosition(0);
 
         View view = inflater.inflate(R.layout.fragment_horizontal_preset_cards, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.cardView);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.cardView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -118,11 +117,6 @@ public class PresetCardsList extends Fragment {
         touchHelper.attachToRecyclerView(recyclerView);
 
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     private class PresetTouchHelper extends ItemTouchHelper.SimpleCallback {
@@ -221,8 +215,9 @@ public class PresetCardsList extends Fragment {
 
     private class PresetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private TextView textViewCardTimer, textViewCardSets;
-        private ImageButton imageButtonCard;
+        private final TextView textViewCardTimer;
+        private final TextView textViewCardSets;
+        private final ImageButton imageButtonCard;
 
         private void inputPreset(int position) {
             ((MainActivity)getActivity()).inputPreset(presetsList.getPreset(position));
@@ -263,7 +258,7 @@ public class PresetCardsList extends Fragment {
 
     private class AddPresetViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageButton imageButtonCard;
+        private final ImageButton imageButtonCard;
 
         AddPresetViewHolder(final View view) {
             super(view);

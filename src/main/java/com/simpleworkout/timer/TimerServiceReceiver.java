@@ -13,7 +13,7 @@ public class TimerServiceReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         switch (intent.getAction()) {
             case IntentAction.START:
-                ((TimerService)context).setInteractiveNotificationAlert(false);
+                ((TimerService)context).setInteractiveNotificationAlertDone();
                 ((TimerService)context).start();
                 break;
             case IntentAction.PAUSE:
@@ -23,7 +23,7 @@ public class TimerServiceReceiver extends BroadcastReceiver {
                 ((TimerService)context).resume();
                 break;
             case IntentAction.EXTRA_SET:
-                ((TimerService)context).setInteractiveNotificationAlert(false);
+                ((TimerService)context).setInteractiveNotificationAlertDone();
                 ((TimerService)context).extraSet();
                 break;
             case IntentAction.NEXT_SET:
@@ -33,11 +33,11 @@ public class TimerServiceReceiver extends BroadcastReceiver {
                 ((TimerService)context).nextSetStart();
                 break;
             case IntentAction.STOP:
-                ((TimerService)context).setInteractiveNotificationAlert(false);
+                ((TimerService)context).setInteractiveNotificationAlertDone();
                 ((TimerService)context).stop();
                 break;
             case IntentAction.RESET:
-                ((TimerService)context).setInteractiveNotificationAlert(false);
+                ((TimerService)context).setInteractiveNotificationAlertDone();
                 ((TimerService)context).reset();
                 break;
             case IntentAction.CLEAR:

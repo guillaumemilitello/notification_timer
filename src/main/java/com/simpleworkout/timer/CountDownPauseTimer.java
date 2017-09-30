@@ -127,16 +127,15 @@ public abstract class CountDownPauseTimer {
     /**
      * Start the countdown.
      */
-    public synchronized final CountDownPauseTimer start() {
+    public synchronized final void start() {
         mCancelled = false;
         mPaused = false;
         if (mMillisInFuture <= 0) {
             onFinish();
-            return this;
+            return;
         }
         mStopTimeInFuture = SystemClock.elapsedRealtime() + mMillisInFuture;
         mHandler.sendMessage(mHandler.obtainMessage(MSG));
-        return this;
     }
 
 
@@ -153,7 +152,7 @@ public abstract class CountDownPauseTimer {
 
     private static final int MSG = 1;
 
-    private CountDownPauseTimerHandler mHandler = new CountDownPauseTimerHandler(this);
+    private final CountDownPauseTimerHandler mHandler = new CountDownPauseTimerHandler(this);
 
     private static class CountDownPauseTimerHandler extends Handler {
 
