@@ -531,9 +531,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
         timerState = TimerService.State.WAITING;
 
+        updateUserInterface();
+
         if (timerServiceBound) {
             getTimerServiceContext();
-            updateUserInterface();
+            timerService.updateNotificationVisibility(false);
+        } else {
+            Intent intent = new Intent(this, TimerService.class);
+            startService(intent);
+            timerServiceBound = bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+            if (!timerServiceBound) {
+                Log.e(TAG, "onStart: timerServiceBound=false");
+            }
         }
     }
 
@@ -1314,19 +1323,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: timerServiceBound=" + timerServiceBound);
-        mainActivityVisible = true;
-        updateUserInterface();
-        if (timerServiceBound) {
-            timerService.updateNotificationVisibility(false);
-        } else {
-            Intent intent = new Intent(this, TimerService.class);
-            startService(intent);
-            timerServiceBound = bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
-            if (!timerServiceBound) {
-                Log.e(TAG, "onResume: timerServiceBound=false");
-            }
-        }
+        Log.d(TAG, "onResume");
     }
 
     @Override
