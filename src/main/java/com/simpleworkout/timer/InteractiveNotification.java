@@ -30,10 +30,9 @@ class InteractiveNotification extends Notification {
 
     private final NotificationManager notificationManager;
     private Notification.Builder notificationBuilder;
+    private PendingIntent pendingIntent, pendingIntentDeleted;
 
-    public Notification getNotification() {
-        return notificationBuilder.build();
-    }
+    public Notification getNotification() { return  notificationBuilder.build(); }
 
     // Timer service related
     private long timerCurrent, timerUser;
@@ -157,23 +156,12 @@ class InteractiveNotification extends Notification {
 
         // pending intent to go back to the main activity from the notification
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 
         // pending intent when the notification is deleted
-        PendingIntent pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // prepare Notification Builder
-        notificationBuilder = new Notification.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pendingIntent)
-                .setDeleteIntent(pendingIntentDeleted)
-                .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                .setPriority(PRIORITY_MAX);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
-            notificationBuilder.setColor(context.getColor(R.color.colorPrimary));
-        }
+        notificationBuilder = createNotificationBuilder();
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -367,9 +355,30 @@ class InteractiveNotification extends Notification {
         }
     }
 
+    private Notification.Builder createNotificationBuilder() {
+        Notification.Builder notificationBuilder = new Notification.Builder(context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent)
+                .setDeleteIntent(pendingIntentDeleted)
+                .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                .setPriority(PRIORITY_MAX);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
+            notificationBuilder.setColor(context.getColor(R.color.colorPrimary));
+        }
+        return notificationBuilder;
+    }
+
     private void build(NotificationMode notificationMode) {
         if (restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
 
+            boolean layoutSetDone = buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE;
+
+            // Do not recreate the notification when updating a DONE notification to preserve the chronometer counter
+            if (notificationMode == NotificationMode.UPDATE && !layoutSetDone) {
+                notificationBuilder = createNotificationBuilder();
+            }
             RemoteViews remoteView = createRemoteView();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -387,6 +396,7 @@ class InteractiveNotification extends Notification {
                     notificationBuilder.setCustomHeadsUpContentView(remoteView);
                 }
                 notificationBuilder.setCustomContentView(remoteView);
+                notificationBuilder.setUsesChronometer(layoutSetDone);
             } else {
                 //noinspection deprecation
                 notificationBuilder.setContent(remoteView);
@@ -413,15 +423,14 @@ class InteractiveNotification extends Notification {
                     Log.e(TAG, "build: notificationMode=" + notificationMode + " not specified");
                     break;
             }
-            Notification notification = notificationBuilder.build();
-            notificationManager.notify(ID, notification);
+            notificationManager.notify(ID, notificationBuilder.build());
 
             notificationBuilder.setSound(null);
             notificationBuilder.setVibrate(null);
 
-            if (notificationMode != NotificationMode.UPDATE) {
+            //if (notificationMode != NotificationMode.UPDATE) {
                 Log.d(TAG, "build: notificationMode=" + notificationMode);
-            }
+            //}
         }
     }
 
