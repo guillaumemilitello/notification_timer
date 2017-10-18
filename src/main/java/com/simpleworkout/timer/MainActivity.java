@@ -1298,6 +1298,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "onStop");
         mainActivityVisible = false;
 
+        if (timerService == null) {
+            timerServiceBound = false;
+        }
+
         if (timerServiceBound) {
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
