@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Timer progressbar -->
-    <dimen name="timer_text_size">90sp</dimen>
-    <dimen name="timer_text_margin_bottom">-5dp</dimen>
-    <dimen name="timer_progressbar_padding">35dp</dimen>
-    <dimen name="timer_progressbar_padding_soft_key">45dp</dimen>
-    <dimen name="sets_text_size">45sp</dimen>
-</resources>

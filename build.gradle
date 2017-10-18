@@ -22,6 +22,9 @@ android {
             debuggable true
         }
     }
+    sourceSets {
+        main.res.srcDirs += 'src/main/res-betterpickers'
+    }
 }
 
 dependencies {
