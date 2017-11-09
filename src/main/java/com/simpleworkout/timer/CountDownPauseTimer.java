@@ -80,7 +80,7 @@ public abstract class CountDownPauseTimer {
      */
     public CountDownPauseTimer(long millisInFuture, long countDownInterval) {
         // An extra second is added to match com.simpleworkout.timer's behavior
-        mMillisInFuture = millisInFuture + 900;
+        mMillisInFuture = millisInFuture + 250;
         mCountdownInterval = countDownInterval;
         mTimeLeft = mMillisInFuture;
     }
@@ -115,7 +115,7 @@ public abstract class CountDownPauseTimer {
      */
     public synchronized final void update(long millis) {
         // An extra second is added to match com.simpleworkout.timer's behavior
-        millis += 900;
+        millis += 250;
         mStopTimeInFuture += (millis - mTimeLeft);
         mTimeLeft = millis;
 	    if(!mPaused) {
@@ -172,7 +172,7 @@ public abstract class CountDownPauseTimer {
 
                 timer.mTimeLeft = timer.mStopTimeInFuture - SystemClock.elapsedRealtime();
 
-                if (timer.mTimeLeft <= 0) {
+                if (timer.mTimeLeft <= 1000) {
                     timer.onFinish();
                 } else {
                     long lastTickStart = SystemClock.elapsedRealtime();

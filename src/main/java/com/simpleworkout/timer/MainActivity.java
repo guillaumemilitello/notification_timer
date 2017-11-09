@@ -914,20 +914,27 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (++setsCurrent <= setsUser) {
             Log.d(TAG, "done: setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
-                vibrate();
-                ring();
+                updateTimerDone();
                 alertSetDone.show();
             }
             updateButtonsLayout(ButtonsLayout.STOPPED);
         } else {
             Log.d(TAG, "done: all sets done, setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
-                vibrate();
-                ring();
+                updateTimerDone();
                 alertAllSetsDone.show();
             }
             updateButtonsLayout(ButtonsLayout.READY);
         }
+    }
+
+    private void updateTimerDone() {
+        timerCurrent = 0;
+        updateTimerDisplay();
+        updateTimerButtons();
+        updateColorLayout();
+        vibrate();
+        ring();
     }
 
     @Override
