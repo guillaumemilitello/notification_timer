@@ -11,7 +11,7 @@
     <color name="default_text_color_holo_light_disabled">#ffb2b2b2</color>
     <color name="default_divider_color_light">#28000000</color>
     <color name="default_button_background_light">#00000000</color>
-    <color name="default_button_background_pressed_light">#ff00ddff</color>
+    <color name="default_button_background_pressed_light">#28000000</color>
     <color name="default_keyboard_indicator_color_light">#ff00ddff</color>
 
     <color name="circle_background">#f2f2f2</color>
