@@ -10,7 +10,7 @@ class AlertBuilderSetDone extends AlertDialog.Builder {
 
     private final static String TAG = "AlertBuilderSetDone";
 
-    public AlertBuilderSetDone(final Context context) {
+    AlertBuilderSetDone(final Context context) {
         super(context);
         setTitle(context.getString(R.string.alert_time_out));
         setIcon(context.getDrawable(R.drawable.ic_timer_off_black_48dp));
