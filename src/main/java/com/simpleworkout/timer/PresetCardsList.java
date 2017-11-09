@@ -1,11 +1,13 @@
 package com.simpleworkout.timer;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -26,6 +28,9 @@ public class PresetCardsList extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private RecycleViewAdapter adapter;
     private boolean addPresetButton;
+
+    private Context context;
+    private AlertDialog alertDialog;
 
     public boolean addPreset(Preset preset) {
         Log.d(TAG, "addPreset: preset='" + preset.toString() + "'");
@@ -80,12 +85,28 @@ public class PresetCardsList extends Fragment {
         linearLayoutManager.scrollToPosition(0);
     }
 
-    public void createPresetsList(Context context, SharedPreferences sharedPreferences){
+    public void initContext(Context context) {
+        this.context = context;
+        createAlertDialog();
+    }
+
+    public void createPresetsList(SharedPreferences sharedPreferences){
         Log.d(TAG, "createPresetsList");
         presetsList = new PresetsList();
         presetsList.setContext(context);
         presetsList.setSharedPreferences(sharedPreferences);
         presetsListSize = presetsList.initPresets();
+    }
+
+    private void createAlertDialog() {
+        alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setMessage(context.getString(R.string.delete_preset));
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, context.getString(R.string.alert_no),
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
     }
 
     @Override
@@ -248,10 +269,16 @@ public class PresetCardsList extends Fragment {
                 resetScrollPosition();
             }
             else if (view.getId() == imageButtonCard.getId()) {
-                int position = getAdapterPosition() - 1;
+                final int position = getAdapterPosition() - 1;
                 Log.d(TAG, "onClick: delete preset position=" + position);
-                removePreset(getAdapterPosition() - 1);
-                updateAddPresetCard();
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            removePreset(position);
+                            updateAddPresetCard();
+                        }
+                    });
+                alertDialog.show();
             }
         }
     }

@@ -343,7 +343,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         presetCardsList = new PresetCardsList();
-        presetCardsList.createPresetsList(this, sharedPreferences);
+        presetCardsList.initContext(this);
+        presetCardsList.createPresetsList(sharedPreferences);
         fragmentManager.beginTransaction().replace(R.id.fragmentContainerPresetCards, presetCardsList).commit();
 
         if (!timerServiceIsRunning()) {
