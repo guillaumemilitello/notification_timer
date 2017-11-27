@@ -23,7 +23,6 @@ public class NumberPickerBuilder {
     private Integer plusMinusVisibility;
     private Integer decimalVisibility;
     private String labelText;
-    private String checkboxLabelText;
     private int mReference;
     private Vector<NumberPickerDialogHandlerV2> mNumberPickerDialogHandlersV2 = new Vector<>();
     private Integer currentNumberValue;
@@ -174,17 +173,6 @@ public class NumberPickerBuilder {
     }
 
     /**
-     * Set the label to be displayed by the checkbox.
-     *
-     * @param labelText the String text to be shown
-     * @return the current Builder object
-     */
-    public NumberPickerBuilder setCheckboxLabelText(String labelText) {
-        this.checkboxLabelText = labelText;
-        return this;
-    }
-
-    /**
      * Attach universal objects as additional handlers for notification when the Picker is set. For most use cases, this
      * method is not necessary as attachment to an Activity or Fragment is done automatically.  If, however, you would
      * like additional objects to subscribe to this Picker being set, attach Handlers here.
@@ -226,7 +214,7 @@ public class NumberPickerBuilder {
 
         final NumberPickerDialogFragment fragment = NumberPickerDialogFragment
                 .newInstance(mReference, styleResId, minNumber, maxNumber, plusMinusVisibility, decimalVisibility,
-                        labelText, checkboxLabelText, currentNumberValue, currentDecimalValue, currentSignValue);
+                        labelText, currentNumberValue, currentDecimalValue, currentSignValue);
         if (targetFragment != null) {
             fragment.setTargetFragment(targetFragment, 0);
         }

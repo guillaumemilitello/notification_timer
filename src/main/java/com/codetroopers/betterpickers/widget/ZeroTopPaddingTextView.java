@@ -22,7 +22,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import com.codetroopers.betterpickers.R;
+import com.simpleworkout.timer.R;
 
 /**
  * Displays text with no padding at the top.

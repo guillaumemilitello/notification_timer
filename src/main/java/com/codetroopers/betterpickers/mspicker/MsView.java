@@ -3,19 +3,17 @@ package com.codetroopers.betterpickers.mspicker;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.codetroopers.betterpickers.R;
 import com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView;
+import com.simpleworkout.timer.R;
 
 public class MsView extends LinearLayout {
 
     private ZeroTopPaddingTextView mMinutesOnes, mMinutesTens;
     private ZeroTopPaddingTextView mSecondsOnes, mSecondsTens;
-    private final Typeface mAndroidClockMonoThin;
     private ZeroTopPaddingTextView mMinusLabel;
 
     private ColorStateList mTextColor;
@@ -37,9 +35,6 @@ public class MsView extends LinearLayout {
      */
     public MsView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        mAndroidClockMonoThin =
-                Typeface.createFromAsset(context.getAssets(), "fonts/AndroidClockMono-Thin.ttf");
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
@@ -96,12 +91,10 @@ public class MsView extends LinearLayout {
         }
         // Set the lowest time unit with thin font (excluding hundredths)
         if (mSecondsTens != null) {
-            mSecondsTens.setTypeface(mAndroidClockMonoThin);
-            mSecondsTens.updatePadding();
+            mSecondsTens.updatePaddingForBoldDate();
         }
         if (mSecondsOnes != null) {
-            mSecondsOnes.setTypeface(mAndroidClockMonoThin);
-            mSecondsOnes.updatePadding();
+            mSecondsOnes.updatePaddingForBoldDate();
         }
     }
 

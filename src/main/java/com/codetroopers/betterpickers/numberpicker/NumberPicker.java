@@ -12,13 +12,10 @@ import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.simpleworkout.timer.MainActivity;
 import com.simpleworkout.timer.R;
 
 import java.math.BigDecimal;
@@ -26,7 +23,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 
 public class NumberPicker extends LinearLayout implements Button.OnClickListener,
-        Button.OnLongClickListener, CheckBox.OnCheckedChangeListener {
+        Button.OnLongClickListener {
 
     protected int mInputSize = 20;
     protected final Button mNumbers[] = new Button[10];
@@ -38,12 +35,10 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     protected final Context mContext;
 
     private TextView mLabel;
-    private CheckBox mCheckbox;
     private boolean mChecked;
     private boolean mInfinity;
     private int mSign;
     private String mLabelText = "";
-    private String mCheckboxLabelText = "";
     private Button mSetButton;
     private static final int CLICKED_DECIMAL = 10;
 
@@ -143,16 +138,13 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         if (mLabel != null) {
             mLabel.setTextColor(mTextColor);
         }
-        if (mCheckbox != null) {
-            mCheckbox.setTextColor(mTextColor);
-        }
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mDivider = findViewById(R.id.divider);
+        mDivider = findViewById(R.id.dividerNumber);
 
         for (int i = 0; i < mInput.length; i++) {
             mInput[i] = -1;
@@ -164,7 +156,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         View v2 = findViewById(R.id.second);
         View v3 = findViewById(R.id.third);
         View v4 = findViewById(R.id.fourth);
-        View v5 = findViewById(R.id.fifth);
         mEnteredNumber = (NumberView) findViewById(R.id.number_text);
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
@@ -200,14 +191,10 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         mLeft.setOnClickListener(this);
         mRight.setOnClickListener(this);
         mLabel = (TextView) findViewById(R.id.label);
-        mCheckbox = (CheckBox) v5.findViewById(R.id.key_checkbox);
-        mCheckbox.setOnCheckedChangeListener(this);
         mSign = SIGN_POSITIVE;
 
         // Set the correct label state
         showLabel();
-        showLabelCheckbox();
-        updateCheckbox(MainActivity.getInitPickerZero());
 
         restyleViews();
         updateKeypad();
@@ -320,11 +307,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         return false;
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        mChecked = isChecked;
-    }
-
     private void updateKeypad() {
         // Update state of keypad
         updateLeftRightButtons();
@@ -348,26 +330,9 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         showLabel();
     }
 
-    public void setCheckBoxLabelText(String labelText) {
-        mCheckboxLabelText = labelText;
-        showLabelCheckbox();
-    }
-
     private void showLabel() {
         if (mLabel != null) {
             mLabel.setText(mLabelText);
-        }
-    }
-
-    private void showLabelCheckbox() {
-        if (mCheckbox != null) {
-            mCheckbox.setText(mCheckboxLabelText);
-        }
-    }
-
-    private void updateCheckbox(boolean checked) {
-        if (mCheckbox != null) {
-            mCheckbox.setChecked(checked);
         }
     }
 
@@ -387,7 +352,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             mNumbers[i].setEnabled(enable);
         }
         mLeft.setEnabled(enable);
-        mCheckbox.setEnabled(enable);
     }
 
     // Update the number displayed in the picker:

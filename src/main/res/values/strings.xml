@@ -38,8 +38,6 @@
     <string name="notification">Notification</string>
     <string name="extra_notification">Extra Notification</string>
     <string name="extra_notification_summary">Notification seconds before the timer is done</string>
-    <string name="init_picker">Default sets choice</string>
-    <string name="init_picker_summary">The timer starts before the first set by default</string>
     <string name="skip_forward">Skip forward</string>
     <string name="skip_backward">Skip backward</string>
     <string name="vibrate">Vibrate</string>
@@ -57,7 +55,6 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
-    <string name="pref_picker_init_zero" translatable="false">pickerInitZero</string>
     <string name="pref_vibrate" translatable="false">vibrate</string>
     <string name="pref_ringtone_uri" translatable="false">ringtoneUri</string>
     <string name="pref_light_color" translatable="false">lightColor</string>
@@ -69,12 +66,10 @@
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>
-    <string name="pref_preset_array_init" translatable="false">presetArray_%1$d_init</string>
     <string name="pref_timer_service" translatable="false">timerService_</string>
     <string name="pref_timer_service_timer_end" translatable="false">timerService_timerEnd</string>
     <string name="pref_timer_service_timer_current" translatable="false">timerService_timerCurrent</string>
     <string name="pref_timer_service_timer_user" translatable="false">timerService_timerUser</string>
-    <string name="pref_timer_service_sets_init" translatable="false">timerService_setsInit</string>
     <string name="pref_timer_service_sets_current" translatable="false">timerService_setsCurrent</string>
     <string name="pref_timer_service_sets_user" translatable="false">timerService_setUser</string>
     <string name="pref_timer_service_state" translatable="false">timerService_state</string>

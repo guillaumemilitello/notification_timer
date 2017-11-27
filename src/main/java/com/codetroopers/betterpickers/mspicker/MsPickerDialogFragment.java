@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.codetroopers.betterpickers.R;
+import com.simpleworkout.timer.R;
 
 import java.util.Vector;
 

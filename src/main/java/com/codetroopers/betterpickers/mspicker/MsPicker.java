@@ -16,7 +16,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.codetroopers.betterpickers.R;
+import com.simpleworkout.timer.R;
 
 public class MsPicker extends LinearLayout implements Button.OnClickListener, Button.OnLongClickListener {
 
@@ -174,7 +174,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
 
         mMinutesLabel = (TextView) findViewById(R.id.minutes_label);
         mSecondsLabel = (TextView) findViewById(R.id.seconds_label);
-        mDivider = findViewById(R.id.divider);
+        mDivider = findViewById(R.id.dividerMs);
 
         restyleViews();
         updateKeypad();

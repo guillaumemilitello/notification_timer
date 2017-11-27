@@ -48,9 +48,12 @@
                         android:id="@+id/number"
                         android:maxLines="1"
                         android:ellipsize="none"
-                        style="@style/medium_bold"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"/>
+                        style="@style/medium_light_hms"
+                        android:layout_height="48dp"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="0"/>
                 <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
                         android:id="@+id/decimal_separator"
                         android:maxLines="1"
@@ -63,6 +66,7 @@
                         android:id="@+id/decimal"
                         android:maxLines="1"
                         android:ellipsize="none"
+                        android:text="0"
                         style="@style/medium_bold"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"/>
@@ -99,13 +103,10 @@
                 android:layout_height="match_parent"/>
     </LinearLayout>
     <View
-            android:id="@+id/divider"
+            android:id="@+id/dividerNumber"
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@color/default_divider_color_light"/>
-    <include
-            layout="@layout/checkbox_keys_view"
-            android:id="@+id/fifth"/>
     <include
             layout="@layout/three_keys_view"
             android:id="@+id/first"/>
