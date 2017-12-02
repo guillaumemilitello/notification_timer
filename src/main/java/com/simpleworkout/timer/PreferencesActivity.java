@@ -93,7 +93,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        updateNotificationChannelPreferences();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            updateNotificationChannelPreferences();
+        }
         updateSummaries(sharedPreferences.getAll());
         updateGetReadyPreferences();
     }

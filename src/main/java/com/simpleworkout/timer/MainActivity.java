@@ -18,7 +18,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
@@ -320,7 +319,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         registerReceiver(mainActivityReceiver, filter);
 
         Intent intent = new Intent(this, TimerService.class);
-        startForegroundService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
         bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());

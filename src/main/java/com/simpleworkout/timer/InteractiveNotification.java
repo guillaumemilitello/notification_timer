@@ -515,37 +515,59 @@ class InteractiveNotification extends Notification {
 
     private Notification.Builder createNotificationBuilder(NotificationMode notificationMode) {
         Log.d(TAG, "createNotificationBuilder, notificationMode=" + notificationMode);
-        if (notificationMode == NotificationMode.DONE) {
-            return new Builder(context, getDoneChannelId())
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentIntent(pendingIntent)
-                    .setDeleteIntent(pendingIntentDeleted)
-                    .setPriority(PRIORITY_MAX)
-                    .setLights(lightColor != COLOR_NONE ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
-                    .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
-                    .setSound(ringtoneReady)
-                    .setColorized(true)
-                    .setColor(getColor());
-        } else if (notificationMode == NotificationMode.READY) {
-            return new Notification.Builder(context, getReadyChannelId())
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentIntent(pendingIntent)
-                    .setDeleteIntent(pendingIntentDeleted)
-                    .setPriority(PRIORITY_MAX)
-                    .setLights(COLOR_DEFAULT, 0, 0)
-                    .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
-                    .setSound(ringtoneReady)
-                    .setColorized(true)
-                    .setColor(getColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationMode == NotificationMode.DONE) {
+                return new Builder(context, getDoneChannelId())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentDeleted)
+                        .setColorized(true)
+                        .setColor(getColor());
+            } else if (notificationMode == NotificationMode.READY) {
+                return new Notification.Builder(context, getReadyChannelId())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentDeleted)
+                        .setColorized(true)
+                        .setColor(getColor());
+            } else {
+                return new Notification.Builder(context, updateChannelId)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentDeleted)
+                        .setColorized(true)
+                        .setColor(getColor());
+            }
         } else {
-            return new Notification.Builder(context, updateChannelId)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentIntent(pendingIntent)
-                    .setDeleteIntent(pendingIntentDeleted)
-                    .setPriority(PRIORITY_MAX)
-                    .setLights(COLOR_DEFAULT, 0, 0)
-                    .setColorized(true)
-                    .setColor(getColor());
+            if (notificationMode == NotificationMode.DONE) {
+                return new Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentDeleted)
+                        .setPriority(PRIORITY_MAX)
+                        .setLights(lightColor != COLOR_NONE ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
+                        .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
+                        .setSound(ringtoneReady)
+                        .setColor(getColor());
+            } else if (notificationMode == NotificationMode.READY) {
+                return new Notification.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentDeleted)
+                        .setPriority(PRIORITY_MAX)
+                        .setLights(COLOR_DEFAULT, 0, 0)
+                        .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
+                        .setSound(ringtoneReady)
+                        .setColor(getColor());
+            } else {
+                return new Notification.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentDeleted)
+                        .setPriority(PRIORITY_MAX)
+                        .setLights(COLOR_DEFAULT, 0, 0)
+                        .setColor(getColor());
+            }
         }
     }
 
@@ -610,9 +632,12 @@ class InteractiveNotification extends Notification {
 
             notificationManager.notify(ID, notificationBuilder.build());
 
-            notificationBuilder.setSound(null);
-            notificationBuilder.setVibrate(null);
-            notificationBuilder.setChannelId(updateChannelId);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationBuilder.setChannelId(updateChannelId);
+            } else {
+                notificationBuilder.setSound(null);
+                notificationBuilder.setVibrate(null);
+            }
         }
     }
 
