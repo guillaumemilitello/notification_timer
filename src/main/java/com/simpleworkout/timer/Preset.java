@@ -6,22 +6,15 @@ class Preset {
 
     private long timer;
     private int sets;
-    private int init;
 
     Preset() {
         this.timer = -1;
         this.sets = -1;
-        this.init = -1;
     }
 
-    Preset(long timer, int sets, int init) {
+    Preset(long timer, int sets) {
         this.timer = timer;
         this.sets = sets;
-        this.init = init;
-    }
-
-    public int getInit() {
-        return init;
     }
 
     int getSets() {
@@ -29,9 +22,7 @@ class Preset {
     }
 
     String getSetsString() {
-        String initString = (init == 0)? "!" : "";
-        String setsString = (sets == Integer.MAX_VALUE)? "" : String.format(Locale.US, "x%d", sets);
-        return setsString + initString;
+        return (sets == Integer.MAX_VALUE)? "" : String.format(Locale.US, "x%d", sets);
     }
 
     public long getTimer() {
@@ -47,7 +38,7 @@ class Preset {
     }
 
     boolean isValid() {
-        return this.timer > 0 && this.sets > 0 && (this.init == 0 || this.init == 1);
+        return this.timer > 0 && this.sets > 0;
     }
 
     @Override
@@ -55,7 +46,7 @@ class Preset {
     {
         if (object != null && object instanceof Preset) {
             Preset preset = (Preset)object;
-            return this.timer == preset.timer && this.sets == preset.sets && this.init == preset.init;
+            return this.timer == preset.timer && this.sets == preset.sets;
         } else {
             return false;
         }

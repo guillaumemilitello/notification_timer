@@ -33,6 +33,9 @@
     <string name="notif_timer_info">Timer %1$d of %2$d total</string>
     <string name="notif_timer_info_start0">Timer %1$d of %2$d! total</string>
     <string name="notif_timer_done">Timer Done !</string>
+    <string name="notif_channel_done">Timer Done</string>
+    <string name="notif_channel_ready">Extra notification</string>
+    <string name="notif_channel_update">Timer update</string>
     <!-- Settings -->
     <string name="timer">Timer</string>
     <string name="notification">Notification</string>

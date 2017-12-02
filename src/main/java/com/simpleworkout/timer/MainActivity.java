@@ -1,6 +1,7 @@
 package com.simpleworkout.timer;
 
 import android.app.ActivityManager;
+import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
@@ -33,7 +34,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -72,8 +72,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // Main user interface
     private Menu toolbarMenu;
-    private TextView timerTextViewBold, timerTextViewMinute, timerTextView, setsTextView, timerUserTextView, setsUserTextView;
-    private ImageView imageViewPresetTimer, imageViewPresetSets, imageViewCurrentSet;
+    private TextView timerTextViewBold, timerTextView, setsTextView;//, timerUserTextView, setsUserTextView;
     private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -102,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private TimerService.State timerState;
     private long timerCurrent;
     private long timerUser;
-    private int setsInit;
     private int setsCurrent;
     private int setsUser;
 
@@ -114,19 +112,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // User preferences
     private long timerMinus;
     private long timerPlus;
-    private static boolean initPickerZero;
     private boolean vibrationEnable;
     private Uri ringtoneUri;
     private boolean timerGetReadyEnable;
     private int timerGetReady;
     private Uri ringtoneUriReady;
 
-    public static boolean getInitPickerZero() {
-        return initPickerZero;
-    }
-
     public Preset getPresetUser() {
-        return new Preset(timerUser, setsUser, setsInit);
+        return new Preset(timerUser, setsUser);
     }
 
     public SharedPreferences sharedPreferences;
@@ -194,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setContentView(R.layout.activity_main);
 
         // Update system color bar and icon for the system
-        Toolbar toolbar = (Toolbar) findViewById(R.id.actionBar);
+        Toolbar toolbar = findViewById(R.id.actionBar);
         setSupportActionBar(toolbar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -215,33 +208,27 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         }
 
-        timerTextViewBold = (TextView) findViewById(R.id.textViewTimerBold);
-        timerTextViewMinute = (TextView) findViewById(R.id.textViewTimerMinute);
-        timerTextView = (TextView) findViewById(R.id.textViewTimer);
-        setsTextView = (TextView) findViewById(R.id.textViewSets);
-        timerUserTextView = (TextView) findViewById(R.id.textViewTimerUser);
-        setsUserTextView = (TextView) findViewById(R.id.textViewSetsUser);
+        timerTextViewBold = findViewById(R.id.textViewTimerBold);
+        timerTextView = findViewById(R.id.textViewTimer);
+        setsTextView = findViewById(R.id.textViewSets);
+        //timerUserTextView = findViewById(R.id.textViewTimerUser);
+        //setsUserTextView = findViewById(R.id.textViewSetsUser);
 
-        informationLayout = (LinearLayout) findViewById(R.id.informationLayout);
-        presetsFrameLayout = (FrameLayout) findViewById(R.id.fragmentContainerPresetCards);
-        fullButtonsLayout = (LinearLayout) findViewById(R.id.fullButtonsLayout);
-        timerLayout = (RelativeLayout) findViewById(R.id.timerLayout);
-        timerButtonsMultiLayout = (LinearLayout) findViewById(R.id.timerButtonsMulti);
-        mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
-        mainLayoutButton = (LinearLayout) findViewById(R.id.mainLayoutButtons);
-
-        imageViewPresetTimer = (ImageView) findViewById(R.id.imageViewPresetTimer);
-        imageViewPresetSets = (ImageView) findViewById(R.id.imageViewPresetSets);
-        imageViewCurrentSet = (ImageView) findViewById(R.id.imageViewCurrentSet);
+        informationLayout = findViewById(R.id.informationLayout);
+        presetsFrameLayout = findViewById(R.id.fragmentContainerPresetCards);
+        fullButtonsLayout = findViewById(R.id.fullButtonsLayout);
+        timerLayout = findViewById(R.id.timerLayout);
+        timerButtonsMultiLayout = findViewById(R.id.timerButtonsMulti);
+        mainLayout = findViewById(R.id.mainLayout);
+        mainLayoutButton = findViewById(R.id.mainLayoutButtons);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondBold.ttf");
         Typeface typefaceLight = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-CondLight.ttf");
         timerTextViewBold.setTypeface(typeface);
-        timerTextViewMinute.setTypeface(typeface);
         timerTextView.setTypeface(typefaceLight);
         setsTextView.setTypeface(typeface);
-        timerUserTextView.setTypeface(typeface);
-        setsUserTextView.setTypeface(typefaceLight);
+        //timerUserTextView.setTypeface(typeface);
+        //setsUserTextView.setTypeface(typefaceLight);
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
@@ -258,18 +245,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         setsPickerBuilder.setDecimalVisibility(View.INVISIBLE);
         setsPickerBuilder.setPlusMinusVisibility(View.VISIBLE);
-        setsPickerBuilder.setCheckboxLabelText(getString(R.string.picker_checkbox));
 
-        timerProgressBar = (ProgressBar) findViewById(R.id.timerProgressBar);
+        timerProgressBar = findViewById(R.id.timerProgressBar);
 
-        imageButtonLeft = (ImageButton) findViewById(R.id.imageButtonLeft);
-        imageButtonCenter = (ImageButton) findViewById(R.id.imageButtonCenter);
-        imageButtonRight = (ImageButton) findViewById(R.id.imageButtonRight);
+        imageButtonLeft = findViewById(R.id.imageButtonLeft);
+        imageButtonCenter = findViewById(R.id.imageButtonCenter);
+        imageButtonRight = findViewById(R.id.imageButtonRight);
 
-        imageButtonTimerMinus = (ImageButton) findViewById(R.id.imageButtonTimerMinus);
-        imageButtonTimerPlus = (ImageButton) findViewById(R.id.imageButtonTimerPlus);
-        imageButtonTimerMinusMulti = (ImageButton) findViewById(R.id.imageButtonTimerMinusMulti);
-        imageButtonTimerPlusMulti = (ImageButton) findViewById(R.id.imageButtonTimerPlusMulti);
+        imageButtonTimerMinus = findViewById(R.id.imageButtonTimerMinus);
+        imageButtonTimerPlus = findViewById(R.id.imageButtonTimerPlus);
+        imageButtonTimerMinusMulti = findViewById(R.id.imageButtonTimerMinusMulti);
+        imageButtonTimerPlusMulti = findViewById(R.id.imageButtonTimerPlusMulti);
         imageButtonTimerMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -295,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         });
 
-        imageButtonKeepScreenOn = (ImageButton) findViewById(R.id.imageButtonKeepScreenOn);
+        imageButtonKeepScreenOn = findViewById(R.id.imageButtonKeepScreenOn);
         imageButtonKeepScreenOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -334,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         registerReceiver(mainActivityReceiver, filter);
 
         Intent intent = new Intent(this, TimerService.class);
-        startService(intent);
+        startForegroundService(intent);
         bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -349,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");
-            startService(new Intent(getBaseContext(), TimerService.class));
+            startForegroundService(new Intent(getBaseContext(), TimerService.class));
         }
 
         // Detect first run
@@ -474,15 +460,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 fullButtonsLayout.setVisibility(View.VISIBLE);
                 timerButtonsMultiLayout.setVisibility(View.GONE);
                 informationLayout.setVisibility(View.VISIBLE);
-                timerBoldTextSizeRatio = 2;
-                timerTextSizeRatio = 5;
+                timerBoldTextSizeRatio = 2f;
+                timerTextSizeRatio = 3.25f;
                 layoutMarginRatio = 5;
                 layoutWeight = 3;
                 break;
         }
         Log.d(TAG, "scaleLayout: timerLayoutHeight=" + timerLayoutHeight + ", timerBoldTextSizeRatio=" + timerBoldTextSizeRatio + ", timerTextSizeRatio=" + timerTextSizeRatio);
         timerTextViewBold.setTextSize(timerLayoutHeight / timerBoldTextSizeRatio);
-        timerTextViewMinute.setTextSize(timerLayoutHeight / timerBoldTextSizeRatio);
         timerTextView.setTextSize(timerLayoutHeight / timerTextSizeRatio);
 
         Log.d(TAG, "scaleLayout: layoutMarginRatio=" + layoutMarginRatio);
@@ -504,13 +489,23 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // Detect the screen orientation with DisplayMetrics for better support in multiWindowMode
     private boolean isScreenInLandscape() {
         WindowManager manager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = manager.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-        Log.d(TAG, "isScreenInLandscape: width=" + width + ", height=" + height);
-        return width >= height;
+        if (manager != null) {
+            Display display = manager.getDefaultDisplay();
+            DisplayMetrics metrics = new DisplayMetrics();
+            display.getMetrics(metrics);
+            int width = metrics.widthPixels;
+            int height = metrics.heightPixels;
+            Log.d(TAG, "isScreenInLandscape: width=" + width + ", height=" + height);
+            return width >= height;
+        }
+        return false; // Default is portrait mode
+    }
+
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "onRestart");
     }
 
     @Override
@@ -527,7 +522,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         timerCurrent = 0;
         timerUser = 0;
-        setsInit = 0;
         setsCurrent = 0;
         setsUser = 0;
         timerState = TimerService.State.WAITING;
@@ -550,12 +544,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private void getTimerServiceContext() {
         timerCurrent = timerService.getTimerCurrent();
         timerUser = timerService.getTimerUser();
-        setsInit = timerService.getSetsInit();
         setsCurrent = timerService.getSetsCurrent();
         setsUser = timerService.getSetsUser();
         timerState = timerService.getState();
         Log.d(TAG, "updateUserInterface: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser +
-                ", setsCurrent=" + setsCurrent + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", timerState=" + timerState);
+                ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", timerState=" + timerState);
     }
 
     private void updateUserInterface() {
@@ -573,10 +566,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private boolean timerServiceIsRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        // Loop through the running services
-        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if (TimerService.class.getName().equals(service.service.getClassName())) {
-                return true;
+        if (activityManager != null) {
+            // Loop through the running services
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                if (TimerService.class.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -605,10 +600,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     @Override
-    public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber, boolean checked) {
+    public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
         int sets = number.intValue();
-        setsInit = (checked && sets != Integer.MAX_VALUE)? 0 : 1;
-        setsCurrent = setsInit;
+        setsCurrent = 1;
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         updateSetsDisplay();
@@ -621,12 +615,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         // TODO : merge with Preset class
         if (timerCurrent >= 60) {
             timerTextViewBold.setText(String.format(Locale.US, "%d", timerCurrent / 60));
-            timerTextViewMinute.setVisibility(View.VISIBLE);
             timerTextView.setVisibility(View.VISIBLE);
             timerTextView.setText(String.format(Locale.US, "%02d", timerCurrent % 60));
         } else {
             timerTextViewBold.setText(String.format(Locale.US, "%d", timerCurrent % 60));
-            timerTextViewMinute.setVisibility(View.GONE);
             timerTextView.setVisibility(View.GONE);
         }
         timerProgressBar.setMax((int) timerUser);
@@ -637,11 +629,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     private void updateColorLayout() {
         // TODO : update resources and use own colors
-        int userTextColor = R.color.timer_progressbar_waiting;
-        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
-            userTextColor = R.color.bpLine_dark;
-        }
-
         int setsTextColor = R.color.timer_progressbar_waiting;
         if (buttonsLayout == ButtonsLayout.READY) {
             setsTextColor = R.color.bpLine_dark;
@@ -677,26 +664,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             progressColor = getColor(progressColor);
             timerTextColor = getColor(timerTextColor);
             setsTextColor = getColor(setsTextColor);
-            userTextColor = getColor(userTextColor);
         } else {
             backgroundColor = getResources().getColor(backgroundColor);
             progressColor = getResources().getColor(progressColor);
             timerTextColor = getResources().getColor(timerTextColor);
             setsTextColor = getResources().getColor(setsTextColor);
-            userTextColor = getResources().getColor(userTextColor);
         }
 
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
         timerTextView.setTextColor(timerTextColor);
         timerTextViewBold.setTextColor(timerTextColor);
-        timerTextViewMinute.setTextColor(timerTextColor);
         setsTextView.setTextColor(setsTextColor);
-        imageViewCurrentSet.setColorFilter(setsTextColor, PorterDuff.Mode.SRC_ATOP);
-        timerUserTextView.setTextColor(userTextColor);
-        setsUserTextView.setTextColor(userTextColor);
-        imageViewPresetTimer.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
-        imageViewPresetSets.setColorFilter(userTextColor, PorterDuff.Mode.SRC_ATOP);
     }
 
     private void updateSetsDisplay() {
@@ -704,9 +683,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updatePresetDisplay() {
-        Preset preset = new Preset(timerUser, setsUser, setsInit);
-        timerUserTextView.setText(preset.getTimerString());
-        setsUserTextView.setText(preset.getSetsString());
+        //Preset preset = new Preset(timerUser, setsUser); // TODO : implements progress bar in preset
+        //timerUserTextView.setText(preset.getTimerString());
+        //setsUserTextView.setText(preset.getSetsString());
     }
 
     private void terminatePickers() {
@@ -735,8 +714,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         timerCurrent = preset.getTimer();
         timerUser = timerCurrent;
-        setsInit = preset.getInit();
-        setsCurrent = setsInit;
+        setsCurrent = 1;
         setsUser = preset.getSets();
 
         timerProgressBar.setMax((int) timerUser);
@@ -754,7 +732,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (timerServiceBound) {
             timerService.setTimerCurrent(timerCurrent);
             timerService.setTimerUser(timerUser);
-            timerService.setSetsInit(setsInit);
             timerService.setSetsCurrent(setsCurrent);
             timerService.setSetsUser(setsUser);
             timerService.setReadyState();
@@ -767,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
             Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
         } else {
-            if (!presetCardsList.addPreset(new Preset(timerUser, setsUser, setsInit))) {
+            if (!presetCardsList.addPreset(new Preset(timerUser, setsUser))) {
                 Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
             }
         }
@@ -819,7 +796,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "clear: timerState=" + timerState);
 
         timerUser = 0;
-        setsInit = 0;
         setsCurrent = 0;
         setsUser = 0;
 
@@ -1002,9 +978,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private void vibrate() {
         if (vibrationEnable) {
             Log.i(TAG, "vibrate");
-            Vibrator vibrator;
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(vibrationPattern, -1);
+            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if (vibrator != null) {
+                vibrator.vibrate(vibrationPattern, -1);
+            }
         }
     }
 
@@ -1126,7 +1103,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 updateButtons(ButtonAction.CLEAR, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case READY:
-                buttonAction = (setsCurrent > setsInit)? ButtonAction.RESET : ButtonAction.CLEAR;
+                buttonAction = (setsCurrent > 1)? ButtonAction.RESET : ButtonAction.CLEAR;
                 updateButtons(buttonAction, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case RUNNING:
@@ -1303,18 +1280,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
-        mainActivityVisible = false;
+        Log.d(TAG, "onStop: mainActivityVisible=" + mainActivityVisible + ", timerService=" + timerService + ", timerServiceBound= " + timerServiceBound);
+        mainActivityVisible = false; // TODO: useless ?
 
-        if (timerService == null) {
-            timerServiceBound = false;
-        }
-
-        if (timerServiceBound) {
+        if (timerService != null) {
             timerService.updateNotificationVisibility(true);
             unbindService(serviceConnection);
-            timerServiceBound = false;
         }
+        timerServiceBound = false;
 
         // Complete ongoing pop-up action
         if (alertSetDone.isShowing()) {
@@ -1374,6 +1347,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 str = "UI_HIDDEN";
                 // TODO: release some resources
                 break;
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+                break;
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+                break;
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+                break;
         }
         Log.d(TAG, "onTrimMemory: level=" + str);
     }
@@ -1417,6 +1396,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             for (Map.Entry<String, ?> preference : preferences.entrySet()) {
                 updatePreference(preference.getKey());
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                timerService.interactiveNotification.updateNotificationChannels();
+            }
         }
     }
 
@@ -1438,8 +1420,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             if (timerServiceBound) {
                 timerService.setTimerPlus(timerPlus);
             }
-        } else if (key.equals(getString(R.string.pref_picker_init_zero))) {
-            initPickerZero = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_picker_init_zero));
         } else if (key.equals(getString(R.string.pref_vibrate))) {
             vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
             if (timerServiceBound) {
@@ -1452,7 +1432,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         } else if (key.equals(getString(R.string.pref_light_color))) {
             if (timerServiceBound) {
-                int color = getColorInt(sharedPreferences.getString(key, getString(R.string.default_light_color)));
+                String colorString = sharedPreferences.getString(key, getString(R.string.default_light_color));
+                int color = getColorInt(colorString);
                 timerService.interactiveNotification.setLightColor(color);
             }
         } else if (key.equals(getString(R.string.pref_light_flash_rate))) {
@@ -1487,7 +1468,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private int getColorInt(String color) {
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                    updatePreference(key);
+                }
+            };
+
+    private static int getColorInt(String color) {
         switch (color) {
             case "none":
                 return InteractiveNotification.COLOR_NONE;
@@ -1498,10 +1486,30 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
-            new SharedPreferences.OnSharedPreferenceChangeListener() {
-                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    updatePreference(key);
-                }
-            };
+    static String getStringColor(int color) {
+        Log.d(TAG, "getStringColor: color=" + color);
+        switch(color) {
+            case InteractiveNotification.COLOR_NONE:
+                return "none";
+            case InteractiveNotification.COLOR_DEFAULT:
+                return "default";
+            case Color.WHITE:
+                return "white";
+            case Color.YELLOW:
+                return "yellow";
+            case Color.RED:
+                return "red";
+            case Color.GREEN:
+                return "green";
+            case Color.BLUE:
+                return "blue";
+            case Color.CYAN:
+                return "cyan";
+            case Color.MAGENTA:
+                return "magenta";
+            case 0xFF800080:
+                return "purple";
+        }
+        return "default";
+    }
 }

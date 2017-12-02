@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:baselineAligned="false"
+    android:background="@android:color/transparent" >
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1" >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:id="@+id/textViewTimer_line" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:text="37:43"
+                android:id="@+id/textViewTimer" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:textColor="@color/darkerGrayNotification"
+                android:text="v0.15 template"
+                android:id="@+id/textViewSets_short" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            style="@style/notificationButton"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@+id/textViewTimer_line"
+            android:progressBackgroundTint="@android:color/white"
+            android:progressTint="@android:color/black"
+            android:paddingEnd="10dp"
+            android:paddingTop="5.5dp"
+            android:progress="80"
+            android:max="100"
+            android:id="@+id/progressBarTimer" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@+id/textViewTimer_line"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:textColor="@color/darkerGrayNotification"
+            android:text="v0.13 template"
+            android:id="@+id/textViewSets" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0" >
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_refresh_black_48dp"
+            android:scaleType="fitCenter"
+            android:clickable="true"
+            android:elevation="2dp"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:id="@+id/button2"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_refresh_black_48dp"
+            android:scaleType="fitCenter"
+            android:clickable="true"
+            android:elevation="4dp"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:id="@+id/button1"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_refresh_black_48dp"
+            android:scaleType="fitCenter"
+            android:clickable="true"
+            android:elevation="6dp"
+            android:theme="@style/notificationImageButton"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:id="@+id/button0"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+</LinearLayout>

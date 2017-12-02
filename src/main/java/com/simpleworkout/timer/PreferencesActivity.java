@@ -2,6 +2,9 @@ package com.simpleworkout.timer;
 
 
 import android.app.ActivityManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
@@ -19,6 +22,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,6 +42,8 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
     private static SharedPreferences sharedPreferences;
     private TimerPreferenceFragment settingsFragment;
+
+    private NotificationManager notificationManager;
 
     @Override
     @SuppressWarnings("deprecation")
@@ -68,6 +74,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        }
     }
 
     public static class TimerPreferenceFragment extends PreferenceFragment
@@ -83,6 +93,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        updateNotificationChannelPreferences();
         updateSummaries(sharedPreferences.getAll());
         updateGetReadyPreferences();
     }
@@ -102,6 +113,47 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    private void updateNotificationChannelPreferences() {
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        List<NotificationChannel> notificationChannelList = notificationManager.getNotificationChannels();
+        for (NotificationChannel notificationChannel : notificationChannelList) {
+            if (notificationChannel.getId().equals(InteractiveNotification.getDoneChannelId())) {
+                Log.d(TAG, "updateNotificationChannelPreferences: notificationId=" + notificationChannel.getId());
+                sharedPreferencesEditor.putBoolean(getString(R.string.pref_vibrate), notificationChannel.shouldVibrate());
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_vibrate) + ", bool=" + notificationChannel.shouldVibrate());
+                Uri uri = notificationChannel.getSound();
+                if (uri != null) {
+                    sharedPreferencesEditor.putString(getString(R.string.pref_ringtone_uri), uri.toString());
+                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=" + notificationChannel.getSound().toString());
+                } else {
+                    sharedPreferencesEditor.putString(getString(R.string.pref_ringtone_uri), getString(R.string.default_timer_get_ready_ringtone_uri));
+                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=default");
+                }
+                if (notificationChannel.shouldShowLights()) {
+                    sharedPreferencesEditor.putString(getString(R.string.pref_light_color), MainActivity.getStringColor(notificationChannel.getLightColor()));
+                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", string=" + MainActivity.getStringColor(notificationChannel.getLightColor()));
+                } else {
+                    sharedPreferencesEditor.putString(getString(R.string.pref_light_color), "none");
+                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", string=none");
+                }
+            }
+            else if (notificationChannel.getId().equals(InteractiveNotification.getReadyChannelId())) {
+                Log.d(TAG, "updateNotificationChannelPreferences: notificationId=" + notificationChannel.getId());
+                sharedPreferencesEditor.putBoolean(getString(R.string.pref_timer_get_ready_vibrate), notificationChannel.shouldVibrate());
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_timer_get_ready_vibrate) + ", bool=" + notificationChannel.shouldVibrate());
+                Uri uri = notificationChannel.getSound();
+                if (uri != null) {
+                    sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready_ringtone_uri), uri.toString());
+                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=" + notificationChannel.getSound().toString());
+                } else {
+                    sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready_ringtone_uri), getString(R.string.default_timer_get_ready_ringtone_uri));
+                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=default");
+                }
+            }
+        }
+        sharedPreferencesEditor.apply();
     }
 
     private void updateGetReadyPreferences() {
@@ -137,6 +189,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                 Log.d(TAG, "updateSummary: title=" + title);
                 title = RingtoneManager.getRingtone(this, Uri.parse(title)).getTitle(this);
                 Log.d(TAG, "updateSummary: title=" + title);
+                if (title.equals("Unknown")) {
+                    title = "None";
+                }
                 preference.setSummary(title);
             }
         }

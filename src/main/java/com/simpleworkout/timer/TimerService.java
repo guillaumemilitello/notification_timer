@@ -51,14 +51,13 @@ public class TimerService extends Service {
         interactiveNotificationAlertDone = true;
     }
 
-    public void setInteractiveNotificationDone(boolean interactiveNotificationDone) {
-        this.interactiveNotificationDone = interactiveNotificationDone;
+    public void setInteractiveNotificationDone() {
+        this.interactiveNotificationDone = true;
     }
 
     // Running values
     private long timerCurrent = 0;
     private long timerUser = 0;
-    private int setsInit = 0;
     private int setsCurrent = 0;
     private int setsUser = 1;
     private State state = State.WAITING;
@@ -69,10 +68,6 @@ public class TimerService extends Service {
 
     public long getTimerUser() {
         return timerUser;
-    }
-
-    public int getSetsInit() {
-        return setsInit;
     }
 
     public int getSetsCurrent() {
@@ -122,8 +117,7 @@ public class TimerService extends Service {
     private static final int CONTEXT_PREFERENCE_TIMER_END = 0x01;
     private static final int CONTEXT_PREFERENCE_TIMER_CURRENT = 0x02;
     private static final int CONTEXT_PREFERENCE_TIMER_USER = 0x04;
-    private static final int CONTEXT_PREFERENCE_SETS_INIT = 0x08;
-    private static final int CONTEXT_PREFERENCE_SETS_CURRENT = 0x0A;
+    private static final int CONTEXT_PREFERENCE_SETS_CURRENT = 0x08;
     private static final int CONTEXT_PREFERENCE_SETS_USER = 0x10;
     private static final int CONTEXT_PREFERENCE_STATE = 0x20;
     private static final int CONTEXT_PREFERENCE_MAIN_ACTIVITY_VISIBLE = 0x40;
@@ -158,7 +152,10 @@ public class TimerService extends Service {
         alarmManager = (AlarmManager) getBaseContext().getSystemService(Context.ALARM_SERVICE);
         powerManager = (PowerManager) getBaseContext().getSystemService(Context.POWER_SERVICE);
         pendingIntentAlarm = PendingIntent.getBroadcast(getBaseContext(), 0, new Intent(IntentAction.ACQUIRE_WAKELOCK), 0);
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SimpleWorkoutTimerWakeLock");
+
+        if (powerManager != null) {
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SimpleWorkoutTimerWakeLock");
+        }
 
         timerServiceReceiver = new TimerServiceReceiver();
         IntentFilter filter = new IntentFilter();
@@ -317,7 +314,7 @@ public class TimerService extends Service {
         }
 
         setsCurrent++;
-        doneInteractiveNotification(InteractiveNotification.NotificationMode.LIGHT_SOUND_LONG_VIBRATE);
+        doneInteractiveNotification(InteractiveNotification.NotificationMode.DONE);
 
         releaseWakeLock();
 
@@ -395,7 +392,7 @@ public class TimerService extends Service {
     void reset() {
         Log.d(TAG, "reset");
 
-        setsCurrent = setsInit;
+        setsCurrent = 1;
         timerCurrent = timerUser;
 
         stopCountDown();
@@ -417,7 +414,6 @@ public class TimerService extends Service {
 
         timerCurrent = 0;
         timerUser = 0;
-        setsInit = 0;
         setsCurrent = 0;
         setsUser = 0;
 
@@ -429,8 +425,7 @@ public class TimerService extends Service {
         interactiveNotification.dismiss();
         releaseWakeLock();
 
-        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_TIMER_USER | CONTEXT_PREFERENCE_SETS_INIT |
-                CONTEXT_PREFERENCE_SETS_CURRENT | CONTEXT_PREFERENCE_SETS_USER);
+        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_TIMER_USER | CONTEXT_PREFERENCE_SETS_CURRENT | CONTEXT_PREFERENCE_SETS_USER);
     }
 
     void timerMinus() {
@@ -469,13 +464,6 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
-    public void setSetsInit(int sets) {
-        Log.d(TAG, "setSetsInit: setsInit=" + sets);
-        setsInit = sets;
-        interactiveNotification.updateSetsInit(setsInit);
-        saveContextPreferences(CONTEXT_PREFERENCE_SETS_INIT);
-    }
-
     public void setSetsCurrent(int sets) {
         Log.d(TAG, "setSetsCurrent: setsCurrent=" + sets);
         setsCurrent = sets;
@@ -507,7 +495,7 @@ public class TimerService extends Service {
     private void notificationUpdateTimerCurrent(long time) {
         // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
         if (time == timerGetReady && timerUser > timerGetReady && timerGetReadyEnable && state == State.RUNNING) {
-            interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.SOUND_SHORT_VIBRATE);
+            interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.READY);
         } else {
             interactiveNotification.updateTimerCurrent(time, InteractiveNotification.NotificationMode.UPDATE);
         }
@@ -591,7 +579,7 @@ public class TimerService extends Service {
         if (wakeLock != null) {
             if (!wakeLock.isHeld()) {
                 Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
-                wakeLock.acquire();
+                wakeLock.acquire(10*60*1000L /*10 minutes*/);
             } else {
                 Log.e(TAG, "acquireWakeLock: wakeLock isHeld=true");
             }
@@ -668,10 +656,6 @@ public class TimerService extends Service {
             sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_user), timerUser);
             Log.d(TAG, "saveContextPreferences: timerUser=" + timerUser);
         }
-        if ((flags & CONTEXT_PREFERENCE_SETS_INIT) == CONTEXT_PREFERENCE_SETS_INIT) {
-            sharedPreferencesEditor.putInt(getString(R.string.pref_timer_service_sets_init), setsInit);
-            Log.d(TAG, "saveContextPreferences: setsInit=" + setsInit);
-        }
         if ((flags & CONTEXT_PREFERENCE_SETS_CURRENT) == CONTEXT_PREFERENCE_SETS_CURRENT) {
             sharedPreferencesEditor.putInt(getString(R.string.pref_timer_service_sets_current), setsCurrent);
             Log.d(TAG, "saveContextPreferences: setsCurrent=" + setsCurrent);
@@ -697,7 +681,6 @@ public class TimerService extends Service {
         setTimerUser(sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_user), timerUser));
         setSetsCurrent(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_current), setsCurrent));
         setSetsUser(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_user), setsUser));
-        setSetsInit(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_init), setsInit));
         state = State.valueOf(sharedPreferences.getString(getString(R.string.pref_timer_service_state), state.toString()).toUpperCase(Locale.US));
         mainActivityVisible = sharedPreferences.getBoolean(getString(R.string.pref_timer_service_main_activity_visible), mainActivityVisible);
 
@@ -734,10 +717,10 @@ public class TimerService extends Service {
             notificationUpdateTimerCurrent(timerCurrent);
         }
         Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
-                + ", setsInit=" + setsInit + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+                + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
     }
 
-    public class TimerBinder extends Binder {
+    class TimerBinder extends Binder {
         TimerService getService() {
             Log.d(TAG, "TimerServiceBinder getService");
             return TimerService.this;

@@ -2,10 +2,12 @@ package com.simpleworkout.timer;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import java.util.List;
 import java.util.Locale;
 
 @SuppressLint("ParcelCreator")
@@ -26,17 +29,39 @@ class InteractiveNotification extends Notification {
         return ID;
     }
 
-    private boolean restTimerNotificationVisible;
+    private final Context context;
+
+    private boolean visible;
+
+    public boolean isVisible() { return visible; }
 
     private final NotificationManager notificationManager;
     private Notification.Builder notificationBuilder;
     private PendingIntent pendingIntent, pendingIntentDeleted;
 
+    private static final String doneChannelId = "doneChannelId";
+    private static final String readyChannelId = "readyChannelId";
+    private static final String updateChannelId = "updateChannelId";
+    private static int doneChannelNbId = 0;
+    private static int readyChannelNbId = 0;
+
+    @SuppressLint("DefaultLocale")
+    static String getDoneChannelId() {  return String.format("%s%d", doneChannelId, doneChannelNbId); }
+    @SuppressLint("DefaultLocale")
+    static String getReadyChannelId() {  return String.format("%s%d", readyChannelId, readyChannelNbId); }
+
+    @SuppressLint("DefaultLocale")
+    private static String getNewDoneChannelId() {  return String.format("%s%d", doneChannelId, ++doneChannelNbId); }
+    @SuppressLint("DefaultLocale")
+    private static String getNewReadyChannelId() { return String.format("%s%d", readyChannelId, ++readyChannelNbId); }
+
     public Notification getNotification() { return  notificationBuilder.build(); }
+
+    private int headsUpUpdateCount;
 
     // Timer service related
     private long timerCurrent, timerUser;
-    private int setsCurrent, setsUser, setsInit;
+    private int setsCurrent, setsUser;
     private String timerString, setsString;
 
     private boolean timerGetReadyEnable;
@@ -79,6 +104,13 @@ class InteractiveNotification extends Notification {
         this.ringtoneReady = ringtoneReady;
     }
 
+    void updateNotificationChannels() {
+        if (notificationManager != null) {
+            updateDoneChannel();
+            updateReadyChannel();
+        }
+    }
+
     // Settings options
     private boolean vibrationEnable;
     private boolean vibrationReadyEnable;
@@ -87,11 +119,7 @@ class InteractiveNotification extends Notification {
     private Uri ringtone;
     private Uri ringtoneReady;
 
-    final static int COLOR_NONE = -1;
-
-    private final Context context;
-
-    private int headsUpUpdate;
+    final static int COLOR_NONE = -2;
 
     private enum ButtonAction {
 
@@ -143,10 +171,10 @@ class InteractiveNotification extends Notification {
 
     enum NotificationMode {
 
-        NO_NOTIFICATION,
+        NONE,
         UPDATE,
-        SOUND_SHORT_VIBRATE,
-        LIGHT_SOUND_LONG_VIBRATE
+        READY,
+        DONE
     }
 
 
@@ -154,23 +182,11 @@ class InteractiveNotification extends Notification {
 
         this.context = context;
 
-        // pending intent to go back to the main activity from the notification
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-        pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-        // pending intent when the notification is deleted
-        pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        notificationBuilder = createNotificationBuilder();
-
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
         timerString = "";
         setsString = "";
         timerCurrent = 0;
         setsCurrent = 0;
         setsUser = 0;
-        setsInit = 0;
 
         timerGetReadyEnable = false;
         timerGetReady = 0;
@@ -180,19 +196,157 @@ class InteractiveNotification extends Notification {
         button0 = ButtonAction.NO_ACTION;
         buttonsLayout = ButtonsLayout.NO_LAYOUT;
 
-        headsUpUpdate = 0;
+        headsUpUpdateCount = 0;
+
+        // pending intent to go back to the main activity from the notification
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+        // pending intent when the notification is deleted
+        pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // attributes used to setup notification channels with sound
+        audioAttributes = (new AudioAttributes.Builder()).setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN).setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
+
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
+            createNotificationChannels();
+        }
+
+        notificationBuilder = createDefaultNotificationBuilder();
 
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
-    protected void update(int setsCurrent, long timerCurrent, ButtonsLayout layout) {
+    private void createNotificationChannels() {
+        boolean doneChannelCreated = false;
+        boolean readyChannelCreated = false;
+        boolean updateChannelCreated = false;
+        List<NotificationChannel> notificationChannelList = notificationManager.getNotificationChannels();
+        for (NotificationChannel notificationChannel : notificationChannelList) {
+            if (notificationChannel.getId().contains(doneChannelId)) {
+                doneChannelNbId = Integer.parseInt(notificationChannel.getId().replaceAll("[^0-9]", ""));
+                doneChannelCreated = true;
+                Log.d(TAG, "createNotificationChannels: " + notificationChannel.getId() + ", doneChannelNbId=" + doneChannelNbId);
+            }
+            else if (notificationChannel.getId().contains(readyChannelId)) {
+                readyChannelNbId = Integer.parseInt(notificationChannel.getId().replaceAll("[^0-9]", ""));
+                readyChannelCreated = true;
+                Log.d(TAG, "createNotificationChannels: " + notificationChannel.getId() + ", readyChannelNbId=" + readyChannelNbId);
+            }
+            else if (notificationChannel.getId().equals(updateChannelId)) {
+                updateChannelCreated = true;
+            }
+        }
+        Log.d(TAG, "createNotificationChannels: doneChannelCreated=" + doneChannelCreated + ", readyChannelCreated=" + readyChannelCreated + ", updateChannelCreated=" + updateChannelCreated);
+        if (!doneChannelCreated) {
+            createDoneChannel();
+        }
+        if (!readyChannelCreated) {
+            createReadyChannel();
+        }
+        if (!updateChannelCreated) {
+            createUpdateChannel();
+        }
+    }
+
+    private void updateDoneChannel() {
+        NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getDoneChannelId());
+        Log.d(TAG, "updateDoneChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
+        Uri uri = currentNotificationChannel.getSound();
+        if (ringtone != null && uri != null && !ringtone.equals(uri)) {
+            Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=" + uri);
+            createDoneChannel();
+        }
+        else if (ringtone == null && uri != null) {
+            Log.d(TAG, "updateDoneChannel: ringtone=null, uri=" + uri);
+            createDoneChannel();
+        }
+        else if (ringtone != null && uri == null) {
+            Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=null");
+            createDoneChannel();
+        }
+        else if (currentNotificationChannel.shouldVibrate() != vibrationEnable) {
+            Log.d(TAG, "updateDoneChannel: vibrationEnable=" + vibrationEnable);
+            createDoneChannel();
+        }
+        else if (currentNotificationChannel.shouldShowLights() && lightColor != COLOR_NONE) {
+            int color = currentNotificationChannel.getLightColor();
+            if (color != lightColor) {
+                Log.d(TAG, "updateDoneChannel: color=" + MainActivity.getStringColor(color) + ", lightColor=" + MainActivity.getStringColor(lightColor));
+                createDoneChannel();
+            }
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private void createDoneChannel() {
+        notificationManager.deleteNotificationChannel(getDoneChannelId());
+        NotificationChannel notificationChannel = new NotificationChannel(getNewDoneChannelId(), context.getString(R.string.notif_channel_done), NotificationManager.IMPORTANCE_HIGH);
+        notificationChannel.setShowBadge(false);
+        notificationChannel.setSound(ringtone, audioAttributes);
+        notificationChannel.setVibrationPattern(MainActivity.vibrationPattern);
+        notificationChannel.enableVibration(vibrationEnable);
+        notificationChannel.enableLights(lightColor != COLOR_NONE);
+        notificationChannel.setLightColor(lightColor);
+        notificationManager.createNotificationChannel(notificationChannel);
+        Log.d(TAG, "createDoneChannel: notificationChannel=" + notificationChannel);
+    }
+
+    private void updateReadyChannel() {
+        NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getReadyChannelId());
+        Log.d(TAG, "updateReadyChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
+        Uri uri = currentNotificationChannel.getSound();
+        if (ringtoneReady != null && uri != null && !ringtoneReady.equals(uri)) {
+            Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=" + uri);
+            createReadyChannel();
+        }
+        else if (ringtoneReady == null && uri != null) {
+            Log.d(TAG, "updateReadyChannel: ringtoneReady=null, uri=" + uri);
+            createReadyChannel();
+        }
+        else if (ringtoneReady != null && uri == null) {
+            Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=null");
+            createReadyChannel();
+        }
+        else if (currentNotificationChannel.shouldVibrate() != vibrationReadyEnable) {
+            Log.d(TAG, "updateReadyChannel: vibrationReadyEnable=" + vibrationReadyEnable);
+            createReadyChannel();
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private void createReadyChannel() {
+        notificationManager.deleteNotificationChannel(getReadyChannelId());
+        NotificationChannel notificationChannel = new NotificationChannel(getNewReadyChannelId(), context.getString(R.string.notif_channel_ready), NotificationManager.IMPORTANCE_HIGH);
+        notificationChannel.setShowBadge(false);
+        notificationChannel.setSound(ringtoneReady, audioAttributes);
+        notificationChannel.setVibrationPattern(MainActivity.vibrationPattern);
+        notificationChannel.enableVibration(vibrationReadyEnable);
+        notificationChannel.enableLights(false);
+        notificationManager.createNotificationChannel(notificationChannel);
+        Log.d(TAG, "createReadyChannel: notificationChannel=" + notificationChannel);
+    }
+
+    @SuppressLint("InlinedApi")
+    private void createUpdateChannel() {
+        NotificationChannel notificationChannel = new NotificationChannel(updateChannelId, context.getString(R.string.notif_channel_update), NotificationManager.IMPORTANCE_LOW);
+        notificationChannel.setShowBadge(false);
+        notificationChannel.enableVibration(false);
+        notificationChannel.enableLights(false);
+        notificationManager.createNotificationChannel(notificationChannel);
+        Log.d(TAG, "createUpdateChannel: notificationChannel=" + notificationChannel);
+    }
+
+    void update(int setsCurrent, long timerCurrent, ButtonsLayout layout) {
         updateTimerCurrent(timerCurrent);
         updateSetsCurrent(setsCurrent);
         updateButtonsLayout(layout, NotificationMode.UPDATE);
     }
 
     void updateButtonsLayout(ButtonsLayout layout) {
-        updateButtonsLayout(layout, NotificationMode.NO_NOTIFICATION);
+        updateButtonsLayout(layout, NotificationMode.NONE);
     }
 
     void updateButtonsLayout(ButtonsLayout layout, NotificationMode notificationMode) {
@@ -200,8 +354,8 @@ class InteractiveNotification extends Notification {
         if (buttonsLayout == ButtonsLayout.READY || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
-                    button2 = (setsCurrent > setsInit)? ButtonAction.DISMISS : ButtonAction.NO_ACTION;
-                    button1 = (setsCurrent > setsInit)? ButtonAction.RESET   : ButtonAction.DISMISS;
+                    button2 = (setsCurrent > 1)? ButtonAction.DISMISS : ButtonAction.NO_ACTION;
+                    button1 = (setsCurrent > 1)? ButtonAction.RESET   : ButtonAction.DISMISS;
                     button0 = ButtonAction.START;
                     break;
                 case RUNNING:
@@ -314,15 +468,15 @@ class InteractiveNotification extends Notification {
 
     void setVisible() {
         Log.d(TAG, "setVisible");
-        restTimerNotificationVisible = true;
+        visible = true;
         build(NotificationMode.UPDATE);
     }
 
     private RemoteViews createRemoteView() {
-
         RemoteViews remoteView;
-        boolean drawProgressBar = drawProgressBar();
-        if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady && drawProgressBar) {
+        if (buttonsLayout == ButtonsLayout.SET_DONE || buttonsLayout == ButtonsLayout.ALL_SETS_DONE) {
+            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_done);
+        } else if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady && drawProgressBar()) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_getready);
         } else {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
@@ -355,87 +509,115 @@ class InteractiveNotification extends Notification {
         }
     }
 
-    private Notification.Builder createNotificationBuilder() {
-        Notification.Builder notificationBuilder = new Notification.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pendingIntent)
-                .setDeleteIntent(pendingIntentDeleted)
-                .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                .setPriority(PRIORITY_MAX);
+    private Notification.Builder createDefaultNotificationBuilder() {
+        return createNotificationBuilder(NotificationMode.UPDATE);
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
-            notificationBuilder.setColor(context.getColor(R.color.colorPrimary));
+    private Notification.Builder createNotificationBuilder(NotificationMode notificationMode) {
+        Log.d(TAG, "createNotificationBuilder, notificationMode=" + notificationMode);
+        if (notificationMode == NotificationMode.DONE) {
+            return new Builder(context, getDoneChannelId())
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+                    .setDeleteIntent(pendingIntentDeleted)
+                    .setPriority(PRIORITY_MAX)
+                    .setLights(lightColor != COLOR_NONE ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
+                    .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
+                    .setSound(ringtoneReady)
+                    .setColorized(true)
+                    .setColor(getColor());
+        } else if (notificationMode == NotificationMode.READY) {
+            return new Notification.Builder(context, getReadyChannelId())
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+                    .setDeleteIntent(pendingIntentDeleted)
+                    .setPriority(PRIORITY_MAX)
+                    .setLights(COLOR_DEFAULT, 0, 0)
+                    .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
+                    .setSound(ringtoneReady)
+                    .setColorized(true)
+                    .setColor(getColor());
+        } else {
+            return new Notification.Builder(context, updateChannelId)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+                    .setDeleteIntent(pendingIntentDeleted)
+                    .setPriority(PRIORITY_MAX)
+                    .setLights(COLOR_DEFAULT, 0, 0)
+                    .setColorized(true)
+                    .setColor(getColor());
         }
-        return notificationBuilder;
+    }
+
+    private void setCustomContent(RemoteViews remoteView, NotificationMode notificationMode, boolean layoutSetDone) {
+        if (notificationMode == NotificationMode.UPDATE && headsUpUpdateCount > 0) {
+            // Avoid updating the headsUpContentView when it won't be visible
+            Log.d(TAG, "setCustomHeadsUpContentView + headsUpUpdateCount=" + headsUpUpdateCount);
+            notificationBuilder.setCustomHeadsUpContentView(remoteView);
+            headsUpUpdateCount--;
+        }
+        else if (notificationMode == NotificationMode.READY) {
+            Log.d(TAG, "setCustomHeadsUpContentView + headsUpUpdateCount=" + headsUpUpdateCount);
+            notificationBuilder.setCustomHeadsUpContentView(remoteView);
+            // Update the next 2 seconds of the headsUpContentView when it's running
+            headsUpUpdateCount = 2;
+        }
+        else {
+            Log.d(TAG, "setCustomHeadsUpContentView + headsUpUpdateCount=" + headsUpUpdateCount);
+            notificationBuilder.setCustomHeadsUpContentView(remoteView);
+        }
+        notificationBuilder.setCustomContentView(remoteView);
+        notificationBuilder.setUsesChronometer(layoutSetDone);
+    }
+
+    private int getColor() {
+        Log.d(TAG, "getColor: buttonsLayout=" + buttonsLayout);
+        switch (buttonsLayout) {
+            case NO_LAYOUT:
+            case READY:
+                return ContextCompat.getColor(context, R.color.progress_bar_ready);
+            case PAUSED:
+            case RUNNING:
+                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady && drawProgressBar())
+                    return ContextCompat.getColor(context, R.color.progress_bar_running_ready);
+                else
+                    return ContextCompat.getColor(context, R.color.progress_bar_running);
+            case SET_DONE:
+            case ALL_SETS_DONE:
+                return ContextCompat.getColor(context, R.color.progress_bar_done);
+        }
+        return ContextCompat.getColor(context, R.color.progress_bar_running);
     }
 
     private void build(NotificationMode notificationMode) {
-        if (restTimerNotificationVisible && notificationMode != NotificationMode.NO_NOTIFICATION) {
+        if (visible && notificationMode != NotificationMode.NONE) {
 
             boolean layoutSetDone = buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE;
 
             // Do not recreate the notification when updating a DONE notification to preserve the chronometer counter
-            if (notificationMode == NotificationMode.UPDATE && !layoutSetDone) {
-                notificationBuilder = createNotificationBuilder();
+            if(notificationMode != NotificationMode.UPDATE || !layoutSetDone) {
+                notificationBuilder = createNotificationBuilder(notificationMode);
             }
-            RemoteViews remoteView = createRemoteView();
 
+            RemoteViews remoteView = createRemoteView();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (notificationMode == NotificationMode.UPDATE && headsUpUpdate > 0) {
-                    // Avoid updating the headsUpContentView when it won't be visible
-                    notificationBuilder.setCustomHeadsUpContentView(remoteView);
-                    headsUpUpdate--;
-                }
-                else if (notificationMode == NotificationMode.SOUND_SHORT_VIBRATE) {
-                    notificationBuilder.setCustomHeadsUpContentView(remoteView);
-                    // Update the next 2 seconds of the headsUpContentView when it's running
-                    headsUpUpdate = 2;
-                }
-                else {
-                    notificationBuilder.setCustomHeadsUpContentView(remoteView);
-                }
-                notificationBuilder.setCustomContentView(remoteView);
-                notificationBuilder.setUsesChronometer(layoutSetDone);
+                notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
+                setCustomContent(remoteView, notificationMode, layoutSetDone);
             } else {
                 //noinspection deprecation
                 notificationBuilder.setContent(remoteView);
             }
 
-            switch (notificationMode) {
-                case UPDATE:
-                    notificationBuilder.setLights(COLOR_DEFAULT, 0, 0);
-                    break;
-                case SOUND_SHORT_VIBRATE:
-                    notificationBuilder.setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null);
-                    notificationBuilder.setSound(ringtoneReady);
-                    break;
-                case LIGHT_SOUND_LONG_VIBRATE:
-                    notificationBuilder.setVibrate(vibrationEnable ? MainActivity.vibrationPattern : null);
-                    notificationBuilder.setSound(ringtone);
-                    if (lightColor != COLOR_NONE) {
-                        notificationBuilder.setLights(lightColor, lightFlashRateOn, lightFlashRateOff);
-                    }
-                    break;
-                case NO_NOTIFICATION:
-                    break;
-                default:
-                    Log.e(TAG, "build: notificationMode=" + notificationMode + " not specified");
-                    break;
-            }
             notificationManager.notify(ID, notificationBuilder.build());
 
             notificationBuilder.setSound(null);
             notificationBuilder.setVibrate(null);
-
-            //if (notificationMode != NotificationMode.UPDATE) {
-                Log.d(TAG, "build: notificationMode=" + notificationMode);
-            //}
+            notificationBuilder.setChannelId(updateChannelId);
         }
     }
 
     private void updateTimerCurrent(long timer) {
-        updateTimerCurrent(timer, NotificationMode.NO_NOTIFICATION);
+        updateTimerCurrent(timer, NotificationMode.NONE);
     }
 
     void updateTimerCurrent(long timer, NotificationMode notificationMode) {
@@ -449,7 +631,7 @@ class InteractiveNotification extends Notification {
     }
 
     void updateSetsCurrent(int sets) {
-        updateSetsCurrent(sets, NotificationMode.NO_NOTIFICATION);
+        updateSetsCurrent(sets, NotificationMode.NONE);
     }
 
     void updateSetsCurrent(int sets, NotificationMode notificationMode) {
@@ -466,17 +648,13 @@ class InteractiveNotification extends Notification {
         build(notificationMode);
     }
 
-    void updateSetsInit(int sets) {
-        setsInit = sets;
-    }
-
     private void updateTimerTextView() {
         switch (buttonsLayout) {
             case NO_LAYOUT:
             case READY:
             case PAUSED:
             case RUNNING:
-                timerString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
+                timerString = String.format(Locale.US, "%d:%02d" , timerCurrent / 60, timerCurrent % 60);
                 break;
             case SET_DONE:
             case ALL_SETS_DONE:
@@ -493,10 +671,8 @@ class InteractiveNotification extends Notification {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if (setsUser == Integer.MAX_VALUE) {
                         setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
-                    } else if (setsInit == 1) {
-                        setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
                     } else {
-                        setsString = String.format(context.getString(R.string.notif_timer_info_start0), setsCurrent, setsUser);
+                        setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
                     }
                 } else {
                     setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
@@ -505,20 +681,16 @@ class InteractiveNotification extends Notification {
             case READY:
                 if (setsUser == Integer.MAX_VALUE) {
                     setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
-                } else if (setsInit == 1) {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info_start0), setsCurrent, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
                 }
                 break;
             case ALL_SETS_DONE:
             case SET_DONE:
                 if (setsUser == Integer.MAX_VALUE) {
                     setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent - 1);
-                } else if (setsInit == 1) {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent - 1, setsUser);
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info_start0), setsCurrent - 1, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent - 1, setsUser);
                 }
                 break;
         }
@@ -526,9 +698,9 @@ class InteractiveNotification extends Notification {
     }
 
     void dismiss() {
-        if (restTimerNotificationVisible) {
+        if (visible) {
             notificationManager.cancel(ID);
-            restTimerNotificationVisible = false;
+            visible = false;
             Log.d(TAG, "dismissed");
         }
     }

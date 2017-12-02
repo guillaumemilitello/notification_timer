@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout="@layout/activity_main_header">
+
+    <PreferenceCategory android:title="Timer">
+
+    <ListPreference
+        android:key="@string/pref_timer_plus"
+        android:title="@string/skip_forward"
+        android:defaultValue="@string/default_timer_plus"
+        android:entries="@array/timerMinusPlus"
+        android:entryValues="@array/timerMinusPlusValues"/>
+    <ListPreference
+        android:key="@string/pref_timer_minus"
+        android:title="@string/skip_backward"
+        android:defaultValue="@string/default_timer_minus"
+        android:entries="@array/timerMinusPlus"
+        android:entryValues="@array/timerMinusPlusValues"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/notification">
+
+    <SwitchPreference
+        android:key="@string/pref_vibrate"
+        android:title="@string/vibrate"
+        android:summary="@string/vibrate_summary"
+        android:defaultValue="@bool/default_vibrate"/>
+    <RingtonePreference
+        android:key="@string/pref_ringtone_uri"
+        android:title="@string/ringtone"
+        android:ringtoneType="notification"
+        android:defaultValue="@string/default_ringtone_uri"
+        android:showDefault="true"
+        android:showSilent="true"/>
+    <ListPreference
+        android:key="@string/pref_light_color"
+        android:title="@string/light_color"
+        android:defaultValue="@string/default_light_color"
+        android:entries="@array/lightColor"
+        android:entryValues="@array/lightColorValues"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/extra_notification">
+
+    <SwitchPreference
+        android:key="@string/pref_timer_get_ready_enable"
+        android:title="@string/enable"
+        android:summary="@string/extra_notification_summary"
+        android:defaultValue="@bool/default_timer_get_ready_enable"/>
+    <ListPreference
+        android:key="@string/pref_timer_get_ready"
+        android:title="@string/get_ready_time"
+        android:summary="@string/get_ready_time_summary"
+        android:defaultValue="@string/default_timer_get_ready"
+        android:entries="@array/timerGetReady"
+        android:entryValues="@array/timerGetReadyValues"/>
+    <SwitchPreference
+        android:key="@string/pref_timer_get_ready_vibrate"
+        android:title="@string/vibrate"
+        android:summary="@string/vibrate_summary_get_ready"
+        android:defaultValue="@bool/default_timer_get_ready_vibrate"/>
+    <RingtonePreference
+        android:key="@string/pref_timer_get_ready_ringtone_uri"
+        android:title="@string/ringtone"
+        android:ringtoneType="notification"
+        android:defaultValue="@string/default_timer_get_ready_ringtone_uri"
+        android:showDefault="true"
+        android:showSilent="true"/>
+    </PreferenceCategory>
+</PreferenceScreen>
