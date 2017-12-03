@@ -48,7 +48,7 @@
             android:progressTint="@color/bpRed"
             android:backgroundTint="@color/colorPrimary"
             android:progress="0"
-            android:max="10"
+            android:max="0"
             android:indeterminate="false"/>
 
         <!-- Main layout including last button row-->
@@ -86,7 +86,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="30"
+                        android:text=""
                         android:maxLines="1"
                         android:textSize="50sp"
                         android:textStyle="bold"
@@ -121,7 +121,7 @@
                             android:layout_centerInParent="true"
                             android:fontFamily="sans-serif-condensed"
                             android:textSize="250sp"
-                            android:text="8"
+                            android:text=""
                             android:maxLines="1"
                             android:textStyle="bold"
                             android:includeFontPadding="false"
@@ -138,7 +138,7 @@
                             android:layout_toEndOf="@+id/textViewTimerBold"
                             android:gravity="center"
                             android:textSize="130sp"
-                            android:text="30"
+                            android:text=""
                             android:maxLines="1"
                             android:textColor="@color/timer_text_color"
                             android:id="@+id/textViewTimer"/>
@@ -214,6 +214,7 @@
                         android:id="@+id/imageButtonTimerPlus"
                         android:src="@drawable/ic_stopwatch_add_black_48dp"
                         android:background="?selectableItemBackgroundBorderless"
+                        android:visibility="invisible"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         tools:ignore="NestedWeights" />
@@ -227,6 +228,7 @@
                         android:adjustViewBounds="false"
                         android:layout_gravity="center"
                         android:id="@+id/imageButtonKeepScreenOn"
+                        android:visibility="invisible"
                         android:src="@drawable/ic_stay_primary_portrait_black_48dp"
                         android:background="?selectableItemBackgroundBorderless" />
 
@@ -239,6 +241,7 @@
                         android:src="@drawable/ic_stopwatch_remove_black_48dp"
                         android:scaleType="centerInside"
                         android:adjustViewBounds="true"
+                        android:visibility="invisible"
                         android:background="?selectableItemBackgroundBorderless"
                         android:layout_weight="1" />
 
@@ -261,6 +264,7 @@
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
                     android:id="@+id/imageButtonLeft"
+                    android:visibility="invisible"
                     android:src="@drawable/ic_refresh_black_48dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:layout_gravity="center"
@@ -274,6 +278,7 @@
                     android:adjustViewBounds="false"
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonCenter"
+                    android:visibility="invisible"
                     android:src="@drawable/ic_play_circle_filled_black_48dp"
                     android:layout_weight="3"
                     android:background="?selectableItemBackgroundBorderless" />
@@ -284,6 +289,7 @@
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonRight"
+                    android:visibility="invisible"
                     android:src="@drawable/ic_chevron_right_double_black_48dp"
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"

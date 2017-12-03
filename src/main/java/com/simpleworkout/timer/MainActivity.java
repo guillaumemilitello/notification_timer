@@ -210,8 +210,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerTextViewBold = findViewById(R.id.textViewTimerBold);
         timerTextView = findViewById(R.id.textViewTimer);
         setsTextView = findViewById(R.id.textViewSets);
-        //timerUserTextView = findViewById(R.id.textViewTimerUser);
-        //setsUserTextView = findViewById(R.id.textViewSetsUser);
 
         informationLayout = findViewById(R.id.informationLayout);
         presetsFrameLayout = findViewById(R.id.fragmentContainerPresetCards);
@@ -226,8 +224,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerTextViewBold.setTypeface(typeface);
         timerTextView.setTypeface(typefaceLight);
         setsTextView.setTypeface(typeface);
-        //timerUserTextView.setTypeface(typeface);
-        //setsUserTextView.setTypeface(typefaceLight);
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
@@ -469,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 layoutWeight = 3;
                 break;
         }
-        Log.d(TAG, "scaleLayout: timerLayoutHeight=" + timerLayoutHeight + ", timerBoldTextSizeRatio=" + timerBoldTextSizeRatio + ", timerTextSizeRatio=" + timerTextSizeRatio);
+        Log.d(TAG, "scaleLayout: timerBoldTextSizeRatio=" + timerBoldTextSizeRatio + ", timerTextSizeRatio=" + timerTextSizeRatio);
         timerTextViewBold.setTextSize(timerLayoutHeight / timerBoldTextSizeRatio);
         timerTextView.setTextSize(timerLayoutHeight / timerTextSizeRatio);
 
@@ -508,13 +504,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onRestart() {
         super.onRestart();
-        Log.d(TAG, "onRestart: timerServiceBound=" + timerServiceBound);
+        Log.d(TAG, "onRestart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: timerServiceBound=" + timerServiceBound);
+        Log.d(TAG, "onStart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             inMultiWindowMode = isInMultiWindowMode();
@@ -530,32 +526,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
         timerState = TimerService.State.WAITING;
 
-        if (timerServiceBound) {
-            getTimerServiceContext();
-            timerService.updateNotificationVisibility(false);
-        } else {
+        if (timerService == null) {
             Intent intent = new Intent(this, TimerService.class);
             startService(intent);
             timerServiceBound = bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
-            if (!timerServiceBound) {
-                Log.e(TAG, "onStart: timerServiceBound=false");
-            }
-            if (timerService != null) {
-                getTimerServiceContext();
-            }
+            Log.d(TAG, "onStart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
         }
 
         updateUserInterface();
-    }
-
-    private void getTimerServiceContext() {
-        timerCurrent = timerService.getTimerCurrent();
-        timerUser = timerService.getTimerUser();
-        setsCurrent = timerService.getSetsCurrent();
-        setsUser = timerService.getSetsUser();
-        timerState = timerService.getState();
-        Log.d(TAG, "updateUserInterface: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser +
-                ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", timerState=" + timerState);
     }
 
     private void updateUserInterface() {
@@ -563,11 +541,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             Log.d(TAG, "updateUserInterface: mainActivityVisible=" + mainActivityVisible);
             timerService.setMainActivityVisible(mainActivityVisible);
             timerService.updateNotificationVisibility(!mainActivityVisible);
-        }
-        if (mainActivityVisible) {
-            timerProgressBar.setMax((int) timerUser);
-            timerProgressBar.setProgress((int) (timerUser - timerCurrent));
-            updateButtonsLayout();
+            if (mainActivityVisible) {
+                timerCurrent = timerService.getTimerCurrent();
+                timerUser = timerService.getTimerUser();
+                setsCurrent = timerService.getSetsCurrent();
+                setsUser = timerService.getSetsUser();
+                timerState = timerService.getState();
+                Log.d(TAG, "updateUserInterface: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser +
+                        ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", timerState=" + timerState);
+                timerProgressBar.setMax((int) timerUser);
+                timerProgressBar.setProgress((int) (timerUser - timerCurrent));
+                updateButtonsLayout();
+            }
         }
     }
 
@@ -585,11 +570,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     void timerServiceRebind() {
-        Log.d(TAG, "timerServiceRebind");
-        timerServiceBound = true;
+        Log.d(TAG, "timerServiceRebind: mainActivityVisible=" + mainActivityVisible);
         // Rebind occurs only when relaunching the mainActivity
-        timerService.updateNotificationVisibility(false);
-        getTimerServiceContext();
         updateUserInterface();
         scaleLayout();
     }
@@ -729,14 +711,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateServiceTimers() {
-        if (timerServiceBound) {
+        if (timerService != null) {
             timerService.setTimerCurrent(timerCurrent);
             timerService.setTimerUser(timerUser);
         }
     }
 
     private void updateServiceState() {
-        if (timerServiceBound) {
+        if (timerService != null) {
             timerService.setTimerCurrent(timerCurrent);
             timerService.setTimerUser(timerUser);
             timerService.setSetsCurrent(setsCurrent);
@@ -801,6 +783,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "clear: timerState=" + timerState);
 
         timerUser = 0;
+        timerCurrent = 0;
         setsCurrent = 0;
         setsUser = 0;
 
@@ -1119,6 +1102,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
         buttonsLayout = layout;
         Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
+
+        // The buttons are INVISIBLE by default in xml to enahnce the multi window switch
+        imageButtonLeft.setVisibility(View.VISIBLE);
+        imageButtonCenter.setVisibility(View.VISIBLE);
+        imageButtonRight.setVisibility(View.VISIBLE);
+        imageButtonTimerMinus.setVisibility(View.VISIBLE);
+        imageButtonTimerPlus.setVisibility(View.VISIBLE);
+        imageButtonKeepScreenOn.setVisibility(View.VISIBLE);
+
         updateSetsButtons();
         updateTimerButtons();
         updateTimerDisplay();
@@ -1277,14 +1269,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop: mainActivityVisible=" + mainActivityVisible + ", timerService=" + timerService + ", timerServiceBound= " + timerServiceBound);
+        Log.d(TAG, "onStop: mainActivityVisible=" + mainActivityVisible + ", timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
         mainActivityVisible = false; // TODO: useless ?
 
         if (timerService != null) {
             timerService.updateNotificationVisibility(true);
-            unbindService(serviceConnection);
         }
-        timerServiceBound = false;
 
         // Complete ongoing pop-up action
         if (alertSetDone.isShowing()) {
@@ -1299,22 +1289,25 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        Log.d(TAG, "onPause: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "onResume: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
     }
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
         super.onDestroy();
 
-        if (timerServiceBound) {
+        if (timerService != null) {
             timerService.updateNotificationVisibility(true);
+        }
+
+        if (timerServiceBound) {
             unbindService(serviceConnection);
             timerServiceBound = false;
         }
@@ -1379,7 +1372,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerService = binder.getService();
             timerServiceBound = true;
             Log.d(TAG, "onServiceConnected");
-            getTimerServiceContext();
             updateAllPreferences();
             updateUserInterface();
             scaleLayout();
@@ -1409,55 +1401,55 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (key.equals(getString(R.string.pref_timer_minus))) {
             timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.setTimerMinus(timerMinus);
             }
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.setTimerPlus(timerPlus);
             }
         } else if (key.equals(getString(R.string.pref_vibrate))) {
             vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
             }
         } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
             ringtoneUri = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_ringtone_uri)));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.interactiveNotification.setRingtone(ringtoneUri);
             }
         } else if (key.equals(getString(R.string.pref_light_color))) {
-            if (timerServiceBound) {
+            if (timerService != null) {
                 String colorString = sharedPreferences.getString(key, getString(R.string.default_light_color));
                 int color = getColorInt(colorString);
                 timerService.interactiveNotification.setLightColor(color);
             }
         } else if (key.equals(getString(R.string.pref_light_flash_rate))) {
-            if (timerServiceBound) {
+            if (timerService != null) {
                 int flashRate = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_light_flash_rate)));
                 timerService.interactiveNotification.setLightFlashRate(flashRate);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
             timerGetReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_enable));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.setTimerGetReadyEnable(timerGetReadyEnable);
                 timerService.interactiveNotification.setTimerGetReadyEnable(timerGetReadyEnable);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready))) {
             timerGetReady = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready)));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.setTimerGetReady(timerGetReady);
                 timerService.interactiveNotification.setTimerGetReady(timerGetReady);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
-            if (timerServiceBound) {
+            if (timerService != null) {
                 boolean vibrationReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
                 timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
             ringtoneUriReady = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_ringtone_uri)));
-            if (timerServiceBound) {
+            if (timerService != null) {
                 timerService.interactiveNotification.setRingtoneReady(ringtoneUriReady);
             }
         } else {
