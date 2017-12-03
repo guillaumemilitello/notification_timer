@@ -508,12 +508,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onRestart() {
         super.onRestart();
-        Log.d(TAG, "onRestart");
+        Log.d(TAG, "onRestart: timerServiceBound=" + timerServiceBound);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: timerServiceBound=" + timerServiceBound);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             inMultiWindowMode = isInMultiWindowMode();
@@ -529,8 +530,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
         timerState = TimerService.State.WAITING;
 
-        updateUserInterface();
-
         if (timerServiceBound) {
             getTimerServiceContext();
             timerService.updateNotificationVisibility(false);
@@ -541,7 +540,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             if (!timerServiceBound) {
                 Log.e(TAG, "onStart: timerServiceBound=false");
             }
+            if (timerService != null) {
+                getTimerServiceContext();
+            }
         }
+
+        updateUserInterface();
     }
 
     private void getTimerServiceContext() {
@@ -555,7 +559,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateUserInterface() {
-        if (timerServiceBound) {
+        if (timerService != null) {
             Log.d(TAG, "updateUserInterface: mainActivityVisible=" + mainActivityVisible);
             timerService.setMainActivityVisible(mainActivityVisible);
             timerService.updateNotificationVisibility(!mainActivityVisible);
@@ -747,9 +751,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
             Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
         } else {
-            if (!presetCardsList.addPreset(new Preset(timerUser, setsUser))) {
-                Toast.makeText(this, "The preset is already in the list", Toast.LENGTH_SHORT).show();
-            }
+            presetCardsList.addPreset();
         }
     }
 
@@ -1036,14 +1038,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private void updateAddPresetButton() {
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            presetCardsList.disableAddPresetButton();
-        } else {
-            presetCardsList.updateAddPresetCard();
-        }
-    }
-
     private void changePresetsFrameLayout() {
         if (presetsFrameLayout != null) {
             presetCardsList.resetScrollPosition();
@@ -1131,7 +1125,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateSetsDisplay();
         updatePresetDisplay();
         updateColorLayout();
-        updateAddPresetButton();
+        presetCardsList.update();
     }
 
     private void updateButtons(ButtonAction left, ButtonAction center, ButtonAction right) {

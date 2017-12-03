@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 
 class PresetsList {
@@ -46,11 +45,11 @@ class PresetsList {
     }
 
     int swapPreset(int fromIndex, int toIndex) {
-        Log.d(TAG, "movePreset: fromIndex=" + fromIndex + ", toIndex=" + toIndex);
-        Collections.swap(list, fromIndex, toIndex);
+        Log.d(TAG, "movePreset: fromIndex=" + fromIndex + ", toIndex=" + toIndex + ", list=" + toString());
         Preset preset = loadPreset(fromIndex);
         removePreset(fromIndex);
         addPreset(toIndex, preset);
+        Log.d(TAG, "movePreset: list=" + toString());
         return getSize();
     }
 
@@ -102,5 +101,18 @@ class PresetsList {
             }
         }
         return getSize();
+    }
+
+    public String toString() {
+        String string = "{";
+        for (int index = 0; index < getSize(); ++index) {
+            string += list.get(index);
+            if (index < getSize() - 1) {
+                string += ", ";
+            } else {
+                string += "}";
+            }
+        }
+        return string;
     }
 }

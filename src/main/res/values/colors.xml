@@ -27,6 +27,7 @@
     <color name="preset_card_timer_font_color">#757575</color>
     <color name="preset_card_sets_font_color">#9e9e9e</color>
     <color name="preset_fragment_background">#9fa8da</color>
+    <color name="preset_card_add_background">#d9ddf5</color>
 
     <!-- Main activity -->
     <color name="mainBackground">#4d000000</color>

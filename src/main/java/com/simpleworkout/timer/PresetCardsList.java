@@ -3,6 +3,7 @@ package com.simpleworkout.timer;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class PresetCardsList extends Fragment {
@@ -25,6 +27,11 @@ public class PresetCardsList extends Fragment {
     private PresetsList presetsList;
     private int presetsListSize = 0;
 
+    private Preset presetUser;
+
+    private static final int USER_POSITION_NONE = -1;
+    private int userPosition;
+
     private LinearLayoutManager linearLayoutManager;
     private RecycleViewAdapter adapter;
     private boolean addPresetButton;
@@ -32,57 +39,86 @@ public class PresetCardsList extends Fragment {
     private Context context;
     private AlertDialog alertDialog;
 
-    public boolean addPreset(Preset preset) {
-        Log.d(TAG, "addPreset: preset='" + preset.toString() + "'");
-        int index = presetsList.indexOf(preset);
-        if (index == -1) {
-            presetsListSize = presetsList.addPreset(0, preset);
-            disableAddPresetButton();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
-            return true;
+    public void addPreset() {
+        if (presetsList.indexOf(presetUser) == -1) {
+            presetsListSize = presetsList.addPreset(0, presetUser);
+            Log.d(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList);
+            addPresetButton = false;
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+            scrollToPosition(0);
         }
-        linearLayoutManager.scrollToPosition(index + 1);
-        return false;
+        Log.e(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList + " already exists, index=" + presetsList.indexOf(presetUser));
     }
 
     private void removePreset(int position) {
         presetsListSize = presetsList.removePreset(position);
-        if (adapter != null) {
-            adapter.notifyItemRemoved(position + 1);
-            adapter.notifyItemRangeChanged(position + 1, adapter.getItemCount());
-        }
+        Log.d(TAG, "removePreset: position=" + position + ", presetList=" + presetsList);
+        adapter.notifyItemRemoved(position);
+        adapter.notifyItemRangeChanged(position, adapter.getItemCount());
     }
 
-    public void disableAddPresetButton() {
-        if (adapter != null && addPresetButton) {
-            addPresetButton = false;
-            adapter.notifyItemChanged(0);
+    public void update() {
+        Preset currentPreset = ((MainActivity)getActivity()).getPresetUser();
+        if (!currentPreset.equals(presetUser)) {
+            presetUser = currentPreset;
         }
-    }
+        int index = presetsList.indexOf(currentPreset);
+        Log.d(TAG, "update: presetUser=" + presetUser + ", index=" + index + ", addPresetButton=" + addPresetButton + ", userPosition=" + userPosition);
 
-    private void enableAddPresetButton() {
-        if (adapter != null && !addPresetButton) {
-            addPresetButton = true;
-            adapter.notifyItemChanged(0);
-        }
-    }
-
-    public void updateAddPresetCard() {
-        Preset preset = ((MainActivity)getActivity()).getPresetUser();
-        int index = presetsList.indexOf(preset);
-        Log.d(TAG, "updateAddPresetCard: preset=" + preset + ", index=" + index);
-        if (index == -1 && preset.isValid()) {
-            enableAddPresetButton();
+        if (index == -1) {
+            // Preset is not in the list
+            if (presetUser.isValid()) {
+                // Preset is valid
+                if (!addPresetButton) {
+                    // Add the preset to the list
+                    addPresetButton = true;
+                    scrollToPosition(0);
+                    adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                }
+            } else {
+                // Preset is invalid, MainActivity layout is WAITING
+                if (addPresetButton) {
+                    addPresetButton = false;
+                    adapter.notifyItemRemoved(0);
+                    adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                } else {
+                    adapter.notifyItemChanged(userPosition);
+                }
+                userPosition = USER_POSITION_NONE;
+            }
         } else {
-            disableAddPresetButton();
+            // Preset already exists in the list
+            if (addPresetButton) {
+                addPresetButton = false;
+                adapter.notifyItemRemoved(0);
+                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                userPosition = USER_POSITION_NONE;
+            }
+            if (userPosition != index) {
+                // Update both positions
+                adapter.notifyItemChanged(userPosition);
+                adapter.notifyItemChanged(index);
+                scrollToPosition(index);
+                Log.d(TAG, "update: adapter.notifyItemChanged=" + userPosition);
+            } else {
+                // Preset is already selected
+                Log.d(TAG, "update: userPosition=" + userPosition + ", position=" + index);
+            }
         }
-        resetScrollPosition();
+    }
+
+    public int getListIndex(int index) {
+        return addPresetButton ? index - 1 : index;
     }
 
     public void resetScrollPosition() {
-        linearLayoutManager.scrollToPosition(0);
+        scrollToPosition(0);
+    }
+
+    private void scrollToPosition(int position) {
+        Log.d(TAG, "scrollToPosition: position=" + position);
+        userPosition = position;
+        linearLayoutManager.scrollToPosition(userPosition);
     }
 
     public void initContext(Context context) {
@@ -115,6 +151,7 @@ public class PresetCardsList extends Fragment {
         Log.d(TAG, "onCreate");
         adapter = new RecycleViewAdapter();
         addPresetButton = false;
+        userPosition = USER_POSITION_NONE;
     }
 
     @Override
@@ -123,10 +160,10 @@ public class PresetCardsList extends Fragment {
 
         linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        linearLayoutManager.scrollToPosition(0);
+        scrollToPosition(USER_POSITION_NONE);
 
         View view = inflater.inflate(R.layout.fragment_horizontal_preset_cards, container, false);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.cardView);
+        RecyclerView recyclerView = view.findViewById(R.id.cardView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -156,7 +193,7 @@ public class PresetCardsList extends Fragment {
             int sourcePosition = source.getAdapterPosition();
             int targetPosition = target.getAdapterPosition();
 
-            if (targetPosition == 0) {
+            if (targetPosition == 0 && addPresetButton) {
                 Log.e(TAG, "onMove: targetAdapterPosition=0");
             } else {
                 adapter.onItemMove(sourcePosition, targetPosition);
@@ -189,16 +226,19 @@ public class PresetCardsList extends Fragment {
 
     public class RecycleViewAdapter extends RecyclerView.Adapter {
 
+        private static final int ITEM_VIEW_TYPE_PRESET_ADD = 0;
+        private static final int ITEM_VIEW_TYPE_PRESET = 1;
+
         @Override
         public int getItemViewType(int position) {
-            return (position != 0)? 1 : 0;
+            return (position > 0)? ITEM_VIEW_TYPE_PRESET : addPresetButton ? ITEM_VIEW_TYPE_PRESET_ADD : ITEM_VIEW_TYPE_PRESET;
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
             Log.d(TAG, "onCreateViewHolder: viewType=" + viewType);
-            if (viewType == 1) {
+            if (viewType == ITEM_VIEW_TYPE_PRESET) {
                 return new PresetViewHolder(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.preset_card_view, parent, false));
             } else {
@@ -209,28 +249,44 @@ public class PresetCardsList extends Fragment {
 
         @Override
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-            if (holder.getItemViewType() == 1) {
+            if (holder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
-                presetViewHolder.textViewCardTimer.setText(presetsList.getPreset(position - 1).getTimerString());
-                presetViewHolder.textViewCardSets.setText(presetsList.getPreset(position - 1).getSetsString());
-                Log.d(TAG, "onBindViewHolder: position=" + position);
+                Preset preset = presetsList.getPreset(getListIndex(position));
+                presetViewHolder.textViewCardTimer.setText(preset.getTimerString());
+                presetViewHolder.textViewCardSets.setText(preset.getSetsString());
+                if (preset.equals(presetUser)) {
+                    presetViewHolder.linearLayoutBackground.setBackgroundColor(Color.WHITE);
+                } else {
+                    presetViewHolder.linearLayoutBackground.setBackgroundColor(context.getColor(R.color.preset_card_add_background));
+                }
+                Log.d(TAG, "onBindViewHolder: position=" + position + ", preset=" + presetsList.getPreset(getListIndex(position)));
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
-                addPresetViewHolder.imageButtonCard.setAlpha(addPresetButton? MainActivity.ALPHA_ENABLED : MainActivity.ALPHA_DISABLED);
-                Log.d(TAG, "onBindViewHolder: position=" + position);
+                addPresetViewHolder.textViewCardTimer.setText(presetUser.getTimerString());
+                addPresetViewHolder.textViewCardSets.setText(presetUser.getSetsString());
+                Log.d(TAG, "onBindViewHolder: position=" + position + ", presetUser=" + presetUser);
             }
         }
 
         @Override
         public int getItemCount() {
-            return presetsListSize + 1;
+            return presetsListSize + (addPresetButton? 1 : 0);
         }
 
         void onItemMove(int fromPosition, int toPosition) {
-            fromPosition -= 1;
-            toPosition -= 1;
-            Log.d(TAG, "onItemMove: fromPosition=" + fromPosition + ", toPosition=" + toPosition);
-            presetsListSize = presetsList.swapPreset(fromPosition, toPosition);
+            int fromListIndex = getListIndex(fromPosition);
+            int toListIndex = getListIndex(toPosition);
+            if (!addPresetButton) {
+                if (presetsList.getPreset(fromListIndex).equals(presetUser)){
+                    Log.d(TAG, "onItemMove: fromListIndex=" + fromListIndex + " preset is active");
+                    userPosition = toPosition;
+                }
+                if (presetsList.getPreset(toListIndex).equals(presetUser)){
+                    Log.d(TAG, "onItemMove: toListIndex=" + toListIndex + " preset is active");
+                    userPosition = fromPosition;
+                }
+            }
+            presetsListSize = presetsList.swapPreset(fromListIndex, toListIndex);
         }
     }
 
@@ -239,16 +295,18 @@ public class PresetCardsList extends Fragment {
         private final TextView textViewCardTimer;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
+        private final LinearLayout linearLayoutBackground;
 
         private void inputPreset(int position) {
-            ((MainActivity)getActivity()).inputPreset(presetsList.getPreset(position));
+            ((MainActivity)getActivity()).inputPreset(presetsList.getPreset(getListIndex(position)));
         }
 
         PresetViewHolder(final View view) {
             super(view);
-            textViewCardTimer = (TextView) view.findViewById(R.id.textViewCardTimer);
-            textViewCardSets = (TextView) view.findViewById(R.id.textViewCardSets);
-            imageButtonCard = (ImageButton) view.findViewById(R.id.imageButtonCard);
+            textViewCardTimer = view.findViewById(R.id.textViewCardTimer);
+            textViewCardSets = view.findViewById(R.id.textViewCardSets);
+            imageButtonCard = view.findViewById(R.id.imageButtonCard);
+            linearLayoutBackground = view.findViewById(R.id.layoutCardTimer);
 
             Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondBold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
@@ -264,18 +322,21 @@ public class PresetCardsList extends Fragment {
         public void onClick(View view) {
 
             if (view.getId() == textViewCardTimer.getId() || view.getId() == textViewCardSets.getId()){
-                Log.d(TAG, "onClick: position=" + (getAdapterPosition() - 1));
-                inputPreset(getAdapterPosition() - 1);
-                resetScrollPosition();
+                int position = getAdapterPosition();
+                Log.d(TAG, "onClick: position=" + position);
+                inputPreset(getAdapterPosition());
+                adapter.notifyItemChanged(position);
+                adapter.notifyItemChanged(userPosition);
+                scrollToPosition(position);
             }
             else if (view.getId() == imageButtonCard.getId()) {
-                final int position = getAdapterPosition() - 1;
+                final int position = getAdapterPosition();
                 Log.d(TAG, "onClick: delete preset position=" + position);
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            removePreset(position);
-                            updateAddPresetCard();
+                            removePreset(getListIndex(position));
+                            update();
                         }
                     });
                 alertDialog.show();
@@ -285,11 +346,20 @@ public class PresetCardsList extends Fragment {
 
     private class AddPresetViewHolder extends RecyclerView.ViewHolder {
 
+        private final TextView textViewCardTimer;
+        private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
 
         AddPresetViewHolder(final View view) {
             super(view);
-            imageButtonCard = (ImageButton) view.findViewById(R.id.imageButtonAddCard);
+            imageButtonCard = view.findViewById(R.id.imageButtonAddCard);
+            textViewCardTimer = view.findViewById(R.id.textViewCardTimer);
+            textViewCardSets = view.findViewById(R.id.textViewCardSets);
+
+            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondBold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
+            textViewCardTimer.setTypeface(typeface);
+            textViewCardSets.setTypeface(typefaceLight);
 
             imageButtonCard.setOnClickListener(new View.OnClickListener() {
                 @Override
