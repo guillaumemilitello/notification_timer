@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsPickerBuilder.setFragmentManager(getSupportFragmentManager());
         setsPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         setsPickerBuilder.setDecimalVisibility(View.INVISIBLE);
-        setsPickerBuilder.setPlusMinusVisibility(View.VISIBLE);
+        setsPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
 
         timerProgressBar = findViewById(R.id.timerProgressBar);
 

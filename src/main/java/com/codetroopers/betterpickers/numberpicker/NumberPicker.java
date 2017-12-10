@@ -35,8 +35,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     protected final Context mContext;
 
     private TextView mLabel;
-    private boolean mChecked;
-    private boolean mInfinity;
     private int mSign;
     private String mLabelText = "";
     private Button mSetButton;
@@ -149,8 +147,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         for (int i = 0; i < mInput.length; i++) {
             mInput[i] = -1;
         }
-        mChecked = false;
-        mInfinity = false;
 
         View v1 = findViewById(R.id.first);
         View v2 = findViewById(R.id.second);
@@ -186,7 +182,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         updateNumber();
 
         Resources res = mContext.getResources();
-        mLeft.setText(res.getString(R.string.infinity));
+        mLeft.setText(res.getString(R.string.number_picker_plus_minus));
         mRight.setText(res.getString(R.string.number_picker_seperator));
         mLeft.setOnClickListener(this);
         mRight.setOnClickListener(this);
@@ -244,7 +240,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
      * Update the 0 button to determine whether it is able to be clicked.
      */
     public void updateZeroButton() {
-        boolean enabled = mInputPointer >= 0 && !mInfinity;
+        boolean enabled = mInputPointer >= 0;
         if (mNumbers[0] != null) {
             mNumbers[0].setEnabled(enabled);
             mNumbers[0].setAlpha(enabled? (float) 1: (float) 0.3);
@@ -275,12 +271,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             // A number was pressed
             addClickedNumber(val);
         } else if (v == mDelete) {
-            if (mInfinity) {
-                reset();
-                enableKeypad(true);
-                mInfinity = false;
-            }
-            else if (mInputPointer >= 0) {
+            if (mInputPointer >= 0) {
                 for (int i = 0; i < mInputPointer; i++) {
                     mInput[i] = mInput[i + 1];
                 }
@@ -379,7 +370,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     }
 
     protected void setLeftRightEnabled() {
-        mLeft.setEnabled(true);
+        mLeft.setEnabled(false);
         mRight.setEnabled(canAddDecimal());
         if (!canAddDecimal()) {
             mRight.setContentDescription(null);
@@ -401,15 +392,11 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
      * Clicking on the bottom left button will toggle the sign.
      */
     private void onLeftClicked() {
-        mInfinity = true;
-        reset();
-        int[] intMaxValueArray = new int[] {7,4,6,3,8,4,7,4,1,2};
-        for (int i = 0; i < intMaxValueArray.length; ++i) {
-            mInput[i] = intMaxValueArray[i];
-            mInputPointer++;
+        if (mSign == SIGN_POSITIVE) {
+            mSign = SIGN_NEGATIVE;
+        } else {
+            mSign = SIGN_POSITIVE;
         }
-        updateNumber();
-        enableKeypad(false);
     }
 
     /**
@@ -475,10 +462,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         }
 
         return new BigDecimal(value);
-    }
-
-    public boolean getChecked() {
-        return mChecked;
     }
 
     private void updateLeftRightButtons() {

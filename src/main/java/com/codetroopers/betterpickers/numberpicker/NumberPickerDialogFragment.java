@@ -171,19 +171,19 @@ public class NumberPickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 dismiss();
-                // Return default value : 1
-                BigDecimal number = new BigDecimal(1);
+                BigInteger max_value = new BigInteger("2147483647", 10);
+                BigDecimal max_value_decimal = new BigDecimal(Integer.MAX_VALUE);
                 for (NumberPickerDialogHandlerV2 handler : mNumberPickerDialogHandlersV2) {
-                    handler.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number);
+                    handler.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
                 }
                 final Activity activity = getActivity();
                 final Fragment fragment = getTargetFragment();
                 if (activity instanceof NumberPickerDialogHandlerV2) {
                     final NumberPickerDialogHandlerV2 act = (NumberPickerDialogHandlerV2) activity;
-                    act.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number);
+                    act.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
                 } else if (fragment instanceof NumberPickerDialogHandlerV2) {
                     final NumberPickerDialogHandlerV2 frag = (NumberPickerDialogHandlerV2) fragment;
-                    frag.onDialogNumberSet(mReference, mPicker.getNumber(), mPicker.getDecimal(), mPicker.getIsNegative(), number);
+                    frag.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
                 }
             }
         });

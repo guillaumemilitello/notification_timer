@@ -253,7 +253,12 @@ public class PresetCardsList extends Fragment {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
                 Preset preset = presetsList.getPreset(getListIndex(position));
                 presetViewHolder.textViewCardTimer.setText(preset.getTimerString());
-                presetViewHolder.textViewCardSets.setText(preset.getSetsString());
+                if (preset.isInfinity()) {
+                    presetViewHolder.textViewCardSets.setVisibility(View.GONE);
+                } else {
+                    presetViewHolder.textViewCardSets.setVisibility(View.VISIBLE);
+                    presetViewHolder.textViewCardSets.setText(preset.getSetsString());
+                }
                 if (preset.equals(presetUser)) {
                     presetViewHolder.linearLayoutBackground.setBackgroundColor(Color.WHITE);
                 } else {
@@ -263,7 +268,12 @@ public class PresetCardsList extends Fragment {
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
                 addPresetViewHolder.textViewCardTimer.setText(presetUser.getTimerString());
-                addPresetViewHolder.textViewCardSets.setText(presetUser.getSetsString());
+                if (presetUser.isInfinity()) {
+                    addPresetViewHolder.textViewCardSets.setVisibility(View.GONE);
+                } else {
+                    addPresetViewHolder.textViewCardSets.setVisibility(View.VISIBLE);
+                    addPresetViewHolder.textViewCardSets.setText(presetUser.getSetsString());
+                }
                 Log.d(TAG, "onBindViewHolder: position=" + position + ", presetUser=" + presetUser);
             }
         }

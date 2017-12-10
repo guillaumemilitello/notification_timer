@@ -13,8 +13,6 @@
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Sets</string>
-    <string name="picker_checkbox">Start the timer at set 0</string>
-    <string name="infinity">∞</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
     <string name="picker_split_screen">Exit split screen mode to add a preset</string>

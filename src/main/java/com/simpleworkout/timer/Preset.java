@@ -21,6 +21,10 @@ class Preset {
         return sets;
     }
 
+    boolean isInfinity() {
+        return sets == Integer.MAX_VALUE;
+    }
+
     String getSetsString() {
         return (sets == Integer.MAX_VALUE)? "" : String.format(Locale.US, "x%d", sets);
     }
