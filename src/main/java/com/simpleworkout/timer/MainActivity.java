@@ -116,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private boolean timerGetReadyEnable;
     private int timerGetReady;
     private Uri ringtoneUriReady;
+    private int colorRunning;
+    private int colorReady;
+    private int colorDone;
 
     public Preset getPresetUser() {
         return new Preset(timerUser, setsUser);
@@ -617,54 +620,75 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     @SuppressWarnings("deprecation")
     private void updateColorLayout() {
-        // TODO : update resources and use own colors
-        int setsTextColor = R.color.timer_progressbar_waiting;
-        if (buttonsLayout == ButtonsLayout.READY) {
-            setsTextColor = R.color.bpLine_dark;
-        } else if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
-            if (setsCurrent == setsUser) {
-                setsTextColor = R.color.timer_progressbar_ready;
-            } else {
-                setsTextColor = R.color.primary;
-            }
+        int progressColor, backgroundColor;
+        final double backgroundColorLighten = 0.175, pauseColorLighten = 0.125, textColorDarken = 0.7;
+        Log.d(TAG, "updateColorLayout: buttonsLayout=" + buttonsLayout);
+        switch (buttonsLayout) {
+            case READY:
+                backgroundColor = lighten(colorRunning, backgroundColorLighten);
+                progressColor = backgroundColor;
+                break;
+            case PAUSED:
+                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                    progressColor = lighten(colorReady, pauseColorLighten);
+                    backgroundColor = lighten(colorReady, backgroundColorLighten);
+                } else {
+                    progressColor = lighten(colorRunning, pauseColorLighten);
+                    backgroundColor = lighten(colorRunning, backgroundColorLighten);
+                }
+                break;
+            case RUNNING:
+                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                    progressColor = colorReady;
+                    backgroundColor = lighten(colorReady, backgroundColorLighten);
+                } else {
+                    progressColor = colorRunning;
+                    backgroundColor = lighten(colorRunning, backgroundColorLighten);
+                }
+                break;
+            case STOPPED:
+                backgroundColor = colorDone;
+                progressColor = colorDone;
+                break;
+            default:
+            case WAITING:
+            case WAITING_SETS:
+                progressColor = R.color.color_waiting;
+                backgroundColor = R.color.color_waiting;
+                break;
         }
-
-        int backgroundColor = R.color.timer_progressbar_waiting;
-        int progressColor= R.color.timer_progressbar_waiting;
-        int timerTextColor = R.color.timer_progressbar_waiting;
-        if (buttonsLayout == ButtonsLayout.READY) {
-            backgroundColor = R.color.timer_progressbar_background;
-            progressColor = R.color.timer_progressbar_background;
-            timerTextColor = R.color.bpLine_dark;
-        } else if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
-            if (timerCurrent <= timerGetReady && timerUser > timerGetReady && timerGetReadyEnable) {
-                backgroundColor = R.color.timer_progressbar_ready;
-                progressColor = R.color.timer_progressbar_ready_transparent;
-                timerTextColor = R.color.timer_progressbar_ready;
-            } else {
-                backgroundColor = R.color.timer_progressbar;
-                progressColor = R.color.timer_progressbar_transparent;
-                timerTextColor = R.color.primary;
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            backgroundColor = getColor(backgroundColor);
-            progressColor = getColor(progressColor);
-            timerTextColor = getColor(timerTextColor);
-            setsTextColor = getColor(setsTextColor);
-        } else {
-            backgroundColor = getResources().getColor(backgroundColor);
-            progressColor = getResources().getColor(progressColor);
-            timerTextColor = getResources().getColor(timerTextColor);
-            setsTextColor = getResources().getColor(setsTextColor);
-        }
+        int textColor = darken(progressColor, textColorDarken);
 
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
-        timerTextView.setTextColor(timerTextColor);
-        timerTextViewBold.setTextColor(timerTextColor);
-        setsTextView.setTextColor(setsTextColor);
+        timerTextView.setTextColor(textColor);
+        timerTextViewBold.setTextColor(textColor);
+        setsTextView.setTextColor(textColor);
+    }
+
+    public static int lighten(int color, double fraction) {
+        int red = lightenColor(Color.red(color), fraction);
+        int green = lightenColor(Color.green(color), fraction);
+        int blue = lightenColor(Color.blue(color), fraction);
+        int alpha = Color.alpha(color);
+        return Color.argb(alpha, red, green, blue);
+    }
+
+    public static int darken(int color, double fraction) {
+        int red = darkenColor(Color.red(color), fraction);
+        int green = darkenColor(Color.green(color), fraction);
+        int blue = darkenColor(Color.blue(color), fraction);
+        int alpha = Color.alpha(color);
+
+        return Color.argb(alpha, red, green, blue);
+    }
+
+    private static int darkenColor(int color, double fraction) {
+        return (int)Math.max(color - (color * fraction), 0);
+    }
+
+    private static int lightenColor(int color, double fraction) {
+        return (int)Math.min(color + (color * fraction), 255);
     }
 
     private void updateSetsDisplay() {
@@ -1391,10 +1415,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    private void updatePreference(String key) {
+    private boolean updatePreference(String key) {
 
         if (key.contains(getString(R.string.pref_preset_array)) || key.contains(getString(R.string.pref_timer_service))) {
-            return;
+            return false;
         }
 
         Log.d(TAG, "updatePreference: key=" + key);
@@ -1413,17 +1437,25 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
             if (timerService != null) {
                 timerService.interactiveNotification.setVibrationEnable(vibrationEnable);
+                return true;
             }
         } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
             ringtoneUri = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_ringtone_uri)));
             if (timerService != null) {
                 timerService.interactiveNotification.setRingtone(ringtoneUri);
+                return true;
+            }
+        }  else if (key.equals(getString(R.string.pref_light_color_enable))) {
+            if (timerService != null) {
+                boolean colorEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_light_color_enable));
+                timerService.interactiveNotification.setLightColorEnable(colorEnable);
+                return true;
             }
         } else if (key.equals(getString(R.string.pref_light_color))) {
             if (timerService != null) {
-                String colorString = sharedPreferences.getString(key, getString(R.string.default_light_color));
-                int color = getColorInt(colorString);
-                timerService.interactiveNotification.setLightColor(color);
+                int light_color = sharedPreferences.getInt(key, getColor(R.color.default_light_color));
+                timerService.interactiveNotification.setLightColor(light_color);
+                return true;
             }
         } else if (key.equals(getString(R.string.pref_light_flash_rate))) {
             if (timerService != null) {
@@ -1441,64 +1473,48 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             if (timerService != null) {
                 timerService.setTimerGetReady(timerGetReady);
                 timerService.interactiveNotification.setTimerGetReady(timerGetReady);
+                return true;
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
             if (timerService != null) {
                 boolean vibrationReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
                 timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
+                return true;
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
             ringtoneUriReady = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_ringtone_uri)));
             if (timerService != null) {
                 timerService.interactiveNotification.setRingtoneReady(ringtoneUriReady);
+                return true;
+            }
+        } else if (key.equals(getString(R.string.pref_custom_color_running))) {
+            colorRunning = sharedPreferences.getInt(key, getColor(R.color.default_color_running));
+            if (timerService != null) {
+                timerService.interactiveNotification.setColorRunning(colorRunning);
+            }
+        } else if (key.equals(getString(R.string.pref_custom_color_ready))) {
+            colorReady = sharedPreferences.getInt(key, getColor(R.color.default_color_ready));
+            if (timerService != null) {
+                timerService.interactiveNotification.setColorReady(colorReady);
+            }
+        } else if (key.equals(getString(R.string.pref_custom_color_done))) {
+            colorDone = sharedPreferences.getInt(key, getColor(R.color.default_color_done));
+            if (timerService != null) {
+                timerService.interactiveNotification.setColorDone(colorDone);
             }
         } else {
             Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
+        return false;
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    updatePreference(key);
+                    Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
+                    if (updatePreference(key) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        timerService.interactiveNotification.updateNotificationChannels();
+                    }
                 }
             };
-
-    private static int getColorInt(String color) {
-        switch (color) {
-            case "none":
-                return InteractiveNotification.COLOR_NONE;
-            case "default":
-                return InteractiveNotification.COLOR_DEFAULT;
-            default:
-                return Color.parseColor(color);
-        }
-    }
-
-    static String getStringColor(int color) {
-        Log.d(TAG, "getStringColor: color=" + color);
-        switch(color) {
-            case InteractiveNotification.COLOR_NONE:
-                return "none";
-            case InteractiveNotification.COLOR_DEFAULT:
-                return "default";
-            case Color.WHITE:
-                return "white";
-            case Color.YELLOW:
-                return "yellow";
-            case Color.RED:
-                return "red";
-            case Color.GREEN:
-                return "green";
-            case Color.BLUE:
-                return "blue";
-            case Color.CYAN:
-                return "cyan";
-            case Color.MAGENTA:
-                return "magenta";
-            case 0xFF800080:
-                return "purple";
-        }
-        return "default";
-    }
 }

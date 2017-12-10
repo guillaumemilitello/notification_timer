@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
@@ -86,6 +87,10 @@ class InteractiveNotification extends Notification {
         this.timerGetReady = timerGetReady;
     }
 
+    void setLightColorEnable(boolean lightColorEnable) {
+        this.lightColorEnable = lightColorEnable;
+    }
+
     void setLightColor(int lightColor) {
         this.lightColor = lightColor;
     }
@@ -104,6 +109,18 @@ class InteractiveNotification extends Notification {
         this.ringtoneReady = ringtoneReady;
     }
 
+    void setColorRunning(int colorRunning) {
+        this.colorRunning = colorRunning;
+    }
+
+    void setColorReady(int colorReady) {
+        this.colorReady = colorReady;
+    }
+
+    void setColorDone(int colorDone) {
+        this.colorDone = colorDone;
+    }
+
     void updateNotificationChannels() {
         if (notificationManager != null) {
             updateDoneChannel();
@@ -114,12 +131,14 @@ class InteractiveNotification extends Notification {
     // Settings options
     private boolean vibrationEnable;
     private boolean vibrationReadyEnable;
+    private boolean lightColorEnable;
     private int lightColor;
     private int lightFlashRateOn, lightFlashRateOff;
     private Uri ringtone;
     private Uri ringtoneReady;
-
-    final static int COLOR_NONE = -2;
+    private int colorRunning;
+    private int colorReady;
+    private int colorDone;
 
     private enum ButtonAction {
 
@@ -258,25 +277,21 @@ class InteractiveNotification extends Notification {
         if (ringtone != null && uri != null && !ringtone.equals(uri)) {
             Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=" + uri);
             createDoneChannel();
-        }
-        else if (ringtone == null && uri != null) {
+        } else if (ringtone == null && uri != null) {
             Log.d(TAG, "updateDoneChannel: ringtone=null, uri=" + uri);
             createDoneChannel();
-        }
-        else if (ringtone != null && uri == null) {
+        } else if (ringtone != null && uri == null) {
             Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=null");
             createDoneChannel();
-        }
-        else if (currentNotificationChannel.shouldVibrate() != vibrationEnable) {
+        } else if (currentNotificationChannel.shouldVibrate() != vibrationEnable) {
             Log.d(TAG, "updateDoneChannel: vibrationEnable=" + vibrationEnable);
             createDoneChannel();
-        }
-        else if (currentNotificationChannel.shouldShowLights() && lightColor != COLOR_NONE) {
-            int color = currentNotificationChannel.getLightColor();
-            if (color != lightColor) {
-                Log.d(TAG, "updateDoneChannel: color=" + MainActivity.getStringColor(color) + ", lightColor=" + MainActivity.getStringColor(lightColor));
-                createDoneChannel();
-            }
+        } else if (currentNotificationChannel.shouldShowLights() != lightColorEnable) {
+            Log.d(TAG, "updateDoneChannel: lightColorEnable=" + lightColorEnable);
+            createDoneChannel();
+        } else if (currentNotificationChannel.getLightColor() != lightColor) {
+            Log.d(TAG, "updateDoneChannel: color=" + color + ", lightColor=" + lightColor);
+            createDoneChannel();
         }
     }
 
@@ -288,7 +303,7 @@ class InteractiveNotification extends Notification {
         notificationChannel.setSound(ringtone, audioAttributes);
         notificationChannel.setVibrationPattern(MainActivity.vibrationPattern);
         notificationChannel.enableVibration(vibrationEnable);
-        notificationChannel.enableLights(lightColor != COLOR_NONE);
+        notificationChannel.enableLights(lightColorEnable);
         notificationChannel.setLightColor(lightColor);
         notificationManager.createNotificationChannel(notificationChannel);
         Log.d(TAG, "createDoneChannel: notificationChannel=" + notificationChannel);
@@ -301,16 +316,13 @@ class InteractiveNotification extends Notification {
         if (ringtoneReady != null && uri != null && !ringtoneReady.equals(uri)) {
             Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=" + uri);
             createReadyChannel();
-        }
-        else if (ringtoneReady == null && uri != null) {
+        } else if (ringtoneReady == null && uri != null) {
             Log.d(TAG, "updateReadyChannel: ringtoneReady=null, uri=" + uri);
             createReadyChannel();
-        }
-        else if (ringtoneReady != null && uri == null) {
+        } else if (ringtoneReady != null && uri == null) {
             Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=null");
             createReadyChannel();
-        }
-        else if (currentNotificationChannel.shouldVibrate() != vibrationReadyEnable) {
+        } else if (currentNotificationChannel.shouldVibrate() != vibrationReadyEnable) {
             Log.d(TAG, "updateReadyChannel: vibrationReadyEnable=" + vibrationReadyEnable);
             createReadyChannel();
         }
@@ -474,12 +486,18 @@ class InteractiveNotification extends Notification {
 
     private RemoteViews createRemoteView() {
         RemoteViews remoteView;
-        if (buttonsLayout == ButtonsLayout.SET_DONE || buttonsLayout == ButtonsLayout.ALL_SETS_DONE) {
-            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_done);
-        } else if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady && drawProgressBar()) {
-            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_getready);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (isColorDark(getColor())) {
+                remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_white_text);
+            } else {
+                remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_black_text);
+            }
         } else {
-            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
+            if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_red_text);
+            } else {
+                remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
+            }
         }
 
         updateButton(remoteView, R.id.button0, button0);
@@ -507,6 +525,10 @@ class InteractiveNotification extends Notification {
             default: case NO_LAYOUT: case PAUSED: case RUNNING: return true;
             case READY: case SET_DONE: case ALL_SETS_DONE: return false;
         }
+    }
+
+    private boolean isColorDark(int color) {
+        return (Color.red(color)*0.299 + Color.green(color)*0.587 + Color.blue(color)*0.114) <= 186;
     }
 
     private Notification.Builder createDefaultNotificationBuilder() {
@@ -545,7 +567,7 @@ class InteractiveNotification extends Notification {
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setPriority(PRIORITY_MAX)
-                        .setLights(lightColor != COLOR_NONE ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
+                        .setLights(lightColorEnable ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
                         .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
                         .setSound(ringtoneReady)
                         .setColor(getColor());
@@ -597,18 +619,18 @@ class InteractiveNotification extends Notification {
         switch (buttonsLayout) {
             case NO_LAYOUT:
             case READY:
-                return ContextCompat.getColor(context, R.color.progress_bar_ready);
+                return ContextCompat.getColor(context, R.color.color_waiting);
             case PAUSED:
             case RUNNING:
-                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady && drawProgressBar())
-                    return ContextCompat.getColor(context, R.color.progress_bar_running_ready);
+                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady)
+                    return colorReady;
                 else
-                    return ContextCompat.getColor(context, R.color.progress_bar_running);
+                    return colorRunning;
             case SET_DONE:
             case ALL_SETS_DONE:
-                return ContextCompat.getColor(context, R.color.progress_bar_done);
+                return colorDone;
         }
-        return ContextCompat.getColor(context, R.color.progress_bar_running);
+        return colorRunning;
     }
 
     private void build(NotificationMode notificationMode) {

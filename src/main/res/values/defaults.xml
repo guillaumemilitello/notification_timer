@@ -4,10 +4,14 @@
     <string name="default_timer_plus" translatable="false">20</string>
     <bool name="default_vibrate">true</bool>
     <string name="default_ringtone_uri" translatable="false">content://settings/system/notification_sound</string>
-    <string name="default_light_color" translatable="false">green</string>
+    <bool name="default_light_color_enable">true</bool>
+    <color name="default_light_color" translatable="false">@color/led_blue</color>
     <string name="default_light_flash_rate" translatable="false">1000</string>
     <bool name="default_timer_get_ready_enable">false</bool>
     <string name="default_timer_get_ready" translatable="false">15</string>
     <bool name="default_timer_get_ready_vibrate">true</bool>
     <string name="default_timer_get_ready_ringtone_uri" translatable="false">content://settings/system/notification_sound</string>
+    <color name="default_color_running" translatable="false">@color/blue_grey</color>
+    <color name="default_color_ready" translatable="false">@color/orange</color>
+    <color name="default_color_done" translatable="false">@color/red</color>
 </resources>

@@ -13,15 +13,7 @@
     <!-- Notification -->
     <color name="progress_bar_background">#B0B0B0</color>
     <color name="progress_bar_get_ready">#FF0000</color>
-
-    <color name="progress_bar_background_light">#d9d9d9</color>
-    <color name="progress_bar_font_light_gray">#595959</color>
-
-    <!-- Background UI colors -->
-    <color name="progress_bar_ready">#d2d2d2</color>
-    <color name="progress_bar_running">#c5cae9</color>
-    <color name="progress_bar_running_ready">#ffab91</color>
-    <color name="progress_bar_done">#ff5252</color>
+    <color name="progress_bar_font_light_gray">#e0e0e0</color>
 
     <!-- Presets -->
     <color name="preset_card_timer_font_color">#757575</color>
@@ -30,14 +22,33 @@
     <color name="preset_card_add_background">#d9ddf5</color>
 
     <!-- Main activity -->
-    <color name="mainBackground">#4d000000</color>
-    <color name="timer_progressbar">@color/primary</color>
-    <color name="timer_progressbar_ready">@android:color/holo_red_light</color>
-    <color name="timer_progressbar_transparent">#807986cb</color>
-    <color name="timer_progressbar_ready_transparent">#80ff4444</color>
-    <color name="timer_progressbar_background">#c5cae9</color>
-    <color name="timer_progressbar_background_ready">#ef5350</color>
-    <color name="timer_progressbar_waiting">@android:color/darker_gray</color>
-    <color name="timer_text_color">@color/primary</color>
-    <color name="sets_text_color">@color/primary_light</color>
+    <color name="color_waiting">@android:color/darker_gray</color>
+
+    <!-- Background colors -->
+    <color name="red">#f44336</color>
+    <color name="pink">#ec407a</color>
+    <color name="purple">#ab47bc</color>
+    <color name="indigo">#7986cb</color>
+    <color name="light_blue">#03a9f4</color>
+    <color name="cyan">#26c6da</color>
+    <color name="teal">#26a69a</color>
+    <color name="green">#66bb6a</color>
+    <color name="light_green">#9ccc65</color>
+    <color name="lime">#cddc39</color>
+    <color name="yellow">#ffeb3b</color>
+    <color name="amber">#ffca28</color>
+    <color name="orange">#ffa726</color>
+    <color name="deep_orange">#ff7043</color>
+    <color name="grey">#bdbdbd</color>
+    <color name="blue_grey">#90a4ae</color>
+
+    <!-- LED colors -->
+    <color name="led_white">#ffffffff</color>
+    <color name="led_yellow">#ffffff00</color>
+    <color name="led_red">#ffff0000</color>
+    <color name="led_green">#ff00ff00</color>
+    <color name="led_blue">#ff0000ff</color>
+    <color name="led_purple">#ff800080</color>
+    <color name="led_cyan">#ff00ffff</color>
+    <color name="led_magenta">#ffff00ff</color>
 </resources>

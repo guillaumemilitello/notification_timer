@@ -127,7 +127,7 @@
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
                             android:lineSpacingMultiplier="0"
-                            android:textColor="@color/timer_text_color"
+                            android:textColor="@color/default_color_running"
                             android:id="@+id/textViewTimerBold"/>
 
                         <!-- TextView is gone below 60 seconds -->
@@ -140,7 +140,7 @@
                             android:textSize="130sp"
                             android:text=""
                             android:maxLines="1"
-                            android:textColor="@color/timer_text_color"
+                            android:textColor="@color/default_color_running"
                             android:id="@+id/textViewTimer"/>
 
                     </RelativeLayout>

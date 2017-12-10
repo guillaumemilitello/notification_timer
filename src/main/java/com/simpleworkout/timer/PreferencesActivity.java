@@ -98,6 +98,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         }
         updateSummaries(sharedPreferences.getAll());
         updateGetReadyPreferences();
+        updateLightColorPreference();
     }
 
     @Override
@@ -133,13 +134,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                     sharedPreferencesEditor.putString(getString(R.string.pref_ringtone_uri), getString(R.string.default_timer_get_ready_ringtone_uri));
                     Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=default");
                 }
-                if (notificationChannel.shouldShowLights()) {
-                    sharedPreferencesEditor.putString(getString(R.string.pref_light_color), MainActivity.getStringColor(notificationChannel.getLightColor()));
-                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", string=" + MainActivity.getStringColor(notificationChannel.getLightColor()));
-                } else {
-                    sharedPreferencesEditor.putString(getString(R.string.pref_light_color), "none");
-                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", string=none");
-                }
+                sharedPreferencesEditor.putBoolean(getString(R.string.pref_light_color_enable), notificationChannel.shouldShowLights());
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color_enable) + ", bool=" + notificationChannel.shouldShowLights());
+                sharedPreferencesEditor.putInt(getString(R.string.pref_light_color), notificationChannel.getLightColor());
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", color=" + notificationChannel.getLightColor());
             }
             else if (notificationChannel.getId().equals(InteractiveNotification.getReadyChannelId())) {
                 Log.d(TAG, "updateNotificationChannelPreferences: notificationId=" + notificationChannel.getId());
@@ -158,11 +156,17 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         sharedPreferencesEditor.apply();
     }
 
+    private void updateLightColorPreference() {
+        boolean lightColorEnable = sharedPreferences.getBoolean(getString(R.string.pref_light_color_enable), true);
+        settingsFragment.findPreference(getString(R.string.pref_light_color)).setEnabled(lightColorEnable);
+    }
+
     private void updateGetReadyPreferences() {
         boolean timerGetReadyEnable = sharedPreferences.getBoolean(getString(R.string.pref_timer_get_ready_enable), true);
         settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)).setEnabled(timerGetReadyEnable);
         settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_vibrate)).setEnabled(timerGetReadyEnable);
         settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_ringtone_uri)).setEnabled(timerGetReadyEnable);
+        settingsFragment.findPreference(getString(R.string.pref_custom_color_ready)).setEnabled(timerGetReadyEnable);
     }
 
     private void updateSummaries(Map<String, ?> preferences) {
@@ -207,8 +211,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
 
-                    if (key.equals("timerGetReadyEnable")) {
+                    if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
                         updateGetReadyPreferences();
+                    }
+
+                    if (key.equals(getString(R.string.pref_light_color_enable))) {
+                        updateLightColorPreference();
                     }
                 }
             }

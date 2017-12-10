@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout="@layout/activity_main_header">
 
     <PreferenceCategory android:title="Timer">
@@ -33,13 +34,20 @@
         android:defaultValue="@string/default_ringtone_uri"
         android:showDefault="true"
         android:showSilent="true"/>
-    <ListPreference
+    <SwitchPreference
+        android:key="@string/pref_light_color_enable"
+        android:title="@string/light_color_enable"
+        android:summary="@string/light_color_enable_summary"
+        android:defaultValue="@bool/default_light_color_enable"/>
+    <com.kizitonwose.colorpreference.ColorPreference
+        android:defaultValue="@color/default_light_color"
         android:key="@string/pref_light_color"
         android:title="@string/light_color"
-        android:defaultValue="@string/default_light_color"
-        android:entries="@array/lightColor"
-        android:entryValues="@array/lightColorValues"/>
-
+        app:colorShape="circle"
+        app:colorChoices="@array/lightColorValues"
+        app:viewSize="large"
+        app:numColumns="4"
+        app:showDialog="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/extra_notification">
@@ -68,5 +76,42 @@
         android:defaultValue="@string/default_timer_get_ready_ringtone_uri"
         android:showDefault="true"
         android:showSilent="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/customization">
+
+    <com.kizitonwose.colorpreference.ColorPreference
+        android:defaultValue="@color/default_color_running"
+        android:key="@string/pref_custom_color_running"
+        android:title="@string/color_running"
+        android:summary="@string/color_running_summary"
+        app:colorShape="circle"
+        app:colorChoices="@array/colorValues"
+        app:viewSize="large"
+        app:numColumns="4"
+        app:showDialog="true"/>
+
+    <com.kizitonwose.colorpreference.ColorPreference
+        android:defaultValue="@color/default_color_ready"
+        android:key="@string/pref_custom_color_ready"
+        android:title="@string/color_ready"
+        android:summary="@string/color_ready_summary"
+        app:colorShape="circle"
+        app:colorChoices="@array/colorValues"
+        app:viewSize="large"
+        app:numColumns="4"
+        app:showDialog="true"/>
+
+    <com.kizitonwose.colorpreference.ColorPreference
+        android:defaultValue="@color/default_color_done"
+        android:key="@string/pref_custom_color_done"
+        android:title="@string/color_done"
+        android:summary="@string/color_done_summary"
+        app:colorShape="circle"
+        app:colorChoices="@array/colorValues"
+        app:viewSize="large"
+        app:numColumns="4"
+        app:showDialog="true"/>
+
     </PreferenceCategory>
 </PreferenceScreen>

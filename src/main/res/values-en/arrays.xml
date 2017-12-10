@@ -38,31 +38,16 @@
         <item>5</item>
     </string-array>
 
-    <string-array name="lightColor">
-        <item>Default</item>
-        <item>None</item>
-        <item>White</item>
-        <item>Yellow</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>Blue</item>
-        <item>Purple</item>
-        <item>Cyan</item>
-        <item>Magenta</item>
-    </string-array>
-
-    <string-array name="lightColorValues">
-        <item>default</item>
-        <item>none</item>
-        <item>white</item>
-        <item>yellow</item>
-        <item>red</item>
-        <item>green</item>
-        <item>blue</item>
-        <item>purple</item>
-        <item>cyan</item>
-        <item>magenta</item>
-    </string-array>
+    <integer-array name="lightColorValues">
+        <item>@color/led_white</item>
+        <item>@color/led_yellow</item>
+        <item>@color/led_red</item>
+        <item>@color/led_green</item>
+        <item>@color/led_blue</item>
+        <item>@color/led_purple</item>
+        <item>@color/led_cyan</item>
+        <item>@color/led_magenta</item>
+    </integer-array>
 
     <string-array name="lightFlashRate">
         <item>None</item>
@@ -83,5 +68,24 @@
         <item>4000</item>
         <item>5000</item>
     </string-array>
+
+    <integer-array name="colorValues">
+        <item>@color/red</item>
+        <item>@color/pink</item>
+        <item>@color/purple</item>
+        <item>@color/indigo</item>
+        <item>@color/light_blue</item>
+        <item>@color/cyan</item>
+        <item>@color/teal</item>
+        <item>@color/green</item>
+        <item>@color/light_green</item>
+        <item>@color/lime</item>
+        <item>@color/yellow</item>
+        <item>@color/amber</item>
+        <item>@color/orange</item>
+        <item>@color/deep_orange</item>
+        <item>@color/grey</item>
+        <item>@color/blue_grey</item>
+    </integer-array>
 
 </resources>
