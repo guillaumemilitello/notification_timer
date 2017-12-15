@@ -92,9 +92,8 @@ public class PresetCardsList extends Fragment {
                 addPresetButton = false;
                 adapter.notifyItemRemoved(0);
                 adapter.notifyItemRangeChanged(0, adapter.getItemCount());
-                userPosition = USER_POSITION_NONE;
-            }
-            if (userPosition != index) {
+                userPosition = index;
+            } else if (userPosition != index) {
                 // Update both positions
                 adapter.notifyItemChanged(userPosition);
                 adapter.notifyItemChanged(index);
@@ -318,8 +317,8 @@ public class PresetCardsList extends Fragment {
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
             linearLayoutBackground = view.findViewById(R.id.layoutCardTimer);
 
-            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondBold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
+            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
             textViewCardTimer.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
@@ -335,9 +334,6 @@ public class PresetCardsList extends Fragment {
                 int position = getAdapterPosition();
                 Log.d(TAG, "onClick: position=" + position);
                 inputPreset(getAdapterPosition());
-                adapter.notifyItemChanged(position);
-                adapter.notifyItemChanged(userPosition);
-                scrollToPosition(position);
             }
             else if (view.getId() == imageButtonCard.getId()) {
                 final int position = getAdapterPosition();
@@ -366,8 +362,8 @@ public class PresetCardsList extends Fragment {
             textViewCardTimer = view.findViewById(R.id.textViewCardTimer);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
 
-            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondBold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/OpenSans-CondLight.ttf");
+            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
             textViewCardTimer.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
