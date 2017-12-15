@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private ImageButton imageButtonTimerMinusMulti, imageButtonTimerPlusMulti;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonKeepScreenOn;
     private LinearLayout setsLayout, bottomButtonsLayout, fullButtonsLayout, mainLayout, mainLayoutButton;
-    private RelativeLayout timerLayout;
+    private RelativeLayout activityLayout, timerLayout;
     private FrameLayout presetsFrameLayout;
 
     private boolean inMultiWindowMode;
@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         mainLayoutButton = findViewById(R.id.layoutMainButtons);
         mainLayout = findViewById(R.id.layoutMain);
         setsLayout = findViewById(R.id.layoutSets);
+        activityLayout = findViewById(R.id.layoutActivity);
         timerLayout = findViewById(R.id.layoutTimer);
         fullButtonsLayout = findViewById(R.id.layoutFullButtons);
         bottomButtonsLayout = findViewById(R.id.layoutBottomButtons);
@@ -406,21 +407,16 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void scaleActivity() {
-        LayoutMode currentLayoutMode = getLayoutMode();
-        if (currentLayoutMode == layoutMode) {
-            Log.d(TAG, "scaleLayout: currentLayoutMode=" + currentLayoutMode + " already set properly");
-            return;
+        if (updateLayoutMode()) {
+            updatePresetsLayout(layoutMode == LayoutMode.FULL);
+            // Sizes are based on the timer layout (or timerProgressBar) height
+            float progressBarHeight = scaleTimerProgressBar();
+            scaleLayouts(progressBarHeight);
+            scaleTimerTextViews();
         }
-        layoutMode = currentLayoutMode;
-        Log.d(TAG, "scaleLayout: layoutMode=" + layoutMode);
-
-        // Sizes are based on the timer layout (or timerProgressBar) height
-        updatePresetsLayout(layoutMode == LayoutMode.FULL); // Always display the presets in FULL layout mode
-        scaleLayouts(scaleTimerProgressBar());
-        scaleTimerTextViews();
     }
 
-    private LayoutMode getLayoutMode() {
+    private boolean updateLayoutMode() {
         int width = timerProgressBar.getWidth();
         int height = timerProgressBar.getHeight();
 
@@ -428,12 +424,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (width == 0 || height == 0) {
             Log.e(TAG, "getLayoutMode: invalid width=" + width + ", height=" + height);
-            return layoutMode;
+            return false;
         }
 
         if (width == timerProgressBarWidth && height == timerProgressBarHeight) {
             Log.d(TAG, "getLayoutMode: already set properly");
-            return layoutMode;
+            return false;
         }
 
         boolean screenInLandscape = isScreenInLandscape();
@@ -452,15 +448,23 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         float scaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
 
         // Use predefined thresholds to detect the current multi-window ratio
+        LayoutMode currentLayoutMode;
         if (scaleX > 1.1) {
-            return screenInLandscape? LayoutMode.HALF_HORIZONTAL : LayoutMode.FULL;
+            currentLayoutMode = screenInLandscape? LayoutMode.HALF_HORIZONTAL : LayoutMode.FULL;
         } else if (scaleX > 0.8) {
-            return LayoutMode.TWO_THIRD;
+            currentLayoutMode = LayoutMode.TWO_THIRD;
         } else if (scaleX > 0.6) {
-            return LayoutMode.HALF;
+            currentLayoutMode = LayoutMode.HALF;
         } else {
-            return LayoutMode.ONE_THIRD;
+            currentLayoutMode = LayoutMode.ONE_THIRD;
         }
+
+        if (layoutMode != currentLayoutMode) {
+            layoutMode = currentLayoutMode;
+            Log.d(TAG, "updateLayoutMode: layoutMode=" + layoutMode);
+            return true;
+        }
+        return false;
     }
 
     private float scaleTimerProgressBar() {
@@ -468,12 +472,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         // In FULL layout mode, update the timerProgressBarHeight and the layout scale
         if (layoutMode == LayoutMode.FULL) {
-            timerProgressBarHeight = timerProgressBar.getHeight();
+            timerProgressBarHeight = (int)(activityLayout.getMeasuredHeight() - getResources().getDimension(R.dimen.preset_card_total_height));
             layoutScaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
+            timerProgressBar.setScaleX(layoutScaleX);
+            return timerProgressBarHeight;
+        } else {
+            timerProgressBar.setScaleX(layoutScaleX);
+            return timerProgressBar.getHeight();
         }
-
-        timerProgressBar.setScaleX(layoutScaleX);
-        return timerProgressBar.getHeight();
     }
 
     private void scaleLayouts(float progressBarHeight) {
@@ -497,6 +503,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 layoutMarginRatio = 7;
                 layoutWeight = 4;
                 break;
+            case HALF_HORIZONTAL:
+                fullButtonsLayout.setVisibility(View.VISIBLE);
+                imageButtonTimerMinusMulti.setVisibility(View.GONE);
+                imageButtonTimerPlusMulti.setVisibility(View.GONE);
+                setsLayout.setVisibility(View.VISIBLE);
+                setsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60);
+                layoutMarginRatio = 5;
+                layoutWeight = 3;
+                break;
             case TWO_THIRD:
                 fullButtonsLayout.setVisibility(View.GONE);
                 imageButtonTimerMinusMulti.setVisibility(View.VISIBLE);
@@ -507,7 +522,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 layoutWeight = 4;
                 break;
             default:
-            case HALF_HORIZONTAL:
             case FULL:
                 fullButtonsLayout.setVisibility(View.VISIBLE);
                 imageButtonTimerMinusMulti.setVisibility(View.GONE);
@@ -522,9 +536,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         int layoutMarginTop = (int)(-progressBarHeight * 1.1 / layoutMarginRatio);
         int layoutMarginBottom = (int)(-progressBarHeight * 0.9 / layoutMarginRatio);
 
-        LinearLayout.LayoutParams timerButtonsMultiLayoutParams = (LinearLayout.LayoutParams) timerLayout.getLayoutParams();
-        timerButtonsMultiLayoutParams.setMargins(0, layoutMarginTop, 0, layoutMarginBottom);
-        timerButtonsMultiLayoutParams.weight = layoutWeight;
+        LinearLayout.LayoutParams timerLayoutParams = (LinearLayout.LayoutParams) timerLayout.getLayoutParams();
+        timerLayoutParams.setMargins(0, layoutMarginTop, 0, layoutMarginBottom);
+        timerLayoutParams.weight = layoutWeight;
 
         LinearLayout.LayoutParams mainLayoutParams = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
         mainLayoutParams.setMargins(0, 0, 0, 2 * layoutMargin);
@@ -537,7 +551,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void scaleTimerTextViews() {
         int timerLayoutWidth = timerLayout.getMeasuredWidth();
-        int timerLayoutHeight = timerLayout.getMeasuredHeight();
+        // in FULL layout mode, recalculate manually the target height due to some delays while setting the layout to VISIBLE
+        int timerLayoutHeight = layoutMode == LayoutMode.FULL ? (timerProgressBarHeight - bottomButtonsLayout.getMeasuredHeight()) / 5 * 3 : timerLayout.getMeasuredHeight();
+        Log.d(TAG, "scaleTimerTextViews: timerLayoutHeight=" + timerLayoutHeight + ", timerProgressBarHeight=" + timerProgressBarHeight);
+
         if (imageButtonTimerPlusMulti.getVisibility() == View.VISIBLE) {
             timerLayoutWidth -= 2 * getResources().getDimension(R.dimen.timer_plus_minus_multi);
         }
@@ -1149,9 +1166,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void updatePresetsLayout(boolean visible) {
         if (presetsFrameLayout != null) {
-            Log.d(TAG, "updatePresetsLayout: visible=" + visible);
             presetsFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
             updateToolBarMenuItems(!visible);
+            Log.d(TAG, "updatePresetsLayout: visible=" + visible);
         }
     }
 
