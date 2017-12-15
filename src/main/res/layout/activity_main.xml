@@ -53,10 +53,9 @@
 
         <!-- Main layout including last button row-->
         <LinearLayout
-            android:id="@+id/mainLayoutButtons"
+            android:id="@+id/layoutMainButtons"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="-100dp"
             android:layout_below="@+id/fragmentContainerPresetCards"
             android:orientation="vertical"
             android:gravity="top"
@@ -64,21 +63,20 @@
 
             <!-- Main layout -->
             <LinearLayout
-                android:id="@+id/mainLayout"
+                android:id="@+id/layoutMain"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:layout_marginBottom="-100dp"
                 android:weightSum="5"
                 android:orientation="vertical">
 
-                <!-- Top bar information -->
                 <LinearLayout
-                    android:id="@+id/informationLayout"
+                    android:id="@+id/layoutSets"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:orientation="horizontal"
                     android:weightSum="3"
                     tools:ignore="NestedWeights">
@@ -86,7 +84,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""
+                        android:text="3"
                         android:maxLines="1"
                         android:textSize="50sp"
                         android:textStyle="bold"
@@ -95,95 +93,109 @@
 
                 </LinearLayout>
 
-                <!-- Timer layout -->
                 <RelativeLayout
-                    android:id="@+id/timerLayout"
-                    android:orientation="vertical"
+                    android:id="@+id/layoutTimer"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_marginTop="-50dp"
-                    android:layout_marginBottom="-50dp"
                     android:layout_weight="3"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:gravity="center">
 
-                    <!-- Current timer -->
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:layout_marginStart="-40dp"
-                        android:layout_marginEnd="-40dp"
                         android:gravity="center">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:fontFamily="sans-serif-condensed"
-                            android:textSize="250sp"
-                            android:text=""
-                            android:maxLines="1"
-                            android:textStyle="bold"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:lineSpacingMultiplier="0"
-                            android:textColor="@color/default_color_running"
-                            android:id="@+id/textViewTimerBold"/>
-
-                        <!-- TextView is gone below 60 seconds -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:fontFamily="sans-serif-condensed"
-                            android:layout_toEndOf="@+id/textViewTimerBold"
-                            android:gravity="center"
-                            android:textSize="130sp"
-                            android:text=""
-                            android:maxLines="1"
-                            android:textColor="@color/default_color_running"
-                            android:id="@+id/textViewTimer"/>
-
-                    </RelativeLayout>
-
-                    <!-- Multi window timer buttons -->
-                    <LinearLayout
-                        android:id="@+id/timerButtonsMulti"
-                        android:orientation="horizontal"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:gravity="center"
-                        android:visibility="gone"
-                        android:weightSum="5">
-
                         <ImageButton
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="@dimen/timer_plus_minus_multi"
+                            android:layout_height="@dimen/timer_plus_minus_multi"
                             android:scaleType="centerInside"
-                            android:layout_gravity="center"
                             android:adjustViewBounds="true"
+                            android:visibility="gone"
                             android:id="@+id/imageButtonTimerPlusMulti"
                             android:src="@drawable/ic_stopwatch_add_black_48dp"
                             android:background="?selectableItemBackgroundBorderless"
-                            android:alpha="0.4"/>
+                            android:alpha="0.4" />
 
-                        <Space
+                        <View
                             android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="3"/>
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/textViewTimerSeconds"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:singleLine="true"
+                            android:textSize="260sp"
+                            android:maxLines="1"
+                            android:text="10"
+                            android:visibility="gone"
+                            android:textStyle="bold"
+                            android:textAlignment="center"
+                            android:lineSpacingExtra="0dp"
+                            android:textColor="@color/default_color_running" />
+
+                        <!-- TextView is gone below 60 seconds -->
+                        <TextView
+                            android:id="@+id/textViewTimerLeft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:singleLine="true"
+                            android:textSize="120sp"
+                            android:maxLines="1"
+                            android:text="10"
+                            android:visibility="gone"
+                            android:textStyle="bold"
+                            android:textAlignment="textEnd"
+                            android:lineSpacingExtra="0dp"
+                            android:textColor="@color/default_color_running" />
+
+                        <!-- TextView is gone below 60 seconds -->
+                        <TextView
+                            android:id="@+id/textViewTimerSeparator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:textSize="120sp"
+                            android:text="'"
+                            android:visibility="gone"
+                            android:textAlignment="center"
+                            android:lineSpacingExtra="0dp"
+                            android:singleLine="true"
+                            android:maxLines="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/default_color_running" />
+
+                        <!-- TextView is gone below 60 seconds -->
+                        <TextView
+                            android:id="@+id/textViewTimerRight"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:textSize="120sp"
+                            android:text="00"
+                            android:visibility="gone"
+                            android:textAlignment="textStart"
+                            android:lineSpacingExtra="0dp"
+                            android:singleLine="true"
+                            android:maxLines="1"
+                            android:textColor="@color/default_color_running"/>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1" />
 
                         <ImageButton
                             android:id="@+id/imageButtonTimerMinusMulti"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="8dp"
-                            android:layout_weight="1"
+                            android:layout_width="@dimen/timer_plus_minus_multi"
+                            android:layout_height="@dimen/timer_plus_minus_multi"
                             android:scaleType="centerInside"
-                            android:layout_gravity="center"
+                            android:visibility="gone"
                             android:adjustViewBounds="true"
                             android:src="@drawable/ic_stopwatch_remove_black_48dp"
                             android:background="?selectableItemBackgroundBorderless"
@@ -195,13 +207,13 @@
 
                 <!-- FULL layout mode buttons -->
                 <LinearLayout
-                    android:id="@+id/fullButtonsLayout"
+                    android:id="@+id/layoutFullButtons"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     android:layout_gravity="bottom"
                     android:orientation="horizontal"
                     android:weightSum="5">
@@ -214,7 +226,6 @@
                         android:id="@+id/imageButtonTimerPlus"
                         android:src="@drawable/ic_stopwatch_add_black_48dp"
                         android:background="?selectableItemBackgroundBorderless"
-                        android:visibility="invisible"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         tools:ignore="NestedWeights" />
@@ -228,7 +239,6 @@
                         android:adjustViewBounds="false"
                         android:layout_gravity="center"
                         android:id="@+id/imageButtonKeepScreenOn"
-                        android:visibility="invisible"
                         android:src="@drawable/ic_stay_primary_portrait_black_48dp"
                         android:background="?selectableItemBackgroundBorderless" />
 
@@ -241,7 +251,6 @@
                         android:src="@drawable/ic_stopwatch_remove_black_48dp"
                         android:scaleType="centerInside"
                         android:adjustViewBounds="true"
-                        android:visibility="invisible"
                         android:background="?selectableItemBackgroundBorderless"
                         android:layout_weight="1" />
 
@@ -251,10 +260,12 @@
 
             <!-- Last buttons row -->
             <LinearLayout
+                android:id="@+id/layoutBottomButtons"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:paddingBottom="8dp"
+                android:visibility="invisible"
                 android:orientation="horizontal"
                 android:weightSum="5" >
 
@@ -264,7 +275,6 @@
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
                     android:id="@+id/imageButtonLeft"
-                    android:visibility="invisible"
                     android:src="@drawable/ic_refresh_black_48dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:layout_gravity="center"
@@ -278,7 +288,6 @@
                     android:adjustViewBounds="false"
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonCenter"
-                    android:visibility="invisible"
                     android:src="@drawable/ic_play_circle_filled_black_48dp"
                     android:layout_weight="3"
                     android:background="?selectableItemBackgroundBorderless" />
@@ -289,7 +298,6 @@
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonRight"
-                    android:visibility="invisible"
                     android:src="@drawable/ic_chevron_right_double_black_48dp"
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
