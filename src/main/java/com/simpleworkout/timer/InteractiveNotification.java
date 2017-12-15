@@ -596,18 +596,15 @@ class InteractiveNotification extends Notification {
     private void setCustomContent(RemoteViews remoteView, NotificationMode notificationMode, boolean layoutSetDone) {
         if (notificationMode == NotificationMode.UPDATE && headsUpUpdateCount > 0) {
             // Avoid updating the headsUpContentView when it won't be visible
-            Log.d(TAG, "setCustomHeadsUpContentView + headsUpUpdateCount=" + headsUpUpdateCount);
             notificationBuilder.setCustomHeadsUpContentView(remoteView);
             headsUpUpdateCount--;
         }
         else if (notificationMode == NotificationMode.READY) {
-            Log.d(TAG, "setCustomHeadsUpContentView + headsUpUpdateCount=" + headsUpUpdateCount);
             notificationBuilder.setCustomHeadsUpContentView(remoteView);
             // Update the next 2 seconds of the headsUpContentView when it's running
             headsUpUpdateCount = 2;
         }
         else {
-            Log.d(TAG, "setCustomHeadsUpContentView + headsUpUpdateCount=" + headsUpUpdateCount);
             notificationBuilder.setCustomHeadsUpContentView(remoteView);
         }
         notificationBuilder.setCustomContentView(remoteView);
@@ -615,7 +612,6 @@ class InteractiveNotification extends Notification {
     }
 
     private int getColor() {
-        Log.d(TAG, "getColor: buttonsLayout=" + buttonsLayout);
         switch (buttonsLayout) {
             case NO_LAYOUT:
             case READY:
