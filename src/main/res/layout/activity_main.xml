@@ -41,6 +41,8 @@
             android:id="@+id/fragmentContainerPresetCards"
             android:layout_width="match_parent"
             android:layout_height="@dimen/preset_card_total_height"
+            android:paddingStart="@dimen/preset_card_margin_side"
+            android:paddingEnd="@dimen/preset_card_margin_side"
             android:visibility="visible"
             android:layout_below="@+id/textViewEmptyPresets"
             android:backgroundTintMode="screen"

@@ -587,10 +587,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     protected void updatePresetsVisibility() {
+        Log.d(TAG, "updatePresetsVisibility");
         setPresetsVisible(!inMultiWindowMode);
     }
 
     private void setPresetsVisible(boolean visible) {
+        Log.d(TAG, "setPresetsVisible: visible=" + visible);
         if (timerState == TimerService.State.WAITING && presetCardsList.isEmpty()) {
             emptyPresetsTextView.setVisibility(visible ? View.VISIBLE : View.GONE);
             presetsFrameLayout.setVisibility(View.GONE);
@@ -815,9 +817,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateServiceState();
         updateButtonsLayout();
         updatePresetsVisibility();
-        if (inMultiWindowMode) {
-            changePresetsFrameLayout();
-        }
     }
 
     private void launchPickers() {
@@ -1158,7 +1157,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void changePresetsFrameLayout() {
         if (presetsFrameLayout != null) {
-            presetCardsList.resetScrollPosition();
             if (presetsFrameLayout.getVisibility() == View.GONE) {
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=visible");
                 setPresetsVisible(true);

@@ -5,10 +5,11 @@
     android:layout_height="@dimen/preset_card_height"
     android:layout_marginTop="@dimen/preset_card_margin_height"
     android:layout_marginBottom="@dimen/preset_card_margin_height"
-    android:layout_marginStart="@dimen/preset_card_margin_side">
+    android:layout_marginStart="@dimen/preset_card_margin_side"
+    android:layout_marginEnd="@dimen/preset_card_margin_side">
 
     <LinearLayout
-        android:id="@+id/layoutCardTimer"
+        android:id="@+id/layoutCard"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -22,6 +23,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/layoutCardTimer"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:paddingStart="@dimen/preset_card_timer_padding_left"
