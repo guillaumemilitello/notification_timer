@@ -47,8 +47,9 @@ public class PresetCardsList extends Fragment {
             addPresetButton = false;
             adapter.notifyItemRangeChanged(0, adapter.getItemCount());
             scrollToPosition(0);
+        } else {
+            Log.e(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList + " already exists, index=" + presetsList.indexOf(presetUser));
         }
-        Log.e(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList + " already exists, index=" + presetsList.indexOf(presetUser));
     }
 
     private void removePreset(int position) {
