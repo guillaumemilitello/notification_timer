@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     // Main user interface
     private Menu toolbarMenu;
-    private TextView setsTextView;
+    private TextView emptyPresetsTextView, setsTextView;
     private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
     private ButtonAction buttonLeftAction, buttonCenterAction, buttonRightAction;
@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerTextViewRight = new TimerTextView((TextView)findViewById(R.id.textViewTimerRight));
         timerTextViewSeconds =  new TimerTextView((TextView)findViewById(R.id.textViewTimerSeconds));
 
+        emptyPresetsTextView = findViewById(R.id.textViewEmptyPresets);
         setsTextView = findViewById(R.id.textViewSets);
 
         presetsFrameLayout = findViewById(R.id.fragmentContainerPresetCards);
@@ -585,6 +586,20 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return false; // Default is portrait mode
     }
 
+    protected void updatePresetsVisibility() {
+        setPresetsVisible(!inMultiWindowMode);
+    }
+
+    private void setPresetsVisible(boolean visible) {
+        if (timerState == TimerService.State.WAITING && presetCardsList.isEmpty()) {
+            emptyPresetsTextView.setVisibility(visible ? View.VISIBLE : View.GONE);
+            presetsFrameLayout.setVisibility(View.GONE);
+        } else {
+            emptyPresetsTextView.setVisibility(View.GONE);
+            presetsFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
 
     @Override
     public void onRestart() {
@@ -600,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             inMultiWindowMode = isInMultiWindowMode();
             Log.d(TAG, "onStart: inMultiWindowMode=" + inMultiWindowMode);
-            presetsFrameLayout.setVisibility(inMultiWindowMode? View.GONE : View.VISIBLE);
+            updatePresetsVisibility();
         }
 
         mainActivityVisible = true;
@@ -700,7 +715,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerTextViewRight.setDigits(digits, false);
 
             timerTextViewLeft.setText(String.format(Locale.US, "%d", timerCurrent / 60));
-            timerTextViewSeparator.setText("'");
             timerTextViewRight.setText(String.format(Locale.US, "%02d", timerCurrent % 60));
         } else {
             timerTextViewLeft.setVisibility(View.GONE);
@@ -800,6 +814,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.READY;
         updateServiceState();
         updateButtonsLayout();
+        updatePresetsVisibility();
         if (inMultiWindowMode) {
             changePresetsFrameLayout();
         }
@@ -907,6 +922,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsUser = 0;
 
         updateButtonsLayout();
+        updatePresetsVisibility();
     }
 
     void reset() {
@@ -1145,11 +1161,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             presetCardsList.resetScrollPosition();
             if (presetsFrameLayout.getVisibility() == View.GONE) {
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=visible");
-                presetsFrameLayout.setVisibility(View.VISIBLE);
+                setPresetsVisible(true);
                 updatePresetsExpandButton(true);
             } else {
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=invisible");
-                presetsFrameLayout.setVisibility(View.GONE);
+                setPresetsVisible(false);
                 updatePresetsExpandButton(false);
             }
         }
@@ -1166,7 +1182,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void updatePresetsLayout(boolean visible) {
         if (presetsFrameLayout != null) {
-            presetsFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+            setPresetsVisible(visible);
             updateToolBarMenuItems(!visible);
             Log.d(TAG, "updatePresetsLayout: visible=" + visible);
         }

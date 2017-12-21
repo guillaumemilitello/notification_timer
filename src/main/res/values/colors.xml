@@ -22,6 +22,7 @@
     <color name="preset_card_add_background">#d9ddf5</color>
 
     <!-- Main activity -->
+    <color name="presetsListEmpty">#eeeeee</color>
     <color name="color_waiting">@android:color/darker_gray</color>
 
     <!-- Background colors -->

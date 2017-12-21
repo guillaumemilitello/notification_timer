@@ -20,15 +20,29 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBar">
 
+        <TextView
+            android:id="@+id/textViewEmptyPresets"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/preset_card_total_height"
+            android:text="@string/presetsListEmpty"
+            android:paddingStart="16dp"
+            android:paddingEnd="0dp"
+            android:visibility="gone"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:background="@color/preset_fragment_background"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/presetsListEmpty" />
+
         <!-- Preset timers -->
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/fragmentContainerPresetCards"
             android:layout_width="match_parent"
             android:layout_height="@dimen/preset_card_total_height"
-            android:paddingStart="@dimen/preset_card_margin_side"
-            android:paddingEnd="0dp"
             android:visibility="visible"
+            android:layout_below="@+id/textViewEmptyPresets"
             android:backgroundTintMode="screen"
             android:elevation="2dp"
             android:background="@color/preset_fragment_background"

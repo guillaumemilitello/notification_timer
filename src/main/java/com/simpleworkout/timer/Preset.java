@@ -33,12 +33,16 @@ class Preset {
         return timer;
     }
 
-    String getTimerString() {
-        return String.format(Locale.US, "%d:%02d", timer / 60, timer % 60);
+    String getTimerLeftString() {
+        return String.format(Locale.US, "%d", timer / 60);
+    }
+
+    String getTimerRightString() {
+        return String.format(Locale.US, "%02d", timer % 60);
     }
 
     public String toString() {
-        return String.format(Locale.US, "%s %s", getTimerString(), getSetsString());
+        return String.format(Locale.US, "%s'%s %s", getTimerLeftString(), getTimerRightString(), getSetsString());
     }
 
     boolean isValid() {

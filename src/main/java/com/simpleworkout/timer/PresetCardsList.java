@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -104,6 +105,8 @@ public class PresetCardsList extends Fragment {
                 Log.d(TAG, "update: userPosition=" + userPosition + ", position=" + index);
             }
         }
+
+        ((MainActivity)getActivity()).updatePresetsVisibility();
     }
 
     public int getListIndex(int index) {
@@ -113,6 +116,8 @@ public class PresetCardsList extends Fragment {
     public void resetScrollPosition() {
         scrollToPosition(0);
     }
+
+    public boolean isEmpty() { return presetsListSize == 0; }
 
     private void scrollToPosition(int position) {
         Log.d(TAG, "scrollToPosition: position=" + position);
@@ -238,11 +243,9 @@ public class PresetCardsList extends Fragment {
 
             Log.d(TAG, "onCreateViewHolder: viewType=" + viewType);
             if (viewType == ITEM_VIEW_TYPE_PRESET) {
-                return new PresetViewHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.preset_card_view, parent, false));
+                return new PresetViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.preset_card_view, parent, false));
             } else {
-                return new AddPresetViewHolder(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.preset_add_card_view, parent, false));
+                return new AddPresetViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.preset_card_view, parent, false));
             }
         }
 
@@ -250,8 +253,10 @@ public class PresetCardsList extends Fragment {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
+                presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_delete_black_48dp);
                 Preset preset = presetsList.getPreset(getListIndex(position));
-                presetViewHolder.textViewCardTimer.setText(preset.getTimerString());
+                presetViewHolder.textViewCardTimerLeft.setText(preset.getTimerLeftString());
+                presetViewHolder.textViewCardTimerRight.setText(preset.getTimerRightString());
                 if (preset.isInfinity()) {
                     presetViewHolder.textViewCardSets.setVisibility(View.GONE);
                 } else {
@@ -263,10 +268,20 @@ public class PresetCardsList extends Fragment {
                 } else {
                     presetViewHolder.linearLayoutBackground.setBackgroundColor(context.getColor(R.color.preset_card_add_background));
                 }
+
+                RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) presetViewHolder.cardView.getLayoutParams();
+                if (position == getItemCount() - 1) {
+                    layoutParams.setMarginEnd((int)context.getResources().getDimension(R.dimen.preset_card_margin_side));
+                } else {
+                    layoutParams.setMarginEnd(0);
+                }
+
                 Log.d(TAG, "onBindViewHolder: position=" + position + ", preset=" + presetsList.getPreset(getListIndex(position)));
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
-                addPresetViewHolder.textViewCardTimer.setText(presetUser.getTimerString());
+                addPresetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_add_black_48dp);
+                addPresetViewHolder.textViewCardTimerLeft.setText(presetUser.getTimerLeftString());
+                addPresetViewHolder.textViewCardTimerRight.setText(presetUser.getTimerRightString());
                 if (presetUser.isInfinity()) {
                     addPresetViewHolder.textViewCardSets.setVisibility(View.GONE);
                 } else {
@@ -300,8 +315,9 @@ public class PresetCardsList extends Fragment {
     }
 
     private class PresetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        private final TextView textViewCardTimer;
+        private final CardView cardView;
+        private final TextView textViewCardTimerLeft;
+        private final TextView textViewCardTimerRight;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
         private final LinearLayout linearLayoutBackground;
@@ -312,17 +328,19 @@ public class PresetCardsList extends Fragment {
 
         PresetViewHolder(final View view) {
             super(view);
-            textViewCardTimer = view.findViewById(R.id.textViewCardTimer);
+            cardView = view.findViewById(R.id.card_view);
+            textViewCardTimerLeft = view.findViewById(R.id.textViewCardTimerLeft);
+            textViewCardTimerRight = view.findViewById(R.id.textViewCardTimerRight);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
             linearLayoutBackground = view.findViewById(R.id.layoutCardTimer);
 
             Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimer.setTypeface(typeface);
+            textViewCardTimerLeft.setTypeface(typeface);
+            textViewCardTimerRight.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
-            textViewCardTimer.setOnClickListener(this);
             textViewCardSets.setOnClickListener(this);
             imageButtonCard.setOnClickListener(this);
         }
@@ -330,7 +348,7 @@ public class PresetCardsList extends Fragment {
         @Override
         public void onClick(View view) {
 
-            if (view.getId() == textViewCardTimer.getId() || view.getId() == textViewCardSets.getId()){
+            if (view.getId() == textViewCardTimerLeft.getId() || view.getId() == textViewCardSets.getId()){
                 int position = getAdapterPosition();
                 Log.d(TAG, "onClick: position=" + position);
                 inputPreset(getAdapterPosition());
@@ -351,20 +369,22 @@ public class PresetCardsList extends Fragment {
     }
 
     private class AddPresetViewHolder extends RecyclerView.ViewHolder {
-
-        private final TextView textViewCardTimer;
+        private final TextView textViewCardTimerLeft;
+        private final TextView textViewCardTimerRight;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
 
         AddPresetViewHolder(final View view) {
             super(view);
-            imageButtonCard = view.findViewById(R.id.imageButtonAddCard);
-            textViewCardTimer = view.findViewById(R.id.textViewCardTimer);
+            textViewCardTimerLeft = view.findViewById(R.id.textViewCardTimerLeft);
+            textViewCardTimerRight = view.findViewById(R.id.textViewCardTimerRight);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
+            imageButtonCard = view.findViewById(R.id.imageButtonCard);
 
             Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimer.setTypeface(typeface);
+            textViewCardTimerLeft.setTypeface(typeface);
+            textViewCardTimerRight.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
             imageButtonCard.setOnClickListener(new View.OnClickListener() {
