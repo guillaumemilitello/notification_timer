@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -120,10 +121,6 @@ public class PresetCardsList extends Fragment {
 
     public int getListIndex(int index) {
         return addPresetButton ? index - 1 : index;
-    }
-
-    public void resetScrollPosition() {
-        scrollToPosition(0);
     }
 
     public boolean isEmpty() { return presetsListSize == 0; }
@@ -248,6 +245,11 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
+        public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+            ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        }
+
+        @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             Log.d(TAG, "onCreateViewHolder: viewType=" + viewType);
             if (viewType == ITEM_VIEW_TYPE_PRESET) {
@@ -336,6 +338,7 @@ public class PresetCardsList extends Fragment {
             Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
             textViewCardTimerLeft.setTypeface(typeface);
+            textViewCardTimerSeparator.setTypeface(typeface);
             textViewCardTimerRight.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
@@ -370,6 +373,7 @@ public class PresetCardsList extends Fragment {
 
     private class AddPresetViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewCardTimerLeft;
+        private final TextView textViewCardTimerSeparator;
         private final TextView textViewCardTimerRight;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
@@ -377,6 +381,7 @@ public class PresetCardsList extends Fragment {
         AddPresetViewHolder(final View view) {
             super(view);
             textViewCardTimerLeft = view.findViewById(R.id.textViewCardTimerLeft);
+            textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
             textViewCardTimerRight = view.findViewById(R.id.textViewCardTimerRight);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
@@ -384,6 +389,7 @@ public class PresetCardsList extends Fragment {
             Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
             textViewCardTimerLeft.setTypeface(typeface);
+            textViewCardTimerSeparator.setTypeface(typeface);
             textViewCardTimerRight.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 

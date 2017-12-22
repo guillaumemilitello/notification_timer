@@ -3,6 +3,7 @@ package com.codetroopers.betterpickers.mspicker;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,7 +15,8 @@ public class MsView extends LinearLayout {
 
     private ZeroTopPaddingTextView mMinutesOnes, mMinutesTens;
     private ZeroTopPaddingTextView mSecondsOnes, mSecondsTens;
-    private ZeroTopPaddingTextView mMinusLabel;
+    private ZeroTopPaddingTextView mMinusLabel, mMinuteLabel;
+    private final Typeface mTypefaceLekton, mTypefaceLektonBold;
 
     private ColorStateList mTextColor;
 
@@ -35,6 +37,9 @@ public class MsView extends LinearLayout {
      */
     public MsView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
+        mTypefaceLektonBold = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Bold.ttf");
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
@@ -82,19 +87,35 @@ public class MsView extends LinearLayout {
         mSecondsTens = (ZeroTopPaddingTextView) findViewById(R.id.seconds_tens);
         mSecondsOnes = (ZeroTopPaddingTextView) findViewById(R.id.seconds_ones);
         mMinusLabel = (ZeroTopPaddingTextView) findViewById(R.id.minus_label);
+        mMinuteLabel = (ZeroTopPaddingTextView) findViewById(R.id.minutes_label);
 
         if (mMinutesTens != null) {
+            mMinutesTens.setTypeface(mTypefaceLektonBold);
             mMinutesTens.updatePaddingForBoldDate();
         }
         if (mMinutesOnes != null) {
+            mMinutesOnes.setTypeface(mTypefaceLektonBold);
             mMinutesOnes.updatePaddingForBoldDate();
         }
         // Set the lowest time unit with thin font (excluding hundredths)
         if (mSecondsTens != null) {
+            mSecondsTens.setTypeface(mTypefaceLekton);
             mSecondsTens.updatePaddingForBoldDate();
         }
         if (mSecondsOnes != null) {
+            mSecondsOnes.setTypeface(mTypefaceLekton);
             mSecondsOnes.updatePaddingForBoldDate();
+        }
+        if (mMinusLabel != null) {
+            mMinusLabel.setTypeface(mTypefaceLekton);
+            mMinusLabel.setTextColor(mTextColor);
+        }
+        if (mMinuteLabel != null) {
+            mMinuteLabel.setTypeface(mTypefaceLekton);
+            mMinuteLabel.setTextColor(mTextColor);
+            mMinuteLabel.updatePaddingForBoldDate();
+            mMinuteLabel.setPaddingLeft((int)getResources().getDimension(R.dimen.time_separator_padding));
+            mMinuteLabel.setPaddingRight((int)getResources().getDimension(R.dimen.time_separator_padding));
         }
     }
 

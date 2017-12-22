@@ -3,6 +3,7 @@ package com.codetroopers.betterpickers.numberpicker;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,6 +16,7 @@ public class NumberView extends LinearLayout {
     private ZeroTopPaddingTextView mNumber, mDecimal;
     private ZeroTopPaddingTextView mDecimalSeperator;
     private ZeroTopPaddingTextView mMinusLabel;
+    private final Typeface mTypefaceLekton;
 
     private ColorStateList mTextColor;
 
@@ -35,6 +37,8 @@ public class NumberView extends LinearLayout {
      */
     public NumberView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
@@ -80,6 +84,7 @@ public class NumberView extends LinearLayout {
         mMinusLabel = (ZeroTopPaddingTextView) findViewById(R.id.minus_label);
         // Set the lowest time unit with thin font
         if (mNumber != null) {
+            mNumber.setTypeface(mTypefaceLekton);
             mNumber.updatePaddingForBoldDate();
         }
         if (mDecimal != null) {

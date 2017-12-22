@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="time_separator_padding">-9dp</dimen>
     <dimen name="medium_font_padding">12dp</dimen>
     <dimen name="medium_font_size">60dp</dimen>
     <dimen name="medium_font_size_hms">54dp</dimen>

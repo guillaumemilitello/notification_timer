@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -44,6 +45,8 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     public static final int SIGN_POSITIVE = 0;
     public static final int SIGN_NEGATIVE = 1;
 
+    private final Typeface mTypefaceLekton;
+
     /**
      * Instantiates an MsPicker object
      *
@@ -72,6 +75,8 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         mButtonBackgroundResId = R.drawable.button_background_dark;
         mDividerColor = getResources().getColor(R.color.default_divider_color_dark);
         mDeleteDrawableSrcResId = R.drawable.ic_backspace_dark;
+
+        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
     }
 
     protected int getLayoutId() {
@@ -104,6 +109,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         for (Button number : mNumbers) {
             if (number != null) {
                 number.setTextColor(mTextColor);
+                number.setTypeface(mTypefaceLekton);
                 number.setBackgroundResource(mKeyBackgroundResId);
             }
         }

@@ -43,6 +43,7 @@ public class ZeroTopPaddingTextView extends TextView {
     private static final Typeface SAN_SERIF_BOLD = Typeface.create("san-serif", Typeface.BOLD);
     private static final Typeface SAN_SERIF_CONDENSED_BOLD = Typeface.create("sans-serif-condensed", Typeface.BOLD);
 
+    private int mPaddingLeft = 0;
     private int mPaddingRight = 0;
 
     private String decimalSeperator = "";
@@ -91,7 +92,7 @@ public class ZeroTopPaddingTextView extends TextView {
         }
         // no need to scale by display density because getTextSize() already returns the font
         // height in px
-        setPadding(0, (int) (-paddingRatio * getTextSize()), mPaddingRight,
+        setPadding(mPaddingLeft, (int) (-paddingRatio * getTextSize()), mPaddingRight,
                 (int) (-bottomPaddingRatio * getTextSize()));
     }
 
@@ -100,12 +101,17 @@ public class ZeroTopPaddingTextView extends TextView {
         float bottomPaddingRatio = BOLD_FONT_BOTTOM_PADDING_RATIO;
         // no need to scale by display density because getTextSize() already returns the font
         // height in px
-        setPadding(0, (int) (-paddingRatio * getTextSize()), mPaddingRight,
+        setPadding(mPaddingLeft, (int) (-paddingRatio * getTextSize()), mPaddingRight,
                 (int) (-bottomPaddingRatio * getTextSize()));
     }
 
     public void setPaddingRight(int padding) {
         mPaddingRight = padding;
+        updatePadding();
+    }
+
+    public void setPaddingLeft(int padding) {
+        mPaddingLeft = padding;
         updatePadding();
     }
 }

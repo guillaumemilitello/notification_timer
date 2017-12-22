@@ -23,25 +23,28 @@
 
     <!-- Main activity -->
     <color name="presetsListEmpty">#eeeeee</color>
-    <color name="color_waiting">@android:color/darker_gray</color>
+    <color name="color_waiting">#e0e0e0</color>
 
     <!-- Background colors -->
     <color name="red">#f44336</color>
-    <color name="pink">#ec407a</color>
+    <color name="pink">#ec407a</color> <!-- Maybe useless -->
     <color name="purple">#ab47bc</color>
     <color name="indigo">#7986cb</color>
     <color name="light_blue">#03a9f4</color>
-    <color name="cyan">#26c6da</color>
+    <color name="cyan">#26c6da</color> <!-- Too bright : merge with previous : make it black font -->
     <color name="teal">#26a69a</color>
     <color name="green">#66bb6a</color>
-    <color name="light_green">#9ccc65</color>
-    <color name="lime">#cddc39</color>
+    <color name="light_green">#9ccc65</color> <!-- Wrong font color :too bright -->
+    <color name="lime">#cddc39</color> <!-- not nice : remove -->
     <color name="yellow">#ffeb3b</color>
     <color name="amber">#ffca28</color>
-    <color name="orange">#ffa726</color>
+    <color name="orange">#ffa726</color> <!-- Maybe useless : too bright -->
     <color name="deep_orange">#ff7043</color>
     <color name="grey">#bdbdbd</color>
     <color name="blue_grey">#90a4ae</color>
+    <!-- add white -->
+    <!-- add light grey : color_waiting -->
+    <!-- add default -->
 
     <!-- LED colors -->
     <color name="led_white">#ffffffff</color>
