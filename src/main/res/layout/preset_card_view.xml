@@ -37,6 +37,8 @@
                         android:fontFamily="sans-serif"
                         android:singleLine="true"
                         android:textSize="@dimen/preset_card_timer_font_size"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="3dp"
                         android:textColor="@color/preset_card_timer_font_color"
                         android:maxLines="1"
                         android:text="10"
@@ -50,6 +52,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:textSize="@dimen/preset_card_timer_font_size"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="3dp"
                         android:textColor="@color/preset_card_timer_font_color"
                         android:text="'"
                         android:paddingStart="-4dp"
@@ -66,9 +70,10 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif"
                         android:textSize="@dimen/preset_card_timer_font_size"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="3dp"
                         android:textColor="@color/preset_card_timer_font_color"
                         android:text="00"
-                        android:textAlignment="textStart"
                         android:lineSpacingExtra="0dp"
                         android:singleLine="true"
                         android:maxLines="1" />
@@ -81,6 +86,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center|start"
                     android:fontFamily="sans-serif-condensed"
+                    android:visibility="gone"
                     android:textSize="@dimen/preset_card_timer_font_size"
                     android:paddingEnd="@dimen/preset_card_sets_padding_right"
                     android:textColor="@color/preset_card_sets_font_color"
@@ -93,7 +99,11 @@
             android:id="@+id/imageButtonCard"
             android:layout_width="@dimen/preset_card_icon_size"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_delete_black_48dp" />
+            android:src="@drawable/ic_preset_add"
+            android:padding="9dp"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:background="?selectableItemBackgroundBorderless" />
 
     </LinearLayout>
 

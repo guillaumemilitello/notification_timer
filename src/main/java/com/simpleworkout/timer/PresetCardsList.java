@@ -270,7 +270,7 @@ public class PresetCardsList extends Fragment {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
-                presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_delete_black_48dp);
+                presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_delete);
                 Preset preset = presetsList.getPreset(getListIndex(position));
                 presetViewHolder.textViewCardTimerLeft.setText(preset.getTimerLeftString());
                 presetViewHolder.textViewCardTimerRight.setText(preset.getTimerRightString());
@@ -288,7 +288,7 @@ public class PresetCardsList extends Fragment {
                 Log.d(TAG, "onBindViewHolder: position=" + position + ", preset=" + presetsList.getPreset(getListIndex(position)));
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
-                addPresetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_add_black_48dp);
+                addPresetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_add);
                 addPresetViewHolder.textViewCardTimerLeft.setText(presetUser.getTimerLeftString());
                 addPresetViewHolder.textViewCardTimerRight.setText(presetUser.getTimerRightString());
                 if (presetUser.isInfinity()) {
