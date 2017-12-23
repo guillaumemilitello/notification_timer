@@ -14,8 +14,7 @@
     <string name="presetsListEmpty">Presets list empty</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
-    <string name="picker_sets">Sets</string>
-    <string name="picker_checkbox">Start the timer at set 0</string>
+    <string name="picker_sets">Timer number</string>
     <string name="picker_cancel">CANCEL</string>
     <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
@@ -47,6 +46,8 @@
     <string name="extra_notification_summary">Notification seconds before the timer is done</string>
     <string name="skip_forward">Skip forward</string>
     <string name="skip_backward">Skip backward</string>
+    <string name="sets_picker_enable">Timer number</string>
+    <string name="sets_picker_enable_summary">Add a timer number limit indicator</string>
     <string name="vibrate">Vibrate</string>
     <string name="vibrate_summary">Vibrate when the timer is done</string>
     <string name="ringtone">Ringtone</string>

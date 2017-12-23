@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // User preferences
     private long timerMinus;
     private long timerPlus;
+    private boolean setsPickerEnable;
     private boolean vibrationEnable;
     private Uri ringtoneUri;
     private boolean timerGetReadyEnable;
@@ -685,9 +686,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerUser = timer;
         Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
         timerProgressBar.setMax((int) timerUser);
-        updateButtonsLayout(ButtonsLayout.WAITING_SETS);
         updateServiceTimers();
-        setsPickerBuilder.show();
+        if (setsPickerEnable) {
+            updateButtonsLayout(ButtonsLayout.WAITING_SETS);
+            setsPickerBuilder.show();
+        } else {
+            setsCurrent = 1;
+            setsUser = Integer.MAX_VALUE;
+            Log.d(TAG, "onDialogMsSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
+            updateSetsDisplay();
+            terminatePickers();
+        }
     }
 
     @Override
@@ -1537,6 +1546,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             if (timerService != null) {
                 timerService.setTimerPlus(timerPlus);
             }
+        } else if (key.equals(getString(R.string.pref_sets_picker_enable))) {
+            setsPickerEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_picker));
         } else if (key.equals(getString(R.string.pref_vibrate))) {
             vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
             if (timerService != null) {

@@ -17,6 +17,11 @@
         android:defaultValue="@string/default_timer_minus"
         android:entries="@array/timerMinusPlus"
         android:entryValues="@array/timerMinusPlusValues"/>
+    <SwitchPreference
+        android:key="@string/pref_sets_picker_enable"
+        android:title="@string/sets_picker_enable"
+        android:summary="@string/sets_picker_enable_summary"
+        android:defaultValue="@bool/default_sets_picker"/>
 
     </PreferenceCategory>
 

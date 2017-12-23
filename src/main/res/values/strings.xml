@@ -14,7 +14,9 @@
     <string name="presetsListEmpty">Presets list empty</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
-    <string name="picker_sets">Sets</string>
+    <string name="picker_sets">Timer Number</string>
+    <string name="picker_cancel">CANCEL</string>
+    <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
     <string name="picker_split_screen">Exit split screen mode to add a preset</string>
@@ -44,6 +46,8 @@
     <string name="extra_notification_summary">Notification seconds before the timer is done</string>
     <string name="skip_forward">Skip forward</string>
     <string name="skip_backward">Skip backward</string>
+    <string name="sets_picker_enable">Timer number</string>
+    <string name="sets_picker_enable_summary">Add a timer number limit indicator</string>
     <string name="vibrate">Vibrate</string>
     <string name="vibrate_summary">Vibrate when the timer is done</string>
     <string name="ringtone">Ringtone</string>
@@ -67,6 +71,7 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
+    <string name="pref_sets_picker_enable" translatable="false">setPickerEnable</string>
     <string name="pref_vibrate" translatable="false">vibrate</string>
     <string name="pref_ringtone_uri" translatable="false">ringtoneUri</string>
     <string name="pref_light_color_enable" translatable="false">lightColorEnable</string>
