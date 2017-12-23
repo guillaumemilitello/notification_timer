@@ -58,6 +58,7 @@
             android:scaleX="1.275"
             android:rotation="90"
             android:visibility="visible"
+            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/fragmentContainerPresetCards"
@@ -75,6 +76,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/fragmentContainerPresetCards"
             android:orientation="vertical"
+            android:background="@android:color/transparent"
             android:gravity="top"
             android:weightSum="1">
 
