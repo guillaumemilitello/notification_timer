@@ -48,6 +48,7 @@
         android:defaultValue="@color/default_light_color"
         android:key="@string/pref_light_color"
         android:title="@string/light_color"
+        android:summary="@string/light_color_summary"
         app:colorShape="circle"
         app:colorChoices="@array/lightColorValues"
         app:viewSize="large"
