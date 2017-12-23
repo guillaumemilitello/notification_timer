@@ -743,78 +743,39 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     @SuppressWarnings("deprecation")
     private void updateColorLayout() {
-        int progressColor, backgroundColor;
-        final double backgroundColorLighten = 0.175, pauseColorLighten = 0.125, textColorDarken = 0.7;
+        int progressColor = Color.WHITE, backgroundColor = Color.WHITE;
         switch (buttonsLayout) {
             case READY:
-                backgroundColor = lighten(colorRunning, backgroundColorLighten);
-                progressColor = backgroundColor;
                 break;
             case PAUSED:
-                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
-                    progressColor = lighten(colorReady, pauseColorLighten);
-                    backgroundColor = lighten(colorReady, backgroundColorLighten);
-                } else {
-                    progressColor = lighten(colorRunning, pauseColorLighten);
-                    backgroundColor = lighten(colorRunning, backgroundColorLighten);
-                }
-                break;
             case RUNNING:
                 if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
                     progressColor = colorReady;
-                    backgroundColor = lighten(colorReady, backgroundColorLighten);
                 } else {
                     progressColor = colorRunning;
-                    backgroundColor = lighten(colorRunning, backgroundColorLighten);
                 }
                 break;
             case STOPPED:
-                backgroundColor = colorDone;
                 progressColor = colorDone;
                 break;
             default:
             case WAITING:
             case WAITING_SETS:
-                progressColor = R.color.color_waiting;
-                backgroundColor = R.color.color_waiting;
+                backgroundColor = getColor(R.color.preset_card_add_background);
+                progressColor = backgroundColor; //R.color.color_waiting; // TODO : remove color background
+                timerProgressBar.setMax(1);
+                timerProgressBar.setProgress(1);
                 break;
         }
-        int textColor = darken(progressColor, textColorDarken);
-
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
 
+        int textColor = getColor(R.color.timer_font_color);
         timerTextViewLeft.setTextColor(textColor);
         timerTextViewSeparator.setTextColor(textColor);
         timerTextViewRight.setTextColor(textColor);
         timerTextViewSeconds.setTextColor(textColor);
-
         setsTextView.setTextColor(textColor);
-    }
-
-    public static int lighten(int color, double fraction) {
-        int red = lightenColor(Color.red(color), fraction);
-        int green = lightenColor(Color.green(color), fraction);
-        int blue = lightenColor(Color.blue(color), fraction);
-        int alpha = Color.alpha(color);
-        return Color.argb(alpha, red, green, blue);
-    }
-
-    public static int darken(int color, double fraction) {
-        int red = darkenColor(Color.red(color), fraction);
-        int green = darkenColor(Color.green(color), fraction);
-        int blue = darkenColor(Color.blue(color), fraction);
-        int alpha = Color.alpha(color);
-
-        return Color.argb(alpha, red, green, blue);
-    }
-
-    private static int darkenColor(int color, double fraction) {
-        return (int)Math.max(color - (color * fraction), 0);
-    }
-
-    private static int lightenColor(int color, double fraction) {
-        return (int)Math.min(color + (color * fraction), 255);
     }
 
     private void updateSetsDisplay() {

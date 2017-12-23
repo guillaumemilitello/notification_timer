@@ -54,6 +54,7 @@
     <string name="light_color_enable">Light</string>
     <string name="light_color_enable_summary">Light when the timer is done</string>
     <string name="light_color">Light color</string>
+    <string name="light_color_summary">Light color when the timer is done</string>
     <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
     <string name="get_ready_time">Ready time</string>

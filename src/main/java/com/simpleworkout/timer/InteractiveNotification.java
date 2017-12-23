@@ -526,9 +526,8 @@ class InteractiveNotification extends Notification {
             case READY: case SET_DONE: case ALL_SETS_DONE: return false;
         }
     }
-
     private boolean isColorDark(int color) {
-        return (Color.red(color)*0.299 + Color.green(color)*0.587 + Color.blue(color)*0.114) <= 186;
+        return (Color.red(color)*0.299 + Color.green(color)*0.690 + Color.blue(color)*0.114) <= 175;
     }
 
     private Notification.Builder createDefaultNotificationBuilder() {

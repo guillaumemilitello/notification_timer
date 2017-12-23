@@ -15,8 +15,6 @@
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timer Number</string>
-    <string name="picker_cancel">CANCEL</string>
-    <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
     <string name="picker_split_screen">Exit split screen mode to add a preset</string>
@@ -54,6 +52,7 @@
     <string name="light_color_enable">Light</string>
     <string name="light_color_enable_summary">Light when the timer is done</string>
     <string name="light_color">Light color</string>
+    <string name="light_color_summary">Light color when the timer is done</string>
     <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
     <string name="get_ready_time">Ready time</string>
