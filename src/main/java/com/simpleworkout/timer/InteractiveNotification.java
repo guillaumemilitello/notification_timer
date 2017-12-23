@@ -539,21 +539,21 @@ class InteractiveNotification extends Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationMode == NotificationMode.DONE) {
                 return new Builder(context, getDoneChannelId())
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setColorized(true)
                         .setColor(getColor());
             } else if (notificationMode == NotificationMode.READY) {
                 return new Notification.Builder(context, getReadyChannelId())
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setColorized(true)
                         .setColor(getColor());
             } else {
                 return new Notification.Builder(context, updateChannelId)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setColorized(true)
@@ -562,7 +562,7 @@ class InteractiveNotification extends Notification {
         } else {
             if (notificationMode == NotificationMode.DONE) {
                 return new Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setPriority(PRIORITY_MAX)
@@ -572,7 +572,7 @@ class InteractiveNotification extends Notification {
                         .setColor(getColor());
             } else if (notificationMode == NotificationMode.READY) {
                 return new Notification.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setPriority(PRIORITY_MAX)
@@ -582,7 +582,7 @@ class InteractiveNotification extends Notification {
                         .setColor(getColor());
             } else {
                 return new Notification.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
                         .setPriority(PRIORITY_MAX)
