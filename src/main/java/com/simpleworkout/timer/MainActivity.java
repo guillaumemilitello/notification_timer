@@ -605,12 +605,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
 
     @Override
-    public void onRestart() {
-        super.onRestart();
-        Log.d(TAG, "onRestart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
@@ -637,6 +631,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
 
         updateUserInterface();
+        updateColorLayout();
     }
 
     private void updateUserInterface() {

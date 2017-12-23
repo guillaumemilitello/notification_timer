@@ -53,19 +53,21 @@ public class PresetCardsList extends Fragment {
     }
 
     private void removePreset(int position) {
-        Preset preset = presetsList.getPreset(position);
-        presetsListSize = presetsList.removePreset(position);
-        Log.d(TAG, "removePreset: position=" + position + ", presetList=" + presetsList + ", currentPreset=" + preset + ", presetUser=" + presetUser);
+        int index = getListIndex(position);
+        Preset preset = presetsList.getPreset(index);
+        Log.d(TAG, "removePreset: position=" + position + ", index=" + index + ", presetList=" + presetsList + ", currentPreset=" + preset + ", presetUser=" + presetUser);
+        presetsListSize = presetsList.removePreset(index);
         // The first preset is removed
-        if(position != 0) {
-            if (addPresetButton) {
-                ++position;
-            }
+        if (addPresetButton && position == 0) {
+            update();
+        } else if(preset.equals(presetUser)) {
+            update();
+        } else {
             adapter.notifyItemRemoved(position);
             adapter.notifyItemRangeChanged(position, adapter.getItemCount());
         }
-        if(preset.equals(presetUser)) {
-            update();
+        if (position == 0) {
+            ((MainActivity)getActivity()).updatePresetsVisibility();
         }
     }
 
@@ -88,6 +90,8 @@ public class PresetCardsList extends Fragment {
                     addPresetButton = true;
                     adapter.notifyItemRangeChanged(1, adapter.getItemCount());
                     scrollToPosition(0);
+                    // Remove empty preset list indications
+                    ((MainActivity)getActivity()).updatePresetsVisibility();
                 }
                 else {
                     // Preset is already selected
@@ -122,8 +126,6 @@ public class PresetCardsList extends Fragment {
                 Log.d(TAG, "update: userPosition=" + userPosition + ", position=" + index);
             }
         }
-
-        ((MainActivity)getActivity()).updatePresetsVisibility();
     }
 
     public int getListIndex(int index) {
@@ -365,7 +367,7 @@ public class PresetCardsList extends Fragment {
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            removePreset(getListIndex(position));
+                            removePreset(position);
                         }
                     });
                 alertDialog.show();
