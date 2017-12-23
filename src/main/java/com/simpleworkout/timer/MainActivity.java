@@ -1155,9 +1155,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void updatePresetsExpandButton(boolean expand) {
         if (expand) {
-            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setIcon(getDrawable(R.drawable.ic_chevron_right_black_48dp));
+            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setIcon(getDrawable(R.drawable.ic_action_up));
         } else {
-            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setIcon(getDrawable(R.drawable.ic_chevron_left_black_48dp));
+            toolbarMenu.getItem(TOOLBAR_MENU_PRESET_INDEX).setIcon(getDrawable(R.drawable.ic_action_down));
         }
     }
 

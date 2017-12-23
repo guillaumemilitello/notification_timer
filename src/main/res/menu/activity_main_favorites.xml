@@ -5,7 +5,7 @@
     <!-- Preset folding display option -->
     <item
         android:id="@+id/presets_display"
-        android:icon="@drawable/ic_chevron_left_black_48dp"
+        android:icon="@drawable/ic_action_down"
         android:title="@string/presets"
         android:visible="true"
         app:showAsAction="always"/>
