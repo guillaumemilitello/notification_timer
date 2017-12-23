@@ -86,7 +86,7 @@ public class PresetCardsList extends Fragment {
                 if (!addPresetButton) {
                     // Add the preset to the list
                     addPresetButton = true;
-                    adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                    adapter.notifyItemRangeChanged(1, adapter.getItemCount());
                     scrollToPosition(0);
                 }
                 else {
