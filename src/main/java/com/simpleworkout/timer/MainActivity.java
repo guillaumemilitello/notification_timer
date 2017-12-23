@@ -631,7 +631,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
 
         updateUserInterface();
-        updateColorLayout();
     }
 
     private void updateUserInterface() {
@@ -672,6 +671,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         // Rebind occurs only when relaunching the mainActivity
         updateUserInterface();
         scaleActivity();
+        updateColorLayout();
     }
 
     @Override
@@ -738,6 +738,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     @SuppressWarnings("deprecation")
     private void updateColorLayout() {
+        Log.d(TAG, "updateColorLayout: buttonsLayout=" + buttonsLayout);
         int progressColor = Color.WHITE, backgroundColor = Color.WHITE;
         switch (buttonsLayout) {
             case READY:
@@ -757,7 +758,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             case WAITING:
             case WAITING_SETS:
                 backgroundColor = getColor(R.color.preset_card_add_background);
-                progressColor = backgroundColor; //R.color.color_waiting; // TODO : remove color background
+                progressColor = backgroundColor;
                 timerProgressBar.setMax(1);
                 timerProgressBar.setProgress(1);
                 break;
@@ -1467,6 +1468,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             updateAllPreferences();
             updateUserInterface();
             scaleActivity();
+            updateColorLayout();
         }
     };
 

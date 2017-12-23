@@ -614,7 +614,7 @@ class InteractiveNotification extends Notification {
         switch (buttonsLayout) {
             case NO_LAYOUT:
             case READY:
-                return ContextCompat.getColor(context, R.color.color_waiting);
+                return ContextCompat.getColor(context, R.color.progress_bar_waiting);
             case PAUSED:
             case RUNNING:
                 if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady)

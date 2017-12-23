@@ -14,6 +14,7 @@
     <color name="progress_bar_background">#B0B0B0</color>
     <color name="progress_bar_get_ready">#FF0000</color>
     <color name="progress_bar_font_light_gray">#e0e0e0</color>
+    <color name="progress_bar_waiting">#e0e0e0</color>
 
     <!-- Presets -->
     <color name="preset_card_timer_font_color">#757575</color>
@@ -24,8 +25,6 @@
     <!-- Main activity -->
     <color name="timer_font_color">#424242</color>
     <color name="presetsListEmpty">#eeeeee</color>
-    <color name="color_waiting">#e0e0e0</color>
-
     <!-- Background colors -->
     <color name="dark_grey">#9e9e9e</color>
     <color name="grey">#bdbdbd</color>
