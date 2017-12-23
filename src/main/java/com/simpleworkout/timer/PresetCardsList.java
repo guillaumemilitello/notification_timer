@@ -53,13 +53,20 @@ public class PresetCardsList extends Fragment {
     }
 
     private void removePreset(int position) {
+        Preset preset = presetsList.getPreset(position);
         presetsListSize = presetsList.removePreset(position);
-        Log.d(TAG, "removePreset: position=" + position + ", presetList=" + presetsList);
-        if (addPresetButton) {
-            ++position;
+        Log.d(TAG, "removePreset: position=" + position + ", presetList=" + presetsList + ", currentPreset=" + preset + ", presetUser=" + presetUser);
+        // The first preset is removed
+        if(position != 0) {
+            if (addPresetButton) {
+                ++position;
+            }
+            adapter.notifyItemRemoved(position);
+            adapter.notifyItemRangeChanged(position, adapter.getItemCount());
         }
-        adapter.notifyItemRemoved(position);
-        adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+        if(preset.equals(presetUser)) {
+            update();
+        }
     }
 
     public void update() {
@@ -359,7 +366,6 @@ public class PresetCardsList extends Fragment {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             removePreset(getListIndex(position));
-                            update();
                         }
                     });
                 alertDialog.show();
