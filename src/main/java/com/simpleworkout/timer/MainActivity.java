@@ -775,7 +775,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateSetsDisplay() {
-        int sets = setsUser == Integer.MAX_VALUE ? setsCurrent : setsUser - setsCurrent + 1;
+        int sets = 0;
+        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+            sets = setsUser == Integer.MAX_VALUE ? setsCurrent : setsUser - setsCurrent + 1;
+        }
         setsTextView.setText(String.format(Locale.US, "%d", sets));
     }
 
