@@ -70,6 +70,7 @@ class InteractiveNotification extends Notification {
 
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
+    private int timerMinusResId;
 
     void setVibrationEnable(boolean vibrationEnable) {
         this.vibrationEnable = vibrationEnable;
@@ -119,6 +120,10 @@ class InteractiveNotification extends Notification {
 
     void setColorDone(int colorDone) {
         this.colorDone = colorDone;
+    }
+
+    void setTimerMinusResId(int resId) {
+        this.timerMinusResId = resId;
     }
 
     void updateNotificationChannels() {
@@ -452,7 +457,7 @@ class InteractiveNotification extends Notification {
                 intent = new Intent().setAction(IntentAction.EXTRA_SET);
                 break;
             case TIMER_MINUS:
-                iconId = R.drawable.ic_stopwatch_remove_black_48dp;
+                iconId = timerMinusResId;
                 intent = new Intent().setAction(IntentAction.TIMER_MINUS);
                 break;
             case TIMER_PLUS:

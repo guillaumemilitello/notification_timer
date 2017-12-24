@@ -1125,6 +1125,38 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
+    private int getTimerMinusResId() {
+        if (timerMinus == 10) {
+            return R.drawable.ic_timer_minus_10;
+        } else if (timerMinus == 15) {
+            return R.drawable.ic_timer_minus_15;
+        } else if (timerMinus == 20) {
+            return R.drawable.ic_timer_minus_20;
+        } else if (timerMinus == 30) {
+            return R.drawable.ic_timer_minus_30;
+        } else if (timerMinus == 45) {
+            return R.drawable.ic_timer_minus_45;
+        } else {
+            return R.drawable.ic_timer_minus_60;
+        }
+    }
+
+    private int getTimerPlusResId() {
+        if (timerPlus == 10) {
+            return R.drawable.ic_timer_plus_10;
+        } else if (timerPlus == 15) {
+            return R.drawable.ic_timer_plus_15;
+        } else if (timerPlus == 20) {
+            return R.drawable.ic_timer_plus_20;
+        } else if (timerPlus == 30) {
+            return R.drawable.ic_timer_plus_30;
+        } else if (timerPlus == 45) {
+            return R.drawable.ic_timer_plus_45;
+        } else {
+            return R.drawable.ic_timer_plus_60;
+        }
+    }
+
     private void changePresetsFrameLayout() {
         if (presetsFrameLayout != null) {
             if (presetsFrameLayout.getVisibility() == View.GONE) {
@@ -1500,11 +1532,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (key.equals(getString(R.string.pref_timer_minus))) {
             timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
+            int resId = getTimerMinusResId();
+            imageButtonTimerMinus.setImageResource(resId);
+            imageButtonTimerMinusMulti.setImageResource(resId);
             if (timerService != null) {
-                timerService.setTimerMinus(timerMinus);
+                timerService.interactiveNotification.setTimerMinusResId(resId);
             }
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
+            int resId = getTimerPlusResId();
+            imageButtonTimerPlus.setImageResource(resId);
+            imageButtonTimerPlusMulti.setImageResource(resId);
             if (timerService != null) {
                 timerService.setTimerPlus(timerPlus);
             }
