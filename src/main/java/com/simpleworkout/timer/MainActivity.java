@@ -772,11 +772,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateSetsDisplay() {
-        int sets = 0;
         if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
-            sets = setsUser == Integer.MAX_VALUE ? setsCurrent : setsUser - setsCurrent + 1;
+            if (setsUser == Integer.MAX_VALUE || setsCurrent > setsUser) {
+                setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
+            } else {
+                setsTextView.setText(String.format(Locale.US, "%d", setsUser - setsCurrent + 1));
+            }
+        } else {
+            setsTextView.setText(String.format(Locale.US, "0"));
         }
-        setsTextView.setText(String.format(Locale.US, "%d", sets));
     }
 
     private void terminatePickers() {
