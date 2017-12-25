@@ -91,7 +91,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_chronometer_reset"
+            android:src="@drawable/ic_chevron_right"
             android:scaleType="fitCenter"
             android:clickable="true"
             android:elevation="4dp"
@@ -103,7 +103,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_play"
+            android:src="@drawable/ic_pause"
             android:scaleType="fitCenter"
             android:clickable="true"
             android:elevation="6dp"
