@@ -486,35 +486,27 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         int layoutWeight;
         switch (layoutMode) {
             case ONE_THIRD:
-                fullButtonsLayout.setVisibility(View.GONE);
-                imageButtonTimerMinusMulti.setVisibility(View.VISIBLE);
-                imageButtonTimerPlusMulti.setVisibility(View.VISIBLE);
+                updateFullLayoutVisibility(View.GONE);
                 setsLayout.setVisibility(View.GONE);
                 layoutMarginRatio = 10;
                 layoutWeight = 5;
                 break;
             case HALF:
-                fullButtonsLayout.setVisibility(View.GONE);
-                imageButtonTimerMinusMulti.setVisibility(View.VISIBLE);
-                imageButtonTimerPlusMulti.setVisibility(View.VISIBLE);
+                updateFullLayoutVisibility(View.GONE);
                 setsLayout.setVisibility(View.VISIBLE);
                 setsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
                 layoutMarginRatio = 7;
                 layoutWeight = 4;
                 break;
             case HALF_HORIZONTAL:
-                fullButtonsLayout.setVisibility(View.VISIBLE);
-                imageButtonTimerMinusMulti.setVisibility(View.GONE);
-                imageButtonTimerPlusMulti.setVisibility(View.GONE);
+                updateFullLayoutVisibility(View.VISIBLE);
                 setsLayout.setVisibility(View.VISIBLE);
                 setsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60);
                 layoutMarginRatio = 5;
                 layoutWeight = 3;
                 break;
             case TWO_THIRD:
-                fullButtonsLayout.setVisibility(View.GONE);
-                imageButtonTimerMinusMulti.setVisibility(View.VISIBLE);
-                imageButtonTimerPlusMulti.setVisibility(View.VISIBLE);
+                updateFullLayoutVisibility(View.GONE);
                 setsLayout.setVisibility(View.VISIBLE);
                 setsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60);
                 layoutMarginRatio = 8;
@@ -522,9 +514,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 break;
             default:
             case FULL:
-                fullButtonsLayout.setVisibility(View.VISIBLE);
-                imageButtonTimerMinusMulti.setVisibility(View.GONE);
-                imageButtonTimerPlusMulti.setVisibility(View.GONE);
+                updateFullLayoutVisibility(View.VISIBLE);
                 setsLayout.setVisibility(View.VISIBLE);
                 setsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 60);
                 layoutMarginRatio = 5;
@@ -554,10 +544,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         int timerLayoutHeight = layoutMode == LayoutMode.FULL ? (timerProgressBarHeight - bottomButtonsLayout.getMeasuredHeight()) / 5 * 3 : timerLayout.getMeasuredHeight();
         Log.d(TAG, "scaleTimerTextViews: timerLayoutHeight=" + timerLayoutHeight + ", timerProgressBarHeight=" + timerProgressBarHeight);
 
-        if (imageButtonTimerPlusMulti.getVisibility() == View.VISIBLE) {
-            timerLayoutWidth -= 2 * getResources().getDimension(R.dimen.timer_plus_minus_multi);
-        }
-
         // TimerTextViewParams generates parameters for the Lekton typeface
         TimerTextViewParameters timerTextViewParams = new TimerTextViewParameters(layoutMode, timerLayoutWidth, timerLayoutHeight, density, this, sharedPreferences);
         Log.d(TAG, "scaleTimerTextViews: timerTextViewParams=" + timerTextViewParams);
@@ -567,6 +553,19 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerTextViewRight.setParameters(timerTextViewParams);
         timerTextViewSeconds.setParameters(timerTextViewParams);
         updateTimerDisplay();
+    }
+
+    private void updateFullLayoutVisibility(int visible) {
+        fullButtonsLayout.setVisibility(visible);
+        if (visible == View.VISIBLE) {
+            imageButtonTimerMinusMulti.setVisibility(View.GONE);
+            imageButtonTimerPlusMulti.setVisibility(View.GONE);
+            bottomButtonsLayout.setWeightSum(5);
+        } else {
+            imageButtonTimerMinusMulti.setVisibility(View.VISIBLE);
+            imageButtonTimerPlusMulti.setVisibility(View.VISIBLE);
+            bottomButtonsLayout.setWeightSum(7);
+        }
     }
 
     // Detect the screen orientation with DisplayMetrics for better support in multiWindowMode
