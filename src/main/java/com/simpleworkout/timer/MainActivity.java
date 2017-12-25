@@ -395,13 +395,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "setKeepScreenOnStatus: keepScreenOn=" + keepScreenOn);
         if (keepScreenOn) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            imageButtonKeepScreenOn.setImageResource(R.drawable.ic_screen_lock_portrait_black_48dp);
+            imageButtonKeepScreenOn.setImageResource(R.drawable.ic_screen_locked);
             if (toolbarMenu != null) {
                 toolbarMenu.getItem(TOOLBAR_MENU_KEEPSCREENON_INDEX).setChecked(true);
             }
         } else {
             getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            imageButtonKeepScreenOn.setImageResource(R.drawable.ic_stay_primary_portrait_black_48dp);
+            imageButtonKeepScreenOn.setImageResource(R.drawable.ic_screen);
             if (toolbarMenu != null) {
                 toolbarMenu.getItem(TOOLBAR_MENU_KEEPSCREENON_INDEX).setChecked(false);
             }
