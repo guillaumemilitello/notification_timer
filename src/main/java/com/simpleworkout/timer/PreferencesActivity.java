@@ -222,7 +222,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             }
         };
 
-    public boolean isKeyPreference(String key) {
+    private boolean isKeyPreference(String key) {
         return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
                 && !key.contains(getString(R.string.pref_timer_text));
     }

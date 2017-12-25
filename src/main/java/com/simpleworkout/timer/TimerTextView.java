@@ -11,8 +11,8 @@ class TimerTextView {
 
     private static final String TAG = "TimerTextView";
 
-    private TextView textView;
-    private LinearLayout.LayoutParams layoutParams;
+    private final TextView textView;
+    private final LinearLayout.LayoutParams layoutParams;
     private TimerTextViewParameters parameters;
     private Typeface typeface;
 

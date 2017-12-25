@@ -104,15 +104,15 @@ class PresetsList {
     }
 
     public String toString() {
-        String string = "{";
+        StringBuilder string = new StringBuilder("{");
         for (int index = 0; index < getSize(); ++index) {
-            string += list.get(index);
+            string.append(list.get(index));
             if (index < getSize() - 1) {
-                string += ", ";
+                string.append(", ");
             } else {
-                string += "}";
+                string.append("}");
             }
         }
-        return string;
+        return string.toString();
     }
 }

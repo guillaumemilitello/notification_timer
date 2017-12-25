@@ -45,7 +45,7 @@ import android.os.SystemClock;
  * {@link #onTick(long)} takes an amount of time to execute that is significant
  * compared to the countdown interval.
  */
-public abstract class CountDownPauseTimer {
+abstract class CountDownPauseTimer {
 
     /**
      * Millis since epoch when alarm should stop.

@@ -4,8 +4,8 @@ import java.util.Locale;
 
 class Preset {
 
-    private long timer;
-    private int sets;
+    private final long timer;
+    private final int sets;
 
     Preset() {
         this.timer = -1;

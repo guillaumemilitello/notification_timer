@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private AlertDialog alertSetDone, alertAllSetsDone;
 
     // MainActivity user interface
-    public static final float ALPHA_ENABLED = (float) 1.0;
-    public static final float ALPHA_DISABLED = (float) 0.2;
+    private static final float ALPHA_ENABLED = (float) 1.0;
+    private static final float ALPHA_DISABLED = (float) 0.2;
 
     // Main user interface
     private Menu toolbarMenu;
@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private LayoutMode layoutMode;
     private TimerTextView timerTextViewLeft, timerTextViewSeparator, timerTextViewRight, timerTextViewSeconds;
 
-    static Typeface typefaceLektonBold, typefaceLekton;
+    static Typeface typefaceLektonBold;
+    private static Typeface typefaceLekton;
 
     static private float density;
 
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return new Preset(timerUser, setsUser);
     }
 
-    public SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
 
     // Button actions available for this activity
     private enum ButtonAction {
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         PAUSED("paused"),
         STOPPED("stopped");
 
-        private String layout;
+        private final String layout;
 
         ButtonsLayout(String layout) {
             this.layout = layout;
@@ -192,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         TWO_THIRD(3, "two_third"),
         FULL(4, "full");
 
-        private int index;
-        private String layout;
+        private final int index;
+        private final String layout;
 
         LayoutMode(int index, String layout) {
             this.index = index;
@@ -583,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return false; // Default is portrait mode
     }
 
-    protected void updatePresetsVisibility() {
+    void updatePresetsVisibility() {
         Log.d(TAG, "updatePresetsVisibility");
         setPresetsVisible(!inMultiWindowMode);
     }
@@ -778,7 +779,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 setsTextView.setText(String.format(Locale.US, "%d", setsUser - setsCurrent + 1));
             }
         } else {
-            setsTextView.setText(String.format(Locale.US, "0"));
+            setsTextView.setText("0");
         }
     }
 
@@ -840,7 +841,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    protected void start() {
+    void start() {
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
         updateButtonsLayout();
@@ -852,7 +853,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout();
     }
 
-    protected void resume() {
+    void resume() {
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "resume: timerState=" + timerState);
         updateButtonsLayout();
@@ -864,7 +865,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
-    protected void nextSet() {
+    void nextSet() {
         // Going to nextSet on the last set is allowed from the notification
         if (++setsCurrent <= setsUser) {
             Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
@@ -881,7 +882,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout();
     }
 
-    protected void clear() {
+    void clear() {
         timerState = TimerService.State.WAITING;
         Log.d(TAG, "clear: timerState=" + timerState);
 
@@ -901,7 +902,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
-    protected void extraSet() {
+    void extraSet() {
         Log.d(TAG, "extraSet: setsCurrent=" + setsCurrent);
 
         updateButtonsLayout(ButtonsLayout.RUNNING);
@@ -919,7 +920,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateColorLayout();
     }
 
-    protected void timerPlus() {
+    void timerPlus() {
         timerCurrent += timerPlus;
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
 
@@ -937,7 +938,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateColorLayout();
     }
 
-    protected void setsPlus() {
+    void setsPlus() {
         setsCurrent += 1;
         Log.d(TAG, "setsPlus: setsCurrent=" + setsCurrent);
 
@@ -954,7 +955,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    protected void setsUpdate(int sets) {
+    void setsUpdate(int sets) {
         Log.d(TAG, "setsUpdate: sets=" + sets + ", setsCurrent=" + setsCurrent);
         if (setsCurrent != sets) {
             setsCurrent = sets;
@@ -978,7 +979,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
-    protected void done() {
+    void done() {
         // The timer will be stopped from the alerts
         if (++setsCurrent <= setsUser) {
             Log.d(TAG, "done: setsCurrent=" + setsCurrent);
@@ -1602,7 +1603,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return false;
     }
 
-    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     Log.d(TAG, "onSharedPreferenceChanged: key=" + key);

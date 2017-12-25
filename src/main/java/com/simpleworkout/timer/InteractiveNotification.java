@@ -34,11 +34,10 @@ class InteractiveNotification extends Notification {
 
     private boolean visible;
 
-    public boolean isVisible() { return visible; }
-
     private final NotificationManager notificationManager;
     private Notification.Builder notificationBuilder;
-    private PendingIntent pendingIntent, pendingIntentDeleted;
+    private final PendingIntent pendingIntent;
+    private final PendingIntent pendingIntentDeleted;
 
     private static final String doneChannelId = "doneChannelId";
     private static final String readyChannelId = "readyChannelId";
@@ -157,7 +156,7 @@ class InteractiveNotification extends Notification {
         TIMER_MINUS("timer_minus"),
         DISMISS("dismiss");
 
-        private String action;
+        private final String action;
 
         ButtonAction(String action) {
             this.action = action;
@@ -525,7 +524,6 @@ class InteractiveNotification extends Notification {
     }
 
     private Notification.Builder createNotificationBuilder(NotificationMode notificationMode) {
-        Log.d(TAG, "createNotificationBuilder, notificationMode=" + notificationMode);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationMode == NotificationMode.DONE) {
                 return new Builder(context, getDoneChannelId())
@@ -673,11 +671,11 @@ class InteractiveNotification extends Notification {
         build(notificationMode);
     }
 
-    void updateSetsUser(int sets, NotificationMode notificationMode) {
+    void updateSetsUser(int sets) {
         Log.d(TAG, "updateSetsUser: setsUser=" + sets);
         setsUser = sets;
         updateSetsTextView();
-        build(notificationMode);
+        build(NotificationMode.UPDATE);
     }
 
     private void updateTimerTextView() {

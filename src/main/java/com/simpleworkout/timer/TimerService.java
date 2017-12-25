@@ -43,7 +43,7 @@ public class TimerService extends Service {
     private SharedPreferences sharedPreferences;
 
     // Notification related
-    protected InteractiveNotification interactiveNotification;
+    InteractiveNotification interactiveNotification;
     private boolean interactiveNotificationAlertDone = false;
     private boolean interactiveNotificationDone = false;
 
@@ -101,10 +101,6 @@ public class TimerService extends Service {
 
     public void setTimerGetReady(int timerGetReady) {
         this.timerGetReady = timerGetReady;
-    }
-
-    public void setTimerMinus(long timerMinus) {
-        this.timerMinus = timerMinus;
     }
 
     public void setTimerPlus(long timerPlus) {
@@ -246,7 +242,7 @@ public class TimerService extends Service {
         }
     }
 
-    protected void start() {
+    void start() {
         Log.d(TAG, "start: timerUser=" + timerUser + ", setsCurrent=" + setsCurrent);
         startCountDown(timerUser);
         updateStateIntent(State.RUNNING);
@@ -279,7 +275,7 @@ public class TimerService extends Service {
         pauseCountDown();
     }
 
-    protected void resume() {
+    void resume() {
         if (state == State.PAUSED) {
             Log.d(TAG, "resume");
 
@@ -321,7 +317,7 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
-    protected void nextSet() {
+    void nextSet() {
         Log.d(TAG, "nextSet: setsCurrent=" + setsCurrent);
 
         stopCountDown();
@@ -373,7 +369,7 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
-    protected void extraSet() {
+    void extraSet() {
         Log.d(TAG, "extraSet: setsCurrent=" + setsCurrent);
 
         timerCurrent = timerUser;
@@ -407,7 +403,7 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
-    protected void clear() {
+    void clear() {
         Log.d(TAG, "clear");
 
         stopCountDown();
@@ -437,7 +433,7 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
-    protected void timerPlus() {
+    void timerPlus() {
         timerCurrent += timerPlus;
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
@@ -457,7 +453,7 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
-    protected void setsPlus() {
+    void setsPlus() {
         setsCurrent += 1;
         Log.d(TAG, "setsPlus: setsCurrent=" + setsCurrent);
         interactiveNotification.updateSetsCurrent(setsCurrent, InteractiveNotification.NotificationMode.UPDATE);
@@ -474,7 +470,7 @@ public class TimerService extends Service {
     public void setSetsUser(int sets) {
         Log.d(TAG, "setSetsUser: setsUser=" + sets);
         setsUser = sets;
-        interactiveNotification.updateSetsUser(setsUser, InteractiveNotification.NotificationMode.UPDATE);
+        interactiveNotification.updateSetsUser(setsUser);
         saveContextPreferences(CONTEXT_PREFERENCE_SETS_USER);
     }
 
@@ -575,7 +571,7 @@ public class TimerService extends Service {
         Log.d(TAG, "cancelAlarmManager: canceling alarm");
     }
 
-    protected void acquireWakeLock() {
+    void acquireWakeLock() {
         if (wakeLock != null) {
             if (!wakeLock.isHeld()) {
                 Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
