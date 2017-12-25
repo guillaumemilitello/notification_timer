@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:id="@+id/imageViewIconNotif1"
             android:scaleType="fitStart"
-            android:src="@drawable/ic_app_notification" />
+            android:src="@drawable/ic_notification_legacy" />
     </LinearLayout>
 
     <RelativeLayout
