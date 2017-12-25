@@ -259,7 +259,7 @@
                         android:adjustViewBounds="false"
                         android:layout_gravity="center"
                         android:id="@+id/imageButtonKeepScreenOn"
-                        android:src="@drawable/ic_stay_primary_portrait_black_48dp"
+                        android:src="@drawable/ic_screen"
                         android:tint="@color/timer_font_color"
                         android:background="?selectableItemBackgroundBorderless" />
 
@@ -297,7 +297,7 @@
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
                     android:id="@+id/imageButtonLeft"
-                    android:src="@drawable/ic_refresh_black_48dp"
+                    android:src="@drawable/ic_chronometer_reset"
                     android:background="?selectableItemBackgroundBorderless"
                     android:layout_gravity="center"
                     android:layout_weight="1"/>
@@ -310,7 +310,7 @@
                     android:adjustViewBounds="false"
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonCenter"
-                    android:src="@drawable/ic_play_circle_filled_black_48dp"
+                    android:src="@drawable/ic_play_circle_black"
                     android:layout_weight="3"
                     android:background="?selectableItemBackgroundBorderless" />
 
@@ -320,7 +320,7 @@
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonRight"
-                    android:src="@drawable/ic_chevron_right_double_black_48dp"
+                    android:src="@drawable/ic_chevron_right"
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
                     android:background="?selectableItemBackgroundBorderless"

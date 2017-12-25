@@ -79,7 +79,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_refresh_black_48dp"
+            android:src="@drawable/ic_cross"
             android:scaleType="fitCenter"
             android:clickable="true"
             android:elevation="2dp"
@@ -91,7 +91,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_refresh_black_48dp"
+            android:src="@drawable/ic_chronometer_reset"
             android:scaleType="fitCenter"
             android:clickable="true"
             android:elevation="4dp"
@@ -103,7 +103,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_refresh_black_48dp"
+            android:src="@drawable/ic_play"
             android:scaleType="fitCenter"
             android:clickable="true"
             android:elevation="6dp"

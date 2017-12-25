@@ -149,15 +149,12 @@ class InteractiveNotification extends Notification {
 
         NO_ACTION("no_action"),
         START("start"),
-        STOP("stop"),
         PAUSE("pause"),
         RESUME("resume"),
         RESET("reset"),
         NEXT_SET("next_set"),
-        NEXT_SET_START("next_set_start"),
         EXTRA_SET("extra_set"),
         TIMER_MINUS("timer_minus"),
-        TIMER_PLUS("timer_plus"),
         DISMISS("dismiss");
 
         private String action;
@@ -429,47 +426,35 @@ class InteractiveNotification extends Notification {
 
         switch (action) {
             case START:
-                iconId = R.drawable.ic_play_arrow_black_48dp;
+                iconId = R.drawable.ic_play;
                 intent = new Intent().setAction(IntentAction.START);
                 break;
             case PAUSE:
-                iconId = R.drawable.ic_pause_black_48dp;
+                iconId = R.drawable.ic_pause;
                 intent = new Intent().setAction(IntentAction.PAUSE);
                 break;
             case RESUME:
-                iconId = R.drawable.ic_play_arrow_black_48dp;
+                iconId = R.drawable.ic_play;
                 intent = new Intent().setAction(IntentAction.RESUME);
                 break;
-            case STOP:
-                iconId = R.drawable.ic_stop_black_48dp;
-                intent = new Intent().setAction(IntentAction.STOP);
-                break;
             case NEXT_SET:
-                iconId = R.drawable.ic_chevron_right_black_48dp;
+                iconId = R.drawable.ic_chevron_right;
                 intent = new Intent().setAction(IntentAction.NEXT_SET);
                 break;
-            case NEXT_SET_START:
-                iconId = R.drawable.ic_chevron_right_double_black_48dp;
-                intent = new Intent().setAction(IntentAction.NEXT_SET_START);
-                break;
             case EXTRA_SET:
-                iconId = R.drawable.ic_chevron_right_double_black_48dp;
+                iconId = R.drawable.ic_cheverons_right;
                 intent = new Intent().setAction(IntentAction.EXTRA_SET);
                 break;
             case TIMER_MINUS:
                 iconId = timerMinusResId;
                 intent = new Intent().setAction(IntentAction.TIMER_MINUS);
                 break;
-            case TIMER_PLUS:
-                iconId = R.drawable.ic_stopwatch_add_black_48dp;
-                intent = new Intent().setAction(IntentAction.TIMER_PLUS);
-                break;
             case RESET:
-                iconId = R.drawable.ic_refresh_black_48dp;
+                iconId = R.drawable.ic_chronometer_reset;
                 intent = new Intent().setAction(IntentAction.RESET);
                 break;
             case DISMISS:
-                iconId = R.drawable.ic_close_black_48dp;
+                iconId = R.drawable.ic_cross;
                 intent = new Intent().setAction(IntentAction.NOTIFICATION_DISMISS);
                 break;
             case NO_ACTION:

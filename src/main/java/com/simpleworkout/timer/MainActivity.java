@@ -145,11 +145,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         CLEAR("clear"),
         CLEAR_DISABLED("clear_disabled"),
         RESET("reset"),
-        RESET_DISABLED("reset_disabled"),
         NEXT_SET("next_set"),
-        NEXT_SET_DISABLED("next_set_disabled"),
-        NEXT_SET_START("next_set_start"),
-        NEXT_SET_START_DISABLED("next_set_start_disabled");
+        NEXT_SET_DISABLED("next_set_disabled");
 
         private final String action;
 
@@ -1270,7 +1267,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 button.setEnabled(false);
                 return true;
             case INPUT:
-                button.setImageResource(R.drawable.ic_add_circle_black_48dp);
+                button.setImageResource(R.drawable.ic_add_circle_black);
                 button.setEnabled(true);
                 if (inMultiWindowMode) {
                     button.setAlpha(ALPHA_DISABLED);
@@ -1294,7 +1291,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 }
             case START:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_play_circle_filled_black_48dp);
+                button.setImageResource(R.drawable.ic_play_circle_black);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1305,7 +1302,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case PAUSE:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_pause_circle_filled_black_48dp);
+                button.setImageResource(R.drawable.ic_pause_circle_black);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1316,7 +1313,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case RESUME:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_play_circle_filled_black_48dp);
+                button.setImageResource(R.drawable.ic_play_circle_black);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1327,7 +1324,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case CLEAR:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_delete_black_48dp);
+                button.setImageResource(R.drawable.ic_trash);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1338,12 +1335,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case CLEAR_DISABLED:
                 button.setEnabled(false);
-                button.setImageResource(R.drawable.ic_delete_black_48dp);
+                button.setImageResource(R.drawable.ic_trash);
                 button.setAlpha(ALPHA_DISABLED);
                 return true;
             case NEXT_SET:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_chevron_right_black_48dp);
+                button.setImageResource(R.drawable.ic_chevron_right);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1354,28 +1351,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case NEXT_SET_DISABLED:
                 button.setEnabled(false);
-                button.setImageResource(R.drawable.ic_chevron_right_black_48dp);
-                button.setAlpha(ALPHA_DISABLED);
-                return true;
-            case NEXT_SET_START:
-                button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_chevron_right_double_black_48dp);
-                button.setAlpha(ALPHA_ENABLED);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        sendBroadcast(new Intent(IntentAction.NEXT_SET_START));
-                    }
-                });
-                return true;
-            case NEXT_SET_START_DISABLED:
-                button.setEnabled(false);
-                button.setImageResource(R.drawable.ic_chevron_right_double_black_48dp);
+                button.setImageResource(R.drawable.ic_chevron_right);
                 button.setAlpha(ALPHA_DISABLED);
                 return true;
             case RESET:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_refresh_black_48dp);
+                button.setImageResource(R.drawable.ic_chronometer_reset);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1383,11 +1364,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                         sendBroadcast(new Intent(IntentAction.RESET));
                     }
                 });
-                return true;
-            case RESET_DISABLED:
-                button.setEnabled(false);
-                button.setImageResource(R.drawable.ic_refresh_black_48dp);
-                button.setAlpha(ALPHA_DISABLED);
                 return true;
             default:
                 Log.e(TAG, "updateButton: impossible with action=" + action);

@@ -13,7 +13,7 @@ class AlertBuilderSetDone extends AlertDialog.Builder {
     AlertBuilderSetDone(final Context context) {
         super(context);
         setTitle(context.getString(R.string.alert_time_out));
-        setIcon(context.getDrawable(R.drawable.ic_timer_off_black_48dp));
+        setIcon(context.getDrawable(R.drawable.ic_chronometer_done));
         setMessage(context.getString(R.string.alert_set_done));
         setNegativeButton(context.getString(R.string.alert_no),
                 new DialogInterface.OnClickListener() {
