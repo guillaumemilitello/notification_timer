@@ -1,8 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        releaseConfig {
+        }
+    }
     compileSdkVersion 26
-
     defaultConfig {
         applicationId "com.simpleworkout.timer"
         minSdkVersion 21
@@ -13,7 +16,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -23,6 +27,10 @@ android {
     }
     sourceSets {
         main.res.srcDirs += 'src/main/res-betterpickers'
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 
