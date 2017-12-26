@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private TimerTextView timerTextViewLeft, timerTextViewSeparator, timerTextViewRight, timerTextViewSeconds;
 
     static Typeface typefaceLektonBold;
-    private static Typeface typefaceLekton;
 
     static private float density;
 
@@ -260,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         bottomButtonsLayout = findViewById(R.id.layoutBottomButtons);
 
         typefaceLektonBold = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Bold.ttf");
-        typefaceLekton = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Regular.ttf");
+        Typeface typefaceLekton = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Regular.ttf");
         timerTextViewLeft.setTypeface(typefaceLektonBold);
         timerTextViewSeparator.setTypeface(typefaceLekton);
         timerTextViewRight.setTypeface(typefaceLekton);

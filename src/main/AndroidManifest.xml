@@ -58,6 +58,9 @@
             android:resizeableActivity="true"
             android:screenOrientation="portrait" />
 
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAI2q7NxBB-YMAkiJqYxAE60W1XD2HKUmRf1JT5YQ" />
     </application>
 
 </manifest>
