@@ -704,14 +704,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private void updateTimerDisplay() {
         // TODO : merge with Preset class
         if (timerCurrent >= 60) {
-            Log.d(TAG, "updateTimerDisplay: timerCurrent=" + timerCurrent);
             timerTextViewLeft.setVisibility(View.VISIBLE);
             timerTextViewSeparator.setVisibility(View.VISIBLE);
             timerTextViewRight.setVisibility(View.VISIBLE);
             timerTextViewSeconds.setVisibility(View.GONE);
 
             int digits = timerCurrent >= 600 ? 4 : 3;
-            Log.d(TAG, "updateTimerDisplay: digits=" + digits);
             timerTextViewLeft.setDigits(digits, false);
             timerTextViewSeparator.setDigits(digits ,true);
             timerTextViewRight.setDigits(digits, false);
@@ -732,9 +730,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
     }
 
-    @SuppressWarnings("deprecation")
     private void updateColorLayout() {
-        Log.d(TAG, "updateColorLayout: buttonsLayout=" + buttonsLayout);
         int progressColor = Color.WHITE, backgroundColor = Color.WHITE;
         switch (buttonsLayout) {
             case READY:
