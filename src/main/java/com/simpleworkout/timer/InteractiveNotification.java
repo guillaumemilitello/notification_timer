@@ -453,7 +453,7 @@ class InteractiveNotification extends Notification {
                 intent = new Intent().setAction(IntentAction.RESET);
                 break;
             case DISMISS:
-                iconId = R.drawable.ic_cross;
+                iconId = R.drawable.ic_preset_delete;
                 intent = new Intent().setAction(IntentAction.NOTIFICATION_DISMISS);
                 break;
             case NO_ACTION:
