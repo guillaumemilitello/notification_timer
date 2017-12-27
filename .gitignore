@@ -1,2 +1,6 @@
 /build
+/release/
+/src/androidTest/
+/src/test/
+mobile.iml
 .DS_Store
