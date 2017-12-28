@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.simpleworkout.timer.R;
+import com.notification.timer.R;
 
 import java.util.Vector;
 
@@ -92,7 +92,7 @@ import java.util.Vector;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(com.simpleworkout.timer.R.layout.ms_picker_dialog, null);
+        View view = inflater.inflate(com.notification.timer.R.layout.ms_picker_dialog, null);
 
         Button doneButton = (Button) view.findViewById(R.id.done_button);
         Button cancelButton = (Button) view.findViewById(R.id.cancel_button);
@@ -128,7 +128,7 @@ import java.util.Vector;
             }
         });
 
-        mPicker = (MsPicker) view.findViewById(com.simpleworkout.timer.R.id.ms_picker);
+        mPicker = (MsPicker) view.findViewById(com.notification.timer.R.id.ms_picker);
         mPicker.setSetButton(doneButton);
         mPicker.setTime(mMinutes, mSeconds);
         mPicker.setTheme(mTheme);

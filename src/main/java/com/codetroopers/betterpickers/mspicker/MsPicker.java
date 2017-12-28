@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.simpleworkout.timer.R;
+import com.notification.timer.R;
 
 public class MsPicker extends LinearLayout implements Button.OnClickListener, Button.OnLongClickListener {
 
@@ -80,7 +80,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     }
 
     protected int getLayoutId() {
-        return com.simpleworkout.timer.R.layout.ms_picker_view;
+        return com.notification.timer.R.layout.ms_picker_view;
     }
 
     /**
@@ -145,7 +145,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         View v2 = findViewById(R.id.second);
         View v3 = findViewById(R.id.third);
         View v4 = findViewById(R.id.fourth);
-        mEnteredMs = (MsView) findViewById(com.simpleworkout.timer.R.id.ms_text);
+        mEnteredMs = (MsView) findViewById(com.notification.timer.R.id.ms_text);
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
         mDelete.setOnLongClickListener(this);

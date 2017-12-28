@@ -1,4 +1,4 @@
-package com.simpleworkout.timer;
+package com.notification.timer;
 
 import android.os.Build;
 import android.os.Bundle;

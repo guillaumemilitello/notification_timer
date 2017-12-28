@@ -1,4 +1,4 @@
-package com.simpleworkout.timer;
+package com.notification.timer;
 
 import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
@@ -44,7 +44,7 @@ import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
 import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
 import com.codetroopers.betterpickers.numberpicker.NumberPickerBuilder;
 import com.codetroopers.betterpickers.numberpicker.NumberPickerDialogFragment;
-import com.simpleworkout.timer.TimerService.TimerBinder;
+import com.notification.timer.TimerService.TimerBinder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

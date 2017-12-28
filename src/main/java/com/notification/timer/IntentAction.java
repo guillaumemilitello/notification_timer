@@ -1,4 +1,4 @@
-package com.simpleworkout.timer;
+package com.notification.timer;
 
 class IntentAction {
 

@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.simpleworkout.timer.R;
+import com.notification.timer.R;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

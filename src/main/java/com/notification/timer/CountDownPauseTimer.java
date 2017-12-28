@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.simpleworkout.timer;
+package com.notification.timer;
 
 import android.os.Handler;
 import android.os.Message;
@@ -62,12 +62,12 @@ abstract class CountDownPauseTimer {
     private long mTimeLeft;
 
     /**
-     * boolean representing if the com.simpleworkout.timer was cancelled
+     * boolean representing if the com.notification.timer was cancelled
      */
     private boolean mCancelled = false;
 
     /**
-     * boolean representing if the com.simpleworkout.timer was paused
+     * boolean representing if the com.notification.timer was paused
      */
     private boolean mPaused = false;
 
@@ -79,7 +79,7 @@ abstract class CountDownPauseTimer {
      *   {@link #onTick(long)} callbacks.
      */
     public CountDownPauseTimer(long millisInFuture, long countDownInterval) {
-        // An extra second is added to match com.simpleworkout.timer's behavior
+        // An extra second is added to match com.notification.timer's behavior
         mMillisInFuture = millisInFuture + 250;
         mCountdownInterval = countDownInterval;
         mTimeLeft = mMillisInFuture;
@@ -114,7 +114,7 @@ abstract class CountDownPauseTimer {
      * Update the remaining time to the countdown
      */
     public synchronized final void update(long millis) {
-        // An extra second is added to match com.simpleworkout.timer's behavior
+        // An extra second is added to match com.notification.timer's behavior
         millis += 250;
         mStopTimeInFuture += (millis - mTimeLeft);
         mTimeLeft = millis;

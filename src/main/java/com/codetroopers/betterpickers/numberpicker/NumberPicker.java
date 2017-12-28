@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.simpleworkout.timer.R;
+import com.notification.timer.R;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

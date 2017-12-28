@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.simpleworkout.timer">
+    package="com.notification.timer">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -57,10 +57,6 @@
             android:label="@string/about"
             android:resizeableActivity="true"
             android:screenOrientation="portrait" />
-
-        <meta-data
-            android:name="com.google.android.backup.api_key"
-            android:value="AEdPqrEAAAAI2q7NxBB-YMAkiJqYxAE60W1XD2HKUmRf1JT5YQ" />
     </application>
 
 </manifest>

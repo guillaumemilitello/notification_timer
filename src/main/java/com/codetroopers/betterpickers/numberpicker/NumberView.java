@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView;
-import com.simpleworkout.timer.R;
+import com.notification.timer.R;
 
 public class NumberView extends LinearLayout {
 

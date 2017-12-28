@@ -7,11 +7,11 @@ android {
     }
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.simpleworkout.timer"
+        applicationId "com.notification.timer"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "0.8.0"
         multiDexEnabled true
     }
     buildTypes {
