@@ -44,10 +44,10 @@
     <string name="extra_notification">Extra Notification</string>
     <string name="customization">Customization</string>
     <string name="extra_notification_summary">Notification seconds before the timer is done</string>
-    <string name="skip_forward">Skip forward</string>
-    <string name="skip_backward">Skip backward</string>
+    <string name="timer_plus">Step time increment</string>
+    <string name="timer_minus">Step time decrement</string>
     <string name="sets_picker_enable">Timer number</string>
-    <string name="sets_picker_enable_summary">Add a timer number limit indicator</string>
+    <string name="sets_picker_enable_summary">Add a timer number limit indicator when creating a new preset</string>
     <string name="vibrate">Vibrate</string>
     <string name="vibrate_summary">Vibrate when the timer is done</string>
     <string name="ringtone">Ringtone</string>

@@ -7,13 +7,13 @@
 
     <ListPreference
         android:key="@string/pref_timer_plus"
-        android:title="@string/skip_forward"
+        android:title="@string/timer_plus"
         android:defaultValue="@string/default_timer_plus"
         android:entries="@array/timerMinusPlus"
         android:entryValues="@array/timerMinusPlusValues"/>
     <ListPreference
         android:key="@string/pref_timer_minus"
-        android:title="@string/skip_backward"
+        android:title="@string/timer_minus"
         android:defaultValue="@string/default_timer_minus"
         android:entries="@array/timerMinusPlus"
         android:entryValues="@array/timerMinusPlusValues"/>
