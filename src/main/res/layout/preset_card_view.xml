@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/preset_card_height"
     android:layout_marginTop="@dimen/preset_card_margin_height"
     android:layout_marginBottom="@dimen/preset_card_margin_height"
     android:layout_marginStart="@dimen/preset_card_margin_side"
-    android:layout_marginEnd="@dimen/preset_card_margin_side">
+    android:layout_marginEnd="@dimen/preset_card_margin_side"
+    tools:ignore="HardcodedText,ContentDescription">
 
     <LinearLayout
         android:id="@+id/layoutCard"
@@ -88,6 +90,7 @@
                     android:fontFamily="sans-serif-condensed"
                     android:visibility="gone"
                     android:textSize="@dimen/preset_card_timer_font_size"
+                    android:paddingStart="0dp"
                     android:paddingEnd="@dimen/preset_card_sets_padding_right"
                     android:textColor="@color/preset_card_sets_font_color"
                     android:text="x12" />

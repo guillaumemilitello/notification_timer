@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"
     android:background="@android:color/transparent"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    tools:ignore="HardcodedText,ContentDescription">
 
     <!-- Icon aera -->
     <LinearLayout
@@ -15,6 +17,7 @@
         android:layout_width="52dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
+        android:paddingStart="0dp"
         android:paddingEnd="12dp"
         android:weightSum="1">
 
@@ -52,7 +55,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
-                android:paddingLeft="5dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="0dp"
                 android:gravity="center_vertical"
                 android:textSize="14sp"
                 android:textColor="@color/darkerGrayNotification"
@@ -67,6 +71,7 @@
             android:layout_height="20dp"
             android:layout_below="@+id/textViewTimer_line"
             android:progressBackgroundTint="@color/progress_bar_background"
+            android:paddingStart="0dp"
             android:paddingEnd="10dp"
             android:maxHeight="10dip"
             android:minHeight="10dip"
@@ -99,6 +104,7 @@
             android:src="@drawable/ic_preset_delete"
             android:scaleType="fitCenter"
             android:clickable="true"
+            android:focusable="true"
             android:theme="@style/notificationImageButton"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button2"
@@ -110,6 +116,7 @@
             android:src="@drawable/ic_chronometer_reset"
             android:scaleType="fitCenter"
             android:clickable="true"
+            android:focusable="true"
             android:theme="@style/notificationImageButton"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button1"
@@ -121,6 +128,7 @@
             android:src="@drawable/ic_play"
             android:scaleType="fitCenter"
             android:clickable="true"
+            android:focusable="true"
             android:theme="@style/notificationImageButton"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:id="@+id/button0"

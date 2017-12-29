@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.notification.timer.MainActivity">
+    tools:context="com.notification.timer.MainActivity"
+    tools:ignore="HardcodedText,ContentDescription,NestedWeights" >
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/actionBar"
@@ -124,7 +125,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:gravity="center">
+                        android:gravity="center"
+                        tools:ignore="UselessParent">
 
                         <TextView
                             android:id="@+id/textViewTimerSeconds"
@@ -215,8 +217,7 @@
                         android:tint="@color/timer_font_color"
                         android:background="?selectableItemBackgroundBorderless"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
-                        tools:ignore="NestedWeights" />
+                        android:layout_weight="1" />
 
                     <ImageButton
                         style="?android:attr/borderlessButtonStyle"
