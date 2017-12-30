@@ -21,6 +21,7 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -221,22 +222,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Toolbar toolbar = findViewById(R.id.actionBar);
         setSupportActionBar(toolbar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
-            setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
-                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                    getColor(R.color.colorPrimary)));
-            if (toolbar != null) {
-                toolbar.setTitleTextColor(getColor(R.color.bpWhite));
-            }
-        } else {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-            setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
-                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                    getResources().getColor(R.color.colorPrimary)));
-            if (toolbar != null) {
-                toolbar.setTitleTextColor(getResources().getColor(R.color.bpWhite));
-            }
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
+                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                ContextCompat.getColor(this, R.color.colorPrimary)));
+        if (toolbar != null) {
+            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.bpWhite));
         }
 
         density = getResources().getDisplayMetrics().density;
@@ -748,7 +739,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             default:
             case WAITING:
             case WAITING_SETS:
-                backgroundColor = getColor(R.color.preset_card_add_background);
+                backgroundColor = ContextCompat.getColor(this, R.color.preset_card_add_background);
                 progressColor = backgroundColor;
                 timerProgressBar.setMax(1);
                 timerProgressBar.setProgress(1);
@@ -757,7 +748,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
 
-        int textColor = getColor(R.color.timer_font_color);
+        int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
         timerTextViewLeft.setTextColor(textColor);
         timerTextViewSeparator.setTextColor(textColor);
         timerTextViewRight.setTextColor(textColor);
@@ -1543,7 +1534,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         } else if (key.equals(getString(R.string.pref_light_color))) {
             if (timerService != null) {
-                int light_color = sharedPreferences.getInt(key, getColor(R.color.default_light_color));
+                int light_color = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_light_color));
                 timerService.interactiveNotification.setLightColor(light_color);
                 return true;
             }
@@ -1578,17 +1569,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             }
         } else if (key.equals(getString(R.string.pref_custom_color_running))) {
-            colorRunning = sharedPreferences.getInt(key, getColor(R.color.default_color_running));
+            colorRunning = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_running));
             if (timerService != null) {
                 timerService.interactiveNotification.setColorRunning(colorRunning);
             }
         } else if (key.equals(getString(R.string.pref_custom_color_ready))) {
-            colorReady = sharedPreferences.getInt(key, getColor(R.color.default_color_ready));
+            colorReady = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_ready));
             if (timerService != null) {
                 timerService.interactiveNotification.setColorReady(colorReady);
             }
         } else if (key.equals(getString(R.string.pref_custom_color_done))) {
-            colorDone = sharedPreferences.getInt(key, getColor(R.color.default_color_done));
+            colorDone = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_done));
             if (timerService != null) {
                 timerService.interactiveNotification.setColorDone(colorDone);
             }

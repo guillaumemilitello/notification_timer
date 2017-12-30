@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -306,7 +307,7 @@ public class PresetCardsList extends Fragment {
                 if (preset.equals(presetUser)) {
                     presetViewHolder.linearLayoutCard.setBackgroundColor(Color.WHITE);
                 } else {
-                    presetViewHolder.linearLayoutCard.setBackgroundColor(context.getColor(R.color.preset_card_add_background));
+                    presetViewHolder.linearLayoutCard.setBackgroundColor(ContextCompat.getColor(context, R.color.preset_card_add_background));
                 }
                 Log.d(TAG, "onBindViewHolder: position=" + position + ", preset=" + presetsList.getPreset(getListIndex(position)));
             } else {

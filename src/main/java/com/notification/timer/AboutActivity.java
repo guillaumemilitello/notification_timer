@@ -1,7 +1,7 @@
 package com.notification.timer;
 
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -22,10 +22,7 @@ public class AboutActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
     }
 
     @Override

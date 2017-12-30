@@ -82,17 +82,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
-            setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
-                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                    getColor(R.color.colorPrimary)));
-        } else {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-            setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
-                    BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                    getResources().getColor(R.color.colorPrimary)));
-        }
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
+                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                ContextCompat.getColor(this, R.color.colorPrimary)));
 
         settingsFragment = new TimerPreferenceFragment();
         getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
