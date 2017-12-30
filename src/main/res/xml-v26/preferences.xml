@@ -54,6 +54,7 @@
         app:viewSize="large"
         app:numColumns="4"
         app:showDialog="true"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/extra_notification">
@@ -82,6 +83,7 @@
         android:defaultValue="@string/default_timer_get_ready_ringtone_uri"
         android:showDefault="true"
         android:showSilent="true"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/customization">
@@ -120,4 +122,19 @@
         app:showDialog="true"/>
 
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/backup">
+
+    <Preference
+        android:title="@string/preferences_backup"
+        android:summary="@string/preferences_backup_summary"
+        android:key="@string/pref_backup" />
+
+    <Preference
+        android:title="@string/preferences_restore"
+        android:summary="@string/preferences_restore_summary"
+        android:key="@string/pref_restore" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

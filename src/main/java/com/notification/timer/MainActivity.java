@@ -366,7 +366,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         presetCardsList = new PresetCardsList();
@@ -1060,10 +1059,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1) {
-            Log.d(TAG, "onActivityResult: resultCode=" + resultCode);
-        }
+        // Update the preset in case of preferences restore
+        presetCardsList.updateFromPreferences();
+        updatePresetsVisibility();
     }
 
     private void vibrate() {
@@ -1487,7 +1485,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     };
 
     private void updateAllPreferences() {
-        Log.d(TAG, "updateSummaries");
+        Log.d(TAG, "updateAllPreferences");
         Map<String, ?> preferences = sharedPreferences.getAll();
         if (preferences != null) {
             for (Map.Entry<String, ?> preference : preferences.entrySet()) {
@@ -1501,8 +1499,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private boolean updatePreference(String key) {
 
-        if (key.contains(getString(R.string.pref_preset_array)) || key.contains(getString(R.string.pref_timer_service))
-                || key.contains(getString(R.string.pref_timer_text))) {
+        if (!isKeyPreference(key)) {
             return false;
         }
 
@@ -1610,4 +1607,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                     }
                 }
             };
+
+    private boolean isKeyPreference(String key) {
+        return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
+                && !key.contains(getString(R.string.pref_timer_text));
+    }
 }

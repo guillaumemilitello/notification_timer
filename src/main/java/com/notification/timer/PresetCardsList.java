@@ -46,7 +46,7 @@ public class PresetCardsList extends Fragment {
             presetsListSize = presetsList.addPreset(0, presetUser);
             Log.d(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList);
             addPresetButton = false;
-            adapter.notifyItemChanged(0);
+            notifyItemChanged(0);
             scrollToPosition(0);
         } else {
             Log.e(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList + " already exists, index=" + presetsList.indexOf(presetUser));
@@ -65,7 +65,7 @@ public class PresetCardsList extends Fragment {
             update();
         } else {
             adapter.notifyItemRemoved(position);
-            adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+            notifyItemRangeChanged(position);
         }
         if (position == 0) {
             ((MainActivity)getActivity()).updatePresetsVisibility();
@@ -89,7 +89,7 @@ public class PresetCardsList extends Fragment {
                 if (!addPresetButton) {
                     // Add the preset to the list
                     addPresetButton = true;
-                    adapter.notifyItemRangeChanged(1, adapter.getItemCount());
+                    notifyItemRangeChanged(1);
                     scrollToPosition(0);
                     // Remove empty preset list indications
                     ((MainActivity)getActivity()).updatePresetsVisibility();
@@ -105,7 +105,7 @@ public class PresetCardsList extends Fragment {
                     addPresetButton = false;
                     adapter.notifyItemRemoved(0);
                 } else {
-                    adapter.notifyItemChanged(userPosition);
+                    notifyItemChanged(userPosition);
                 }
                 userPosition = USER_POSITION_NONE;
             }
@@ -114,18 +114,38 @@ public class PresetCardsList extends Fragment {
             if (addPresetButton) {
                 addPresetButton = false;
                 adapter.notifyItemRemoved(0);
-                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                notifyItemRangeChanged(0);
                 userPosition = index;
             } else if (userPosition != index) {
                 // Update both positions
-                adapter.notifyItemChanged(userPosition);
-                adapter.notifyItemChanged(index);
+                notifyItemChanged(userPosition);
+                notifyItemChanged(index);
                 scrollToPosition(index);
-                Log.d(TAG, "update: adapter.notifyItemChanged=" + userPosition);
             } else {
                 // Preset is already selected
                 Log.d(TAG, "update: userPosition=" + userPosition + ", position=" + index);
             }
+        }
+    }
+
+    public void updateFromPreferences() {
+        if (!presetsList.resetPresets()) {
+            Log.d(TAG, "updateFromPreferences: presets changed");
+            presetsListSize = presetsList.getSize();
+            adapter.notifyItemRangeRemoved(0, adapter.getItemCount());
+            notifyItemRangeChanged(0);
+        }
+    }
+
+    private void notifyItemChanged(int position) {
+        if (position >= 0 && position < adapter.getItemCount()) {
+            adapter.notifyItemChanged(position);
+        }
+    }
+
+    private void notifyItemRangeChanged(int positionStart) {
+        if (positionStart >= 0 && positionStart < adapter.getItemCount()) {
+            adapter.notifyItemRangeChanged(positionStart, adapter.getItemCount() - positionStart);
         }
     }
 

@@ -61,7 +61,7 @@ class PresetsList {
         return list.get(index);
     }
 
-    private int getSize() { return list.size(); }
+    int getSize() { return list.size(); }
 
     private void savePreset(int index, final Preset preset) {
         if (sharedPreferences != null) {
@@ -103,16 +103,32 @@ class PresetsList {
         return getSize();
     }
 
+    boolean resetPresets() {
+        ArrayList<Preset> currentList = (ArrayList<Preset>) list.clone();
+        list.clear();
+        initPresets();
+        return currentList.equals(list);
+    }
+
     public String toString() {
         StringBuilder string = new StringBuilder("{");
         for (int index = 0; index < getSize(); ++index) {
             string.append(list.get(index));
             if (index < getSize() - 1) {
                 string.append(", ");
-            } else {
-                string.append("}");
             }
         }
+        string.append("}");
         return string.toString();
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object != null && object instanceof PresetsList) {
+            return this.list.equals(((PresetsList) object).list);
+        } else {
+            return false;
+        }
     }
 }

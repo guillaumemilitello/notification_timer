@@ -1,29 +1,47 @@
 package com.notification.timer;
 
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.kizitonwose.colorpreference.ColorPreference;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
+
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -41,6 +59,13 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     private static final String TAG = "PreferencesActivity";
 
     private static SharedPreferences sharedPreferences;
+
+    private File sharedPreferencesFile;
+    private boolean restoringPreferences;
+
+    private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
+    private static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
+
     private TimerPreferenceFragment settingsFragment;
 
     private NotificationManager notificationManager;
@@ -78,6 +103,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
         }
+
+        sharedPreferencesFile = new File(Environment.getExternalStorageDirectory() + "/NotificationTimer/preferences.xml");
+        restoringPreferences = false;
     }
 
     public static class TimerPreferenceFragment extends PreferenceFragment
@@ -96,9 +124,37 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updateNotificationChannelPreferences();
         }
-        updateSummaries(sharedPreferences.getAll());
+        updateSummaries();
         updateGetReadyPreferences();
         updateLightColorPreference();
+        updateBackupPreferences();
+    }
+
+    private void updateAllPreferences() {
+        for (Map.Entry<String, ?> preference : sharedPreferences.getAll().entrySet()) {
+            String key = preference.getKey();
+            if (isKeyPreference(key)) {
+                Log.d(TAG, "updatePreference: key=" + key);
+                updatePreference(settingsFragment.findPreference(key), preference.getValue());
+            }
+        }
+        updateSummaries();
+        updateGetReadyPreferences();
+        updateLightColorPreference();
+    }
+
+    private void updatePreference(Preference preference, Object newVal) {
+        Log.d(TAG, "updatePreference: key=" + preference.getKey() + ", newVal=" + newVal);
+        if (preference instanceof SwitchPreference) {
+            SwitchPreference switchPreference = (SwitchPreference) preference;
+            switchPreference.setChecked((boolean) newVal);
+        } else if (preference instanceof ColorPreference) {
+            ColorPreference colorPreference = (ColorPreference) preference;
+            colorPreference.setValue((int) newVal);
+        } else if (preference instanceof ListPreference) {
+            ListPreference listPreference = (ListPreference) preference;
+            listPreference.setValue((String) newVal);
+        }
     }
 
     @Override
@@ -156,23 +212,48 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         sharedPreferencesEditor.apply();
     }
 
+    private void updateBackupPreferences() {
+        settingsFragment.findPreference(getString(R.string.pref_backup)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Log.d(TAG, "PreferencesBackup");
+                saveSharedPreferencesToFile();
+                return true;
+            }
+        });
+        settingsFragment.findPreference(getString(R.string.pref_restore)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Log.d(TAG, "PreferencesRestore");
+                loadSharedPreferencesFromFile();
+                return true;
+            }
+        });
+    }
+
     private void updateLightColorPreference() {
         boolean lightColorEnable = sharedPreferences.getBoolean(getString(R.string.pref_light_color_enable), true);
-        settingsFragment.findPreference(getString(R.string.pref_light_color)).setEnabled(lightColorEnable);
+        enablePreference(settingsFragment.findPreference(getString(R.string.pref_light_color)), lightColorEnable);
     }
 
     private void updateGetReadyPreferences() {
         boolean timerGetReadyEnable = sharedPreferences.getBoolean(getString(R.string.pref_timer_get_ready_enable), true);
-        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)).setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_vibrate)).setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_ringtone_uri)).setEnabled(timerGetReadyEnable);
-        settingsFragment.findPreference(getString(R.string.pref_custom_color_ready)).setEnabled(timerGetReadyEnable);
+        enablePreference(settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)), timerGetReadyEnable);
+        enablePreference(settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_vibrate)), timerGetReadyEnable);
+        enablePreference(settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_ringtone_uri)), timerGetReadyEnable);
+        enablePreference(settingsFragment.findPreference(getString(R.string.pref_custom_color_ready)), timerGetReadyEnable);
     }
 
-    private void updateSummaries(Map<String, ?> preferences) {
+    private void enablePreference(Preference preference, boolean enable) {
+        if (preference != null) {
+            preference.setEnabled(enable);
+        }
+    }
+
+    private void updateSummaries() {
         Log.d(TAG, "updateSummaries");
-        if (preferences != null) {
-            for (Map.Entry<String, ?> preference : preferences.entrySet()) {
+        if (sharedPreferences != null) {
+            for (Map.Entry<String, ?> preference : sharedPreferences.getAll().entrySet()) {
                 String key = preference.getKey();
                 if (isKeyPreference(key)) {
                     Log.d(TAG, "updateSummaries: key=" + key);
@@ -187,7 +268,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             if (preference instanceof ListPreference) {
                 Log.d(TAG, "updateSummary: key=" + preference.getKey());
                 ListPreference listPreference = (ListPreference) preference;
-                preference.setSummary(listPreference.getEntry());
+                listPreference.setSummary(listPreference.getEntry());
             }
             else if (preference instanceof RingtonePreference) {
                 Log.d(TAG, "updateSummary: key=" + preference.getKey());
@@ -206,7 +287,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     private final SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if (isKeyPreference(key)) {
+                if (isKeyPreference(key) && !restoringPreferences) {
                     // preferenceChangeListener implementation
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
@@ -225,5 +306,117 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     private boolean isKeyPreference(String key) {
         return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
                 && !key.contains(getString(R.string.pref_timer_text));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
+                    saveSharedPreferencesToFile();
+                } else {
+                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
+                }
+                break;
+            case PERMISSION_READ_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
+                    loadSharedPreferencesFromFile();
+                } else {
+                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
+                }
+                break;
+        }
+    }
+
+    private void saveSharedPreferencesToFile() {
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            Log.d(TAG, "saveSharedPreferencesToFile: permissionCheck=" + permissionCheck);
+            if (permissionCheck == PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
+                return;
+            }
+            if (!sharedPreferencesFile.exists()) {
+                Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " does not exists");
+                if(!sharedPreferencesFile.getParentFile().mkdirs() || !sharedPreferencesFile.createNewFile()) {
+                    Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(sharedPreferencesFile));
+            objectOutputStream.writeObject(sharedPreferences.getAll());
+            Toast.makeText(this, getString(R.string.preferences_backup_success), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (objectOutputStream != null) {
+                    objectOutputStream.flush();
+                    objectOutputStream.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadSharedPreferencesFromFile() {
+        ObjectInputStream objectInputStream = null;
+        try {
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            Log.d(TAG, "loadSharedPreferencesFromFile : permissionCheck=" + permissionCheck);
+            if (permissionCheck == PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
+                return;
+            }
+            Log.d(TAG, "loadSharedPreferencesFromFile: " + sharedPreferencesFile.getAbsolutePath());
+            if (!sharedPreferencesFile.exists()) {
+                Toast.makeText(this, getString(R.string.preferences_restore_no_file), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            restoringPreferences = true;
+            objectInputStream = new ObjectInputStream(new FileInputStream(sharedPreferencesFile));
+            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+            sharedPreferencesEditor.clear();
+            for (Map.Entry<String, ?> entry : ((Map<String, ?>) objectInputStream.readObject()).entrySet()) {
+                String key = entry.getKey();
+                // Do not restore timer preferences and main activity text view settings
+                if (key.contains(getString(R.string.pref_timer_service)) || key.contains(getString(R.string.pref_timer_text))) {
+                    continue;
+                }
+                Object value = entry.getValue();
+                Log.d(TAG, "loadSharedPreferencesFromFile: key=" + key + ", value=" + value);
+                if (value instanceof Boolean) {
+                    sharedPreferencesEditor.putBoolean(key, (Boolean) value);
+                } else if (value instanceof Float) {
+                    sharedPreferencesEditor.putFloat(key, (Float) value);
+                } else if (value instanceof Integer) {
+                    sharedPreferencesEditor.putInt(key, (Integer) value);
+                } else if (value instanceof Long) {
+                    sharedPreferencesEditor.putLong(key, (Long) value);
+                } else if (value instanceof String) {
+                    sharedPreferencesEditor.putString(key, (String) value);
+                }
+            }
+            sharedPreferencesEditor.apply();
+            updateAllPreferences();
+            Toast.makeText(this, getString(R.string.preferences_restore_success), Toast.LENGTH_SHORT).show();
+            restoringPreferences = false;
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (objectInputStream != null) {
+                    objectInputStream.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

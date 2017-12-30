@@ -41,6 +41,7 @@
     <string name="notification">Notification</string>
     <string name="extra_notification">Extra Notification</string>
     <string name="customization">Customization</string>
+    <string name="backup">Backup</string>
     <string name="extra_notification_summary">Notification seconds before the timer is done</string>
     <string name="timer_plus">Step time increment</string>
     <string name="timer_minus">Step time decrement</string>
@@ -64,6 +65,14 @@
     <string name="color_ready_summary">Background color after the ready time</string>
     <string name="color_done">Done color</string>
     <string name="color_done_summary">Background color when the timer is done</string>
+    <string name="preferences_backup">Backup</string>
+    <string name="preferences_backup_summary">Backup all preferences and presets to the external storage</string>
+    <string name="preferences_restore">Restore</string>
+    <string name="preferences_restore_summary">Restore all preferences and presets from the external storage</string>
+    <string name="preferences_backup_error">Error while creating the file</string>
+    <string name="preferences_backup_success">Backup successful</string>
+    <string name="preferences_restore_no_file">No backup file found</string>
+    <string name="preferences_restore_success">Restore successful</string>
     <!-- Preferences -->
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>
@@ -96,4 +105,6 @@
     <string name="pref_custom_color_done" translatable="false">colorDone</string>
     <string name="pref_timer_text" translatable="false">timerText_</string>
     <string name="pref_timer_text_size" translatable="false">timerText_size_%1$d_%2$d</string>
+    <string name="pref_backup" translatable="false">preferencesBackup</string>
+    <string name="pref_restore" translatable="false">preferencesRestore</string>
 </resources>
