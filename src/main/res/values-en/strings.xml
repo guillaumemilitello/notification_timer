@@ -74,6 +74,7 @@
     <string name="preferences_backup_success">Backup successful</string>
     <string name="preferences_restore_no_file">No backup file found</string>
     <string name="preferences_restore_success">Restore successful</string>
+    <string name="preferences_permission_denied">Insufficient permissions</string>
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>
     <string name="pref_title_vibrate">Vibrate</string>

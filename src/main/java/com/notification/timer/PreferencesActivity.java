@@ -305,19 +305,13 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_WRITE_EXTERNAL_STORAGE:
+            case PERMISSION_READ_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
                     saveSharedPreferencesToFile();
                 } else {
                     Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
-                }
-                break;
-            case PERMISSION_READ_EXTERNAL_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
-                    loadSharedPreferencesFromFile();
-                } else {
-                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
+                    Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
