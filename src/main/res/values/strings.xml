@@ -68,9 +68,9 @@
     <string name="color_done">Done color</string>
     <string name="color_done_summary">Background color when the timer is done</string>
     <string name="preferences_backup">Backup</string>
-    <string name="preferences_backup_summary">Backup all preferences and presets to the external storage</string>
+    <string name="preferences_backup_summary">Backup settings and presets on this device</string>
     <string name="preferences_restore">Restore</string>
-    <string name="preferences_restore_summary">Restore all preferences and presets from the external storage</string>
+    <string name="preferences_restore_summary">Restore settings and presets from this device</string>
     <string name="preferences_backup_error">Error while creating the file</string>
     <string name="preferences_backup_success">Backup successful</string>
     <string name="preferences_restore_no_file">No backup file found</string>
