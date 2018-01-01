@@ -15,6 +15,7 @@
     <color name="progress_bar_get_ready">#FF0000</color>
     <color name="progress_bar_font_light_gray">#e0e0e0</color>
     <color name="progress_bar_waiting">#e0e0e0</color>
+    <color name="icon_color_tint">#424242</color>
 
     <!-- Presets -->
     <color name="preset_card_timer_font_color">#757575</color>
