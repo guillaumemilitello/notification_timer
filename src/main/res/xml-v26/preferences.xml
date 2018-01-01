@@ -88,6 +88,12 @@
 
     <PreferenceCategory android:title="@string/customization">
 
+    <SwitchPreference
+        android:key="@string/pref_custom_color_enable"
+        android:title="@string/color_enable"
+        android:summary="@string/color_enable_summary"
+        android:defaultValue="@bool/default_color_enable"/>
+
     <com.kizitonwose.colorpreference.ColorPreference
         android:defaultValue="@color/default_color_running"
         android:key="@string/pref_custom_color_running"

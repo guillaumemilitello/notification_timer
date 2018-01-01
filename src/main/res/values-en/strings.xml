@@ -60,6 +60,8 @@
     <string name="get_ready_time">Ready time</string>
     <string name="get_ready_time_summary">Amount of time to enable get ready</string>
     <string name="vibrate_summary_get_ready">Vibrate on the get ready time</string>
+    <string name="color_enable">Notification background color</string>
+    <string name="color_enable_summary">Apply the colors to the background of the notification</string>
     <string name="color_running">Running color</string>
     <string name="color_running_summary">Background color while running</string>
     <string name="color_ready">Ready color</string>

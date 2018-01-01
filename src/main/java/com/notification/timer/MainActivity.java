@@ -1568,6 +1568,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 timerService.interactiveNotification.setRingtoneReady(ringtoneUriReady);
                 return true;
             }
+        } else if (key.equals(getString(R.string.pref_custom_color_enable))) {
+            if (timerService != null) {
+                boolean colorEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_color_enable));
+                timerService.interactiveNotification.setColorEnable(colorEnable);
+            }
         } else if (key.equals(getString(R.string.pref_custom_color_running))) {
             colorRunning = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_running));
             if (timerService != null) {

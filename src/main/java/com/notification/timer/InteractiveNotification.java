@@ -109,6 +109,10 @@ class InteractiveNotification extends Notification {
         this.ringtoneReady = ringtoneReady;
     }
 
+    void setColorEnable(boolean colorEnable) {
+        this.colorEnable = colorEnable;
+    }
+
     void setColorRunning(int colorRunning) {
         this.colorRunning = colorRunning;
     }
@@ -140,6 +144,7 @@ class InteractiveNotification extends Notification {
     private int lightFlashRateOn, lightFlashRateOff;
     private Uri ringtone;
     private Uri ringtoneReady;
+    private boolean colorEnable;
     private int colorRunning;
     private int colorReady;
     private int colorDone;
@@ -475,18 +480,20 @@ class InteractiveNotification extends Notification {
 
     private RemoteViews createRemoteView() {
         RemoteViews remoteView;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable) {
             if (isColorDark(getColor())) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_white_text);
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_black_text);
             }
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_red_text);
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
             }
+        } else {
+            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
         }
 
         updateButton(remoteView, R.id.button0, button0);
@@ -530,21 +537,21 @@ class InteractiveNotification extends Notification {
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
-                        .setColorized(true)
+                        .setColorized(colorEnable)
                         .setColor(getColor());
             } else if (notificationMode == NotificationMode.READY) {
                 return new Notification.Builder(context, getReadyChannelId())
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
-                        .setColorized(true)
+                        .setColorized(colorEnable)
                         .setColor(getColor());
             } else {
                 return new Notification.Builder(context, updateChannelId)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentIntent(pendingIntent)
                         .setDeleteIntent(pendingIntentDeleted)
-                        .setColorized(true)
+                        .setColorized(colorEnable)
                         .setColor(getColor());
             }
         } else {
@@ -599,19 +606,38 @@ class InteractiveNotification extends Notification {
     }
 
     private int getColor() {
-        switch (buttonsLayout) {
-            case NO_LAYOUT:
-            case READY:
-                return ContextCompat.getColor(context, R.color.progress_bar_waiting);
-            case PAUSED:
-            case RUNNING:
-                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady)
-                    return colorReady;
-                else
-                    return colorRunning;
-            case SET_DONE:
-            case ALL_SETS_DONE:
-                return colorDone;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable) {
+            switch (buttonsLayout) {
+                case NO_LAYOUT:
+                case READY:
+                    return ContextCompat.getColor(context, R.color.progress_bar_waiting);
+                case PAUSED:
+                case RUNNING:
+                    if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                        return colorReady;
+                    } else {
+                        return colorRunning;
+                    }
+                case SET_DONE:
+                case ALL_SETS_DONE:
+                    return colorDone;
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            switch (buttonsLayout) {
+                case NO_LAYOUT:
+                case READY:
+                    return ContextCompat.getColor(context, R.color.primary);
+                case PAUSED:
+                case RUNNING:
+                    if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                        return Color.RED;
+                    } else {
+                        return ContextCompat.getColor(context, R.color.primary);
+                    }
+                case SET_DONE:
+                case ALL_SETS_DONE:
+                    return Color.RED;
+            }
         }
         return colorRunning;
     }
