@@ -103,6 +103,10 @@ public class TimerService extends Service {
         this.timerGetReady = timerGetReady;
     }
 
+    public void setTimerMinus(long timerMinus) {
+        this.timerMinus = timerMinus;
+    }
+
     public void setTimerPlus(long timerPlus) {
         this.timerPlus = timerPlus;
     }
@@ -428,6 +432,7 @@ public class TimerService extends Service {
         timerCurrent = Math.max(timerCurrent - timerMinus, 0);
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
+        updateTimerIntent(timerCurrent);
         notificationUpdateTimerCurrent(timerCurrent);
         interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
@@ -437,6 +442,7 @@ public class TimerService extends Service {
         timerCurrent += timerPlus;
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
+        updateTimerIntent(timerCurrent);
         notificationUpdateTimerCurrent(timerCurrent);
         interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);

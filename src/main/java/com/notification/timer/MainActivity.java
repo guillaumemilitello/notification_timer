@@ -897,21 +897,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     void timerMinus() {
-        timerCurrent -= timerMinus;
-        if (timerCurrent <= 0) {
-            timerCurrent = 1;
-        }
-        Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
-
         updateTimerDisplay();
         updateTimerButtons();
         updateColorLayout();
     }
 
     void timerPlus() {
-        timerCurrent += timerPlus;
-        Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
-
         updateTimerDisplay();
         updateTimerButtons();
         updateColorLayout();
@@ -1094,18 +1085,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             imageButtonTimerMinus.setAlpha(ALPHA_ENABLED);
             imageButtonTimerMinusMulti.setEnabled(true);
             imageButtonTimerMinusMulti.setAlpha(ALPHA_ENABLED);
-        } else {
-            imageButtonTimerMinus.setEnabled(false);
-            imageButtonTimerMinus.setAlpha(ALPHA_DISABLED);
-            imageButtonTimerMinusMulti.setEnabled(false);
-            imageButtonTimerMinusMulti.setAlpha(ALPHA_DISABLED);
-        }
-        if (buttonsLayout == ButtonsLayout.RUNNING || buttonsLayout == ButtonsLayout.PAUSED) {
             imageButtonTimerPlus.setEnabled(true);
             imageButtonTimerPlus.setAlpha(ALPHA_ENABLED);
             imageButtonTimerPlusMulti.setEnabled(true);
             imageButtonTimerPlusMulti.setAlpha(ALPHA_ENABLED);
         } else {
+            imageButtonTimerMinus.setEnabled(false);
+            imageButtonTimerMinus.setAlpha(ALPHA_DISABLED);
+            imageButtonTimerMinusMulti.setEnabled(false);
+            imageButtonTimerMinusMulti.setAlpha(ALPHA_DISABLED);
             imageButtonTimerPlus.setEnabled(false);
             imageButtonTimerPlus.setAlpha(ALPHA_DISABLED);
             imageButtonTimerPlusMulti.setEnabled(false);
@@ -1502,6 +1490,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             imageButtonTimerMinus.setImageResource(resId);
             imageButtonTimerMinusMulti.setImageResource(resId);
             if (timerService != null) {
+                timerService.setTimerMinus(timerMinus);
                 timerService.interactiveNotification.setTimerMinusResId(resId);
             }
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
