@@ -37,6 +37,7 @@ public class PresetCardsList extends Fragment {
 
     private LinearLayoutManager linearLayoutManager;
     private RecycleViewAdapter adapter;
+    private RecyclerView recyclerView;
     private boolean addPresetButton;
 
     private Context context;
@@ -130,11 +131,17 @@ public class PresetCardsList extends Fragment {
     }
 
     public void updateFromPreferences() {
-        if (!presetsList.resetPresets()) {
-            Log.d(TAG, "updateFromPreferences: presets changed");
-            presetsListSize = presetsList.getSize();
-            adapter.notifyItemRangeRemoved(0, adapter.getItemCount());
+        if (!presetsList.isSynced()) {
+            Log.d(TAG, "updateFromPreferences: presets are not synced");
+            int previousPresetsListSize = presetsListSize;
+            presetsListSize = presetsList.initPresets();
+            if (previousPresetsListSize > presetsListSize) {
+                adapter.notifyItemRangeRemoved(presetsListSize, previousPresetsListSize - presetsListSize);
+            } else if (presetsListSize > previousPresetsListSize) {
+                adapter.notifyItemRangeInserted(previousPresetsListSize, presetsListSize - previousPresetsListSize);
+            }
             notifyItemRangeChanged(0);
+            scrollToPosition(0);
         }
     }
 
@@ -204,7 +211,7 @@ public class PresetCardsList extends Fragment {
         scrollToPosition(USER_POSITION_NONE);
 
         View view = inflater.inflate(R.layout.fragment_horizontal_preset_cards, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.cardView);
+        recyclerView = view.findViewById(R.id.cardView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -327,6 +334,7 @@ public class PresetCardsList extends Fragment {
 
         @Override
         public int getItemCount() {
+            Log.d(TAG, "getItemCount: presetsListSize=" + presetsListSize + ", addPresetButton=" + addPresetButton);
             return presetsListSize + (addPresetButton? 1 : 0);
         }
 

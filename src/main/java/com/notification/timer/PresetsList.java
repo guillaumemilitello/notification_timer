@@ -92,6 +92,7 @@ class PresetsList {
     int initPresets() {
         Log.d(TAG, "initPresets");
         int index = 0;
+        list.clear();
         while (true) {
             Preset preset = loadPreset(index);
             if (preset.isValid()) {
@@ -103,11 +104,19 @@ class PresetsList {
         return getSize();
     }
 
-    boolean resetPresets() {
-        ArrayList<Preset> currentList = (ArrayList<Preset>) list.clone();
-        list.clear();
-        initPresets();
-        return currentList.equals(list);
+    boolean isSynced() {
+        Log.d(TAG, "syncPresets");
+        ArrayList<Preset> otherList = new ArrayList<>();
+        int index = 0;
+        while (true) {
+            Preset preset = loadPreset(index);
+            if (preset.isValid()) {
+                otherList.add(index++, preset);
+            } else {
+                break;
+            }
+        }
+        return otherList.equals(list);
     }
 
     public String toString() {
