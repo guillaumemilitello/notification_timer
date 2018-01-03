@@ -279,7 +279,7 @@
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
                     android:id="@+id/imageButtonLeft"
-                    android:src="@drawable/ic_timer_reset"
+                    android:src="@drawable/ic_chevron_left"
                     android:background="?selectableItemBackgroundBorderless"
                     android:layout_gravity="center"
                     android:layout_weight="1"/>

@@ -1335,7 +1335,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case RESET:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_timer_reset);
+                button.setImageResource(R.drawable.ic_chevron_left);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
