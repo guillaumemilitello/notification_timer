@@ -27,6 +27,8 @@ public class PresetCardsList extends Fragment {
 
     private static final String TAG = "PresetCardsList";
 
+    private MainActivity mainActivity;
+
     private PresetsList presetsList;
     private int presetsListSize = 0;
 
@@ -37,7 +39,6 @@ public class PresetCardsList extends Fragment {
 
     private LinearLayoutManager linearLayoutManager;
     private RecycleViewAdapter adapter;
-    private RecyclerView recyclerView;
     private boolean addPresetButton;
 
     private Context context;
@@ -70,12 +71,12 @@ public class PresetCardsList extends Fragment {
             notifyItemRangeChanged(position);
         }
         if (position == 0) {
-            ((MainActivity)getActivity()).updatePresetsVisibility();
+            mainActivity.updatePresetsVisibility();
         }
     }
 
     public void update() {
-        Preset currentPreset = ((MainActivity)getActivity()).getPresetUser();
+        Preset currentPreset = mainActivity.getPresetUser();
         if (!currentPreset.equals(presetUser)) {
             presetUser = currentPreset;
         }
@@ -94,7 +95,7 @@ public class PresetCardsList extends Fragment {
                     notifyItemRangeChanged(1);
                     scrollToPosition(0);
                     // Remove empty preset list indications
-                    ((MainActivity)getActivity()).updatePresetsVisibility();
+                    mainActivity.updatePresetsVisibility();
                 }
                 else {
                     // Preset is already selected
@@ -200,18 +201,19 @@ public class PresetCardsList extends Fragment {
         adapter = new RecycleViewAdapter();
         addPresetButton = false;
         userPosition = USER_POSITION_NONE;
+        mainActivity = (MainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
 
-        linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager = new LinearLayoutManager(mainActivity);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         scrollToPosition(USER_POSITION_NONE);
 
         View view = inflater.inflate(R.layout.fragment_horizontal_preset_cards, container, false);
-        recyclerView = view.findViewById(R.id.cardView);
+        RecyclerView recyclerView = view.findViewById(R.id.cardView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -360,7 +362,7 @@ public class PresetCardsList extends Fragment {
         private final LinearLayout linearLayoutCard, linearLayoutTimer;
 
         private void inputPreset(int position) {
-            ((MainActivity)getActivity()).inputPreset(presetsList.getPreset(getListIndex(position)));
+            mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
         }
 
         PresetViewHolder(final View view) {
@@ -373,8 +375,8 @@ public class PresetCardsList extends Fragment {
             linearLayoutCard = view.findViewById(R.id.layoutCard);
             linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
 
-            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
+            Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
             textViewCardTimerLeft.setTypeface(typeface);
             textViewCardTimerSeparator.setTypeface(typeface);
             textViewCardTimerRight.setTypeface(typeface);
@@ -423,8 +425,8 @@ public class PresetCardsList extends Fragment {
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
 
-            Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Bold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Lekton-Regular.ttf");
+            Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
             textViewCardTimerLeft.setTypeface(typeface);
             textViewCardTimerSeparator.setTypeface(typeface);
             textViewCardTimerRight.setTypeface(typeface);
@@ -434,7 +436,7 @@ public class PresetCardsList extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "OnClick: add preset");
-                    ((MainActivity)getActivity()).addPreset();
+                    mainActivity.addPreset();
                 }
             });
         }
