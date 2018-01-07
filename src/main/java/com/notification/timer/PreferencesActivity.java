@@ -3,9 +3,11 @@ package com.notification.timer;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -62,6 +64,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
     private File sharedPreferencesFile;
     private boolean restoringPreferences;
+    private boolean overridePreferencesFile;
 
     private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
     private static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
@@ -99,6 +102,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
 
         sharedPreferencesFile = new File(Environment.getExternalStorageDirectory() + "/NotificationTimer/prefs.backup");
         restoringPreferences = false;
+        overridePreferencesFile = false;
     }
 
     public static class TimerPreferenceFragment extends PreferenceFragment
@@ -337,9 +341,15 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
                 return;
             }
-            if (!sharedPreferencesFile.exists()) {
+            if (sharedPreferencesFile.exists()) {
+                Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " already exists");
+                if (!overridePreferencesFile) {
+                    showAlertDialogFileOverride();
+                    return;
+                }
+            } else {
                 Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " does not exists");
-                if(!sharedPreferencesFile.getParentFile().mkdirs() || !sharedPreferencesFile.createNewFile()) {
+                if(!sharedPreferencesFile.getParentFile().mkdirs() && !sharedPreferencesFile.createNewFile()) {
                     Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -347,7 +357,8 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             objectOutputStream = new ObjectOutputStream(new FileOutputStream(sharedPreferencesFile));
             objectOutputStream.writeObject(sharedPreferences.getAll());
             Toast.makeText(this, getString(R.string.preferences_backup_success), Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath());
+            Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " overridePreferencesFile=" + overridePreferencesFile);
+            overridePreferencesFile = false;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -360,6 +371,26 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private void showAlertDialogFileOverride() {
+        Log.d(TAG, "showAlertDialogFileOverride");
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setMessage(getString(R.string.preferences_backup_override));
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        overridePreferencesFile = true;
+                        saveSharedPreferencesToFile();
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     @SuppressWarnings("unchecked")
