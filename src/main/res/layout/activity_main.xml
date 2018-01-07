@@ -13,7 +13,60 @@
         android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Light"
         android:minHeight="?attr/actionBarSize"
-        android:elevation="4dp"/>
+        android:elevation="2dp"/>
+
+    <LinearLayout
+        android:id="@+id/layoutHelp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/actionBar"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/helpOverlay_background"
+        android:elevation="1dp"
+        android:weightSum="10">
+
+        <TextView
+            android:id="@+id/textViewHelpButtonInfo"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/help_tap_to_continue"
+            android:textColor="@color/white"
+            android:clickable="false"
+            android:focusable="false"
+            android:visibility="visible"
+            android:includeFontPadding="false"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/imageViewHelp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            android:layout_weight="8"
+            android:src="@drawable/help_ready"/>
+
+        <TextView
+            android:id="@+id/textViewHelpButtonDone"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/help_quit"
+            android:textColor="@color/white"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="visible"
+            android:background="?selectableItemBackgroundBorderless"
+            android:includeFontPadding="false"
+            android:textStyle="bold"
+            android:textSize="24sp"/>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/layoutActivity"
@@ -29,7 +82,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="0dp"
             android:visibility="gone"
-            android:elevation="2dp"
+            android:elevation="1dp"
             android:gravity="center_vertical"
             android:background="@color/preset_fragment_background"
             android:textSize="18sp"
@@ -47,7 +100,7 @@
             android:visibility="visible"
             android:layout_below="@+id/textViewEmptyPresets"
             android:backgroundTintMode="screen"
-            android:elevation="2dp"
+            android:elevation="1dp"
             android:background="@color/preset_fragment_background"
             tools:context=".MainActivity">
         </FrameLayout>
@@ -321,7 +374,7 @@
                     android:src="@drawable/ic_timer_minus_30"
                     android:background="?selectableItemBackgroundBorderless" />
 
-        </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

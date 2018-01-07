@@ -37,6 +37,10 @@
     <string name="notif_channel_done">Timer done</string>
     <string name="notif_channel_ready">Extra notification</string>
     <string name="notif_channel_update">Timer update</string>
+    <!-- HelpOverlay -->
+    <string name="help_tap_to_continue">Tap to continue</string>
+    <string name="help_quit">QUIT</string>
+    <string name="help_ok">OK</string>
     <!-- Settings -->
     <string name="timer">Timer</string>
     <string name="notification">Notification</string>

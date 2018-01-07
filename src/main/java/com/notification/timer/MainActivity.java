@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private static boolean keepScreenOn = false;
 
+    private HelpOverlay helpOverlay;
+
     // Settings
     static final long[] vibrationPattern = {0, 400, 200, 400,};
 
@@ -369,12 +371,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             startForegroundService(new Intent(getBaseContext(), TimerService.class));
         }
 
-        // Detect first run
-        if (sharedPreferences.getBoolean("firstRun", true)) {
-            Log.d(TAG, "onCreate: firstRun=true");
-            // TODO: show overdraw indications
-            // sharedPreferences.edit().putBoolean("firstRun", false).apply();
-        }
+        helpOverlay = new HelpOverlay(this);
     }
 
     private void setKeepScreenOnStatus(boolean enable) {
@@ -617,6 +614,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
 
         updateUserInterface();
+
+        if (sharedPreferences.getBoolean("firstRun", true)) {
+            Log.d(TAG, "onStart: firstRun=true");
+            helpOverlay.showFirstRun();
+            sharedPreferences.edit().putBoolean("firstRun", false).apply();
+        }
     }
 
     private void updateUserInterface() {
@@ -1019,6 +1022,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"guillaume.militello@gmail.com"});
             sendEmail.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name) + " feedback");
             startActivity(Intent.createChooser(sendEmail, "Send Feedback:"));
+            return true;
+        } else if (id == R.id.help) {
+            helpOverlay.show();
             return true;
         } else if (id == R.id.about) {
             Log.d(TAG, "onOptionsItemSelected: item.id=about");

@@ -10,6 +10,9 @@
     <color name="darkGrayNotification">#616161</color>
     <color name="darkerGrayNotification">#6d6d6d</color>
 
+    <!-- Help overlay -->
+    <color name="helpOverlay_background">#B0000000</color>
+
     <!-- Notification -->
     <color name="progress_bar_background">#B0B0B0</color>
     <color name="progress_bar_get_ready">#FF0000</color>

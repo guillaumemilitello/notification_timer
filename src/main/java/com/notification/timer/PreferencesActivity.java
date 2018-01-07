@@ -127,8 +127,11 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         for (Map.Entry<String, ?> preference : sharedPreferences.getAll().entrySet()) {
             String key = preference.getKey();
             if (isKeyPreference(key)) {
-                Log.d(TAG, "updatePreference: key=" + key);
-                updatePreference(settingsFragment.findPreference(key), preference.getValue());
+                Preference settingsPreference = settingsFragment.findPreference(key);
+                if (settingsPreference != null) {
+                    Log.d(TAG, "updatePreference: key=" + key);
+                    updatePreference(settingsPreference, preference.getValue());
+                }
             }
         }
         updateSummaries();
