@@ -97,7 +97,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
         }
 
-        sharedPreferencesFile = new File(Environment.getExternalStorageDirectory() + "/NotificationTimer/preferences.xml");
+        sharedPreferencesFile = new File(Environment.getExternalStorageDirectory() + "/NotificationTimer/prefs.backup");
         restoringPreferences = false;
     }
 
