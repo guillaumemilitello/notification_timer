@@ -334,7 +334,6 @@ public class PresetCardsList extends Fragment {
 
         @Override
         public int getItemCount() {
-            Log.d(TAG, "getItemCount: presetsListSize=" + presetsListSize + ", addPresetButton=" + addPresetButton);
             return presetsListSize + (addPresetButton? 1 : 0);
         }
 
