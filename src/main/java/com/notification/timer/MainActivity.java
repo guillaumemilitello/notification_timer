@@ -1252,7 +1252,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 button.setEnabled(false);
                 return true;
             case INPUT:
-                button.setImageResource(R.drawable.ic_add_circle_black);
+                button.setImageResource(R.drawable.ic_add_circle);
                 button.setEnabled(true);
                 if (inMultiWindowMode) {
                     button.setAlpha(ALPHA_DISABLED);
@@ -1276,7 +1276,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 }
             case START:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_play_circle_black);
+                button.setImageResource(R.drawable.ic_play_circle);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1287,7 +1287,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case PAUSE:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_pause_circle_black);
+                button.setImageResource(R.drawable.ic_pause_circle);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1298,7 +1298,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case RESUME:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_play_circle_black);
+                button.setImageResource(R.drawable.ic_play_circle);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
