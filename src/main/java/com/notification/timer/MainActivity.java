@@ -969,15 +969,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 updateTimerDone();
                 alertSetDone.show();
             }
-            updateButtonsLayout(ButtonsLayout.STOPPED);
         } else {
             Log.d(TAG, "done: all sets done, setsCurrent=" + setsCurrent);
             if (mainActivityVisible) {
                 updateTimerDone();
                 alertAllSetsDone.show();
             }
-            updateButtonsLayout(ButtonsLayout.READY);
         }
+        updateButtonsLayout(ButtonsLayout.STOPPED);
     }
 
     private void updateTimerDone() {
