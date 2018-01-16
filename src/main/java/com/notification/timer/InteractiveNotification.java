@@ -214,7 +214,7 @@ class InteractiveNotification extends Notification {
         setsUser = 0;
 
         timerGetReadyEnable = false;
-        timerGetReady = 0;
+        timerGetReady = 15;
 
         button2 = ButtonAction.NO_ACTION;
         button1 = ButtonAction.NO_ACTION;

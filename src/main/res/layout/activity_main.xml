@@ -266,7 +266,7 @@
                         android:scaleType="centerInside"
                         android:adjustViewBounds="true"
                         android:id="@+id/imageButtonTimerPlus"
-                        android:src="@drawable/ic_timer_minus_30"
+                        android:src="@drawable/ic_timer_minus_20"
                         android:tint="@color/timer_font_color"
                         android:background="?selectableItemBackgroundBorderless"
                         android:layout_gravity="center"
@@ -291,7 +291,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center"
                         android:id="@+id/imageButtonTimerMinus"
-                        android:src="@drawable/ic_timer_plus_30"
+                        android:src="@drawable/ic_timer_plus_20"
                         android:tint="@color/timer_font_color"
                         android:scaleType="centerInside"
                         android:adjustViewBounds="true"
@@ -323,7 +323,7 @@
                     android:layout_weight="1"
                     android:tint="@color/timer_font_color"
                     android:id="@+id/imageButtonTimerPlusMulti"
-                    android:src="@drawable/ic_timer_plus_30"
+                    android:src="@drawable/ic_timer_plus_20"
                     android:background="?selectableItemBackgroundBorderless" />
 
                 <ImageButton
@@ -371,7 +371,7 @@
                     android:layout_weight="1"
                     android:tint="@color/timer_font_color"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/ic_timer_minus_30"
+                    android:src="@drawable/ic_timer_minus_20"
                     android:background="?selectableItemBackgroundBorderless" />
 
             </LinearLayout>

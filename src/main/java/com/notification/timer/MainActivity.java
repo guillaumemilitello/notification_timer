@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private Uri ringtoneUri;
     private boolean timerGetReadyEnable;
     private int timerGetReady;
+    private boolean vibrationEnableReady;
     private Uri ringtoneUriReady;
     private int colorRunning;
     private int colorReady;
@@ -951,7 +952,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
                 if (time == timerGetReady && timerUser > timerGetReady && timerGetReadyEnable && timerState == TimerService.State.RUNNING) {
                     ring(ringtoneUriReady);
-                    vibrate();
+                    if (vibrationEnableReady) {
+                        vibrate();
+                    }
                 }
                 timerCurrent = time;
                 updateTimerDisplay();
@@ -984,8 +987,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         updateTimerDisplay();
         updateTimerButtons();
         updateColorLayout();
-        vibrate();
-        ring();
+        ring(ringtoneUri);
+        if (vibrationEnable) {
+            vibrate();
+        }
     }
 
     @Override
@@ -1052,17 +1057,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void vibrate() {
-        if (vibrationEnable) {
-            Log.i(TAG, "vibrate");
-            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            if (vibrator != null) {
-                vibrator.vibrate(vibrationPattern, -1);
-            }
+        Log.i(TAG, "vibrate");
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+            vibrator.vibrate(vibrationPattern, -1);
         }
-    }
-
-    private void ring() {
-        ring(ringtoneUri);
     }
 
     private void ring(Uri uri) {
@@ -1472,9 +1471,23 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         Log.d(TAG, "updateAllPreferences");
         Map<String, ?> preferences = sharedPreferences.getAll();
         if (preferences != null) {
-            for (Map.Entry<String, ?> preference : preferences.entrySet()) {
-                updatePreference(preference.getKey());
-            }
+            // Force default values
+            updatePreference(getString(R.string.pref_timer_minus));
+            updatePreference(getString(R.string.pref_timer_plus));
+            updatePreference(getString(R.string.pref_sets_picker_enable));
+            updatePreference(getString(R.string.pref_vibrate));
+            updatePreference(getString(R.string.pref_ringtone_uri));
+            updatePreference(getString(R.string.pref_light_color_enable));
+            updatePreference(getString(R.string.pref_light_color));
+            updatePreference(getString(R.string.pref_light_flash_rate));
+            updatePreference(getString(R.string.pref_timer_get_ready_enable));
+            updatePreference(getString(R.string.pref_timer_get_ready));
+            updatePreference(getString(R.string.pref_timer_get_ready_vibrate));
+            updatePreference(getString(R.string.pref_timer_get_ready_ringtone_uri));
+            updatePreference(getString(R.string.pref_custom_color_enable));
+            updatePreference(getString(R.string.pref_custom_color_running));
+            updatePreference(getString(R.string.pref_custom_color_ready));
+            updatePreference(getString(R.string.pref_custom_color_done));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 timerService.interactiveNotification.updateNotificationChannels();
             }
@@ -1551,9 +1564,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+            vibrationEnableReady = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
             if (timerService != null) {
-                boolean vibrationReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
-                timerService.interactiveNotification.setVibrationReadyEnable(vibrationReadyEnable);
+                timerService.interactiveNotification.setVibrationReadyEnable(vibrationEnableReady);
                 return true;
             }
         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {

@@ -89,10 +89,10 @@ public class TimerService extends Service {
     }
 
     // Settings
-    private boolean timerGetReadyEnable = true;
-    private int timerGetReady = 15;
-    private long timerMinus = 30;
-    private long timerPlus = 30;
+    private boolean timerGetReadyEnable;
+    private int timerGetReady;
+    private long timerMinus;
+    private long timerPlus;
 
     public void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
         this.timerGetReadyEnable = timerGetReadyEnable;
