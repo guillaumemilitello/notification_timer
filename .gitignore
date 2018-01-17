@@ -1,4 +1,9 @@
-/build
+/build/*
+!/build/outputs/*
+/build/outpus/logs/*
+/build/outpus/apk/debug/*
+!/build/outpus/apk/release/*
+/build/outputs/apk/release/output.json
 /release/
 /src/androidTest/
 /src/test/
