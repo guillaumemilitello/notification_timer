@@ -486,14 +486,12 @@ class InteractiveNotification extends Notification {
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_black_text);
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        } else {
             if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_red_text);
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
             }
-        } else {
-            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
         }
 
         updateButton(remoteView, R.id.button0, button0);
