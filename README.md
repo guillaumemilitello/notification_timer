@@ -22,20 +22,25 @@ You can add an extra notification to get notified few seconds before the end to 
 
 ## Screenshots
 
-### Android 5.0+
+### Notification
+
+#### Android 5.0+
 
 <img src="screenshots/Notification_API21_ready.png" width="350"/> <img src="screenshots/Notification_API21_running.png" width="350"/> <img src="screenshots/Notification_API21_running_get_ready.png" width="350"/>
 
-### Anrdoid 7.0+
+#### Anrdoid 7.0+
 
 <img src="screenshots/Notification_API24_ready.png" width="350"/> <img src="screenshots/Notification_API24_running.png" width="350"/> <img src="screenshots/Notification_API24_running_get_ready.png" width="350"/>
 
-### Android 8.0+
+#### Android 8.0+
+The background color can be disabled from the settings
 
 <img src="screenshots/Notification_API26_running.jpg" width="350"/> <img src="screenshots/Notification_API26_running_get_ready.jpg" width="350"/> <img src="screenshots/Notification_API26_done.jpg" width="350"/>
 
-The background color can be disabled from the settings
+### Activity
 
-#
 <img src="screenshots/Activity_running.png" width="350"/> <img src="screenshots/Activity_running_get_ready.png" width="350"/> <img src="screenshots/Activity_running_multi.png" width="350"/>
+
+### Tutorial help
+
 <img src="screenshots/help_add.png" width="350"/> <img src="screenshots/help_ready.png" width="350"/> <img src="screenshots/help_running.png" width="350"/>
