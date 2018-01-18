@@ -1,10 +1,6 @@
-/build/*
-!/build/outputs/*
-/build/outpus/logs/*
-/build/outpus/apk/debug/*
-!/build/outpus/apk/release/*
-/build/outputs/apk/release/output.json
-/release/
+/build/
+/config/
+/release/output.json
 /src/androidTest/
 /src/test/
 mobile.iml
