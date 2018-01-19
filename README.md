@@ -17,7 +17,7 @@ You can add an extra notification to get notified few seconds before the end to 
 
 ## Downloads
 
-[NotificationTimer.0.8.0.apk](release/NotificationTimer.0.8.0.apk)
+[NotificationTimer.0.8.1.apk](release/NotificationTimer.0.8.1.apk)
 
 
 ## Screenshots
@@ -28,7 +28,7 @@ You can add an extra notification to get notified few seconds before the end to 
 
 <img src="screenshots/Notification_API21_ready.png" width="350"/> <img src="screenshots/Notification_API21_running.png" width="350"/> <img src="screenshots/Notification_API21_running_get_ready.png" width="350"/>
 
-#### Anrdoid 7.0+
+#### Android 7.0+
 
 <img src="screenshots/Notification_API24_ready.png" width="350"/> <img src="screenshots/Notification_API24_running.png" width="350"/> <img src="screenshots/Notification_API24_running_get_ready.png" width="350"/>
 
