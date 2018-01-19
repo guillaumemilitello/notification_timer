@@ -618,7 +618,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         if (sharedPreferences.getBoolean("firstRun", true)) {
             Log.d(TAG, "onStart: firstRun=true");
-            helpOverlay.showFirstRun();
+            helpOverlay.show();
             sharedPreferences.edit().putBoolean("firstRun", false).apply();
         }
     }

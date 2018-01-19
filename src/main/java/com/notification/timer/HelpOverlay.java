@@ -12,16 +12,14 @@ class HelpOverlay {
 
     private LinearLayout layout;
     private ImageView imageView;
-    private TextView textViewInfo, textViewDone;
 
-    private boolean showFirstRun;
     private int currentImageId;
 
     HelpOverlay(MainActivity mainActivity) {
         layout = mainActivity.findViewById(R.id.layoutHelp);
         imageView = mainActivity.findViewById(R.id.imageViewHelp);
-        textViewInfo = mainActivity.findViewById(R.id.textViewHelpButtonInfo);
-        textViewDone = mainActivity.findViewById(R.id.textViewHelpButtonDone);
+        TextView textViewInfo = mainActivity.findViewById(R.id.textViewHelpButtonInfo);
+        TextView textViewDone = mainActivity.findViewById(R.id.textViewHelpButtonDone);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,8 +38,6 @@ class HelpOverlay {
                 hide();
             }
         });
-
-        showFirstRun = false;
     }
 
     private void setVisible(boolean visible) {
@@ -51,38 +47,16 @@ class HelpOverlay {
         imageView.setVisibility(visibility);
     }
 
-    void showFirstRun() {
-        Log.d(TAG, "showFirstRun");
-        showFirstRun = true;
-        setVisible(true);
-        layout.setWeightSum(9);
-        textViewInfo.setVisibility(View.GONE);
-        textViewDone.setVisibility(View.VISIBLE);
-        textViewDone.setText(R.string.help_ok);
-        imageView.setImageResource(R.drawable.help_first_run);
-        imageView.setScaleType(ImageView.ScaleType.FIT_END);
-    }
-
     void show() {
         Log.d(TAG, "show");
-        showFirstRun = false;
         setVisible(true);
-        layout.setWeightSum(10);
-        textViewInfo.setVisibility(View.VISIBLE);
-        textViewDone.setText(R.string.help_quit);
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         currentImageId = 0;
         showImage(currentImageId);
     }
 
     private void next() {
         Log.d(TAG, "next");
-        if (showFirstRun) {
-            showFirstRun = false;
-            hide();
-        } else {
-            showImage(++currentImageId);
-        }
+        showImage(++currentImageId);
     }
 
     private void hide() {
