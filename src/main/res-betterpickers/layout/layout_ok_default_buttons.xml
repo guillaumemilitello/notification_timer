@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="@string/picker_default" />
+        android:text="@string/picker_none" />
 
     <Button
         android:id="@+id/done_button"
