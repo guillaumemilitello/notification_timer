@@ -454,7 +454,7 @@ class InteractiveNotification extends Notification {
                 intent = new Intent().setAction(IntentAction.TIMER_MINUS);
                 break;
             case RESET:
-                iconId = R.drawable.ic_chevron_left;
+                iconId = R.drawable.ic_chevrons_left;
                 intent = new Intent().setAction(IntentAction.RESET);
                 break;
             case DISMISS:

@@ -115,7 +115,7 @@
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_chevron_left"
+            android:src="@drawable/ic_chevrons_left"
             android:tint="@color/icon_color_tint"
             android:scaleType="fitCenter"
             android:clickable="true"

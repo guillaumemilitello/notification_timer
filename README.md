@@ -35,7 +35,7 @@ You can add an extra notification to get notified few seconds before the end to 
 #### Android 8.0+
 The background color can be customized or disabled from the settings. These colors match the progress bar background color of the activity.
 
-<img src="screenshots/Notification_API26_running.jpg" width="350"/> <img src="screenshots/Notification_API26_running_get_ready.jpg" width="350"/> <img src="screenshots/Notification_API26_done.jpg" width="350"/>
+<img src="screenshots/Notification_API26_ready.jpg" width="350"/> <img src="screenshots/Notification_API26_running.jpg" width="350"/> <img src="screenshots/Notification_running_get_ready.jpg" width="350"/>
 
 ### Activity
 
@@ -43,4 +43,4 @@ The background color can be customized or disabled from the settings. These colo
 
 ### Tutorial help
 
-<img src="screenshots/help_add.png" width="350"/> <img src="screenshots/help_ready.png" width="350"/> <img src="screenshots/help_running.png" width="350"/>
+<img src="src/main/res/drawable-xxxhdpi/help_add.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_ready.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_running.png" width="350"/>
