@@ -18,13 +18,13 @@
     <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
-    <string name="picker_split_screen">Exit split screen mode to add a preset</string>
+    <string name="picker_split_screen">Increase the height of the window to enter a timer</string>
     <!-- Alerts -->
     <string name="delete_preset">Are you sure you want to delete the selected preset?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
-    <string name="alert_extra_set">EXTRA SET</string>
+    <string name="alert_extra_set">EXTRA TIMER</string>
     <string name="alert_reset">RESET</string>
     <string name="alert_clear">CLEAR</string>
     <string name="alert_yes">YES</string>
