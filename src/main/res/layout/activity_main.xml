@@ -97,7 +97,7 @@
             android:layout_height="@dimen/preset_card_total_height"
             android:paddingStart="@dimen/preset_card_margin_side"
             android:paddingEnd="@dimen/preset_card_margin_side"
-            android:visibility="visible"
+            android:visibility="invisible"
             android:layout_below="@+id/textViewEmptyPresets"
             android:backgroundTintMode="screen"
             android:elevation="1dp"
@@ -108,10 +108,10 @@
         <!-- scaleX = 1.275 on nexus 6P -->
         <ProgressBar
             android:id="@+id/timerProgressBar"
-            android:scaleY="200"
+            android:scaleY="400"
             android:scaleX="1.275"
             android:rotation="90"
-            android:visibility="visible"
+            android:visibility="invisible"
             android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -143,28 +143,17 @@
                 android:weightSum="5"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/layoutSets"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
+                    android:text=""
                     android:gravity="center"
-                    android:visibility="invisible"
-                    android:orientation="horizontal"
-                    android:weightSum="3"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3"
-                        android:maxLines="1"
-                        android:textSize="50sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/bpRed"
-                        android:id="@+id/textViewSets"/>
-
-                </LinearLayout>
+                    android:maxLines="1"
+                    android:textSize="50sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bpRed"
+                    android:id="@+id/textViewSets"/>
 
                 <RelativeLayout
                     android:id="@+id/layoutTimer"

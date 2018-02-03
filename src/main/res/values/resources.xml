@@ -5,6 +5,11 @@
     <color name="primary_light">#9fa8da</color>
     <color name="primary_extra_light">#b0bec5</color>
 
+    <!-- Main activity layout -->
+    <dimen name="full_mode_threshold">510dp</dimen>
+    <dimen name="compact_mode_threshold">270dp</dimen>
+    <dimen name="pickers_threshold">450dp</dimen>
+
     <!-- Preset card -->
     <dimen name="preset_card_height">56dp</dimen>
     <dimen name="preset_card_margin_height">10dp</dimen>

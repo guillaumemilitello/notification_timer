@@ -20,15 +20,18 @@ class TimerTextView {
     private String text = "";
     private int color = Color.BLACK;
     private int visibility = View.GONE;
+    private boolean sideMargins = false;
 
     TimerTextView(TextView textView) {
         this.textView = textView;
         this.layoutParams = (LinearLayout.LayoutParams) textView.getLayoutParams();
     }
 
-    void setParameters(TimerTextViewParameters parameters) {
-        Log.d(TAG, "TimerTextView: textView=" + textView + ", parameters=" + parameters);
+    void setParameters(TimerTextViewParameters parameters, boolean sideMargins) {
         this.parameters = parameters;
+        this.sideMargins = sideMargins;
+        // force an update of the text size and the margins at the next setDigits()
+        digits = 0;
     }
 
     public void setText(String text) {
@@ -59,7 +62,8 @@ class TimerTextView {
         }
     }
 
-    void setDigits(int digits, boolean sideMargins) {
+    void setDigits(int digits) {
+        Log.d(TAG, "setDigits: digits=" + digits + ", this.digits=" + this.digits + " parameters=" + parameters);
         if (parameters != null && this.digits != digits) {
             this.digits = digits;
             textView.setTextSize(parameters.getTextSize(digits));
@@ -68,7 +72,7 @@ class TimerTextView {
             } else {
                 layoutParams.setMargins(0, parameters.getTopMargin(digits), 0, parameters.getBottomMargin(digits));
             }
-            Log.d(TAG, "TimerTextView: digits=" + digits + ", sideMargins=" + sideMargins + " parameters=" + parameters);
+            Log.d(TAG, "setDigits: digits=" + digits + ", sideMargins=" + sideMargins + " parameters=" + parameters);
         }
     }
 }

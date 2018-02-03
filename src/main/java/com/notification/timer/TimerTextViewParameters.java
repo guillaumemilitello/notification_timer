@@ -135,9 +135,8 @@ class TimerTextViewParameters {
         paint.setTextSize(rectTextSize);
         paint.getTextBounds("00'00", 0, digits > 2 ? digits + 1 : digits, rectBounds);
         // Threshold are fixed for the Typeface Lekton including font padding
-        int width = (int)(rectBounds.width() * density * 0.9);
-        int height = (int)(rectBounds.height() * density * 1.25);
-        //Log.d(TAG, "doesRectFit: digits=" + digits + ", rectTextSize=" + rectTextSize + ", width=" + width + ", height=" + height + ", targetWidth=" + targetWidth + ", targetHeight=" + targetHeight);
+        int width = (int)(rectBounds.width() * density * ((digits == 2)? 1.125 : 0.925));
+        int height = (int)(rectBounds.height() * density * 1.5);
         return width < targetWidth && height < targetHeight;
     }
 
