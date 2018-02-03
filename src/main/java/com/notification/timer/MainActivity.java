@@ -1374,6 +1374,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             timerServiceBound = false;
         }
 
+        if (alertSetDone.isShowing()){
+            alertSetDone.dismiss();
+        }
+        if (alertAllSetsDone.isShowing()){
+            alertAllSetsDone.dismiss();
+        }
+
         unregisterReceiver(mainActivityReceiver);
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
     }
