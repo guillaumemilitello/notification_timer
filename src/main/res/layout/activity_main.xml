@@ -92,7 +92,7 @@
         <!-- Preset timers -->
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/fragmentContainerPresetCards"
+            android:id="@+id/frameLayoutPresets"
             android:layout_width="match_parent"
             android:layout_height="@dimen/preset_card_total_height"
             android:paddingStart="@dimen/preset_card_margin_side"
@@ -115,28 +115,26 @@
             android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/fragmentContainerPresetCards"
             style="?android:attr/progressBarStyleHorizontal"
             android:progressTint="@color/bpRed"
             android:backgroundTint="@color/colorPrimary"
+            android:layout_marginTop="@dimen/preset_card_total_height"
             android:progress="0"
             android:max="0"
             android:indeterminate="false"/>
 
         <!-- Main layout including last button row-->
         <LinearLayout
-            android:id="@+id/layoutMainButtons"
+            android:id="@+id/layoutMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/fragmentContainerPresetCards"
             android:orientation="vertical"
             android:background="@android:color/transparent"
+            android:layout_marginTop="@dimen/preset_card_total_height"
             android:gravity="top"
             android:weightSum="1">
 
-            <!-- Main layout -->
             <LinearLayout
-                android:id="@+id/layoutMain"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"

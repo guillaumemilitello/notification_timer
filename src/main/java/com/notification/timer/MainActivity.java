@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinusMulti, imageButtonTimerPlusMulti;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonKeepScreenOn;
-    private LinearLayout bottomButtonsLayout, fullButtonsLayout;
+    private LinearLayout mainLayout, bottomButtonsLayout, fullButtonsLayout;
     private RelativeLayout activityLayout, timerLayout;
     private FrameLayout presetsFrameLayout;
 
@@ -237,9 +237,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         emptyPresetsTextView = findViewById(R.id.textViewEmptyPresets);
         setsTextView = findViewById(R.id.textViewSets);
 
-        presetsFrameLayout = findViewById(R.id.fragmentContainerPresetCards);
+        presetsFrameLayout = findViewById(R.id.frameLayoutPresets);
         activityLayout = findViewById(R.id.layoutActivity);
         timerLayout = findViewById(R.id.layoutTimer);
+        mainLayout = findViewById(R.id.layoutMain);
         fullButtonsLayout = findViewById(R.id.layoutFullButtons);
         bottomButtonsLayout = findViewById(R.id.layoutBottomButtons);
 
@@ -374,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         presetCardsList = new PresetCardsList();
         presetCardsList.initContext(this);
         presetCardsList.createPresetsList(sharedPreferences);
-        fragmentManager.beginTransaction().replace(R.id.fragmentContainerPresetCards, presetCardsList).commit();
+        fragmentManager.beginTransaction().replace(R.id.frameLayoutPresets, presetCardsList).commit();
 
         if (!timerServiceIsRunning()) {
             Log.d(TAG, "onCreate: starting service TimerService");
@@ -439,9 +440,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         return true;
     }
 
+    private boolean isLayoutModeFull() {
+        return layoutMode == LayoutMode.FULL;
+    }
+
     private void scaleTimerProgressBar() {
         int timerProgressBarWidth = timerProgressBar.getMeasuredWidth();
-        int timerProgressBarHeight = (int)((layoutMode == LayoutMode.FULL)? activityLayoutHeight - getResources().getDimension(R.dimen.preset_card_total_height) : activityLayoutHeight);
+        int timerProgressBarHeight = (int)(isLayoutModeFull() ? activityLayoutHeight - getResources().getDimension(R.dimen.preset_card_total_height) : activityLayoutHeight);
         float layoutScaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
         Log.d(TAG, "scaleTimerProgressBar: layoutScaleX=" + layoutScaleX + ", timerProgressBarHeight=" + timerProgressBarHeight + ", timerProgressBarWidth=" + timerProgressBarWidth);
         timerProgressBar.setScaleX(layoutScaleX);
@@ -505,7 +510,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         float setsLayoutHeight = setsTextView.getMeasuredHeight() / density;
         // Threshold are fixed for the Typeface Lekton
-        float setsTextSize = (layoutMode == LayoutMode.FULL) ? setsLayoutHeight / 2 : setsLayoutHeight / 1.3f;
+        float setsTextSize = isLayoutModeFull() ? setsLayoutHeight / 2 : setsLayoutHeight / 1.3f;
         Log.d(TAG, "scaleTextViews: setsLayoutHeight=" + setsLayoutHeight + ", setsTextSize=" + setsTextSize);
         setsTextView.setTextSize(setsTextSize);
     }
@@ -525,7 +530,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     void updatePresetsVisibility() {
         Log.d(TAG, "updatePresetsVisibility: layoutMode=" + layoutMode);
-        setPresetsVisible(layoutMode == LayoutMode.FULL);
+        setPresetsVisible(isLayoutModeFull());
         updatePresetsExpandButton(false);
     }
 
@@ -537,6 +542,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else {
             emptyPresetsTextView.setVisibility(View.GONE);
             presetsFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private boolean isPresetsVisible() {
+        if (presetCardsList.isEmpty()) {
+            return emptyPresetsTextView.getVisibility() == View.VISIBLE;
+        } else {
+            return presetsFrameLayout.getVisibility() == View.VISIBLE;
         }
     }
 
@@ -1084,14 +1097,14 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void changePresetsFrameLayout() {
         if (presetsFrameLayout != null) {
-            if (presetsFrameLayout.getVisibility() == View.GONE) {
-                Log.d(TAG, "changePresetsFrameLayout: setVisibility=visible");
-                setPresetsVisible(true);
-                updatePresetsExpandButton(true);
-            } else {
+            if (isPresetsVisible()) {
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=invisible");
                 setPresetsVisible(false);
                 updatePresetsExpandButton(false);
+            } else {
+                Log.d(TAG, "changePresetsFrameLayout: setVisibility=visible");
+                setPresetsVisible(true);
+                updatePresetsExpandButton(true);
             }
         }
     }
@@ -1108,8 +1121,21 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private void updatePresetsLayout() {
         if (presetsFrameLayout != null) {
             Log.d(TAG, "updatePresetsLayout: layoutMode=" + layoutMode);
-            setPresetsVisible(layoutMode == LayoutMode.FULL);
-            updateToolBarMenuItems(layoutMode != LayoutMode.FULL);
+            setPresetsVisible(isLayoutModeFull());
+            updateToolBarMenuItems(!isLayoutModeFull());
+            int backgroundColor, topMargin = 0;
+            if (isLayoutModeFull()) {
+                backgroundColor = ContextCompat.getColor(this, R.color.preset_fragment_background);
+                topMargin = getResources().getDimensionPixelSize(R.dimen.preset_card_total_height);
+            } else {
+                backgroundColor = ContextCompat.getColor(this, R.color.preset_fragment_transparent_background);
+            }
+            presetsFrameLayout.setBackgroundColor(backgroundColor);
+            emptyPresetsTextView.setBackgroundColor(backgroundColor);
+            RelativeLayout.LayoutParams mainLayoutParams = (RelativeLayout.LayoutParams) mainLayout.getLayoutParams();
+            RelativeLayout.LayoutParams timerProgressBarLayoutParams = (RelativeLayout.LayoutParams) timerProgressBar.getLayoutParams();
+            mainLayoutParams.setMargins(0, topMargin, 0, 0);
+            timerProgressBarLayoutParams.setMargins(0, topMargin, 0, 0);
         }
     }
 
@@ -1128,7 +1154,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         if (layout == ButtonsLayout.WAITING && timerUser > 0) {
             layout = ButtonsLayout.WAITING_SETS;
         }
-        if (timerState != TimerService.State.WAITING && timerCurrent == 0 && setsCurrent ==0) {
+        if (timerState != TimerService.State.WAITING && timerCurrent == 0 && setsCurrent == 0) {
             Log.e(TAG, "updateButtonsLayout: wrong layout timerState=" + timerState + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
             layout = ButtonsLayout.WAITING;
         }
