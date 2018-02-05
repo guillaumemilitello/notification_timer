@@ -63,7 +63,6 @@ class TimerTextView {
     }
 
     void setDigits(int digits) {
-        Log.d(TAG, "setDigits: digits=" + digits + ", this.digits=" + this.digits + " parameters=" + parameters);
         if (parameters != null && this.digits != digits) {
             this.digits = digits;
             textView.setTextSize(parameters.getTextSize(digits));
