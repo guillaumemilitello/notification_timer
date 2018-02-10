@@ -979,11 +979,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             return true;
         } else if (id == R.id.feedback) {
-            Intent sendEmail = new Intent(Intent.ACTION_SEND);
-            sendEmail.setType("text/email");
-            sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"guillaume.militello@gmail.com"});
+            Intent sendEmail = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto","guillaume.militello@gmail.com", null));
             sendEmail.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name) + " feedback");
-            startActivity(Intent.createChooser(sendEmail, "Send Feedback:"));
+            startActivity(Intent.createChooser(sendEmail, "Send email..."));
             return true;
         } else if (id == R.id.help) {
             helpOverlay.show();
