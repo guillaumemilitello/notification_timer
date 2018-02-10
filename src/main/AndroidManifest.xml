@@ -54,11 +54,6 @@
             android:name=".PreferencesActivity"
             android:label="@string/settings"
             android:resizeableActivity="true" />
-
-        <activity
-            android:name=".AboutActivity"
-            android:label="@string/about"
-            android:resizeableActivity="true" />
     </application>
 
 </manifest>

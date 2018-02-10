@@ -988,11 +988,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else if (id == R.id.help) {
             helpOverlay.show();
             return true;
-        } else if (id == R.id.about) {
-            Log.d(TAG, "onOptionsItemSelected: item.id=about");
-            startActivityForResult(new Intent(this, AboutActivity.class), requestCode);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            return true;
         } else if (id == R.id.presets_display) {
             Log.d(TAG, "onOptionsItemSelected: item.id=presets_display");
             changePresetsFrameLayout();

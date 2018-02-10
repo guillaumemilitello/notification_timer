@@ -34,10 +34,4 @@
         android:orderInCategory="100"
         android:title="@string/feedback"
         app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/about"
-        android:orderInCategory="100"
-        android:title="@string/about"
-        app:showAsAction="never"/>
 </menu>
