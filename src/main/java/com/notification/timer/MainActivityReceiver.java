@@ -76,7 +76,7 @@ public class MainActivityReceiver extends BroadcastReceiver {
                 ((MainActivity)context).timerServiceRebind();
                 break;
             case IntentAction.NOTIFICATION_DISMISS:
-                ((MainActivity)context).finish();
+                ((MainActivity)context).clear();
                 break;
             default:
                 Log.e(TAG, "wrong intent event=" + intent.getAction());
