@@ -6,8 +6,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -373,72 +371,6 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         }
 
         updateKeypad();
-    }
-
-
-    @Override
-    public Parcelable onSaveInstanceState() {
-        final Parcelable parcel = super.onSaveInstanceState();
-        final SavedState state = new SavedState(parcel);
-        state.mInput = mInput;
-        state.mInputPointer = mInputPointer;
-        return state;
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-
-        final SavedState savedState = (SavedState) state;
-        super.onRestoreInstanceState(savedState.getSuperState());
-
-        mInputPointer = savedState.mInputPointer;
-        mInput = savedState.mInput;
-        if (mInput == null) {
-            mInput = new int[mInputSize];
-            mInputPointer = -1;
-        }
-        updateKeypad();
-    }
-
-    private static class SavedState extends BaseSavedState {
-
-        int mInputPointer;
-        int[] mInput;
-        int mAmPmState;
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            mInputPointer = in.readInt();
-            mInput = in.createIntArray();
-            mAmPmState = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(mInputPointer);
-            dest.writeIntArray(mInput);
-            dest.writeInt(mAmPmState);
-        }
-
-        public static final Creator<SavedState> CREATOR
-                = new Creator<MsPicker.SavedState>() {
-            public MsPicker.SavedState createFromParcel(Parcel in) {
-                return new MsPicker.SavedState(in);
-            }
-
-            public MsPicker.SavedState[] newArray(int size) {
-                return new MsPicker.SavedState[size];
-            }
-        };
     }
 
     /**

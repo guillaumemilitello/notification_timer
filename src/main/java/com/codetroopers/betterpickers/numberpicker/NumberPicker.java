@@ -5,8 +5,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.HapticFeedbackConstants;
@@ -530,36 +528,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         return mSign == SIGN_NEGATIVE;
     }
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        final Parcelable parcel = super.onSaveInstanceState();
-        final SavedState state = new SavedState(parcel);
-        state.mInput = mInput;
-        state.mSign = mSign;
-        state.mInputPointer = mInputPointer;
-        return state;
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-
-        final SavedState savedState = (SavedState) state;
-        super.onRestoreInstanceState(savedState.getSuperState());
-
-        mInputPointer = savedState.mInputPointer;
-        mInput = savedState.mInput;
-        if (mInput == null) {
-            mInput = new int[mInputSize];
-            mInputPointer = -1;
-        }
-        mSign = savedState.mSign;
-        updateKeypad();
-    }
-
     public void setNumber(Integer integerPart, Double decimalPart, Integer mCurrentSign) {
         if (mCurrentSign != null) {
             mSign = mCurrentSign;
@@ -599,53 +567,5 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         DecimalFormat format = new DecimalFormat("0.0");
         format.setMaximumFractionDigits(Integer.MAX_VALUE);
         return format.format(value);
-    }
-
-
-    private static class SavedState extends BaseSavedState {
-
-        int mInputPointer;
-        int[] mInput;
-        int mSign;
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            mInputPointer = in.readInt();
-            int size = in.readInt();
-            if (size > 0) {
-                mInput = new int[size];
-                in.readIntArray(mInput);
-            }
-            mSign = in.readInt();
-        }
-
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(mInputPointer);
-            if (mInput != null) {
-                dest.writeInt(mInput.length);
-                dest.writeIntArray(mInput);
-            } else {
-                dest.writeInt(0);
-            }
-            dest.writeInt(mSign);
-        }
-
-        public static final Creator<SavedState> CREATOR
-                = new Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }
