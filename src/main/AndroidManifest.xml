@@ -13,7 +13,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
@@ -53,7 +52,16 @@
         <activity
             android:name=".PreferencesActivity"
             android:label="@string/settings"
-            android:resizeableActivity="true" />
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true"
+            android:theme="@style/AppTheme" >
+            <layout
+                android:defaultHeight="460dp"
+                android:defaultWidth="360dp"
+                android:gravity="top|end"
+                android:minHeight="225dp"
+                android:minWidth="320dp" />
+        </activity>
     </application>
 
 </manifest>
