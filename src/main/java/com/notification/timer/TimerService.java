@@ -7,13 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TimerService extends Service {
@@ -178,6 +182,8 @@ public class TimerService extends Service {
         registerReceiver(timerServiceReceiver, filter);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        updateAllPreferences();
+
         loadContextPreferences();
 
         running = true;
@@ -186,7 +192,7 @@ public class TimerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: running=" + running);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     void updateNotificationVisibilityScreenLocked() {
@@ -699,7 +705,6 @@ public class TimerService extends Service {
         }
 
         if (!mainActivityVisible) {
-            updateNotificationVisibility(true);
             switch (state) {
                 case RUNNING:
                     interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING);
@@ -717,9 +722,118 @@ public class TimerService extends Service {
             interactiveNotification.updateSetsCurrent(setsCurrent);
             interactiveNotification.updateTimerUser(timerUser);
             notificationUpdateTimerCurrent(timerCurrent);
+            updateNotificationVisibility(true);
         }
         Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
                 + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+    }
+
+    // Get preferences for the notification when the am schedule a restart of the service
+    // TODO: merge with MainActivity
+    private void updateAllPreferences() {
+        Log.d(TAG, "updateAllPreferences");
+        Map<String, ?> preferences = sharedPreferences.getAll();
+        if (preferences != null) {
+            updatePreference(getString(R.string.pref_timer_minus));
+            updatePreference(getString(R.string.pref_timer_plus));
+            updatePreference(getString(R.string.pref_vibrate));
+            updatePreference(getString(R.string.pref_ringtone_uri));
+            updatePreference(getString(R.string.pref_light_color_enable));
+            updatePreference(getString(R.string.pref_light_color));
+            updatePreference(getString(R.string.pref_light_flash_rate));
+            updatePreference(getString(R.string.pref_timer_get_ready_enable));
+            updatePreference(getString(R.string.pref_timer_get_ready));
+            updatePreference(getString(R.string.pref_timer_get_ready_vibrate));
+            updatePreference(getString(R.string.pref_timer_get_ready_ringtone_uri));
+            updatePreference(getString(R.string.pref_custom_color_enable));
+            updatePreference(getString(R.string.pref_custom_color_running));
+            updatePreference(getString(R.string.pref_custom_color_ready));
+            updatePreference(getString(R.string.pref_custom_color_done));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                interactiveNotification.updateNotificationChannels();
+            }
+        }
+    }
+
+    // TODO: merge with MainActivity
+    private void updatePreference(String key) {
+
+        if (!isKeyPreference(key)) {
+            return;
+        }
+
+        Log.d(TAG, "updatePreference: key=" + key);
+
+        if (key.equals(getString(R.string.pref_timer_minus))) {
+            timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
+            int resId = getTimerMinusResId();
+            interactiveNotification.setTimerMinusResId(resId);
+        } else if (key.equals(getString(R.string.pref_timer_plus))) {
+            timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
+        } else if (key.equals(getString(R.string.pref_vibrate))) {
+            boolean vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
+            interactiveNotification.setVibrationEnable(vibrationEnable);
+        } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
+            Uri ringtoneUri = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_ringtone_uri)));
+            interactiveNotification.setRingtone(ringtoneUri);
+        }  else if (key.equals(getString(R.string.pref_light_color_enable))) {
+            boolean colorEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_light_color_enable));
+            interactiveNotification.setLightColorEnable(colorEnable);
+        } else if (key.equals(getString(R.string.pref_light_color))) {
+            int light_color = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_light_color));
+            interactiveNotification.setLightColor(light_color);
+        } else if (key.equals(getString(R.string.pref_light_flash_rate))) {
+            int flashRate = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_light_flash_rate)));
+            interactiveNotification.setLightFlashRate(flashRate);
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
+            timerGetReadyEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_enable));
+            interactiveNotification.setTimerGetReadyEnable(timerGetReadyEnable);
+        } else if (key.equals(getString(R.string.pref_timer_get_ready))) {
+            timerGetReady = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready)));
+            interactiveNotification.setTimerGetReady(timerGetReady);
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+            boolean vibrationEnableReady = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_timer_get_ready_vibrate));
+            interactiveNotification.setVibrationReadyEnable(vibrationEnableReady);
+        } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
+            Uri ringtoneUriReady = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_timer_get_ready_ringtone_uri)));
+            interactiveNotification.setRingtoneReady(ringtoneUriReady);
+        } else if (key.equals(getString(R.string.pref_custom_color_enable))) {
+            boolean colorEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_color_enable));
+            interactiveNotification.setColorEnable(colorEnable);
+        } else if (key.equals(getString(R.string.pref_custom_color_running))) {
+            int colorRunning = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_running));
+            interactiveNotification.setColorRunning(colorRunning);
+        } else if (key.equals(getString(R.string.pref_custom_color_ready))) {
+            int colorReady = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_ready));
+            interactiveNotification.setColorReady(colorReady);
+        } else if (key.equals(getString(R.string.pref_custom_color_done))) {
+            int colorDone = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_done));
+            interactiveNotification.setColorDone(colorDone);
+        } else {
+            Log.e(TAG, "updatePreference: not supported preference key=" + key);
+        }
+    }
+
+    // TODO: merge with MainActivity
+    private int getTimerMinusResId() {
+        if (timerMinus == 10) {
+            return R.drawable.ic_timer_minus_10;
+        } else if (timerMinus == 15) {
+            return R.drawable.ic_timer_minus_15;
+        } else if (timerMinus == 20) {
+            return R.drawable.ic_timer_minus_20;
+        } else if (timerMinus == 30) {
+            return R.drawable.ic_timer_minus_30;
+        } else if (timerMinus == 45) {
+            return R.drawable.ic_timer_minus_45;
+        } else {
+            return R.drawable.ic_timer_minus_60;
+        }
+    }
+
+    private boolean isKeyPreference(String key) {
+        return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
+                && !key.contains(getString(R.string.pref_timer_text));
     }
 
     class TimerBinder extends Binder {
