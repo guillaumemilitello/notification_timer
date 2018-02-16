@@ -640,6 +640,12 @@ class InteractiveNotification extends Notification {
         return colorRunning;
     }
 
+    void updateNotificationBuilder() {
+        Log.d(TAG, "updateNotificationBuilder");
+        // Force update the notification when the service has crashed regardless of the layout
+        notificationBuilder = createNotificationBuilder(NotificationMode.UPDATE);
+    }
+
     private void build(NotificationMode notificationMode) {
         if (visible && notificationMode != NotificationMode.NONE) {
 
