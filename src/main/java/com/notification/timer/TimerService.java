@@ -101,11 +101,10 @@ public class TimerService extends Service {
     // context preferences save
     private long timerCurrentSaving = 0;
     private static final int TIMER_CURRENT_SAVING_INTERVAL = 5;
-    private static final int CONTEXT_PREFERENCE_TIMER_END = 0x01;
-    private static final int CONTEXT_PREFERENCE_TIMER_CURRENT = 0x02;
-    private static final int CONTEXT_PREFERENCE_TIMER_USER = 0x04;
-    private static final int CONTEXT_PREFERENCE_SETS_CURRENT = 0x08;
-    private static final int CONTEXT_PREFERENCE_SETS_USER = 0x10;
+    private static final int CONTEXT_PREFERENCE_TIMER_CURRENT = 0x01;
+    private static final int CONTEXT_PREFERENCE_TIMER_USER = 0x02;
+    private static final int CONTEXT_PREFERENCE_SETS_CURRENT = 0x04;
+    private static final int CONTEXT_PREFERENCE_SETS_USER = 0x08;
     private static final int CONTEXT_PREFERENCE_STATE = 0x20;
     private static final int CONTEXT_PREFERENCE_MAIN_ACTIVITY_VISIBLE = 0x40;
 
@@ -312,7 +311,7 @@ public class TimerService extends Service {
 
         releaseWakeLock();
 
-        saveContextPreferences(CONTEXT_PREFERENCE_SETS_CURRENT);
+        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
     void nextSet() {
@@ -506,7 +505,7 @@ public class TimerService extends Service {
             }
             if (time / TIMER_CURRENT_SAVING_INTERVAL != timerCurrentSaving) {
                 timerCurrentSaving = time / TIMER_CURRENT_SAVING_INTERVAL;
-                saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_TIMER_END);
+                saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
             }
             if (timerGetReadyEnable && timerCurrent == timerGetReady) {
                 releaseWakeLock();
@@ -605,6 +604,7 @@ public class TimerService extends Service {
             @Override
             public void onFinish() {
                 Log.d("CountDownPauseTimer", "onFinish");
+                timerUpdate(0);
                 done();
             }
         };
@@ -641,13 +641,9 @@ public class TimerService extends Service {
 
     private void saveContextPreferences(int flags) {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        if ((flags & CONTEXT_PREFERENCE_TIMER_END) == CONTEXT_PREFERENCE_TIMER_END) {
-            sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_end), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timerCurrent));
-            Log.d(TAG, "saveContextPreferences: timerEnd");
-        }
         if ((flags & CONTEXT_PREFERENCE_TIMER_CURRENT) == CONTEXT_PREFERENCE_TIMER_CURRENT) {
             sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_current), timerCurrent);
-            Log.d(TAG, "saveContextPreferences: timerCurrent=" + timerCurrent);
+            sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_end), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timerCurrent));            Log.d(TAG, "saveContextPreferences: timerCurrent=" + timerCurrent);
         }
         if ((flags & CONTEXT_PREFERENCE_TIMER_USER) == CONTEXT_PREFERENCE_TIMER_USER) {
             sharedPreferencesEditor.putLong(getString(R.string.pref_timer_service_timer_user), timerUser);
@@ -690,29 +686,20 @@ public class TimerService extends Service {
             if (remainingTime > 0) {
                 timerCurrent = remainingTime;
                 startContextPreferences();
-            } else {
-                setsCurrent++;
-                timerCurrent = timerUser;
-                state = State.READY;
+            } else if (timerCurrent > 0) {
+                interactiveNotification.updateSetsCurrent(++setsCurrent);
+                timerCurrent = 0;
             }
+            notificationUpdateTimerCurrent(timerCurrent);
         } else if (state == State.PAUSED) {
             pauseContextPreference();
         }
 
         if (!mainActivityVisible) {
-            updateNotification();
+            updateNotificationLayout();
+            interactiveNotification.updateNotificationBuilder();
+            updateNotificationVisibility(!mainActivityVisible);
         }
-    }
-
-    private void updateNotification() {
-        Log.d(TAG, "updateNotification");
-        updateNotificationLayout();
-        notificationUpdateTimerCurrent(timerCurrent);
-        interactiveNotification.updateTimerUser(timerUser);
-        interactiveNotification.updateSetsCurrent(setsCurrent);
-        interactiveNotification.updateSetsUser(setsUser);
-        interactiveNotification.updateNotificationBuilder();
-        updateNotificationVisibility(!mainActivityVisible);
     }
 
     private void updateNotificationLayout() {
