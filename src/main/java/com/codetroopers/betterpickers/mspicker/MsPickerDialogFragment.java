@@ -1,11 +1,11 @@
 package com.codetroopers.betterpickers.mspicker;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +23,7 @@ import java.util.Vector;
     private static final String REFERENCE_KEY = "MsPickerDialogFragment_ReferenceKey";
     private static final String THEME_RES_ID_KEY = "MsPickerDialogFragment_ThemeResIdKey";
     private static final String PLUS_MINUS_VISIBILITY_KEY = "MsPickerDialogFragment_PlusMinusVisibilityKey";
+    private static final String TITLE_TEXT_KEY = "MsPickerDialogFragment_TitleTextKey";
 
     private MsPicker mPicker;
 
@@ -34,6 +35,7 @@ import java.util.Vector;
     private int mMinutes;
     private int mSeconds;
     private int mPlusMinusVisibility = View.INVISIBLE;
+    private String mTitleText = "";
 
     /**
      * Create an instance of the Picker (used internally)
@@ -42,13 +44,16 @@ import java.util.Vector;
      * @param themeResId the style resource ID for theming
      * @return a Picker!
      */
-    public static MsPickerDialogFragment newInstance(int reference, int themeResId, Integer plusMinusVisibility) {
+    public static MsPickerDialogFragment newInstance(int reference, int themeResId, Integer plusMinusVisibility, String labelText) {
         final MsPickerDialogFragment frag = new MsPickerDialogFragment();
         Bundle args = new Bundle();
         args.putInt(REFERENCE_KEY, reference);
         args.putInt(THEME_RES_ID_KEY, themeResId);
         if (plusMinusVisibility != null) {
             args.putInt(PLUS_MINUS_VISIBILITY_KEY, plusMinusVisibility);
+        }
+        if (labelText != null) {
+            args.putString(TITLE_TEXT_KEY, labelText);
         }
         frag.setArguments(args);
         return frag;
@@ -72,6 +77,9 @@ import java.util.Vector;
         }
         if (args != null && args.containsKey(PLUS_MINUS_VISIBILITY_KEY)) {
             mPlusMinusVisibility = args.getInt(PLUS_MINUS_VISIBILITY_KEY);
+        }
+        if (args != null && args.containsKey(TITLE_TEXT_KEY)) {
+            mTitleText = args.getString(TITLE_TEXT_KEY);
         }
 
         setStyle(DialogFragment.STYLE_NO_TITLE, 0);
@@ -133,6 +141,7 @@ import java.util.Vector;
         mPicker.setTime(mMinutes, mSeconds);
         mPicker.setTheme(mTheme);
         mPicker.setPlusMinusVisibility(mPlusMinusVisibility);
+        mPicker.setTitleText(mTitleText);
 
         getDialog().getWindow().setBackgroundDrawableResource(mDialogBackgroundResId);
 

@@ -14,6 +14,7 @@
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timer number</string>
+    <string name="picker_timer_get_ready">Extra Notification Time</string>
     <string name="picker_cancel">CANCEL</string>
     <string name="picker_set">OK</string>
     <string name="picker_toast_all">Add a timer and a sets number first</string>
@@ -61,8 +62,8 @@
     <string name="light_color_summary">Light color when the timer is done</string>
     <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
-    <string name="get_ready_time">Ready time</string>
-    <string name="get_ready_time_summary">Amount of time to enable get ready</string>
+    <string name="get_ready_time">Time</string>
+    <string name="get_ready_time_summary">Notification will occur %1$d:%2$02d before the end</string>
     <string name="vibrate_summary_get_ready">Vibrate on the get ready time</string>
     <string name="color_enable">Notification background color</string>
     <string name="color_enable_summary">Apply the colors to the background of the notification</string>

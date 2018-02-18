@@ -275,12 +275,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         alertAllSetsDone = alertBuilderAllSetsDone.create();
 
         timerPickerBuilder = new MsPickerBuilder();
-        timerPickerBuilder.setFragmentManager(getSupportFragmentManager());
+        timerPickerBuilder.setFragmentManager(getFragmentManager());
         timerPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         timerPickerBuilder.setTimeInSeconds(0);
+        timerPickerBuilder.setTitleText(getString(R.string.picker_timer));
 
         setsPickerBuilder = new NumberPickerBuilder();
-        setsPickerBuilder.setFragmentManager(getSupportFragmentManager());
+        setsPickerBuilder.setFragmentManager(getFragmentManager());
         setsPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         setsPickerBuilder.setDecimalVisibility(View.INVISIBLE);
         setsPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);

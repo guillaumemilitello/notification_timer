@@ -28,6 +28,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     protected MsView mEnteredMs;
     protected final Context mContext;
 
+    private TextView mTitle;
     private TextView mMinutesLabel, mSecondsLabel;
     private Button mSetButton;
 
@@ -164,6 +165,8 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         mNumbers[0] = (Button) v4.findViewById(R.id.key_middle);
         mRight = (Button) v4.findViewById(R.id.key_right);
         setRightEnabled(false);
+
+        mTitle = (TextView) findViewById(R.id.textViewTitle);
 
         for (int i = 0; i < 10; i++) {
             mNumbers[i].setOnClickListener(this);
@@ -348,6 +351,17 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     public void setPlusMinusVisibility(int visibility) {
         if (mLeft != null) {
             mLeft.setVisibility(visibility);
+        }
+    }
+
+    /**
+     * Set the picker title text
+     *
+     * @param titleText the String to set as the text
+     */
+    public void setTitleText(String titleText) {
+        if (mTitle != null) {
+            mTitle.setText(titleText);
         }
     }
 

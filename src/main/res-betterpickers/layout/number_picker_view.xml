@@ -10,7 +10,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/picker_sets"
         android:fontFamily="sans-serif-light"
-        android:id="@+id/textViewTimerText"
+        android:id="@+id/textViewTitle"
         android:gravity="center_vertical|center_horizontal"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp" />

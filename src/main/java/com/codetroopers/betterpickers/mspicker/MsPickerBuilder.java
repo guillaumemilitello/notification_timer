@@ -1,8 +1,8 @@
 package com.codetroopers.betterpickers.mspicker;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.util.Log;
 
 import java.util.Vector;
@@ -19,6 +19,7 @@ public class MsPickerBuilder {
     private Vector<MsPickerDialogFragment.MsPickerDialogHandlerV2> mMsPickerDialogHandlerV2s = new Vector<MsPickerDialogFragment.MsPickerDialogHandlerV2>();
     private int mMinutes;
     private int mSeconds;
+    private String titleText;
     private Integer plusMinusVisibility;
 
     /**
@@ -133,6 +134,17 @@ public class MsPickerBuilder {
     }
 
     /**
+     * Set the picker title text
+     *
+     * @param titleText the String text
+     * @return the current Builder object
+     */
+    public MsPickerBuilder setTitleText(String titleText) {
+        this.titleText = titleText;
+        return this;
+    }
+
+    /**
      * Set some initial values for the picker
      *
      * @param timeInMilliseconds the time in milliseconds
@@ -158,7 +170,7 @@ public class MsPickerBuilder {
         }
         ft.addToBackStack(null);
 
-        final MsPickerDialogFragment fragment = MsPickerDialogFragment.newInstance(mReference, styleResId, plusMinusVisibility);
+        final MsPickerDialogFragment fragment = MsPickerDialogFragment.newInstance(mReference, styleResId, plusMinusVisibility, titleText);
         if (targetFragment != null) {
             fragment.setTargetFragment(targetFragment, 0);
         }

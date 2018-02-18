@@ -32,6 +32,8 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
+import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
 import com.kizitonwose.colorpreference.ColorPreference;
 
 import java.io.File;
@@ -41,6 +43,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
@@ -56,7 +59,7 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class PreferencesActivity extends AppCompatPreferenceActivity {
+public class PreferencesActivity extends AppCompatPreferenceActivity implements MsPickerDialogFragment.MsPickerDialogHandlerV2 {
 
     private static final String TAG = "PreferencesActivity";
 
@@ -72,6 +75,8 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     private TimerPreferenceFragment settingsFragment;
 
     private NotificationManager notificationManager;
+
+    private MsPickerBuilder timerGetReadyPickerBuilder;
 
     @Override
     @SuppressWarnings("deprecation")
@@ -89,6 +94,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
         setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                 ContextCompat.getColor(this, R.color.colorPrimary)));
+
+        timerGetReadyPickerBuilder = new MsPickerBuilder();
+        timerGetReadyPickerBuilder.setFragmentManager(getFragmentManager());
+        timerGetReadyPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
+        timerGetReadyPickerBuilder.setTimeInSeconds(0);
+        timerGetReadyPickerBuilder.setTitleText(getString(R.string.picker_timer_get_ready));
 
         settingsFragment = new TimerPreferenceFragment();
         getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
@@ -122,6 +133,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             updateNotificationChannelPreferences();
         }
         updateSummaries();
+        updateTimerGetReadySummary();
         updateGetReadyPreferences();
         updateLightColorPreference();
         updateBackupPreferences();
@@ -139,6 +151,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
             }
         }
         updateSummaries();
+        updateTimerGetReadySummary();
         updateGetReadyPreferences();
         updateLightColorPreference();
     }
@@ -172,6 +185,27 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onDialogMsSet(int reference, boolean isNegative, int minutes, int seconds) {
+        Log.d(TAG, "onDialogMsSet: minutes=" + minutes + ", seconds=" + seconds);
+        int timerGetReady = minutes * 60 + seconds;
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready), String.valueOf(timerGetReady));
+        sharedPreferencesEditor.apply();
+        updateTimerGetReadySummary(timerGetReady);
+    }
+
+    private void updateTimerGetReadySummary() {
+        int timerGetReady = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_timer_get_ready), getString(R.string.default_timer_get_ready)));
+        updateTimerGetReadySummary(timerGetReady);
+    }
+
+    private void updateTimerGetReadySummary(int timerGetReady) {
+        String summary = String.format(Locale.US, getString(R.string.get_ready_time_summary), timerGetReady / 60, timerGetReady % 60);
+        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)).setSummary(summary);
+        Log.d(TAG, "updateTimerGetReadySummary: summary=" + summary);
     }
 
     private void updateNotificationChannelPreferences() {
@@ -213,6 +247,14 @@ public class PreferencesActivity extends AppCompatPreferenceActivity {
     }
 
     private void updateBackupPreferences() {
+        settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Log.d(TAG, "TimerGetReady");
+                timerGetReadyPickerBuilder.show();
+                return true;
+            }
+        });
         settingsFragment.findPreference(getString(R.string.pref_backup)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {

@@ -70,13 +70,11 @@
         android:title="@string/enable"
         android:summary="@string/extra_notification_summary"
         android:defaultValue="@bool/default_timer_get_ready_enable"/>
-    <ListPreference
+    <Preference
         android:key="@string/pref_timer_get_ready"
         android:title="@string/get_ready_time"
-        android:summary="@string/get_ready_time_summary"
         android:defaultValue="@string/default_timer_get_ready"
-        android:entries="@array/timerGetReady"
-        android:entryValues="@array/timerGetReadyValues"/>
+        android:summary="@string/get_ready_time_summary" />
     <SwitchPreference
         android:key="@string/pref_timer_get_ready_vibrate"
         android:title="@string/vibrate"
