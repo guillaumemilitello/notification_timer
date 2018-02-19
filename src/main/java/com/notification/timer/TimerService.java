@@ -164,6 +164,7 @@ public class TimerService extends Service {
         registerReceiver(timerServiceReceiver, filter);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
         updateAllPreferences();
 
         loadContextPreferences();
@@ -751,11 +752,6 @@ public class TimerService extends Service {
     }
 
     private void updatePreference(String key) {
-
-        if (!isKeyPreference(key)) {
-            return;
-        }
-
         Log.d(TAG, "updatePreference: key=" + key);
 
         if (key.equals(getString(R.string.pref_timer_minus))) {
@@ -809,10 +805,19 @@ public class TimerService extends Service {
         }
     }
 
-    private boolean isKeyPreference(String key) {
-        return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
-                && !key.contains(getString(R.string.pref_timer_text));
-    }
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                    Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
+                    if (PreferencesActivity.isKeyPreference(getBaseContext(), key))
+                    {
+                        updatePreference(key);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            interactiveNotification.updateNotificationChannels();
+                        }
+                    }
+                }
+            };
 
     class TimerBinder extends Binder {
         TimerService getService() {
@@ -829,6 +834,7 @@ public class TimerService extends Service {
         stopNotificationForeground();
         releaseWakeLock();
         unregisterReceiver(timerServiceReceiver);
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 

@@ -1442,19 +1442,10 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             updatePreference(getString(R.string.pref_custom_color_running));
             updatePreference(getString(R.string.pref_custom_color_ready));
             updatePreference(getString(R.string.pref_custom_color_done));
-            if (timerService != null) {
-                // Propagate the preferences to the notification
-                timerService.updateAllPreferences();
-            }
         }
     }
 
-    private boolean updatePreference(String key) {
-
-        if (!isKeyPreference(key)) {
-            return false;
-        }
-
+    private void updatePreference(String key) {
         Log.d(TAG, "updatePreference: key=" + key);
 
         if (key.equals(getString(R.string.pref_timer_minus))) {
@@ -1489,23 +1480,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             colorDone = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_done));
         } else {
             Log.e(TAG, "updatePreference: not supported preference key=" + key);
-            return false;
         }
-        return true;
     }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
-                    if (updatePreference(key) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        timerService.interactiveNotification.updateNotificationChannels();
+                    if (PreferencesActivity.isKeyPreference(getBaseContext(), key))
+                    {
+                        updatePreference(key);
                     }
                 }
             };
-
-    private boolean isKeyPreference(String key) {
-        return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
-                && !key.contains(getString(R.string.pref_timer_text));
-    }
 }

@@ -142,7 +142,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private void updateAllPreferences() {
         for (Map.Entry<String, ?> preference : sharedPreferences.getAll().entrySet()) {
             String key = preference.getKey();
-            if (isKeyPreference(key)) {
+            if (isKeyPreference(getBaseContext(), key)) {
                 Preference settingsPreference = settingsFragment.findPreference(key);
                 if (settingsPreference != null) {
                     Log.d(TAG, "updatePreference: key=" + key);
@@ -297,7 +297,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         if (sharedPreferences != null) {
             for (Map.Entry<String, ?> preference : sharedPreferences.getAll().entrySet()) {
                 String key = preference.getKey();
-                if (isKeyPreference(key)) {
+                if (isKeyPreference(getBaseContext(), key)) {
                     Log.d(TAG, "updateSummaries: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
                 }
@@ -329,7 +329,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private final SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if (isKeyPreference(key) && !restoringPreferences) {
+                if (isKeyPreference(getBaseContext(), key) && !restoringPreferences) {
                     // preferenceChangeListener implementation
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
@@ -345,9 +345,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             }
         };
 
-    private boolean isKeyPreference(String key) {
-        return !key.contains(getString(R.string.pref_preset_array)) && !key.contains(getString(R.string.pref_timer_service))
-                && !key.contains(getString(R.string.pref_timer_text));
+    static boolean isKeyPreference(Context context, String key) {
+        return !key.contains(context.getString(R.string.pref_preset_array)) && !key.contains(context.getString(R.string.pref_timer_service))
+                && !key.contains(context.getString(R.string.pref_timer_text));
     }
 
     @Override
