@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback">Retours</string>
+    <string name="help">Indications</string>
+    <string name="settings">Paramètres</string>
+    <string name="keepScreenOn">Garder l\'écran allumé</string>
+    <string name="presets">Presets</string>
+    <string name="minute">minute</string>
+    <string name="minutes">minutes</string>
+    <string name="seconds">secondes</string>
+    <!-- Main Activity -->
+    <string name="presetsListEmpty">Liste des presets vide</string>
+    <!-- Pickers -->
+    <string name="picker_timer">Timer</string>
+    <string name="picker_sets">Limite du nombre de timer</string>
+    <string name="picker_timer_get_ready">Temps de la notification</string>
+    <string name="picker_toast_all">Ajoutez un timer d\'abord</string>
+    <string name="picker_toast_sets">Ajoutez un nombre de timer d\'abord</string>
+    <string name="picker_split_screen">Augmentez la hauteur de la fenêtre pour saisir un timer</string>
+    <!-- Alerts -->
+    <string name="delete_preset">" Êtes-vous sûr de vouloir supprimer le preset sélectionné ?"</string>
+    <string name="alert_time_out">Temps écoulé !</string>
+    <string name="alert_set_done">Voulez-vous lancer le prochain timer?</string>
+    <string name="alert_all_set_done">Quelle action aimeriez-vous faire ensuite?</string>
+    <string name="alert_extra_set">EXTRA TIMER</string>
+    <string name="alert_reset">RÉINITIALISER</string>
+    <string name="alert_clear">CLEAR</string>
+    <string name="alert_yes">OUI</string>
+    <string name="alert_no">NO</string>
+    <!-- Notification -->
+    <string name="notif_timer_number">Timer %1$d</string>
+    <string name="notif_timer_info">Timer %1$d sur %2$d au total</string>
+    <string name="notif_timer_done">Timer terminé !</string>
+    <string name="notif_channel_done">Timer terminé</string>
+    <string name="notif_channel_ready">Notification supplémentaire</string>
+    <string name="notif_channel_update">Timer update</string>
+    <!-- HelpOverlay -->
+    <string name="help_tap_to_continue">Appuyez pour continuer</string>
+    <string name="help_quit">QUITTER</string>
+    <string name="help_ok">OK</string>
+    <!-- Settings -->
+    <string name="timer">Timer</string>
+    <string name="notification">Notification</string>
+    <string name="extra_notification">Notification supplémentaire</string>
+    <string name="customization">Personnalisation</string>
+    <string name="backup">Sauvegarde</string>
+    <string name="extra_notification_summary">Notification supplémentaire avant la fin du timer</string>
+    <string name="timer_plus">Incrément du temps</string>
+    <string name="timer_minus">Décrément du tmeps</string>
+    <string name="sets_picker_enable">Nombre de timers</string>
+    <string name="sets_picker_enable_summary">Ajoute un indicateur de limite du nombre de timers lors de la création d\'un nouveau preset</string>
+    <string name="vibrate">Vibreur</string>
+    <string name="vibrate_summary">Vibration lorsque le timer est terminé</string>
+    <string name="ringtone">Son</string>
+    <string name="light_color_enable">Voyant</string>
+    <string name="light_color_enable_summary">Voyant lorsque le timer est terminé</string>
+    <string name="light_color">Couleur du voyant</string>
+    <string name="light_color_summary">Couleur du voyant lorsque le timer est terminé</string>
+    <string name="light_flash_rate">Vitesse de clignotement du voyant</string>
+    <string name="enable">Activer</string>
+    <string name="get_ready_time">Temps</string>
+    <string name="get_ready_time_summary">La notification se produira %1$d:%2$02d avant la fin</string>
+    <string name="vibrate_summary_get_ready">Vibration lorsque le timer passe en mode prêtfeef</string>
+    <string name="color_enable">Couleur de fond de la notification</string>
+    <string name="color_enable_summary">Appliquer les couleurs à l\'arrière-plan de la notification</string>
+    <string name="color_running">Timer en cours</string>
+    <string name="color_running_summary">Couleur d\'arrière-plan lorsque le timer est en cours</string>
+    <string name="color_ready">Timer prêt</string>
+    <string name="color_ready_summary">Couleur d\'arrière-plan lorsque le timer est prêt</string>
+    <string name="color_done">Timer terminé</string>
+    <string name="color_done_summary">Couleur d\'arrière-plan lorsque le temps est terminé</string>
+    <string name="preferences_backup">Sauvgarde</string>
+    <string name="preferences_backup_summary">Sauvgarde des paramètres et des presets sur cet appareil</string>
+    <string name="preferences_restore">Restauration</string>
+    <string name="preferences_restore_summary">Restauration des paramètres et des presets depuis cet appareil</string>
+    <string name="preferences_backup_error">Erreur lors de la création du fichier</string>
+    <string name="preferences_backup_success">Sauvgarde réussie</string>
+    <string name="preferences_restore_no_file">Aucun fichier trouvé</string>
+    <string name="preferences_restore_success">Restauration réussie</string>
+    <string name="preferences_permission_denied">Autorisations insuffisantes</string>
+    <string name="preferences_backup_override">Souhaitez-vous remplacer la sauvegarde existante?</string>
+</resources>

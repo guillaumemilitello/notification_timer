@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="picker_cancel">Anuller</string>
+    <string name="picker_none">Aucune</string>
+    <string name="picker_set">OK</string>
+</resources>
+

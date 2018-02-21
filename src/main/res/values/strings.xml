@@ -2,8 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">NotificationTimer</string>
     <string name="feedback">Feedback</string>
-    <string name="help">Help</string>
-    <string name="about">About</string>
+    <string name="help">Indications</string>
     <string name="settings">Settings</string>
     <string name="keepScreenOn">Keep Screen On</string>
     <string name="presets">Presets</string>
@@ -14,9 +13,9 @@
     <string name="presetsListEmpty">Presets list empty</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
-    <string name="picker_sets">Timer Number</string>
-    <string name="picker_timer_get_ready">Extra Notification Time</string>
-    <string name="picker_toast_all">Add a timer and a sets number first</string>
+    <string name="picker_sets">Timer number limit</string>
+    <string name="picker_timer_get_ready">Extra notification time</string>
+    <string name="picker_toast_all">Add a timer first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
     <string name="picker_split_screen">Increase the height of the window to enter a timer</string>
     <!-- Alerts -->
@@ -32,14 +31,13 @@
     <!-- Notification -->
     <string name="notif_timer_number">Timer %1$d</string>
     <string name="notif_timer_info">Timer %1$d of %2$d total</string>
-    <string name="notif_timer_info_start0">Timer %1$d of %2$d! total</string>
-    <string name="notif_timer_done">Timer Done !</string>
-    <string name="notif_channel_done">Timer Done</string>
+    <string name="notif_timer_done">Timer done !</string>
+    <string name="notif_channel_done">Timer done</string>
     <string name="notif_channel_ready">Extra notification</string>
     <string name="notif_channel_update">Timer update</string>
     <!-- HelpOverlay -->
     <string name="help_tap_to_continue">Tap to continue</string>
-    <string name="help_quit">QUIT HELP</string>
+    <string name="help_quit">QUIT</string>
     <string name="help_ok">OK</string>
     <!-- Settings -->
     <string name="timer">Timer</string>
@@ -47,14 +45,14 @@
     <string name="extra_notification">Extra Notification</string>
     <string name="customization">Customization</string>
     <string name="backup">Backup</string>
-    <string name="extra_notification_summary">Notification seconds before the timer is done</string>
+    <string name="extra_notification_summary">Extra notification before the end of the timer</string>
     <string name="timer_plus">Step time increment</string>
     <string name="timer_minus">Step time decrement</string>
     <string name="sets_picker_enable">Timer number</string>
     <string name="sets_picker_enable_summary">Add a timer number limit indicator when creating a new preset</string>
     <string name="vibrate">Vibrate</string>
     <string name="vibrate_summary">Vibrate when the timer is done</string>
-    <string name="ringtone">Ringtone</string>
+    <string name="ringtone">Sound</string>
     <string name="light_color_enable">Light</string>
     <string name="light_color_enable_summary">Light when the timer is done</string>
     <string name="light_color">Light color</string>
@@ -63,7 +61,7 @@
     <string name="enable">Enable</string>
     <string name="get_ready_time">Time</string>
     <string name="get_ready_time_summary">Notification will occur %1$d:%2$02d before the end</string>
-    <string name="vibrate_summary_get_ready">Vibrate on the get ready time</string>
+    <string name="vibrate_summary_get_ready">Vibrate at the get ready time</string>
     <string name="color_enable">Notification background color</string>
     <string name="color_enable_summary">Apply the colors to the background of the notification</string>
     <string name="color_running">Running color</string>
@@ -83,9 +81,6 @@
     <string name="preferences_permission_denied">Insufficient permissions</string>
     <string name="preferences_backup_override">Would you like to override existing backup?</string>
     <!-- Preferences -->
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-    <string name="pref_title_vibrate">Vibrate</string>
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
     <string name="pref_sets_picker_enable" translatable="false">setPickerEnable</string>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="timerMinusPlus">
+        <item>60 secondes</item>
+        <item>45 secondes</item>
+        <item>30 secondes</item>
+        <item>20 secondes</item>
+        <item>15 secondes</item>
+        <item>10 secondes</item>
+    </string-array>
+
+    <string-array name="lightFlashRate">
+        <item>None</item>
+        <item>0.5 seconde</item>
+        <item>1 seconde</item>
+        <item>2 secondes</item>
+        <item>3 secondes</item>
+        <item>4 secondes</item>
+        <item>5 secondes</item>
+    </string-array>
+
+</resources>
