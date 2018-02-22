@@ -46,7 +46,7 @@
     <string name="backup">Sauvegarde</string>
     <string name="extra_notification_summary">Notification supplémentaire avant la fin du timer</string>
     <string name="timer_plus">Incrément du temps</string>
-    <string name="timer_minus">Décrément du tmeps</string>
+    <string name="timer_minus">Décrément du temps</string>
     <string name="sets_picker_enable">Nombre de timers</string>
     <string name="sets_picker_enable_summary">Ajoute un indicateur de limite du nombre de timers lors de la création d\'un nouveau preset</string>
     <string name="vibrate">Vibreur</string>
