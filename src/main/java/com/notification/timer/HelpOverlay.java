@@ -10,8 +10,8 @@ class HelpOverlay {
 
     private static final String TAG = "HelpOverlay";
 
-    private LinearLayout layout;
-    private ImageView imageView;
+    private final LinearLayout layout;
+    private final ImageView imageView;
 
     private int currentImageId;
 

@@ -11,7 +11,7 @@
     android:baselineAligned="false"
     tools:ignore="HardcodedText,ContentDescription">
 
-    <!-- Icon aera -->
+    <!-- Icon area -->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="52dp"

@@ -5,9 +5,6 @@
     <string name="settings">Paramètres</string>
     <string name="keepScreenOn">Garder l\'écran allumé</string>
     <string name="presets">Presets</string>
-    <string name="minute">minute</string>
-    <string name="minutes">minutes</string>
-    <string name="seconds">secondes</string>
     <!-- Main Activity -->
     <string name="presetsListEmpty">Liste des presets vide</string>
     <!-- Pickers -->
@@ -37,9 +34,7 @@
     <!-- HelpOverlay -->
     <string name="help_tap_to_continue">Appuyez pour continuer</string>
     <string name="help_quit">QUITTER</string>
-    <string name="help_ok">OK</string>
     <!-- Settings -->
-    <string name="timer">Timer</string>
     <string name="notification">Notification</string>
     <string name="extra_notification">Notification supplémentaire</string>
     <string name="customization">Personnalisation</string>

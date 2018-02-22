@@ -2,8 +2,6 @@
 <resources>
     <!-- Primary colors -->
     <color name="primary">#7986cb</color>
-    <color name="primary_light">#9fa8da</color>
-    <color name="primary_extra_light">#b0bec5</color>
 
     <!-- Main activity layout -->
     <dimen name="full_mode_threshold">510dp</dimen>
@@ -19,6 +17,5 @@
     <dimen name="preset_card_timer_padding_right">4dp</dimen>
     <dimen name="preset_card_sets_padding_right">4dp</dimen>
     <dimen name="preset_card_timer_font_size">28sp</dimen>
-    <dimen name="preset_card_sets_font_size">22sp</dimen>
     <dimen name="preset_card_icon_size">48dp</dimen>
 </resources>

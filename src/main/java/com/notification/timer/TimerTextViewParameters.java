@@ -13,16 +13,16 @@ class TimerTextViewParameters {
 
     private static final String TAG = "TimerTextViewParameters";
 
-    private SharedPreferences sharedPreferences;
-    private Context context;
+    private final SharedPreferences sharedPreferences;
+    private final Context context;
 
-    private int targetWidth, targetHeight;
-    private float density;
-    private float[] size;
-    private int[] leftMargin, topMargin, rightMargin, bottomMargin;
+    private final int targetWidth, targetHeight;
+    private final float density;
+    private final float[] size;
+    private final int[] leftMargin, topMargin, rightMargin, bottomMargin;
 
-    private Paint paint;
-    private Rect rectBounds;
+    private final Paint paint;
+    private final Rect rectBounds;
 
     private final float threshold = 2;
 

@@ -6,9 +6,6 @@
     <string name="settings">Settings</string>
     <string name="keepScreenOn">Keep Screen On</string>
     <string name="presets">Presets</string>
-    <string name="minute">minute</string>
-    <string name="minutes">minutes</string>
-    <string name="seconds">seconds</string>
     <!-- Main Activity -->
     <string name="presetsListEmpty">Presets list empty</string>
     <!-- Pickers -->
@@ -38,9 +35,7 @@
     <!-- HelpOverlay -->
     <string name="help_tap_to_continue">Tap to continue</string>
     <string name="help_quit">QUIT</string>
-    <string name="help_ok">OK</string>
     <!-- Settings -->
-    <string name="timer">Timer</string>
     <string name="notification">Notification</string>
     <string name="extra_notification">Extra Notification</string>
     <string name="customization">Customization</string>

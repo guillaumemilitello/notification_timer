@@ -47,7 +47,7 @@ public class TimerService extends Service {
     private SharedPreferences sharedPreferences;
 
     // Notification related
-    InteractiveNotification interactiveNotification;
+    private InteractiveNotification interactiveNotification;
     private boolean interactiveNotificationAlertDone = false;
     private boolean interactiveNotificationDone = false;
 
@@ -726,7 +726,7 @@ public class TimerService extends Service {
         }
     }
 
-    void updateAllPreferences() {
+    private void updateAllPreferences() {
         Log.d(TAG, "updateAllPreferences");
         Map<String, ?> preferences = sharedPreferences.getAll();
         if (preferences != null) {

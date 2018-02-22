@@ -61,7 +61,7 @@ class PresetsList {
         return list.get(index);
     }
 
-    int getSize() { return list.size(); }
+    private int getSize() { return list.size(); }
 
     private void savePreset(int index, final Preset preset) {
         if (sharedPreferences != null) {
@@ -132,12 +132,7 @@ class PresetsList {
     }
 
     @Override
-    public boolean equals(Object object)
-    {
-        if (object != null && object instanceof PresetsList) {
-            return this.list.equals(((PresetsList) object).list);
-        } else {
-            return false;
-        }
+    public boolean equals(Object object) {
+        return object != null && object instanceof PresetsList && this.list.equals(((PresetsList) object).list);
     }
 }
