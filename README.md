@@ -1,24 +1,21 @@
 # NotificationTimer
 
-Type in the time you want, control it from the notification without the need to expand it or use always screen on option to always keep an eye on the remaining time.<br>
-Once the timer is done, a simple notification will occur.<br>
-You can add an extra notification to get notified few seconds before the end to get ready.
+Type in the time you want for the countdown timer, then control it from the notification without the need to expand it or use always screen on option to always keep an eye on the remaining time.<br>
+When the time is out, a simple notification will occur. This notification is customizable from the settings.<br>
+You can add an extra notification to get notified few seconds before the end to be prepared.
 
 ## Features
 
 * Timer controls from the notification
-* Quick preset timer selection
-* Big number display
-* Always screen on
-* Multi-window support
+* Quick preset timers selection
+* Big numbers always fitting the screen
+* Option to keep the screen on
 * Timer number to track laps
-* Customizable background color progress bar
-* Multi-windows support
+* Multi-window support
 
 ## Downloads
 
 [NotificationTimer.0.9.8.apk](release/NotificationTimer.0.9.8.apk)
-
 
 ## Screenshots
 

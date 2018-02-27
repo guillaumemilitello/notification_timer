@@ -10,11 +10,11 @@
     <string name="presetsListEmpty">Presets list empty</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
-    <string name="picker_sets">Timer number limit</string>
+    <string name="picker_sets">Timers number limit</string>
     <string name="picker_timer_get_ready">Extra notification time</string>
     <string name="picker_toast_all">Add a timer first</string>
     <string name="picker_toast_sets">Add a sets number first</string>
-    <string name="picker_split_screen">Increase the height of the window to enter a timer</string>
+    <string name="picker_split_screen">Increase the height of the window to create a timer</string>
     <!-- Alerts -->
     <string name="delete_preset">Are you sure you want to delete the selected preset?</string>
     <string name="alert_time_out">"Time out!"</string>
@@ -28,10 +28,10 @@
     <!-- Notification -->
     <string name="notif_timer_number">Timer %1$d</string>
     <string name="notif_timer_info">Timer %1$d of %2$d total</string>
-    <string name="notif_timer_done">Timer done !</string>
-    <string name="notif_channel_done">Timer done</string>
-    <string name="notif_channel_ready">Extra notification</string>
-    <string name="notif_channel_update">Timer update</string>
+    <string name="notif_timer_done">Time out!</string>
+    <string name="notif_channel_done" translatable="false">Time out</string>
+    <string name="notif_channel_ready" translatable="false">Extra notification</string>
+    <string name="notif_channel_update" translatable="false">Timer update</string>
     <!-- HelpOverlay -->
     <string name="help_tap_to_continue">Tap to continue</string>
     <string name="help_quit">QUIT</string>
@@ -44,27 +44,27 @@
     <string name="timer_plus">Step time increment</string>
     <string name="timer_minus">Step time decrement</string>
     <string name="sets_picker_enable">Timer number</string>
-    <string name="sets_picker_enable_summary">Add a timer number limit indicator when creating a new preset</string>
+    <string name="sets_picker_enable_summary">Add the possibility to enter a timers number limit indicator at the creation</string>
     <string name="vibrate">Vibrate</string>
-    <string name="vibrate_summary">Vibrate when the timer is done</string>
+    <string name="vibrate_summary">Vibrate when the time is out</string>
     <string name="ringtone">Sound</string>
     <string name="light_color_enable">Light</string>
-    <string name="light_color_enable_summary">Light when the timer is done</string>
+    <string name="light_color_enable_summary">Light when the time is out</string>
     <string name="light_color">Light color</string>
-    <string name="light_color_summary">Light color when the timer is done</string>
+    <string name="light_color_summary">Light color when the time is out</string>
     <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
     <string name="get_ready_time">Time</string>
-    <string name="get_ready_time_summary">Notification will occur %1$d:%2$02d before the end</string>
-    <string name="vibrate_summary_get_ready">Vibrate at the get ready time</string>
+    <string name="get_ready_time_summary">Notification will occur %1$d:%2$02d before the end of the timer</string>
+    <string name="vibrate_summary_get_ready">Vibrate at the extra notification</string>
     <string name="color_enable">Notification background color</string>
-    <string name="color_enable_summary">Apply the colors to the background of the notification</string>
+    <string name="color_enable_summary">Apply the following colors to the notification background</string>
     <string name="color_running">Running color</string>
     <string name="color_running_summary">Background color while running</string>
     <string name="color_ready">Ready color</string>
-    <string name="color_ready_summary">Background color after the ready time</string>
+    <string name="color_ready_summary">Background color after the extra notification</string>
     <string name="color_done">Done color</string>
-    <string name="color_done_summary">Background color when the timer is done</string>
+    <string name="color_done_summary">Background color when the time is out</string>
     <string name="preferences_backup">Backup</string>
     <string name="preferences_backup_summary">Backup settings and presets on this device</string>
     <string name="preferences_restore">Restore</string>
