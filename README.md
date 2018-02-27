@@ -15,7 +15,7 @@ You can add an extra notification to get notified few seconds before the end to 
 
 ## Downloads
 
-[NotificationTimer.0.9.8.apk](release/NotificationTimer.0.9.8.apk)
+[NotificationTimer.0.9.9.apk](release/NotificationTimer.0.9.9.apk)
 
 ## Screenshots
 
