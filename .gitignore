@@ -1,6 +1,6 @@
 /build/
 /config/
-/release/output.json
+/release/
 /src/androidTest/
 /src/test/
 mobile.iml
