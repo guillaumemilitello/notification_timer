@@ -1,7 +1,7 @@
 # NotificationTimer
 
-Type in the time you want for the countdown timer, then control it from the notification without the need to expand it or use always screen on option to always keep an eye on the remaining time.<br>
-When the time is out, a simple notification will occur. This notification is customizable from the settings.<br>
+Type in the time you want for the countdown timer, then control it from the notification without the need to expand it or use the always screen on option to keep an eye on the remaining time.<br>
+When the time is out, a simple notification will occur. This notification is customizable from the settings: vibration, sound, light and color background (Android 8.0+).<br>
 You can add an extra notification to get notified few seconds before the end to be prepared.
 
 ## Features
@@ -13,9 +13,9 @@ You can add an extra notification to get notified few seconds before the end to 
 * Timer number to track laps
 * Multi-window support
 
-## Downloads
+## Download
 
-[NotificationTimer.0.9.9.apk](release/NotificationTimer.0.9.9.apk)
+https://play.google.com/store/apps/details?id=com.notification.timer
 
 ## Screenshots
 
