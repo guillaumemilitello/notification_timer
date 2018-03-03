@@ -836,7 +836,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         setsCurrent = 0;
         setsUser = 0;
 
-        updateButtonsLayout();
+        updateButtonsLayout(ButtonsLayout.WAITING);
         updatePresetsVisibility();
     }
 
@@ -880,6 +880,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         updateSetsDisplay();
         updateSetsButtons();
+        updateColorLayout();
         updateColorLayout();
     }
 
@@ -1144,7 +1145,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
         if (timerState != TimerService.State.WAITING && timerCurrent == 0 && setsCurrent == 0) {
             Log.e(TAG, "updateButtonsLayout: wrong layout timerState=" + timerState + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
-            layout = ButtonsLayout.WAITING;
+            return;
         }
         updateButtonsLayout(layout);
     }
