@@ -74,36 +74,55 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBar">
 
-        <TextView
-            android:id="@+id/textViewEmptyPresets"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/preset_card_total_height"
-            android:text="@string/presetsListEmpty"
-            android:paddingStart="16dp"
-            android:paddingEnd="0dp"
-            android:visibility="gone"
+        <LinearLayout
+            android:id="@+id/presetsLayout"
             android:elevation="1dp"
-            android:gravity="center_vertical"
-            android:background="@color/preset_fragment_background"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-condensed"
-            android:textColor="@color/presetsListEmpty" />
-
-        <!-- Preset timers -->
-        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/frameLayoutPresets"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/preset_card_total_height"
-            android:paddingStart="@dimen/preset_card_margin_side"
-            android:paddingEnd="@dimen/preset_card_margin_side"
             android:visibility="invisible"
-            android:layout_below="@+id/textViewEmptyPresets"
-            android:backgroundTintMode="screen"
-            android:elevation="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/preset_card_total_height"
             android:background="@color/preset_fragment_background"
-            tools:context=".MainActivity">
-        </FrameLayout>
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/imageButtonAddPreset"
+                android:layout_width="52dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_preset_add"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:tint="@color/white"
+                android:paddingStart="9dp"
+                android:paddingEnd="5dp"
+                android:adjustViewBounds="true"
+                android:background="?selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/textViewEmptyPresets"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/preset_card_total_height"
+                android:text="@string/presetsListEmpty"
+                android:paddingStart="16dp"
+                android:paddingEnd="0dp"
+                android:visibility="gone"
+                android:gravity="center_vertical"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/presetsListEmpty" />
+
+            <!-- Preset timers -->
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/frameLayoutPresets"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/preset_card_total_height"
+                android:paddingStart="@dimen/preset_card_margin_side"
+                android:paddingEnd="@dimen/preset_card_margin_side"
+                android:visibility="visible"
+                android:backgroundTintMode="screen"
+                tools:context=".MainActivity">
+            </FrameLayout>
+
+        </LinearLayout>
 
         <!-- scaleX = 1.275 on nexus 6P -->
         <ProgressBar

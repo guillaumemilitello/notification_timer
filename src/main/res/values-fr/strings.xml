@@ -8,6 +8,8 @@
     <!-- Main Activity -->
     <string name="presetsListEmpty">Liste des minuteurs sauvgardés vide</string>
     <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le minuteur actuel ?</string>
+    <string name="add_preset_reset_warning">Êtes-vous sûr de vouloir remettre à zéro le minuteur actuel ?</string>
+    <string name="add_preset_stop_reset_warning">Êtes-vous sûr de vouloir arrêter et remettre à zéro le minuteur actuel ?</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
     <string name="picker_sets">Limite de minuteurs</string>

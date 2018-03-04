@@ -81,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private LinearLayout mainLayout, bottomButtonsLayout, fullButtonsLayout;
     private RelativeLayout activityLayout, timerLayout;
     private FrameLayout presetsFrameLayout;
+    private ImageButton imageButtonAddPreset;
+    private LinearLayout presetsLayout;
 
     private int activityLayoutWidth, activityLayoutHeight;
     private LayoutMode layoutMode;
@@ -141,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         NO_ACTION("no_action"),
         START("start"),
-        INPUT("input"),
         PAUSE("pause"),
         RESUME("resume"),
         CLEAR("clear"),
@@ -165,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     // Predefined layout for this activity
     private enum ButtonsLayout {
 
-        NO_LAYOUT("no_layout"),
         WAITING("waiting"),
         WAITING_SETS("waiting_sets"),
         READY("ready"),
@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         emptyPresetsTextView = findViewById(R.id.textViewEmptyPresets);
         setsTextView = findViewById(R.id.textViewSets);
 
+        presetsLayout = findViewById(R.id.presetsLayout);
         presetsFrameLayout = findViewById(R.id.frameLayoutPresets);
         activityLayout = findViewById(R.id.layoutActivity);
         timerLayout = findViewById(R.id.layoutTimer);
@@ -333,10 +334,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             }
         });
 
-        buttonLeftAction = ButtonAction.NO_ACTION;
-        buttonCenterAction = ButtonAction.NO_ACTION;
-        buttonRightAction = ButtonAction.NO_ACTION;
-        buttonsLayout = ButtonsLayout.NO_LAYOUT;
+        imageButtonAddPreset = findViewById(R.id.imageButtonAddPreset);
 
         // Catching button actions through intent from the notification
         mainActivityReceiver = new MainActivityReceiver();
@@ -408,8 +406,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             scaleTimerProgressBar();
             scaleLayouts();
             scaleTextViews();
-            // force update center button action, add preset is only available in FULL mode
-            updateButton(imageButtonCenter, buttonCenterAction);
+            updateAddButtonPreset();
         }
     }
 
@@ -535,20 +532,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void setPresetsVisible(boolean visible) {
         Log.d(TAG, "setPresetsVisible: visible=" + visible);
+        presetsLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
         if (timerState == TimerService.State.WAITING && presetCardsList.isEmpty()) {
             emptyPresetsTextView.setVisibility(visible ? View.VISIBLE : View.GONE);
             presetsFrameLayout.setVisibility(View.GONE);
         } else {
             emptyPresetsTextView.setVisibility(View.GONE);
             presetsFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    private boolean isPresetsVisible() {
-        if (presetCardsList.isEmpty()) {
-            return emptyPresetsTextView.getVisibility() == View.VISIBLE;
-        } else {
-            return presetsFrameLayout.getVisibility() == View.VISIBLE;
         }
     }
 
@@ -1091,7 +1081,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private void changePresetsFrameLayout() {
         if (presetsFrameLayout != null) {
-            if (isPresetsVisible()) {
+            if (presetsLayout.getVisibility() == View.VISIBLE) {
                 Log.d(TAG, "changePresetsFrameLayout: setVisibility=invisible");
                 setPresetsVisible(false);
                 updatePresetsExpandButton(false);
@@ -1124,8 +1114,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             } else {
                 backgroundColor = ContextCompat.getColor(this, R.color.preset_fragment_transparent_background);
             }
-            presetsFrameLayout.setBackgroundColor(backgroundColor);
-            emptyPresetsTextView.setBackgroundColor(backgroundColor);
+            presetsLayout.setBackgroundColor(backgroundColor);
             RelativeLayout.LayoutParams mainLayoutParams = (RelativeLayout.LayoutParams) mainLayout.getLayoutParams();
             RelativeLayout.LayoutParams timerProgressBarLayoutParams = (RelativeLayout.LayoutParams) timerProgressBar.getLayoutParams();
             mainLayoutParams.setMargins(0, topMargin, 0, 0);
@@ -1143,6 +1132,58 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
+    private void updateAddButtonPreset() {
+        Log.d(TAG, "updateAddButtonPreset: activityLayoutHeight=" + activityLayoutHeight);
+        if (activityLayoutHeight < getResources().getDimensionPixelSize(R.dimen.pickers_threshold)) {
+            imageButtonAddPreset.setAlpha(ALPHA_DISABLED);
+            imageButtonAddPreset.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.picker_split_screen), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else {
+            imageButtonAddPreset.setAlpha(ALPHA_ENABLED);
+            imageButtonAddPreset.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+                        showAlertDialogAddPreset();
+                    } else {
+                        launchPickers();
+                    }
+                }
+            });
+        }
+    }
+
+    private void showAlertDialogAddPreset() {
+        Log.d(TAG, "showAlertDialogAddPreset");
+        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this).create();
+        if (buttonsLayout == ButtonsLayout.READY) {
+            alertDialog.setMessage(getString(R.string.add_preset_reset_warning));
+        } else {
+            alertDialog.setMessage(getString(R.string.add_preset_stop_reset_warning));
+        }
+        alertDialog.setButton(android.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Update directly the layout to WAITING to be able to launch the pickers
+                        updateButtonsLayout(ButtonsLayout.WAITING);
+                        sendBroadcast(new Intent(IntentAction.CLEAR));
+                        launchPickers();
+                    }
+                });
+        alertDialog.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
+
     private void updateButtonsLayout() {
         ButtonsLayout layout = ButtonsLayout.valueOf(timerState.toString().toUpperCase(Locale.US));
         if (layout == ButtonsLayout.WAITING && timerUser > 0) {
@@ -1156,13 +1197,15 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     private void updateButtonsLayout(ButtonsLayout layout) {
+        buttonsLayout = layout;
+        Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
         ButtonAction buttonAction;
         switch (layout) {
             case WAITING:
-                updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
+                updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case WAITING_SETS:
-                updateButtons(ButtonAction.CLEAR, ButtonAction.INPUT, ButtonAction.NEXT_SET_DISABLED);
+                updateButtons(ButtonAction.CLEAR, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case READY:
                 buttonAction = (setsCurrent > 1)? ButtonAction.RESET : ButtonAction.CLEAR;
@@ -1182,13 +1225,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             default:
                 Log.e(TAG, "updateButtonsLayout: impossible layout=" + layout.toString());
         }
-        buttonsLayout = layout;
-        Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
 
         // Some elements are INVISIBLE by default in xml to enhance the multi window resize
         bottomButtonsLayout.setVisibility(View.VISIBLE);
         timerProgressBar.setVisibility(View.VISIBLE);
 
+        updateAddButtonPreset();
         updateSetsButtons();
         updateTimerButtons();
         updateTimerDisplay();
@@ -1216,30 +1258,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         switch (action) {
             case NO_ACTION:
                 button.setEnabled(false);
+                button.setImageResource(R.drawable.ic_play_circle);
+                button.setAlpha(ALPHA_DISABLED);
                 return true;
-            case INPUT:
-                button.setImageResource(R.drawable.ic_add_circle);
-                button.setEnabled(true);
-                if (activityLayoutHeight < getResources().getDimensionPixelSize(R.dimen.pickers_threshold)) {
-                    button.setAlpha(ALPHA_DISABLED);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(getApplicationContext(), getString(R.string.picker_split_screen), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return true;
-                }
-                else {
-                    button.setAlpha(ALPHA_ENABLED);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            launchPickers();
-                        }
-                    });
-                    return true;
-                }
             case START:
                 button.setEnabled(true);
                 button.setImageResource(R.drawable.ic_play_circle);
