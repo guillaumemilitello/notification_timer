@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">NotificationTimer</string>
-    <string name="feedback">Feedback</string>
+    <string name="feedback">Send feedback…</string>
     <string name="help">Indications</string>
     <string name="settings">Settings</string>
     <string name="keepScreenOn">Keep Screen On</string>
