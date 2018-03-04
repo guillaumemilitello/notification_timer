@@ -22,8 +22,8 @@
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
     <string name="alert_extra_set">EXTRA TIMER</string>
-    <string name="alert_reset">RESET</string>
-    <string name="alert_clear">CLEAR</string>
+    <string name="alert_reset">RELOAD</string>
+    <string name="alert_clear">RESET</string>
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->

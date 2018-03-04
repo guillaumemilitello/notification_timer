@@ -20,9 +20,9 @@
     <string name="alert_time_out">Temps écoulé !</string>
     <string name="alert_set_done">Voulez-vous lancer le prochain minuteur?</string>
     <string name="alert_all_set_done">Quelle action aimeriez-vous faire ensuite?</string>
-    <string name="alert_extra_set">EXTRA TIMER</string>
-    <string name="alert_reset">RÉINITIALISER</string>
-    <string name="alert_clear">CLEAR</string>
+    <string name="alert_extra_set">MINUTEUR SUPPLÉMENTAIRE</string>
+    <string name="alert_reset">RETOUR AU DÉPART</string>
+    <string name="alert_clear">REMISE À ZÉRO</string>
     <string name="alert_yes">OUI</string>
     <string name="alert_no">NON</string>
     <!-- Notification -->
