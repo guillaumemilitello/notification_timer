@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -1310,11 +1311,37 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                         sendBroadcast(new Intent(IntentAction.RESET));
                     }
                 });
+                button.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showAlertDialogClear();
+                        return true;
+                    }
+                });
                 return true;
             default:
                 Log.e(TAG, "updateButton: impossible with action=" + action);
         }
         return false;
+    }
+
+    private void showAlertDialogClear() {
+        Log.d(TAG, "showAlertDialogClear");
+        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this).create();
+        alertDialog.setMessage(getString(R.string.clear_long_press));
+        alertDialog.setButton(android.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendBroadcast(new Intent(IntentAction.CLEAR));
+                    }
+                });
+        alertDialog.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     @Override

@@ -7,6 +7,7 @@
     <string name="presets">Comptes à rebours sauvgardés</string>
     <!-- Main Activity -->
     <string name="presetsListEmpty">Liste des comptes à rebours sauvgardés vide</string>
+    <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le compte à rebours actuel ?</string>
     <!-- Pickers -->
     <string name="picker_timer">Compte à rebours</string>
     <string name="picker_sets">Limite de comptes à rebours</string>
