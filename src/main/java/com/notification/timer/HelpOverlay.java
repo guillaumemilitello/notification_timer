@@ -67,9 +67,12 @@ class HelpOverlay {
     private void showImage(int imageId) {
         Log.d(TAG, "showImage: imageId=" + imageId);
         switch (imageId) {
-            case 0: imageView.setImageResource(R.drawable.help_add); return;
-            case 1: imageView.setImageResource(R.drawable.help_ready); return;
-            case 2: imageView.setImageResource(R.drawable.help_running); return;
+            case 0: imageView.setImageResource(R.drawable.help_0_add); return;
+            case 1: imageView.setImageResource(R.drawable.help_1_ready); return;
+            case 2: imageView.setImageResource(R.drawable.help_2_running); return;
+            case 3: imageView.setImageResource(R.drawable.help_3_running); return;
+            case 4: imageView.setImageResource(R.drawable.help_4_ready); return;
+            case 5: imageView.setImageResource(R.drawable.help_5_running); return;
         }
         hide();
     }
