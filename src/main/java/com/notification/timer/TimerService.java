@@ -55,10 +55,6 @@ public class TimerService extends Service {
         interactiveNotificationAlertDone = true;
     }
 
-    public void setInteractiveNotificationDone() {
-        this.interactiveNotificationDone = true;
-    }
-
     // Running values
     private long timerCurrent = 0;
     private long timerUser = 0;
@@ -530,7 +526,24 @@ public class TimerService extends Service {
         interactiveNotificationAlertDone = true;
         Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " state=" + state);
         interactiveNotification.dismiss();
-        clear();
+        // Complete timer action
+        if (state == State.RUNNING && timerCurrent == 0)
+        {
+            if (setsCurrent <= setsUser) {
+                if (mainActivityVisible) {
+                    Log.d(TAG, "notificationDeleted: sending STOP action");
+                    getBaseContext().sendBroadcast(new Intent(IntentAction.STOP));
+                }
+                stop();
+            } else {
+                interactiveNotification.dismiss();
+                if (mainActivityVisible) {
+                    Log.d(TAG, "notificationDeleted: sending CLEAR action");
+                    getBaseContext().sendBroadcast(new Intent(IntentAction.CLEAR));
+                }
+                reset();
+            }
+        }
     }
 
     public void stopCountDown(){
