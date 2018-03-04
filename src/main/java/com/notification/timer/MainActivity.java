@@ -1307,7 +1307,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case CLEAR:
                 button.setEnabled(true);
-                button.setImageResource(R.drawable.ic_trash);
+                button.setImageResource(R.drawable.ic_empty);
                 button.setAlpha(ALPHA_ENABLED);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1318,7 +1318,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 return true;
             case CLEAR_DISABLED:
                 button.setEnabled(false);
-                button.setImageResource(R.drawable.ic_trash);
+                button.setImageResource(R.drawable.ic_empty);
                 button.setAlpha(ALPHA_DISABLED);
                 return true;
             case NEXT_SET:
