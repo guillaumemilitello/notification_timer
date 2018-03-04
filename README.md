@@ -38,10 +38,6 @@ The background color can be customized or disabled from the settings. These colo
 
 <img src="screenshots/Activity_running.png" width="350"/> <img src="screenshots/Activity_running_get_ready.png" width="350"/> <img src="screenshots/Activity_running_multi.png" width="350"/> <img src="screenshots/Notification_screen_locked.png" width="350"/>
 
-### Tutorial help
-
-<img src="src/main/res/drawable-xxxhdpi/help_add.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_ready.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_running.png" width="350"/>
-
 ## License
 
 Copyright 2018 Guillaume Militello
