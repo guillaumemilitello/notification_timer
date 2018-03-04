@@ -1158,6 +1158,17 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         }
     }
 
+    @Override
+    public void sendBroadcast(Intent intent) {
+        if (timerService == null) {
+            Log.e(TAG, "The TimerService is dead, restarting");
+            Intent serviceIntent = new Intent(getBaseContext(), TimerService.class);
+            startService(serviceIntent);
+            timerServiceBound = bindService(serviceIntent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+        }
+        super.sendBroadcast(intent);
+    }
+
     private void showAlertDialogAddPreset() {
         Log.d(TAG, "showAlertDialogAddPreset");
         android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this).create();
