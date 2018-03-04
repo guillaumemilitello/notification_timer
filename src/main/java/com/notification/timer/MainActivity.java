@@ -108,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private int setsCurrent;
     private int setsUser;
 
+    private static final long TIMER_MAX = 5999;
+    private long timerPlus = 0;
+
     private static boolean keepScreenOn = false;
 
     private HelpOverlay helpOverlay;
@@ -620,9 +623,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     @Override
     public void onDialogMsSet(int reference, boolean isNegative, int minutes, int seconds) {
-        long timer = minutes * 60 + seconds;
-        timerCurrent = timer;
+        long timer = Math.min(minutes * 60 + seconds, TIMER_MAX); // limit to 99'59
         timerUser = timer;
+        timerCurrent = timer;
         Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
         timerProgressBar.setMax((int) timerUser);
         updateServiceTimers();
@@ -1037,10 +1040,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             imageButtonTimerMinus.setAlpha(ALPHA_ENABLED);
             imageButtonTimerMinusMulti.setEnabled(true);
             imageButtonTimerMinusMulti.setAlpha(ALPHA_ENABLED);
-            imageButtonTimerPlus.setEnabled(true);
-            imageButtonTimerPlus.setAlpha(ALPHA_ENABLED);
-            imageButtonTimerPlusMulti.setEnabled(true);
-            imageButtonTimerPlusMulti.setAlpha(ALPHA_ENABLED);
+            boolean enabled = timerCurrent + timerPlus <= TIMER_MAX;
+            imageButtonTimerPlus.setEnabled(enabled);
+            imageButtonTimerPlus.setAlpha(enabled ? ALPHA_ENABLED : ALPHA_DISABLED);
+            imageButtonTimerPlusMulti.setEnabled(enabled);
+            imageButtonTimerPlusMulti.setAlpha(enabled ? ALPHA_ENABLED : ALPHA_DISABLED);
         } else {
             imageButtonTimerMinus.setEnabled(false);
             imageButtonTimerMinus.setAlpha(ALPHA_DISABLED);
@@ -1482,7 +1486,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             imageButtonTimerMinus.setImageResource(resId);
             imageButtonTimerMinusMulti.setImageResource(resId);
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
-            long timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
+            timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
             int resId = getTimerPlusResId(timerPlus);
             imageButtonTimerPlus.setImageResource(resId);
             imageButtonTimerPlusMulti.setImageResource(resId);
