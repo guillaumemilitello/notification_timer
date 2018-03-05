@@ -7,7 +7,7 @@
     <string name="keepScreenOn">Keep Screen On</string>
     <string name="presets">Presets</string>
     <!-- Main Activity -->
-    <string name="presetsListEmpty">Presets list empty</string>
+    <string name="presetsListEmpty">Timers list empty</string>
     <string name="clear_long_press">Would you like to clear the current timer?</string>
     <string name="add_preset_reset_warning">Would you like to reset the current timer to add a new one?</string>
     <string name="add_preset_stop_reset_warning">Would you like to stop and reset the current timer to add a new one?</string>
@@ -19,12 +19,12 @@
     <string name="picker_toast_sets">Add a sets number first</string>
     <string name="picker_split_screen">Increase the height of the window to create a timer</string>
     <!-- Alerts -->
-    <string name="delete_preset">Are you sure you want to delete the selected preset?</string>
+    <string name="delete_preset">Are you sure you want to delete the selected timer?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
     <string name="alert_extra_set">EXTRA TIMER</string>
-    <string name="alert_reset">RELOAD</string>
+    <string name="alert_reset">REINITIALIZE</string>
     <string name="alert_clear">RESET</string>
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
@@ -69,9 +69,9 @@
     <string name="color_done">Done color</string>
     <string name="color_done_summary">Background color when the time is out</string>
     <string name="preferences_backup">Backup</string>
-    <string name="preferences_backup_summary">Backup settings and presets on this device</string>
+    <string name="preferences_backup_summary">Backup settings and timers on this device</string>
     <string name="preferences_restore">Restore</string>
-    <string name="preferences_restore_summary">Restore settings and presets from this device</string>
+    <string name="preferences_restore_summary">Restore settings and timers from this device</string>
     <string name="preferences_backup_error">Error while creating the file</string>
     <string name="preferences_backup_success">Backup successful</string>
     <string name="preferences_restore_no_file">No backup file found</string>
