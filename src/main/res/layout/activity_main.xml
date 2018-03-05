@@ -77,24 +77,41 @@
         <LinearLayout
             android:id="@+id/presetsLayout"
             android:elevation="1dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="@dimen/preset_card_total_height"
             android:background="@color/preset_fragment_background"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/imageButtonAddPreset"
-                android:layout_width="52dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_preset_add"
-                android:layout_gravity="center"
-                android:scaleType="centerInside"
-                android:tint="@color/white"
-                android:paddingStart="9dp"
-                android:paddingEnd="5dp"
-                android:adjustViewBounds="true"
-                android:background="?selectableItemBackgroundBorderless" />
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/card_view"
+                android:layout_width="wrap_content"
+                android:paddingStart="8dp"
+                android:elevation="2dp"
+                android:paddingEnd="@dimen/preset_card_margin_side"
+                android:layout_height="@dimen/preset_card_height"
+                android:layout_marginTop="@dimen/preset_card_margin_height"
+                android:layout_marginBottom="@dimen/preset_card_margin_height"
+                android:layout_marginStart="@dimen/preset_card_margin_side"
+                android:layout_marginEnd="@dimen/preset_card_margin_side"
+                card_view:cardCornerRadius="5dp"
+                tools:ignore="HardcodedText,ContentDescription">
+
+                <ImageButton
+                    style="?android:attr/borderlessButtonStyle"
+                    android:id="@+id/imageButtonAddPreset"
+                    android:layout_width="@dimen/preset_card_icon_size"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_preset_add"
+                    android:padding="9dp"
+                    android:scaleType="centerInside"
+                    android:adjustViewBounds="true"
+                    android:background="?selectableItemBackgroundBorderless" />
+
+
+            </android.support.v7.widget.CardView>
 
             <TextView
                 android:id="@+id/textViewEmptyPresets"
@@ -115,7 +132,7 @@
                 android:id="@+id/frameLayoutPresets"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/preset_card_total_height"
-                android:paddingStart="@dimen/preset_card_margin_side"
+                android:paddingStart="0dp"
                 android:paddingEnd="@dimen/preset_card_margin_side"
                 android:visibility="visible"
                 android:backgroundTintMode="screen"

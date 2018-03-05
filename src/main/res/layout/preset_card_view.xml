@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="wrap_content"
@@ -8,6 +9,7 @@
     android:layout_marginBottom="@dimen/preset_card_margin_height"
     android:layout_marginStart="@dimen/preset_card_margin_side"
     android:layout_marginEnd="@dimen/preset_card_margin_side"
+    card_view:cardCornerRadius="5dp"
     tools:ignore="HardcodedText,ContentDescription">
 
     <LinearLayout
