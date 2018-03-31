@@ -361,9 +361,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         filter.addAction(IntentAction.NOTIFICATION_DISMISS);
         registerReceiver(mainActivityReceiver, filter);
 
-        Intent intent = new Intent(this, TimerService.class);
-        startService(intent);
-        bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+        startTimerService();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
@@ -374,12 +372,18 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         presetCardsList.createPresetsList(sharedPreferences);
         fragmentManager.beginTransaction().replace(R.id.frameLayoutPresets, presetCardsList).commit();
 
-        if (!timerServiceIsRunning()) {
-            Log.d(TAG, "onCreate: starting service TimerService");
-            startForegroundService(new Intent(getBaseContext(), TimerService.class));
-        }
-
         helpOverlay = new HelpOverlay(this);
+    }
+
+    private void startTimerService() {
+        Log.d(TAG, "startTimerService");
+        Intent intent = new Intent(this, TimerService.class);
+        if (timerService == null) {
+            startService(intent);
+        }
+        if (!timerServiceBound) {
+            bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+        }
     }
 
     private void setKeepScreenOnStatus(boolean enable) {
@@ -546,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
+        Log.d(TAG, "onStart: timerService=" + timerService);
 
         mainActivityVisible = true;
 
@@ -557,10 +561,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerState = TimerService.State.WAITING;
 
         if (timerService == null) {
-            Intent intent = new Intent(this, TimerService.class);
-            startService(intent);
-            timerServiceBound = bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
-            Log.d(TAG, "onStart: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
+            startTimerService();
         }
 
         updateUserInterface();
@@ -588,19 +589,6 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
                 updateButtonsLayout();
             }
         }
-    }
-
-    private boolean timerServiceIsRunning() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager != null) {
-            // Loop through the running services
-            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (TimerService.class.getName().equals(service.service.getClassName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     void timerServiceRebind() {
@@ -1162,9 +1150,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     public void sendBroadcast(Intent intent) {
         if (timerService == null) {
             Log.e(TAG, "The TimerService is dead, restarting");
-            Intent serviceIntent = new Intent(getBaseContext(), TimerService.class);
-            startService(serviceIntent);
-            timerServiceBound = bindService(serviceIntent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+            startTimerService();
         }
         super.sendBroadcast(intent);
     }
@@ -1383,7 +1369,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop: mainActivityVisible=" + mainActivityVisible + ", timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
+        Log.d(TAG, "onStop: mainActivityVisible=" + mainActivityVisible + ", timerService=" + timerService);
         mainActivityVisible = false; // TODO: useless ?
 
         if (timerService != null) {
@@ -1401,20 +1387,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
-    }
-
-    @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy: timerService=" + timerService + ", timerServiceBound=" + timerServiceBound);
+        Log.d(TAG, "onDestroy: timerService=" + timerService);
         super.onDestroy();
 
         if (timerService != null) {
@@ -1474,6 +1448,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         public void onServiceDisconnected(ComponentName name) {
             Log.d(TAG, "onServiceDisconnected");
             timerServiceBound = false;
+            timerService = null;
         }
 
         @Override
