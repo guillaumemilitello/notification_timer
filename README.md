@@ -1,17 +1,25 @@
 # NotificationTimer
 
-Type in the time you want for the countdown timer, then control it from the notification without the need to expand it or use the always screen on option to keep an eye on the remaining time.<br>
-When the time is out, a simple notification will occur. This notification is customizable from the settings: vibration, sound, light and color background (Android 8.0+).<br>
-You can add an extra notification to get notified few seconds before the end to be prepared.
+Countdown timer entirely controllable from the notifications and the lock screen.
+Perfect for a quick access when unlocking the screen or while using another application, no need to expand the notification to access the buttons.
+
+Customizable timeout notification from the settings: vibration, sound, light and color background.
+
+Large display of the remaining time always adjusted to the width of the screen in the application, use the always screen on option to keep an eye on the remaining time.
+
+Add an optional extra notification to get notified seconds before the end to get ready.
+
+Save timer presets to easily switch between the timers you always use.
 
 ## Features
 
-* Timer controls from the notification
+* Timer controls from the notification and the lock screen
 * Quick preset timers selection
 * Big numbers always fitting the screen
 * Option to keep the screen on
 * Timer number to track laps
 * Multi-window support
+* No permission required
 
 ## Download
 
