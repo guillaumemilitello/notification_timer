@@ -3,6 +3,7 @@ package com.codetroopers.betterpickers.numberpicker;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -147,6 +148,8 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
         setStyle(DialogFragment.STYLE_NO_TITLE, 0);
 
+        setCancelable(true);
+
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
         mDialogBackgroundResId = R.drawable.dialog_full_holo_dark;
@@ -157,6 +160,13 @@ public class NumberPickerDialogFragment extends DialogFragment {
             mTextColor = a.getColorStateList(R.styleable.BetterPickersDialogFragment_bpTextColor);
             mDialogBackgroundResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpDialogBackground, mDialogBackgroundResId);
         }
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        //When you touch outside of dialog bounds,
+        //the dialog gets canceled and this method executes.
+        returnMaxValue();
     }
 
     @Override
@@ -171,20 +181,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 dismiss();
-                BigInteger max_value = new BigInteger("2147483647", 10);
-                BigDecimal max_value_decimal = new BigDecimal(Integer.MAX_VALUE);
-                for (NumberPickerDialogHandlerV2 handler : mNumberPickerDialogHandlersV2) {
-                    handler.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
-                }
-                final Activity activity = getActivity();
-                final Fragment fragment = getTargetFragment();
-                if (activity instanceof NumberPickerDialogHandlerV2) {
-                    final NumberPickerDialogHandlerV2 act = (NumberPickerDialogHandlerV2) activity;
-                    act.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
-                } else if (fragment instanceof NumberPickerDialogHandlerV2) {
-                    final NumberPickerDialogHandlerV2 frag = (NumberPickerDialogHandlerV2) fragment;
-                    frag.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
-                }
+                returnMaxValue();
             }
         });
 
@@ -241,6 +238,24 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
         getDialog().getWindow().setBackgroundDrawableResource(mDialogBackgroundResId);
         return view;
+    }
+
+    private void returnMaxValue()
+    {
+        BigInteger max_value = new BigInteger("2147483647", 10);
+        BigDecimal max_value_decimal = new BigDecimal(Integer.MAX_VALUE);
+        for (NumberPickerDialogHandlerV2 handler : mNumberPickerDialogHandlersV2) {
+            handler.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
+        }
+        final Activity activity = getActivity();
+        final Fragment fragment = getTargetFragment();
+        if (activity instanceof NumberPickerDialogHandlerV2) {
+            final NumberPickerDialogHandlerV2 act = (NumberPickerDialogHandlerV2) activity;
+            act.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
+        } else if (fragment instanceof NumberPickerDialogHandlerV2) {
+            final NumberPickerDialogHandlerV2 frag = (NumberPickerDialogHandlerV2) fragment;
+            frag.onDialogNumberSet(mReference, max_value, 0, mPicker.getIsNegative(), max_value_decimal);
+        }
     }
 
     private boolean isBigger(BigDecimal number) {
