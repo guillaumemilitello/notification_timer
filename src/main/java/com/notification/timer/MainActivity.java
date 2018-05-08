@@ -265,6 +265,8 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
             });
         }
 
+        buttonsLayout = ButtonsLayout.WAITING;
+
         typefaceLektonBold = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Bold.ttf");
         Typeface typefaceLekton = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Regular.ttf");
         timerTextViewLeft.setTypeface(typefaceLektonBold);
