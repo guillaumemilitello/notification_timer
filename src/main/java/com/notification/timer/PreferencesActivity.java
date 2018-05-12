@@ -32,8 +32,8 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
-import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
+import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder;
+import com.codetroopers.betterpickers.hmspicker.HmsPickerDialogFragment;
 import com.kizitonwose.colorpreference.ColorPreference;
 
 import java.io.File;
@@ -59,7 +59,7 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class PreferencesActivity extends AppCompatPreferenceActivity implements MsPickerDialogFragment.MsPickerDialogHandlerV2 {
+public class PreferencesActivity extends AppCompatPreferenceActivity implements HmsPickerDialogFragment.HmsPickerDialogHandlerV2 {
 
     private static final String TAG = "PreferencesActivity";
 
@@ -76,7 +76,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     private NotificationManager notificationManager;
 
-    private MsPickerBuilder timerGetReadyPickerBuilder;
+    private HmsPickerBuilder timerGetReadyPickerBuilder;
 
     @Override
     @SuppressWarnings("deprecation")
@@ -95,7 +95,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                 ContextCompat.getColor(this, R.color.colorPrimary)));
 
-        timerGetReadyPickerBuilder = new MsPickerBuilder();
+        timerGetReadyPickerBuilder = new HmsPickerBuilder();
         timerGetReadyPickerBuilder.setFragmentManager(getFragmentManager());
         timerGetReadyPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         timerGetReadyPickerBuilder.setTimeInSeconds(0);
@@ -188,9 +188,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     }
 
     @Override
-    public void onDialogMsSet(int reference, boolean isNegative, int minutes, int seconds) {
-        Log.d(TAG, "onDialogMsSet: minutes=" + minutes + ", seconds=" + seconds);
-        int timerGetReady = minutes * 60 + seconds;
+    public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
+        Log.d(TAG, "onDialogMsSet: hours=" + hours + ", minutes=" + minutes + ", seconds=" + seconds);
+        int timerGetReady = hours * 3600 + minutes * 60 + seconds; // TODO: use time lib
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready), String.valueOf(timerGetReady));
         sharedPreferencesEditor.apply();

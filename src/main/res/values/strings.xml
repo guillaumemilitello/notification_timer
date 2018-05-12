@@ -110,4 +110,6 @@
     <string name="pref_timer_text_size" translatable="false">timerText_size_%1$d_%2$d</string>
     <string name="pref_backup" translatable="false">preferencesBackup</string>
     <string name="pref_restore" translatable="false">preferencesRestore</string>
+    <!-- Others -->
+    <string name="timer_separator" translatable="false">:</string>
 </resources>

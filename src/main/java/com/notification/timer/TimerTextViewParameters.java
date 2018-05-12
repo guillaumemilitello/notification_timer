@@ -26,8 +26,10 @@ class TimerTextViewParameters {
 
     private final float threshold = 2;
 
+    private static final int SIZE_COUNT = 5;
+
     float getTextSize(int digits) {
-        return size[digits - 2];
+        return size[digits - 2]; // size start from 2
     }
 
     int getLeftMargin(int digits) {
@@ -54,11 +56,11 @@ class TimerTextViewParameters {
         this.targetHeight = targetHeight;
         this.density = density;
 
-        size = new float[3];
-        leftMargin = new int[3];
-        topMargin = new int[3];
-        rightMargin = new int[3];
-        bottomMargin = new int[3];
+        size = new float[SIZE_COUNT];
+        leftMargin = new int[SIZE_COUNT];
+        topMargin = new int[SIZE_COUNT];
+        rightMargin = new int[SIZE_COUNT];
+        bottomMargin = new int[SIZE_COUNT];
 
         paint = new Paint();
         paint.setTypeface(MainActivity.typefaceLektonBold);
@@ -66,9 +68,9 @@ class TimerTextViewParameters {
 
         float[] loadedSize = loadSizes(layoutMode);
 
-        update(2, loadedSize[0]);
-        update(3, loadedSize[1]);
-        update(4, loadedSize[2]);
+        for (int i=0; i < SIZE_COUNT; ++i) {
+            update(i + 2, loadedSize[i]);  // size start from 2
+        }
 
         if (!Arrays.equals(loadedSize, size)) {
             saveSizes(layoutMode, size);
@@ -91,8 +93,8 @@ class TimerTextViewParameters {
         // Ratios are fixed for the Typeface Lekton
         topMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.425);
         bottomMargin[digitsIndex] = (int)(topMargin[digitsIndex] * 1.125);
-        leftMargin[digitsIndex] = (int)(size[digitsIndex] * density *  -0.1875);
-        rightMargin[digitsIndex] = (int)(leftMargin[digitsIndex] * 1.06);
+        leftMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.05);
+        rightMargin[digitsIndex] = leftMargin[digitsIndex];
     }
 
     private float findBestRectFontSize(int digits) {
@@ -133,7 +135,7 @@ class TimerTextViewParameters {
 
     private boolean doesRectFit(int digits, float rectTextSize) {
         paint.setTextSize(rectTextSize);
-        paint.getTextBounds("00'00", 0, digits > 2 ? digits + 1 : digits, rectBounds);
+        paint.getTextBounds("00:00:00", 0, digits > 4 ? digits + 2 : digits > 2 ? digits + 1 : digits, rectBounds);
         // Threshold are fixed for the Typeface Lekton including font padding
         int width = (int)(rectBounds.width() * density * ((digits == 2)? 1.125 : 0.925));
         int height = (int)(rectBounds.height() * density * 1.5);
@@ -143,7 +145,7 @@ class TimerTextViewParameters {
     private void saveSizes(MainActivity.LayoutMode layoutMode, float[] size) {
         if (sharedPreferences != null) {
             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < SIZE_COUNT; ++i) {
                 sharedPreferencesEditor.putFloat(String.format(Locale.US, context.getString(R.string.pref_timer_text_size), layoutMode.getIndex(), i), size[i]);
                 Log.d(TAG, "saveSizes: key=" + String.format(Locale.US, context.getString(R.string.pref_timer_text_size), layoutMode.getIndex(), i) + ", size=" + size[i]);
             }
@@ -152,9 +154,9 @@ class TimerTextViewParameters {
     }
 
     private float[] loadSizes(MainActivity.LayoutMode layoutMode) {
-        float[] size = new float[3];
+        float[] size = new float[SIZE_COUNT];
         if (sharedPreferences != null) {
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < SIZE_COUNT; ++i) {
                 size[i] = sharedPreferences.getFloat(String.format(Locale.US, context.getString(R.string.pref_timer_text_size), layoutMode.getIndex(), i), -1);
                 Log.d(TAG, "loadSizes: key=" + String.format(Locale.US, context.getString(R.string.pref_timer_text_size), layoutMode.getIndex(), i) + ", size=" + size[i]);
             }
@@ -165,7 +167,7 @@ class TimerTextViewParameters {
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append("targetWidth=").append(targetWidth).append(", targetHeight=").append(targetHeight).append(", density=").append(density).append("\n");
-        for (int i=0 ; i < 3; ++i) {
+        for (int i=0 ; i < SIZE_COUNT; ++i) {
             s.append("digits=").append(i + 2).append(", textSize=").append(size[i]).append(", margins={").append(leftMargin[i]).append(",").append(topMargin[i]).append(",").append(rightMargin[i]).append(",").append(bottomMargin[i]).append("}").append("\n");
         }
         return s.toString();

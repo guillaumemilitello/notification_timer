@@ -1,4 +1,4 @@
-package com.codetroopers.betterpickers.mspicker;
+package com.codetroopers.betterpickers.hmspicker;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -17,23 +17,23 @@ import android.widget.TextView;
 
 import com.notification.timer.R;
 
-public class MsPicker extends LinearLayout implements Button.OnClickListener, Button.OnLongClickListener {
+public class HmsPicker extends LinearLayout implements Button.OnClickListener, Button.OnLongClickListener {
 
-    protected int mInputSize = 4;
+    protected int mInputSize = 6;
     protected final Button mNumbers[] = new Button[10];
     protected int mInput[] = new int[mInputSize];
     protected int mInputPointer = -1;
     protected ImageButton mDelete;
     protected Button mLeft, mRight;
-    protected MsView mEnteredMs;
+    protected HmsView mEnteredHms;
     protected final Context mContext;
 
     private TextView mTitle;
-    private TextView mMinutesLabel, mSecondsLabel;
+    private TextView mHoursLabel, mMinutesLabel, mSecondsLabel;
     private Button mSetButton;
 
     protected View mDivider;
-    private ColorStateList mTextColor;
+    private ColorStateList mTextColor, mTextLabelColor;
     private int mKeyBackgroundResId;
     private int mButtonBackgroundResId;
     private int mDividerColor;
@@ -47,21 +47,21 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     private final Typeface mTypefaceLekton;
 
     /**
-     * Instantiates an MsPicker object
+     * Instantiates an HmsPicker object
      *
      * @param context the Context required for creation
      */
-    public MsPicker(Context context) {
+    public HmsPicker(Context context) {
         this(context, null);
     }
 
     /**
-     * Instantiates an MsPicker object
+     * Instantiates an HmsPicker object
      *
      * @param context the Context required for creation
      * @param attrs   additional attributes that define custom colors, selectors, and backgrounds.
      */
-    public MsPicker(Context context, AttributeSet attrs) {
+    public HmsPicker(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         LayoutInflater layoutInflater =
@@ -70,6 +70,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
+        mTextLabelColor = getResources().getColorStateList(R.color.default_text_label_color_holo_dark_disabled);
         mKeyBackgroundResId = R.drawable.key_background_dark;
         mButtonBackgroundResId = R.drawable.button_background_dark;
         mDividerColor = getResources().getColor(R.color.default_divider_color_dark);
@@ -79,7 +80,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     }
 
     protected int getLayoutId() {
-        return com.notification.timer.R.layout.ms_picker_view;
+        return com.notification.timer.R.layout.hms_picker_view;
     }
 
     /**
@@ -115,20 +116,24 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         if (mDivider != null) {
             mDivider.setBackgroundColor(mDividerColor);
         }
+        if (mHoursLabel != null) {
+            mHoursLabel.setTextColor(mTextLabelColor);
+            mHoursLabel.setBackgroundResource(mKeyBackgroundResId);
+        }
         if (mMinutesLabel != null) {
-            mMinutesLabel.setTextColor(mTextColor);
+            mMinutesLabel.setTextColor(mTextLabelColor);
             mMinutesLabel.setBackgroundResource(mKeyBackgroundResId);
         }
         if (mSecondsLabel != null) {
-            mSecondsLabel.setTextColor(mTextColor);
+            mSecondsLabel.setTextColor(mTextLabelColor);
             mSecondsLabel.setBackgroundResource(mKeyBackgroundResId);
         }
         if (mDelete != null) {
             mDelete.setBackgroundResource(mButtonBackgroundResId);
             mDelete.setImageDrawable(getResources().getDrawable(mDeleteDrawableSrcResId));
         }
-        if (mEnteredMs != null) {
-            mEnteredMs.setTheme(mTheme);
+        if (mEnteredHms != null) {
+            mEnteredHms.setTheme(mTheme);
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
@@ -144,7 +149,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
         View v2 = findViewById(R.id.second);
         View v3 = findViewById(R.id.third);
         View v4 = findViewById(R.id.fourth);
-        mEnteredMs = (MsView) findViewById(com.notification.timer.R.id.ms_text);
+        mEnteredHms = (HmsView) findViewById(R.id.hms_text);
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
         mDelete.setOnLongClickListener(this);
@@ -173,15 +178,16 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
             mNumbers[i].setText(String.format("%d", i));
             mNumbers[i].setTag(R.id.numbers_key, new Integer(i));
         }
-        updateMs();
+        updateHms();
 
         Resources res = mContext.getResources();
         mLeft.setText(res.getString(R.string.number_picker_plus_minus));
         mLeft.setOnClickListener(this);
 
+        mHoursLabel = (TextView) findViewById(R.id.hours_label);
         mMinutesLabel = (TextView) findViewById(R.id.minutes_label);
         mSecondsLabel = (TextView) findViewById(R.id.seconds_label);
-        mDivider = findViewById(R.id.dividerMs);
+        mDivider = findViewById(R.id.dividerHms);
 
         restyleViews();
         updateKeypad();
@@ -258,19 +264,19 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     }
 
     /**
-     * Reset all inputs and the minutes:seconds.
+     * Reset all inputs and the hours:minutes:seconds.
      */
     public void reset() {
         for (int i = 0; i < mInputSize; i++) {
             mInput[i] = 0;
         }
         mInputPointer = -1;
-        updateMs();
+        updateHms();
     }
 
     private void updateKeypad() {
         // Update the h:m:s
-        updateMs();
+        updateHms();
         // enable/disable the "set" key
         enableSetButton();
         // Update the backspace button
@@ -284,8 +290,8 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
      * <p/>
      * Put "-" in digits that was not entered by passing -1
      */
-    protected void updateMs() {
-        mEnteredMs.setTime(isNegative(), mInput[3], mInput[2], mInput[1], mInput[0]);
+    protected void updateHms() {
+        mEnteredHms.setTime(isNegative(), mInput[5], mInput[4], mInput[3], mInput[2], mInput[1], mInput[0]);
     }
 
     private void addClickedNumber(int val) {
@@ -323,6 +329,15 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     public void setSetButton(Button b) {
         mSetButton = b;
         enableSetButton();
+    }
+
+    /**
+     * Returns the hours as currently inputted by the user.
+     *
+     * @return the inputted hours
+     */
+    public int getHours() {
+        return mInput[5] * 10 + mInput[4];
     }
 
     /**
@@ -366,18 +381,20 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
     }
 
     /**
-     * Set the current minutes, and seconds on the picker.
+     * Set the current hours, minutes, and seconds on the picker.
      *
+     * @param hours   the input hours value
      * @param minutes the input minutes value
      * @param seconds the input seconds value
      */
-    public void setTime(int minutes, int seconds) {
+    public void setTime(int hours, int minutes, int seconds) {
+        mInput[4] = hours;
         mInput[3] = minutes / 10;
         mInput[2] = minutes % 10;
         mInput[1] = seconds / 10;
         mInput[0] = seconds % 10;
 
-        for (int i = 3; i >= 0; i--) {
+        for (int i = 4; i >= 0; i--) {
             if (mInput[i] > 0) {
                 mInputPointer = i;
                 break;
@@ -393,7 +410,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
      * @return an int representing the time in seconds
      */
     public int getTime() {
-        return mInput[3] * 600 + mInput[2] * 60 + mInput[1] * 10 + mInput[0];
+        return mInput[4] * 3600 + mInput[3] * 600 + mInput[2] * 60 + mInput[1] * 10 + mInput[0];
     }
 
     public void saveEntryState(Bundle outState, String key) {
@@ -409,7 +426,7 @@ public class MsPicker extends LinearLayout implements Button.OnClickListener, Bu
                     mInputPointer = i;
                 }
             }
-            updateMs();
+            updateHms();
         }
     }
 

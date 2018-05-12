@@ -78,7 +78,7 @@
     <!-- DO NOT TRANSLATE -->
     <string name="time_placeholder" translatable="false">--</string>
     <!-- DO NOT TRANSLATE -->
-    <string name="time_separator" translatable="false">\'</string>
+    <string name="time_separator" translatable="false">:</string>
 
     <!-- DO NOT TRANSLATE -->
     <string name="radial_numbers_typeface" translatable="false">sans-serif</string>

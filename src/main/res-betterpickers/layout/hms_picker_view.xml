@@ -30,8 +30,8 @@
         android:paddingLeft="@dimen/timer_padding_left"
         android:paddingTop="@dimen/medium_font_padding">
 
-        <com.codetroopers.betterpickers.mspicker.MsView
-            android:id="@+id/ms_text"
+        <com.codetroopers.betterpickers.hmspicker.HmsView
+            android:id="@+id/hms_text"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -41,6 +41,39 @@
             android:paddingBottom="@dimen/medium_font_padding"
             android:paddingLeft="@dimen/timer_padding_left"
             android:paddingTop="@dimen/medium_font_padding">
+
+            <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
+                android:id="@+id/hours_tens"
+                style="@style/medium_bold_hms"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:ellipsize="none"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="0" />
+
+            <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
+                android:id="@+id/hours_ones"
+                style="@style/medium_bold_hms"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:ellipsize="none"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="0" />
+
+            <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
+                android:id="@+id/hours_label"
+                style="@style/medium_bold_hms_separator"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:ellipsize="none"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="@string/time_separator" />
 
             <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
                 android:id="@+id/minutes_tens"
@@ -66,7 +99,7 @@
 
             <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
                 android:id="@+id/minutes_label"
-                style="@style/medium_bold_hms"
+                style="@style/medium_bold_hms_separator"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
@@ -120,7 +153,7 @@
                 android:gravity="top"
                 android:maxLines="1"
                 android:text="@string/number_picker_minus_label" />
-        </com.codetroopers.betterpickers.mspicker.MsView>
+        </com.codetroopers.betterpickers.hmspicker.HmsView>
 
         <ImageButton
             android:id="@+id/delete"
@@ -137,7 +170,7 @@
             android:src="@drawable/ic_backspace_normal_light" />
     </LinearLayout>
     <View
-        android:id="@+id/dividerMs"
+        android:id="@+id/dividerHms"
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="@color/default_divider_color_light"/>

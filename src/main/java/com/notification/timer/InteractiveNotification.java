@@ -714,7 +714,11 @@ class InteractiveNotification extends Notification {
             case READY:
             case PAUSED:
             case RUNNING:
-                timerString = String.format(Locale.US, "%d:%02d" , timerCurrent / 60, timerCurrent % 60);
+                if (timerCurrent >= 3600) {
+                    timerString = String.format(Locale.US, "%d:%02d:%02d", timerCurrent / 3600, timerCurrent % 3600 / 60, timerCurrent % 60);
+                } else {
+                    timerString = String.format(Locale.US, "%d:%02d", timerCurrent / 60, timerCurrent % 60);
+                }
                 break;
             case SET_DONE:
             case ALL_SETS_DONE:

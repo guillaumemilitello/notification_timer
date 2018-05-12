@@ -205,7 +205,7 @@
                         tools:ignore="UselessParent">
 
                         <TextView
-                            android:id="@+id/textViewTimerSeconds"
+                            android:id="@+id/textViewTimerLastSeconds"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
@@ -219,9 +219,41 @@
                             android:lineSpacingExtra="0dp"
                             android:textColor="@color/default_color_running" />
 
+                        <!-- TextView is gone below 60 minutes -->
+                        <TextView
+                            android:id="@+id/textViewTimerHours"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:singleLine="true"
+                            android:textSize="120sp"
+                            android:maxLines="1"
+                            android:text="10"
+                            android:visibility="gone"
+                            android:textStyle="bold"
+                            android:textAlignment="textEnd"
+                            android:lineSpacingExtra="0dp"
+                            android:textColor="@color/default_color_running" />
+
+                        <!-- TextView is gone below 60 minutes -->
+                        <TextView
+                            android:id="@+id/textViewTimerSeparatorHours"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:textSize="120sp"
+                            android:text="@string/timer_separator"
+                            android:visibility="gone"
+                            android:textAlignment="center"
+                            android:lineSpacingExtra="0dp"
+                            android:singleLine="true"
+                            android:maxLines="1"
+                            android:textStyle="bold"
+                            android:textColor="@color/default_color_running" />
+
                         <!-- TextView is gone below 60 seconds -->
                         <TextView
-                            android:id="@+id/textViewTimerLeft"
+                            android:id="@+id/textViewTimerMinutes"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
@@ -242,7 +274,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
                             android:textSize="120sp"
-                            android:text="'"
+                            android:text="@string/timer_separator"
                             android:visibility="gone"
                             android:textAlignment="center"
                             android:lineSpacingExtra="0dp"
@@ -253,7 +285,7 @@
 
                         <!-- TextView is gone below 60 seconds -->
                         <TextView
-                            android:id="@+id/textViewTimerRight"
+                            android:id="@+id/textViewTimerSeconds"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"

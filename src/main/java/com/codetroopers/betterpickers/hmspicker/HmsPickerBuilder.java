@@ -1,4 +1,4 @@
-package com.codetroopers.betterpickers.mspicker;
+package com.codetroopers.betterpickers.hmspicker;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -10,13 +10,14 @@ import java.util.Vector;
 /**
  * User: derek Date: 5/2/13 Time: 7:55 PM
  */
-public class MsPickerBuilder {
+public class HmsPickerBuilder {
 
     private FragmentManager manager; // Required
     private Integer styleResId; // Required
     private Fragment targetFragment;
     private int mReference;
-    private Vector<MsPickerDialogFragment.MsPickerDialogHandlerV2> mMsPickerDialogHandlerV2s = new Vector<MsPickerDialogFragment.MsPickerDialogHandlerV2>();
+    private Vector<HmsPickerDialogFragment.HmsPickerDialogHandlerV2> mHmsPickerDialogHandlerV2s = new Vector<HmsPickerDialogFragment.HmsPickerDialogHandlerV2>();
+    private int mHours;
     private int mMinutes;
     private int mSeconds;
     private String titleText;
@@ -31,7 +32,7 @@ public class MsPickerBuilder {
      * @param plusMinusVisibility an int corresponding to View.VISIBLE, View.INVISIBLE, or View.GONE
      * @return the current Builder object
      */
-    public MsPickerBuilder setPlusMinusVisibility(int plusMinusVisibility) {
+    public HmsPickerBuilder setPlusMinusVisibility(int plusMinusVisibility) {
         this.plusMinusVisibility = plusMinusVisibility;
         return this;
     }
@@ -43,7 +44,7 @@ public class MsPickerBuilder {
      * @param manager the FragmentManager that handles the transaction
      * @return the current Builder object
      */
-    public MsPickerBuilder setFragmentManager(FragmentManager manager) {
+    public HmsPickerBuilder setFragmentManager(FragmentManager manager) {
         this.manager = manager;
         return this;
     }
@@ -55,7 +56,7 @@ public class MsPickerBuilder {
      * @param styleResId the style resource ID to use for theming
      * @return the current Builder object
      */
-    public MsPickerBuilder setStyleResId(int styleResId) {
+    public HmsPickerBuilder setStyleResId(int styleResId) {
         this.styleResId = styleResId;
         return this;
     }
@@ -66,7 +67,7 @@ public class MsPickerBuilder {
      * @param targetFragment the Fragment to attach to
      * @return the current Builder object
      */
-    public MsPickerBuilder setTargetFragment(Fragment targetFragment) {
+    public HmsPickerBuilder setTargetFragment(Fragment targetFragment) {
         this.targetFragment = targetFragment;
         return this;
     }
@@ -77,7 +78,7 @@ public class MsPickerBuilder {
      * @param reference a user-defined int intended for Picker tracking
      * @return the current Builder object
      */
-    public MsPickerBuilder setReference(int reference) {
+    public HmsPickerBuilder setReference(int reference) {
         this.mReference = reference;
         return this;
     }
@@ -90,8 +91,8 @@ public class MsPickerBuilder {
      * @param handler an Object implementing the appropriate Picker Handler
      * @return the current Builder object
      */
-    public MsPickerBuilder addMsPickerDialogHandler(MsPickerDialogFragment.MsPickerDialogHandlerV2 handler) {
-        this.mMsPickerDialogHandlerV2s.add(handler);
+    public HmsPickerBuilder addHmsPickerDialogHandler(HmsPickerDialogFragment.HmsPickerDialogHandlerV2 handler) {
+        this.mHmsPickerDialogHandlerV2s.add(handler);
         return this;
     }
 
@@ -101,19 +102,21 @@ public class MsPickerBuilder {
      * @param handler the Object to remove
      * @return the current Builder object
      */
-    public MsPickerBuilder removeMsPickerDialogHandler(MsPickerDialogFragment.MsPickerDialogHandlerV2 handler) {
-        this.mMsPickerDialogHandlerV2s.remove(handler);
+    public HmsPickerBuilder removeHmsPickerDialogHandler(HmsPickerDialogFragment.HmsPickerDialogHandlerV2 handler) {
+        this.mHmsPickerDialogHandlerV2s.remove(handler);
         return this;
     }
 
     /**
      * Set some initial values for the picker
      *
+     * @param hours   the initial hours value
      * @param minutes the initial minutes value
      * @param seconds the initial seconds value
      * @return the current Builder object
      */
-    public MsPickerBuilder setTime(int minutes, int seconds) {
+    public HmsPickerBuilder setTime(int hours, int minutes, int seconds) {
+        this.mHours = bounded(hours, 0, 99);
         this.mMinutes = bounded(minutes, 0, 99);
         this.mSeconds = bounded(seconds, 0, 99);
         return this;
@@ -125,12 +128,13 @@ public class MsPickerBuilder {
      * @param timeInSeconds the time in seconds
      * @return the current Builder object
      */
-    public MsPickerBuilder setTimeInSeconds(int timeInSeconds) {
+    public HmsPickerBuilder setTimeInSeconds(int timeInSeconds) {
+        int hours = timeInSeconds / 3600;
         int remaining = timeInSeconds % 3600;
         int minutes = remaining / 60;
         int seconds = remaining % 60;
 
-        return this.setTime(minutes, seconds);
+        return this.setTime(hours, minutes, seconds);
     }
 
     /**
@@ -139,7 +143,7 @@ public class MsPickerBuilder {
      * @param titleText the String text
      * @return the current Builder object
      */
-    public MsPickerBuilder setTitleText(String titleText) {
+    public HmsPickerBuilder setTitleText(String titleText) {
         this.titleText = titleText;
         return this;
     }
@@ -150,7 +154,7 @@ public class MsPickerBuilder {
      * @param timeInMilliseconds the time in milliseconds
      * @return the current Builder object
      */
-    public MsPickerBuilder setTimeInMilliseconds(long timeInMilliseconds) {
+    public HmsPickerBuilder setTimeInMilliseconds(long timeInMilliseconds) {
         return this.setTimeInSeconds((int) (timeInMilliseconds / 1000L));
     }
 
@@ -159,28 +163,28 @@ public class MsPickerBuilder {
      */
     public void show() {
         if (manager == null || styleResId == null) {
-            Log.e("MsPickerBuilder", "setFragmentManager() and setStyleResId() must be called.");
+            Log.e("HmsPickerBuilder", "setFragmentManager() and setStyleResId() must be called.");
             return;
         }
         FragmentTransaction ft = manager.beginTransaction();
-        final Fragment prev = manager.findFragmentByTag("ms_dialog");
+        final Fragment prev = manager.findFragmentByTag("hms_dialog");
         if (prev != null) {
             ft.remove(prev).commit();
             ft = manager.beginTransaction();
         }
         ft.addToBackStack(null);
 
-        final MsPickerDialogFragment fragment = MsPickerDialogFragment.newInstance(mReference, styleResId, plusMinusVisibility, titleText);
+        final HmsPickerDialogFragment fragment = HmsPickerDialogFragment.newInstance(mReference, styleResId, plusMinusVisibility, titleText);
         if (targetFragment != null) {
             fragment.setTargetFragment(targetFragment, 0);
         }
-        fragment.setMsPickerDialogHandlersV2(mMsPickerDialogHandlerV2s);
+        fragment.setHmsPickerDialogHandlersV2(mHmsPickerDialogHandlerV2s);
 
-        if ((mMinutes | mSeconds) != 0) {
-            fragment.setTime(mMinutes, mSeconds);
+        if ((mHours | mMinutes | mSeconds) != 0) {
+            fragment.setTime(mHours, mMinutes, mSeconds);
         }
 
-        fragment.show(ft, "ms_dialog");
+        fragment.show(ft, "hms_dialog");
     }
 
     private static int bounded(int i, int min, int max) {

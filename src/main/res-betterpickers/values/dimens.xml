@@ -4,6 +4,7 @@
     <dimen name="medium_font_padding">12dp</dimen>
     <dimen name="medium_font_size">60dp</dimen>
     <dimen name="medium_font_size_hms">54dp</dimen>
+    <dimen name="medium_font_size_hms_separator">50dp</dimen>
     <dimen name="medium_font_size_header">24sp</dimen>
     <dimen name="medium_date_font_size">48dp</dimen>
     <dimen name="medium_expiration_font_size">40dp</dimen>

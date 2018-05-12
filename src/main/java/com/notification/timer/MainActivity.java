@@ -39,8 +39,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codetroopers.betterpickers.mspicker.MsPickerBuilder;
-import com.codetroopers.betterpickers.mspicker.MsPickerDialogFragment;
+import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder;
+import com.codetroopers.betterpickers.hmspicker.HmsPickerDialogFragment;
 import com.codetroopers.betterpickers.numberpicker.NumberPickerBuilder;
 import com.codetroopers.betterpickers.numberpicker.NumberPickerDialogFragment;
 import com.notification.timer.TimerService.TimerBinder;
@@ -50,7 +50,7 @@ import java.math.BigInteger;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements MsPickerDialogFragment.MsPickerDialogHandlerV2,
+public class MainActivity extends AppCompatActivity implements HmsPickerDialogFragment.HmsPickerDialogHandlerV2,
         NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private static final String TAG = "MainActivity";
@@ -86,7 +86,9 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
     private int activityLayoutWidth, activityLayoutHeight;
     private LayoutMode layoutMode;
-    private TimerTextView timerTextViewLeft, timerTextViewSeparator, timerTextViewRight, timerTextViewSeconds;
+    private TimerTextView timerTextViewHours, timerTextViewSeparatorHours;
+    private TimerTextView timerTextViewMinutes, timerTextViewSeparator;
+    private TimerTextView timerTextViewSeconds, timerTextViewLastSeconds;
 
     static Typeface typefaceLektonBold;
 
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private static final int TOOLBAR_MENU_KEEPSCREENON_INDEX = 2;
 
     // Timer and Sets Pickers
-    private MsPickerBuilder timerPickerBuilder;
+    private HmsPickerBuilder timerPickerBuilder;
     private NumberPickerBuilder setsPickerBuilder;
 
     // Preset Timers
@@ -110,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     private int setsCurrent;
     private int setsUser;
 
-    private static final long TIMER_MAX = 5999;
+    private static final long TIMER_MAX = 359999;
     private long timerPlus = 0;
 
     private static boolean keepScreenOn = false;
@@ -231,10 +233,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         density = getResources().getDisplayMetrics().density;
 
-        timerTextViewLeft = new TimerTextView((TextView)findViewById(R.id.textViewTimerLeft));
+        timerTextViewHours = new TimerTextView((TextView)findViewById(R.id.textViewTimerHours));
+        timerTextViewSeparatorHours = new TimerTextView((TextView)findViewById(R.id.textViewTimerSeparatorHours));
+        timerTextViewMinutes = new TimerTextView((TextView)findViewById(R.id.textViewTimerMinutes));
         timerTextViewSeparator = new TimerTextView((TextView)findViewById(R.id.textViewTimerSeparator));
-        timerTextViewRight = new TimerTextView((TextView)findViewById(R.id.textViewTimerRight));
-        timerTextViewSeconds =  new TimerTextView((TextView)findViewById(R.id.textViewTimerSeconds));
+        timerTextViewSeconds = new TimerTextView((TextView)findViewById(R.id.textViewTimerSeconds));
+        timerTextViewLastSeconds =  new TimerTextView((TextView)findViewById(R.id.textViewTimerLastSeconds));
 
         emptyPresetsTextView = findViewById(R.id.textViewEmptyPresets);
         setsTextView = findViewById(R.id.textViewSets);
@@ -269,10 +273,13 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
 
         typefaceLektonBold = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Bold.ttf");
         Typeface typefaceLekton = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Regular.ttf");
-        timerTextViewLeft.setTypeface(typefaceLektonBold);
-        timerTextViewSeparator.setTypeface(typefaceLekton);
-        timerTextViewRight.setTypeface(typefaceLekton);
-        timerTextViewSeconds.setTypeface(typefaceLektonBold);
+        Typeface typefaceJulius = Typeface.createFromAsset(getAssets(), "fonts/JuliusSansOne-Regular.ttf");
+        timerTextViewHours.setTypeface(typefaceLektonBold);
+        timerTextViewSeparatorHours.setTypeface(typefaceJulius);
+        timerTextViewMinutes.setTypeface(typefaceLektonBold);
+        timerTextViewSeparator.setTypeface(typefaceJulius);
+        timerTextViewSeconds.setTypeface(typefaceLekton);
+        timerTextViewLastSeconds.setTypeface(typefaceLektonBold);
 
         setsTextView.setTypeface(typefaceLektonBold);
 
@@ -281,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         alertSetDone = alertBuilderSetDone.create();
         alertAllSetsDone = alertBuilderAllSetsDone.create();
 
-        timerPickerBuilder = new MsPickerBuilder();
+        timerPickerBuilder = new HmsPickerBuilder();
         timerPickerBuilder.setFragmentManager(getFragmentManager());
         timerPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         timerPickerBuilder.setTimeInSeconds(0);
@@ -503,10 +510,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         TimerTextViewParameters timerTextViewParams = new TimerTextViewParameters(layoutMode, timerLayoutWidth, timerLayoutHeight, density, this, sharedPreferences);
         Log.d(TAG, "scaleTextViews: timerTextViewParams=" + timerTextViewParams);
 
-        timerTextViewLeft.setParameters(timerTextViewParams, false);
+        timerTextViewHours.setParameters(timerTextViewParams, false);
+        timerTextViewSeparatorHours.setParameters(timerTextViewParams, true);
+        timerTextViewMinutes.setParameters(timerTextViewParams, false);
         timerTextViewSeparator.setParameters(timerTextViewParams, true);
-        timerTextViewRight.setParameters(timerTextViewParams, false);
         timerTextViewSeconds.setParameters(timerTextViewParams, false);
+        timerTextViewLastSeconds.setParameters(timerTextViewParams, false);
 
         updateTimerDisplay();
 
@@ -602,11 +611,11 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     }
 
     @Override
-    public void onDialogMsSet(int reference, boolean isNegative, int minutes, int seconds) {
-        long timer = Math.min(minutes * 60 + seconds, TIMER_MAX); // limit to 99'59
+    public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
+        long timer = Math.min(hours * 3600 + minutes * 60 + seconds, TIMER_MAX); // limit to 99'59'59
         timerUser = timer;
         timerCurrent = timer;
-        Log.d(TAG, "onDialogMsSet: timerUser=" + timerUser);
+        Log.d(TAG, "onDialogHmsSet: timerUser=" + timerUser);
         timerProgressBar.setMax((int) timerUser);
         updateServiceTimers();
         if (setsPickerEnable) {
@@ -615,7 +624,7 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         } else {
             setsCurrent = 1;
             setsUser = Integer.MAX_VALUE;
-            Log.d(TAG, "onDialogMsSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
+            Log.d(TAG, "onDialogHmsSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
             updateSetsDisplay();
             terminatePickers();
         }
@@ -634,28 +643,50 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
     @SuppressWarnings("deprecation")
     private void updateTimerDisplay() {
         // TODO : merge with Preset class
-        if (timerCurrent >= 60) {
-            timerTextViewLeft.setVisibility(View.VISIBLE);
+        if (timerCurrent >= 3600) {
+            timerTextViewHours.setVisibility(View.VISIBLE);
+            timerTextViewSeparatorHours.setVisibility(View.VISIBLE);
+            timerTextViewMinutes.setVisibility(View.VISIBLE);
             timerTextViewSeparator.setVisibility(View.VISIBLE);
-            timerTextViewRight.setVisibility(View.VISIBLE);
-            timerTextViewSeconds.setVisibility(View.GONE);
+            timerTextViewSeconds.setVisibility(View.VISIBLE);
+            timerTextViewLastSeconds.setVisibility(View.GONE);
+
+            int digits = timerCurrent >= 36000 ? 6 : 5;
+            timerTextViewHours.setDigits(digits);
+            timerTextViewSeparatorHours.setDigits(digits); // TODO: avoid copy paste
+            timerTextViewMinutes.setDigits(digits);
+            timerTextViewSeparator.setDigits(digits);
+            timerTextViewSeconds.setDigits(digits);
+
+            timerTextViewHours.setText(String.format(Locale.US, "%d", timerCurrent / 3600));
+            timerTextViewMinutes.setText(String.format(Locale.US, "%02d", timerCurrent % 3600 / 60));
+            timerTextViewSeconds.setText(String.format(Locale.US, "%02d", timerCurrent % 60));
+        } else if (timerCurrent >= 60) {
+            timerTextViewHours.setVisibility(View.GONE);
+            timerTextViewSeparatorHours.setVisibility(View.GONE);
+            timerTextViewMinutes.setVisibility(View.VISIBLE);
+            timerTextViewSeparator.setVisibility(View.VISIBLE);
+            timerTextViewSeconds.setVisibility(View.VISIBLE);
+            timerTextViewLastSeconds.setVisibility(View.GONE);
 
             int digits = timerCurrent >= 600 ? 4 : 3;
-            timerTextViewLeft.setDigits(digits);
+            timerTextViewMinutes.setDigits(digits);
             timerTextViewSeparator.setDigits(digits);
-            timerTextViewRight.setDigits(digits);
+            timerTextViewSeconds.setDigits(digits);
 
-            timerTextViewLeft.setText(String.format(Locale.US, "%d", timerCurrent / 60));
-            timerTextViewRight.setText(String.format(Locale.US, "%02d", timerCurrent % 60));
+            timerTextViewMinutes.setText(String.format(Locale.US, "%d", timerCurrent / 60));
+            timerTextViewSeconds.setText(String.format(Locale.US, "%02d", timerCurrent % 60));
         } else {
-            timerTextViewLeft.setVisibility(View.GONE);
+            timerTextViewHours.setVisibility(View.GONE);
+            timerTextViewSeparatorHours.setVisibility(View.GONE);
+            timerTextViewMinutes.setVisibility(View.GONE);
             timerTextViewSeparator.setVisibility(View.GONE);
-            timerTextViewRight.setVisibility(View.GONE);
-            timerTextViewSeconds.setVisibility(View.VISIBLE);
+            timerTextViewSeconds.setVisibility(View.GONE);
+            timerTextViewLastSeconds.setVisibility(View.VISIBLE);
 
-            timerTextViewSeconds.setDigits(2);
+            timerTextViewLastSeconds.setDigits(2);
 
-            timerTextViewSeconds.setText(String.format(Locale.US, "%d", timerCurrent % 60));
+            timerTextViewLastSeconds.setText(String.format(Locale.US, "%d", timerCurrent % 60));
         }
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
@@ -690,10 +721,12 @@ public class MainActivity extends AppCompatActivity implements MsPickerDialogFra
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
 
         int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
-        timerTextViewLeft.setTextColor(textColor);
+        timerTextViewHours.setTextColor(textColor);
+        timerTextViewSeparatorHours.setTextColor(textColor);
+        timerTextViewMinutes.setTextColor(textColor);
         timerTextViewSeparator.setTextColor(textColor);
-        timerTextViewRight.setTextColor(textColor);
         timerTextViewSeconds.setTextColor(textColor);
+        timerTextViewLastSeconds.setTextColor(textColor);
         setsTextView.setTextColor(textColor);
     }
 

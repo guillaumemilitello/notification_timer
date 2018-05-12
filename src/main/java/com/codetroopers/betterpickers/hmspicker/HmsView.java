@@ -1,4 +1,4 @@
-package com.codetroopers.betterpickers.mspicker;
+package com.codetroopers.betterpickers.hmspicker;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -11,31 +11,32 @@ import android.widget.LinearLayout;
 import com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView;
 import com.notification.timer.R;
 
-public class MsView extends LinearLayout {
+public class HmsView extends LinearLayout {
 
+    private ZeroTopPaddingTextView mHoursOnes, mHoursTens;
     private ZeroTopPaddingTextView mMinutesOnes, mMinutesTens;
     private ZeroTopPaddingTextView mSecondsOnes, mSecondsTens;
-    private ZeroTopPaddingTextView mMinusLabel, mMinuteLabel;
+    private ZeroTopPaddingTextView mMinusLabel, mMinuteLabel, mHourLabel;
     private final Typeface mTypefaceLekton, mTypefaceLektonBold;
 
     private ColorStateList mTextColor;
 
     /**
-     * Instantiate an MsView
+     * Instantiate an HmsView
      *
      * @param context the Context in which to inflate the View
      */
-    public MsView(Context context) {
+    public HmsView(Context context) {
         this(context, null);
     }
 
     /**
-     * Instantiate an MsView
+     * Instantiate an HmsView
      *
      * @param context the Context in which to inflate the View
      * @param attrs attributes that define the title color
      */
-    public MsView(Context context, AttributeSet attrs) {
+    public HmsView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
@@ -61,6 +62,12 @@ public class MsView extends LinearLayout {
     }
 
     private void restyleViews() {
+        if (mHoursTens != null) {
+            mHoursTens.setTextColor(mTextColor);
+        }
+        if (mHoursOnes != null) {
+            mHoursOnes.setTextColor(mTextColor);
+        }
         if (mMinutesOnes != null) {
             mMinutesOnes.setTextColor(mTextColor);
         }
@@ -82,13 +89,24 @@ public class MsView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mHoursTens = (ZeroTopPaddingTextView) findViewById(R.id.hours_tens);
+        mHoursOnes = (ZeroTopPaddingTextView) findViewById(R.id.hours_ones);
         mMinutesTens = (ZeroTopPaddingTextView) findViewById(R.id.minutes_tens);
         mMinutesOnes = (ZeroTopPaddingTextView) findViewById(R.id.minutes_ones);
         mSecondsTens = (ZeroTopPaddingTextView) findViewById(R.id.seconds_tens);
         mSecondsOnes = (ZeroTopPaddingTextView) findViewById(R.id.seconds_ones);
         mMinusLabel = (ZeroTopPaddingTextView) findViewById(R.id.minus_label);
+        mHourLabel = (ZeroTopPaddingTextView) findViewById(R.id.hours_label);
         mMinuteLabel = (ZeroTopPaddingTextView) findViewById(R.id.minutes_label);
 
+        if (mHoursTens != null) {
+            mHoursTens.setTypeface(mTypefaceLektonBold);
+            mHoursTens.updatePaddingForBoldDate();
+        }
+        if (mHoursOnes != null) {
+            mHoursOnes.setTypeface(mTypefaceLektonBold);
+            mHoursOnes.updatePaddingForBoldDate();
+        }
         if (mMinutesTens != null) {
             mMinutesTens.setTypeface(mTypefaceLektonBold);
             mMinutesTens.updatePaddingForBoldDate();
@@ -106,13 +124,14 @@ public class MsView extends LinearLayout {
             mSecondsOnes.setTypeface(mTypefaceLekton);
             mSecondsOnes.updatePaddingForBoldDate();
         }
-        if (mMinusLabel != null) {
-            mMinusLabel.setTypeface(mTypefaceLekton);
-            mMinusLabel.setTextColor(mTextColor);
+        if (mHourLabel != null) {
+            mHourLabel.setTypeface(mTypefaceLekton);
+            mHourLabel.updatePaddingForBoldDate();
+            mHourLabel.setPaddingLeft((int)getResources().getDimension(R.dimen.time_separator_padding));
+            mHourLabel.setPaddingRight((int)getResources().getDimension(R.dimen.time_separator_padding));
         }
         if (mMinuteLabel != null) {
             mMinuteLabel.setTypeface(mTypefaceLekton);
-            mMinuteLabel.setTextColor(mTextColor);
             mMinuteLabel.updatePaddingForBoldDate();
             mMinuteLabel.setPaddingLeft((int)getResources().getDimension(R.dimen.time_separator_padding));
             mMinuteLabel.setPaddingRight((int)getResources().getDimension(R.dimen.time_separator_padding));
@@ -122,21 +141,29 @@ public class MsView extends LinearLayout {
     /**
      * Set the time shown
      *
+     * @param hoursTensDigit the tens digit of the hours TextView
+     * @param hoursOnesDigit the ones digit of the hours TextView
      * @param minutesTensDigit the tens digit of the minutes TextView
      * @param minutesOnesDigit the ones digit of the minutes TextView
      * @param secondsTensDigit the tens digit of the seconds TextView
      * @param secondsOnesDigit the ones digit of the seconds TextView
      */
-    public void setTime(int minutesTensDigit, int minutesOnesDigit, int secondsTensDigit,
+    public void setTime(int hoursTensDigit, int hoursOnesDigit, int minutesTensDigit, int minutesOnesDigit, int secondsTensDigit,
                         int secondsOnesDigit) {
-        setTime(false, minutesTensDigit, minutesOnesDigit, secondsTensDigit, secondsOnesDigit);
+        setTime(false, hoursTensDigit, hoursOnesDigit, minutesTensDigit, minutesOnesDigit, secondsTensDigit, secondsOnesDigit);
     }
 
-    public void setTime(boolean isNegative, int minutesTensDigit, int minutesOnesDigit, int secondsTensDigit,
+    public void setTime(boolean isNegative, int hoursTensDigit, int hoursOnesDigit, int minutesTensDigit, int minutesOnesDigit, int secondsTensDigit,
             int secondsOnesDigit) {
 
         mMinusLabel.setVisibility(isNegative ? View.VISIBLE : View.GONE);
 
+        if (mHoursTens != null) {
+            mHoursTens.setText(String.format("%d", hoursTensDigit));
+        }
+        if (mHoursOnes != null) {
+            mHoursOnes.setText(String.format("%d", hoursOnesDigit));
+        }
         if (mMinutesTens != null) {
             mMinutesTens.setText(String.format("%d", minutesTensDigit));
         }

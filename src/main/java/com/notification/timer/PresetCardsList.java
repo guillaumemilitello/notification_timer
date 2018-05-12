@@ -305,8 +305,12 @@ public class PresetCardsList extends Fragment {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
                 presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_delete);
                 Preset preset = presetsList.getPreset(getListIndex(position));
-                presetViewHolder.textViewCardTimerLeft.setText(preset.getTimerLeftString());
-                presetViewHolder.textViewCardTimerRight.setText(preset.getTimerRightString());
+                boolean hours = preset.getTimer() >= 3600;
+                presetViewHolder.textViewCardTimerHours.setVisibility(hours ? View.VISIBLE : View.GONE);
+                presetViewHolder.textViewCardTimerSeparatorHours.setVisibility(hours ? View.VISIBLE : View.GONE);
+                presetViewHolder.textViewCardTimerHours.setText(preset.getTimerHoursString());
+                presetViewHolder.textViewCardTimerMinutes.setText(preset.getTimerMinutesString(hours));
+                presetViewHolder.textViewCardTimerSeconds.setText(preset.getTimerSecondsString());
                 if (preset.isInfinity()) {
                     presetViewHolder.textViewCardSets.setVisibility(View.GONE);
                 } else {
@@ -322,8 +326,12 @@ public class PresetCardsList extends Fragment {
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
                 addPresetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_add);
-                addPresetViewHolder.textViewCardTimerLeft.setText(presetUser.getTimerLeftString());
-                addPresetViewHolder.textViewCardTimerRight.setText(presetUser.getTimerRightString());
+                boolean hours = presetUser.getTimer() >= 3600;
+                addPresetViewHolder.textViewCardTimerHours.setVisibility(hours ? View.VISIBLE : View.GONE);
+                addPresetViewHolder.textViewCardTimerSeparatorHours.setVisibility(hours ? View.VISIBLE : View.GONE);
+                addPresetViewHolder.textViewCardTimerHours.setText(presetUser.getTimerHoursString());
+                addPresetViewHolder.textViewCardTimerMinutes.setText(presetUser.getTimerMinutesString(hours));
+                addPresetViewHolder.textViewCardTimerSeconds.setText(presetUser.getTimerSecondsString());
                 if (presetUser.isInfinity()) {
                     addPresetViewHolder.textViewCardSets.setVisibility(View.GONE);
                 } else {
@@ -357,7 +365,12 @@ public class PresetCardsList extends Fragment {
     }
 
     private class PresetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView textViewCardTimerLeft, textViewCardTimerSeparator, textViewCardTimerRight, textViewCardSets;
+        private final TextView textViewCardTimerHours;
+        private final TextView textViewCardTimerSeparatorHours;
+        private final TextView textViewCardTimerMinutes;
+        private final TextView textViewCardTimerSeparator;
+        private final TextView textViewCardTimerSeconds;
+        private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
         private final LinearLayout linearLayoutCard, linearLayoutTimer;
 
@@ -367,9 +380,11 @@ public class PresetCardsList extends Fragment {
 
         PresetViewHolder(final View view) {
             super(view);
-            textViewCardTimerLeft = view.findViewById(R.id.textViewCardTimerLeft);
+            textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
+            textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
+            textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
             textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
-            textViewCardTimerRight = view.findViewById(R.id.textViewCardTimerRight);
+            textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
             linearLayoutCard = view.findViewById(R.id.layoutCard);
@@ -377,15 +392,19 @@ public class PresetCardsList extends Fragment {
 
             Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimerLeft.setTypeface(typeface);
+            textViewCardTimerHours.setTypeface(typeface);
+            textViewCardTimerSeparatorHours.setTypeface(typeface);
+            textViewCardTimerMinutes.setTypeface(typeface);
             textViewCardTimerSeparator.setTypeface(typeface);
-            textViewCardTimerRight.setTypeface(typeface);
+            textViewCardTimerSeconds.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
             linearLayoutTimer.setOnClickListener(this);
-            textViewCardTimerLeft.setOnClickListener(this);
+            textViewCardTimerHours.setOnClickListener(this);
+            textViewCardTimerSeparatorHours.setOnClickListener(this);
+            textViewCardTimerMinutes.setOnClickListener(this);
             textViewCardTimerSeparator.setOnClickListener(this);
-            textViewCardTimerRight.setOnClickListener(this);
+            textViewCardTimerSeconds.setOnClickListener(this);
             textViewCardSets.setOnClickListener(this);
             imageButtonCard.setOnClickListener(this);
         }
@@ -411,25 +430,31 @@ public class PresetCardsList extends Fragment {
     }
 
     private class AddPresetViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewCardTimerLeft;
+        private final TextView textViewCardTimerHours;
+        private final TextView textViewCardTimerSeparatorHours;
+        private final TextView textViewCardTimerMinutes;
         private final TextView textViewCardTimerSeparator;
-        private final TextView textViewCardTimerRight;
+        private final TextView textViewCardTimerSeconds;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
 
         AddPresetViewHolder(final View view) {
             super(view);
-            textViewCardTimerLeft = view.findViewById(R.id.textViewCardTimerLeft);
+            textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
+            textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
+            textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
             textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
-            textViewCardTimerRight = view.findViewById(R.id.textViewCardTimerRight);
+            textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
 
             Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimerLeft.setTypeface(typeface);
+            textViewCardTimerHours.setTypeface(typeface);
+            textViewCardTimerSeparatorHours.setTypeface(typeface);
+            textViewCardTimerMinutes.setTypeface(typeface);
             textViewCardTimerSeparator.setTypeface(typeface);
-            textViewCardTimerRight.setTypeface(typeface);
+            textViewCardTimerSeconds.setTypeface(typeface);
             textViewCardSets.setTypeface(typefaceLight);
 
             imageButtonCard.setOnClickListener(new View.OnClickListener() {

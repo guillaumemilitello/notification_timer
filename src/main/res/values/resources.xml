@@ -17,5 +17,6 @@
     <dimen name="preset_card_timer_padding_right">4dp</dimen>
     <dimen name="preset_card_sets_padding_right">4dp</dimen>
     <dimen name="preset_card_timer_font_size">28sp</dimen>
+    <dimen name="preset_card_timer_separator_font_size">25sp</dimen>
     <dimen name="preset_card_icon_size">48dp</dimen>
 </resources>

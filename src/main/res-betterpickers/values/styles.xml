@@ -8,6 +8,10 @@
     <style name="medium_bold_hms" parent="medium_bold">
         <item name="android:textSize">@dimen/medium_font_size_hms</item>
     </style>
+    <style name="medium_bold_hms_separator" parent="medium_bold">
+        <item name="android:textSize">@dimen/medium_font_size_hms_separator</item>
+        <item name="android:layout_marginLeft">2dp</item>
+    </style>
     <style name="medium_light">
         <item name="android:textSize">@dimen/medium_font_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
