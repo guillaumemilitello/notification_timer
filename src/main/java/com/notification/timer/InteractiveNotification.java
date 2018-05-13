@@ -530,57 +530,59 @@ class InteractiveNotification extends Notification {
 
     private Notification.Builder createNotificationBuilder(NotificationMode notificationMode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationMode == NotificationMode.DONE) {
-                return new Builder(context, getDoneChannelId())
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentIntent(pendingIntent)
-                        .setDeleteIntent(pendingIntentDeleted)
-                        .setColorized(colorEnable)
-                        .setColor(getColor());
-            } else if (notificationMode == NotificationMode.READY) {
-                return new Notification.Builder(context, getReadyChannelId())
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentIntent(pendingIntent)
-                        .setDeleteIntent(pendingIntentDeleted)
-                        .setColorized(colorEnable)
-                        .setColor(getColor());
-            } else {
-                return new Notification.Builder(context, updateChannelId)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentIntent(pendingIntent)
-                        .setDeleteIntent(pendingIntentDeleted)
-                        .setColorized(colorEnable)
-                        .setColor(getColor());
+            switch (notificationMode) {
+                case DONE:
+                    return new Builder(context, getDoneChannelId())
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(pendingIntentDeleted)
+                            .setColorized(colorEnable)
+                            .setColor(getColor());
+                case READY:
+                    return new Builder(context, getReadyChannelId())
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(pendingIntentDeleted)
+                            .setColorized(colorEnable)
+                            .setColor(getColor());
+                default:
+                    return new Builder(context, updateChannelId)
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(pendingIntentDeleted)
+                            .setColorized(colorEnable)
+                            .setColor(getColor());
             }
         } else {
-            if (notificationMode == NotificationMode.DONE) {
-                return new Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentIntent(pendingIntent)
-                        .setDeleteIntent(pendingIntentDeleted)
-                        .setPriority(PRIORITY_MAX)
-                        .setLights(lightColorEnable ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
-                        .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
-                        .setSound(ringtoneReady)
-                        .setColor(getColor());
-            } else if (notificationMode == NotificationMode.READY) {
-                return new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentIntent(pendingIntent)
-                        .setDeleteIntent(pendingIntentDeleted)
-                        .setPriority(PRIORITY_MAX)
-                        .setLights(COLOR_DEFAULT, 0, 0)
-                        .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
-                        .setSound(ringtoneReady)
-                        .setColor(getColor());
-            } else {
-                return new Notification.Builder(context)
-                        .setSmallIcon(R.drawable.ic_notification)
-                        .setContentIntent(pendingIntent)
-                        .setDeleteIntent(pendingIntentDeleted)
-                        .setPriority(PRIORITY_MAX)
-                        .setLights(COLOR_DEFAULT, 0, 0)
-                        .setColor(getColor());
+            switch (notificationMode) {
+                case DONE:
+                    return new Builder(context)
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(pendingIntentDeleted)
+                            .setPriority(PRIORITY_MAX)
+                            .setLights(lightColorEnable ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
+                            .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
+                            .setSound(ringtoneReady)
+                            .setColor(getColor());
+                case READY:
+                    return new Builder(context)
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(pendingIntentDeleted)
+                            .setPriority(PRIORITY_MAX)
+                            .setLights(COLOR_DEFAULT, 0, 0)
+                            .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
+                            .setSound(ringtoneReady)
+                            .setColor(getColor());
+                default:
+                    return new Builder(context)
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(pendingIntentDeleted)
+                            .setPriority(PRIORITY_MAX)
+                            .setLights(COLOR_DEFAULT, 0, 0)
+                            .setColor(getColor());
             }
         }
     }

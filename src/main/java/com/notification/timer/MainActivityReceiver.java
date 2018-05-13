@@ -14,72 +14,76 @@ public class MainActivityReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        switch (intent.getAction()) {
-            case IntentAction.START:
-                ((MainActivity)context).start();
-                break;
-            case IntentAction.PAUSE:
-                ((MainActivity)context).pause();
-                break;
-            case IntentAction.RESUME:
-                ((MainActivity)context).resume();
-                break;
-            case IntentAction.STOP:
-                ((MainActivity)context).stop();
-                break;
-            case IntentAction.CLEAR:
-                ((MainActivity)context).clear();
-                break;
-            case IntentAction.NEXT_SET:
-                ((MainActivity)context).nextSet();
-                break;
-            case IntentAction.NEXT_SET_START:
-                ((MainActivity)context).nextSetStart();
-                break;
-            case IntentAction.RESET:
-                ((MainActivity)context).reset();
-                break;
-            case IntentAction.EXTRA_SET:
-                ((MainActivity)context).extraSet();
-                break;
-            case IntentAction.TIMER_MINUS:
-                ((MainActivity)context).timerMinus();
-                break;
-            case IntentAction.TIMER_PLUS:
-                ((MainActivity)context).timerPlus();
-                break;
-            case IntentAction.SETS_MINUS:
-                ((MainActivity)context).setsMinus();
-                break;
-            case IntentAction.SETS_PLUS:
-                ((MainActivity)context).setsPlus();
-                break;
-            case IntentAction.TIMER_STATE:
-                if (intent.hasExtra("state")) {
-                    String state = intent.getExtras().getString("state");
-                    if(state != null)
-                        ((MainActivity)context).updateTimerState(TimerService.State.valueOf(state.toUpperCase(Locale.US)));
-                }
-                break;
-            case IntentAction.TIMER_UPDATE:
-                if (intent.hasExtra("time")) {
-                    ((MainActivity) context).timerUpdate(intent.getExtras().getLong("time"));
-                }
-                if (intent.hasExtra("sets")) {
-                    ((MainActivity) context).setsUpdate(intent.getExtras().getInt("sets"));
-                }
-                break;
-            case IntentAction.TIMER_DONE:
-                ((MainActivity)context).done();
-                break;
-            case IntentAction.TIMER_REBIND:
-                ((MainActivity)context).timerServiceRebind();
-                break;
-            case IntentAction.NOTIFICATION_DISMISS:
-                ((MainActivity)context).clear();
-                break;
-            default:
-                Log.e(TAG, "wrong intent event=" + intent.getAction());
+        String action = intent.getAction();
+        if (action != null) {
+            switch (action) {
+                case IntentAction.START:
+                    ((MainActivity) context).start();
+                    break;
+                case IntentAction.PAUSE:
+                    ((MainActivity) context).pause();
+                    break;
+                case IntentAction.RESUME:
+                    ((MainActivity) context).resume();
+                    break;
+                case IntentAction.STOP:
+                    ((MainActivity) context).stop();
+                    break;
+                case IntentAction.CLEAR:
+                    ((MainActivity) context).clear();
+                    break;
+                case IntentAction.NEXT_SET:
+                    ((MainActivity) context).nextSet();
+                    break;
+                case IntentAction.NEXT_SET_START:
+                    ((MainActivity) context).nextSetStart();
+                    break;
+                case IntentAction.RESET:
+                    ((MainActivity) context).reset();
+                    break;
+                case IntentAction.EXTRA_SET:
+                    ((MainActivity) context).extraSet();
+                    break;
+                case IntentAction.TIMER_MINUS:
+                    ((MainActivity) context).timerMinus();
+                    break;
+                case IntentAction.TIMER_PLUS:
+                    ((MainActivity) context).timerPlus();
+                    break;
+                case IntentAction.SETS_MINUS:
+                    ((MainActivity) context).setsMinus();
+                    break;
+                case IntentAction.SETS_PLUS:
+                    ((MainActivity) context).setsPlus();
+                    break;
+                case IntentAction.TIMER_STATE:
+                    String state = intent.getStringExtra("state");
+                    if (state != null) {
+                        ((MainActivity) context).updateTimerState(TimerService.State.valueOf(state.toUpperCase(Locale.US)));
+                    }
+                    break;
+                case IntentAction.TIMER_UPDATE:
+                    long time = intent.getLongExtra("time", -1);
+                    if (time != -1) {
+                        ((MainActivity) context).timerUpdate(time);
+                    }
+                    int sets = intent.getIntExtra("sets", -1);
+                    if (sets != -1) {
+                        ((MainActivity) context).setsUpdate(sets);
+                    }
+                    break;
+                case IntentAction.TIMER_DONE:
+                    ((MainActivity) context).done();
+                    break;
+                case IntentAction.TIMER_REBIND:
+                    ((MainActivity) context).timerServiceRebind();
+                    break;
+                case IntentAction.NOTIFICATION_DISMISS:
+                    ((MainActivity) context).clear();
+                    break;
+                default:
+                    Log.e(TAG, "wrong intent event=" + intent.getAction());
+            }
         }
     }
 }

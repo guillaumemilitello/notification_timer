@@ -488,12 +488,6 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
-    public void setState(State state) {
-        Log.d(TAG, "setState: state=" + state);
-        this.state = state;
-        saveContextPreferences(CONTEXT_PREFERENCE_STATE);
-    }
-
     private void notificationUpdateTimerCurrent(long time) {
         // Avoid the extra notification when the timerUser == timerGetReady and when not RUNNING
         if (time == timerGetReady && timerUser > timerGetReady && timerGetReadyEnable && state == State.RUNNING) {

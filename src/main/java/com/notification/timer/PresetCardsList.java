@@ -274,7 +274,7 @@ public class PresetCardsList extends Fragment {
     }
 
 
-    public class RecycleViewAdapter extends RecyclerView.Adapter {
+    private class RecycleViewAdapter extends RecyclerView.Adapter {
 
         private static final int ITEM_VIEW_TYPE_PRESET_ADD = 0;
         private static final int ITEM_VIEW_TYPE_PRESET = 1;
@@ -285,12 +285,13 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
-        public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
             ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             Log.d(TAG, "onCreateViewHolder: viewType=" + viewType);
             if (viewType == ITEM_VIEW_TYPE_PRESET) {
                 return new PresetViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.preset_card_view, parent, false));
@@ -300,7 +301,7 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
                 presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_delete);

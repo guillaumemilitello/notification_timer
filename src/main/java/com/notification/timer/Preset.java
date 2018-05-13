@@ -37,10 +37,6 @@ class Preset {
         return String.format(Locale.US, "%d", timer / 3600);
     }
 
-    String getTimerMinutesString() {
-        return getTimerMinutesString(false);
-    }
-
     String getTimerMinutesString(boolean zero) {
         String format = zero ? "%02d" : "%d";
         return String.format(Locale.US, format, timer % 3600 / 60);
@@ -51,7 +47,7 @@ class Preset {
     }
 
     public String toString() {
-        return String.format(Locale.US, "%s:%s:%s %s", getTimerHoursString(), getTimerMinutesString(), getTimerSecondsString(), getSetsString());
+        return String.format(Locale.US, "%s:%s:%s %s", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getSetsString());
     }
 
     boolean isValid() {

@@ -753,12 +753,16 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private void launchPickers() {
-        if (buttonsLayout == ButtonsLayout.WAITING) {
-            timerPickerBuilder.show();
-        } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            setsPickerBuilder.show();
-        } else {
-            Log.e(TAG, "launchPickers: buttonsLayout=" + buttonsLayout);
+        switch (buttonsLayout) {
+            case WAITING:
+                timerPickerBuilder.show();
+                break;
+            case WAITING_SETS:
+                setsPickerBuilder.show();
+                break;
+            default:
+                Log.e(TAG, "launchPickers: buttonsLayout=" + buttonsLayout);
+                break;
         }
     }
 
@@ -794,12 +798,16 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     public void addPreset() {
-        if (buttonsLayout == ButtonsLayout.WAITING) {
-            Toast.makeText(this, getString(R.string.picker_toast_all), Toast.LENGTH_SHORT).show();
-        } else if (buttonsLayout == ButtonsLayout.WAITING_SETS) {
-            Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
-        } else {
-            presetCardsList.addPreset();
+        switch (buttonsLayout) {
+            case WAITING:
+                Toast.makeText(this, getString(R.string.picker_toast_all), Toast.LENGTH_SHORT).show();
+                break;
+            case WAITING_SETS:
+                Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                presetCardsList.addPreset();
+                break;
         }
     }
 
@@ -986,29 +994,30 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         int id = item.getItemId();
         int requestCode = 1;
 
-        if (id == R.id.preferences) {
-            Log.d(TAG, "onOptionsItemSelected: item.id=settings");
-            startActivityForResult(new Intent(this, PreferencesActivity.class), requestCode);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            return true;
-        } else if (id == R.id.feedback) {
-            Intent sendEmail = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto","guillaume.militello@gmail.com", null));
-            sendEmail.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name) + " feedback");
-            startActivity(Intent.createChooser(sendEmail, "Send email..."));
-            return true;
-        } else if (id == R.id.help) {
-            helpOverlay.show();
-            return true;
-        } else if (id == R.id.presets_display) {
-            Log.d(TAG, "onOptionsItemSelected: item.id=presets_display");
-            changePresetsFrameLayout();
-            return true;
-        } else if (id == R.id.keepScreenOn) {
-            Log.d(TAG, "onOptionsItemSelected: item.id=keepScreenOn");
-            setKeepScreenOnStatus(!keepScreenOn);
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        switch (id) {
+            case R.id.preferences:
+                Log.d(TAG, "onOptionsItemSelected: item.id=settings");
+                startActivityForResult(new Intent(this, PreferencesActivity.class), requestCode);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                return true;
+            case R.id.feedback:
+                Intent sendEmail = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "guillaume.militello@gmail.com", null));
+                sendEmail.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name) + " feedback");
+                startActivity(Intent.createChooser(sendEmail, "Send email..."));
+                return true;
+            case R.id.help:
+                helpOverlay.show();
+                return true;
+            case R.id.presets_display:
+                Log.d(TAG, "onOptionsItemSelected: item.id=presets_display");
+                changePresetsFrameLayout();
+                return true;
+            case R.id.keepScreenOn:
+                Log.d(TAG, "onOptionsItemSelected: item.id=keepScreenOn");
+                setKeepScreenOnStatus(!keepScreenOn);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -1086,7 +1095,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
-    static int getTimerPlusResId(long timerPlus) {
+    private static int getTimerPlusResId(long timerPlus) {
         if (timerPlus == 10) {
             return R.drawable.ic_timer_plus_10;
         } else if (timerPlus == 15) {

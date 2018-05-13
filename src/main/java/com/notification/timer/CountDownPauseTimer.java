@@ -78,7 +78,7 @@ abstract class CountDownPauseTimer {
      * @param countDownInterval The interval along the way to receive
      *   {@link #onTick(long)} callbacks.
      */
-    public CountDownPauseTimer(long millisInFuture, long countDownInterval) {
+    CountDownPauseTimer(long millisInFuture, long countDownInterval) {
         // An extra second is added to match com.notification.timer's behavior
         mMillisInFuture = millisInFuture + 250;
         mCountdownInterval = countDownInterval;
@@ -143,12 +143,12 @@ abstract class CountDownPauseTimer {
      * Callback fired on regular interval.
      * @param millisUntilFinished The amount of time until finished.
      */
-    public abstract void onTick(long millisUntilFinished);
+    protected abstract void onTick(long millisUntilFinished);
 
     /**
      * Callback fired when the time is up.
      */
-    public abstract void onFinish();
+    protected abstract void onFinish();
 
     private static final int MSG = 1;
 
