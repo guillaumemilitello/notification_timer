@@ -1,6 +1,6 @@
 # NotificationTimer
 
-Countdown timer entirely controllable from the notifications and the lock screen.
+Simple and clean countdown timer entirely controllable from the notifications and the lock screen.
 Perfect for a quick access when unlocking the screen or while using another application, no need to expand the notification to access the buttons.
 
 Customizable timeout notification from the settings: vibration, sound, light and color background.
@@ -44,7 +44,7 @@ The background color can be customized or disabled from the settings. These colo
 
 ### Activity
 
-<img src="screenshots/Activity_running.png" width="350"/> <img src="screenshots/Activity_running_get_ready.png" width="350"/> <img src="screenshots/Activity_running_multi.png" width="350"/> <img src="screenshots/Notification_screen_locked.png" width="350"/>
+<img src="screenshots/Activity_running.png" width="350"/> <img src="screenshots/Activity_running_get_ready.png" width="350"/> <img src="screenshots/Activity_running_multi.png" width="350"/> <img src="screenshots/Notification_screen_locked.png" width="350"/> <img src="screenshots/Activity_running_landscape.png" width="350"/>
 
 ### Tutorial
 
