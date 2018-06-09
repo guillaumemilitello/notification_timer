@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="feedback">Envoyer un retour…</string>
+    <string name="rateApp">Noter l\'application</string>
     <string name="help">Indications</string>
     <string name="settings">Paramètres</string>
     <string name="keepScreenOn">Écran toujours allumé</string>

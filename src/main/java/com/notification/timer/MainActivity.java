@@ -1,6 +1,7 @@
 package com.notification.timer;
 
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
@@ -1015,6 +1016,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             case R.id.keepScreenOn:
                 Log.d(TAG, "onOptionsItemSelected: item.id=keepScreenOn");
                 setKeepScreenOnStatus(!keepScreenOn);
+                return true;
+            case R.id.rateApp:
+                Uri uri = Uri.parse("market://details?id=" + getPackageName());
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                // Add flags to intent to go back to the app after pressing the back button
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

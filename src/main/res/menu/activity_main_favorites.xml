@@ -30,6 +30,12 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/rateApp"
+        android:orderInCategory="100"
+        android:title="@string/rateApp"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/feedback"
         android:orderInCategory="100"
         android:title="@string/feedback"
