@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private int setsCurrent;
     private int setsUser;
 
-    private static final long TIMER_MAX = 359999;
+    static final long TIMER_MAX = 359999;
     private long timerPlus = 0;
 
     private static boolean keepScreenOn = false;
@@ -1107,7 +1107,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
-    private static int getTimerPlusResId(long timerPlus) {
+    static int getTimerPlusResId(long timerPlus) {
         if (timerPlus == 10) {
             return R.drawable.ic_timer_plus_10;
         } else if (timerPlus == 15) {

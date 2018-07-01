@@ -3,6 +3,7 @@
     <string name="default_timer_minus" translatable="false">20</string>
     <string name="default_timer_plus" translatable="false">20</string>
     <bool name="default_sets_picker">false</bool>
+    <string name="default_step_time" translatable="false">-20</string>
     <bool name="default_vibrate">true</bool>
     <string name="default_ringtone_uri" translatable="false">content://settings/system/notification_sound</string>
     <bool name="default_light_color_enable">true</bool>

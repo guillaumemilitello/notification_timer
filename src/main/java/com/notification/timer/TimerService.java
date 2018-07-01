@@ -91,6 +91,7 @@ public class TimerService extends Service {
     // Settings
     private boolean timerGetReadyEnable;
     private int timerGetReady;
+    private long stepTime;
     private long timerMinus;
     private long timerPlus;
 
@@ -150,6 +151,7 @@ public class TimerService extends Service {
         filter.addAction(IntentAction.NEXT_SET);
         filter.addAction(IntentAction.NEXT_SET_START);
         filter.addAction(IntentAction.EXTRA_SET);
+        filter.addAction(IntentAction.STEP_TIME);
         filter.addAction(IntentAction.TIMER_MINUS);
         filter.addAction(IntentAction.TIMER_PLUS);
         filter.addAction(IntentAction.SETS_MINUS);
@@ -422,7 +424,19 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_TIMER_USER | CONTEXT_PREFERENCE_SETS_CURRENT | CONTEXT_PREFERENCE_SETS_USER);
     }
 
+    void stepTime() {
+        if (stepTime > 0) {
+            timerPlus(stepTime);
+        } else {
+            timerMinus(-stepTime);
+        }
+    }
+
     void timerMinus() {
+        timerMinus(timerMinus);
+    }
+
+    void timerMinus(long timerMinus) {
         timerCurrent = Math.max(timerCurrent - timerMinus, 0);
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
@@ -433,6 +447,10 @@ public class TimerService extends Service {
     }
 
     void timerPlus() {
+        timerPlus(timerPlus);
+    }
+
+    void timerPlus(long timerPlus) {
         timerCurrent += timerPlus;
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
@@ -733,6 +751,7 @@ public class TimerService extends Service {
         if (preferences != null) {
             updatePreference(getString(R.string.pref_timer_minus));
             updatePreference(getString(R.string.pref_timer_plus));
+            updatePreference(getString(R.string.pref_step_time));
             updatePreference(getString(R.string.pref_vibrate));
             updatePreference(getString(R.string.pref_ringtone_uri));
             updatePreference(getString(R.string.pref_light_color_enable));
@@ -757,10 +776,11 @@ public class TimerService extends Service {
 
         if (key.equals(getString(R.string.pref_timer_minus))) {
             timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
-            int resId = MainActivity.getTimerMinusResId(timerMinus);
-            interactiveNotification.setTimerMinusResId(resId);
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
+        } else if (key.equals(getString(R.string.pref_step_time))) {
+            stepTime = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_step_time)));
+            interactiveNotification.setStepTime(stepTime);
         } else if (key.equals(getString(R.string.pref_vibrate))) {
             boolean vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
             interactiveNotification.setVibrationEnable(vibrationEnable);

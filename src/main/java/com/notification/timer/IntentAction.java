@@ -2,6 +2,8 @@ package com.notification.timer;
 
 class IntentAction {
 
+    static final String NO_ACTION = "com.notification.timer.action.NO_ACTION";
+
     // Sent from the buttons
     static final String START = "com.notification.timer.action.START";
     static final String PAUSE = "com.notification.timer.action.PAUSE";
@@ -14,6 +16,7 @@ class IntentAction {
     static final String EXTRA_SET = "com.notification.timer.action.EXTRA_SET";
     static final String TIMER_MINUS = "com.notification.timer.action.TIMER_MINUS";
     static final String TIMER_PLUS = "com.notification.timer.action.TIMER_PLUS";
+    static final String STEP_TIME = "com.notification.timer.action.STEP_TIME";
     static final String SETS_MINUS = "com.notification.timer.action.SETS_MINUS";
     static final String SETS_PLUS = "com.notification.timer.action.SETS_PLUS";
 

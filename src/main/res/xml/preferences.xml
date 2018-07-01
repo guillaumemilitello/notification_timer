@@ -27,6 +27,12 @@
 
     <PreferenceCategory android:title="@string/notification">
 
+    <ListPreference
+        android:key="@string/pref_step_time"
+        android:title="@string/step_time"
+        android:defaultValue="@string/default_step_time"
+        android:entries="@array/stepTime"
+        android:entryValues="@array/stepTimeValues"/>
     <SwitchPreference
         android:key="@string/pref_vibrate"
         android:title="@string/vibrate"

@@ -51,6 +51,9 @@ public class TimerServiceReceiver extends BroadcastReceiver {
                 case IntentAction.TIMER_PLUS:
                     ((TimerService) context).timerPlus();
                     break;
+                case IntentAction.STEP_TIME:
+                    ((TimerService) context).stepTime();
+                    break;
                 case IntentAction.SETS_MINUS:
                     ((TimerService) context).setsMinus();
                     break;

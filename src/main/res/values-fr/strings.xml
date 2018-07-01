@@ -45,6 +45,7 @@
     <string name="timer_minus">Décrémentation du temps</string>
     <string name="sets_picker_enable">Nombre de minuteurs</string>
     <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
+    <string name="step_time">Saut de temps</string>
     <string name="vibrate">Vibreur</string>
     <string name="vibrate_summary">Vibration lorsque le temps est écoulé</string>
     <string name="ringtone">Son</string>

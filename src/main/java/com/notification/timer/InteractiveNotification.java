@@ -69,7 +69,8 @@ class InteractiveNotification extends Notification {
 
     private ButtonsLayout buttonsLayout;
     private ButtonAction button0, button1, button2;
-    private int timerMinusResId;
+    private long stepTime;
+    private int stepTimeResId;
 
     void setVibrationEnable(boolean vibrationEnable) {
         this.vibrationEnable = vibrationEnable;
@@ -125,8 +126,9 @@ class InteractiveNotification extends Notification {
         this.colorDone = colorDone;
     }
 
-    void setTimerMinusResId(int resId) {
-        this.timerMinusResId = resId;
+    void setStepTime(long stepTime) {
+        this.stepTime = stepTime;
+        this.stepTimeResId = stepTime > 0 ? MainActivity.getTimerPlusResId(stepTime) : MainActivity.getTimerMinusResId(-stepTime);
     }
 
     void updateNotificationChannels() {
@@ -158,7 +160,7 @@ class InteractiveNotification extends Notification {
         RESET("reset"),
         NEXT_SET("next_set"),
         EXTRA_SET("extra_set"),
-        TIMER_MINUS("timer_minus"),
+        STEP_TIME("step_time"),
         DISMISS("dismiss");
 
         private final String action;
@@ -377,7 +379,7 @@ class InteractiveNotification extends Notification {
                     button0 = ButtonAction.START;
                     break;
                 case RUNNING:
-                    button2 = ButtonAction.TIMER_MINUS;
+                    button2 = ButtonAction.STEP_TIME;
                     button1 = ButtonAction.NEXT_SET;
                     button0 = ButtonAction.PAUSE;
                     break;
@@ -449,9 +451,13 @@ class InteractiveNotification extends Notification {
                 iconId = R.drawable.ic_chevrons_right;
                 intent = new Intent().setAction(IntentAction.EXTRA_SET);
                 break;
-            case TIMER_MINUS:
-                iconId = timerMinusResId;
-                intent = new Intent().setAction(IntentAction.TIMER_MINUS);
+            case STEP_TIME:
+                iconId = stepTimeResId;
+                if (stepTime > 0 && timerCurrent + stepTime > MainActivity.TIMER_MAX) {
+                    intent = new Intent().setAction(IntentAction.NO_ACTION);
+                } else {
+                    intent = new Intent().setAction(IntentAction.STEP_TIME);
+                }
                 break;
             case RESET:
                 iconId = R.drawable.ic_chevrons_left;
