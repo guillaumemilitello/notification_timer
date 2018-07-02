@@ -133,6 +133,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             updateNotificationChannelPreferences();
         }
         updateSummaries();
+        updateStepTimePreference();
         updateTimerGetReadySummary();
         updateGetReadyPreferences();
         updateLightColorPreference();
@@ -286,6 +287,17 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         enablePreference(settingsFragment.findPreference(getString(R.string.pref_custom_color_ready)), timerGetReadyEnable);
     }
 
+    private void updateStepTimePreference() {
+        ListPreference listPreference = (ListPreference) settingsFragment.findPreference(getString(R.string.pref_step_time));
+        Long stepTime = Long.parseLong(listPreference.getValue());
+        Log.d(TAG, "updateStepTimePreference: stepTime=" + stepTime + ", str=" + listPreference.getValue());
+        if (stepTime < 0) {
+            listPreference.setSummary(String.format(Locale.US, getString(R.string.step_time_decrement), -stepTime));
+        } else {
+            listPreference.setSummary(String.format(Locale.US, getString(R.string.step_time_increment), stepTime));
+        }
+    }
+
     private void enablePreference(Preference preference, boolean enable) {
         if (preference != null) {
             preference.setEnabled(enable);
@@ -340,6 +352,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
                     if (key.equals(getString(R.string.pref_light_color_enable))) {
                         updateLightColorPreference();
+                    }
+
+                    if (key.equals(getString(R.string.pref_step_time))) {
+                        updateStepTimePreference();
                     }
                 }
             }

@@ -778,9 +778,15 @@ public class TimerService extends Service {
             timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
-        } else if (key.equals(getString(R.string.pref_step_time))) {
-            stepTime = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_step_time)));
+        } else if (key.equals(getString(R.string.pref_step_time))) { // timerMinus must be set before in updateAllPreferences()
+            String timerMinusString = Long.toString(-timerMinus);
+            stepTime = Long.parseLong(sharedPreferences.getString(key, timerMinusString));
             interactiveNotification.setStepTime(stepTime);
+            if (!sharedPreferences.contains(getString(R.string.pref_step_time))) { // keep the previous timerMinus preference when updating
+                SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                sharedPreferencesEditor.putString(getString(R.string.pref_step_time), timerMinusString);
+                sharedPreferencesEditor.apply();
+            }
         } else if (key.equals(getString(R.string.pref_vibrate))) {
             boolean vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
             interactiveNotification.setVibrationEnable(vibrationEnable);

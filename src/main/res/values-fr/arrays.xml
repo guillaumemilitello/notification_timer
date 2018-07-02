@@ -11,18 +11,18 @@
     </string-array>
 
     <string-array name="stepTime">
-        <item>Plus 60 secondes</item>
-        <item>Plus 45 secondes</item>
-        <item>Plus 30 secondes</item>
-        <item>Plus 20 secondes</item>
-        <item>Plus 15 secondes</item>
-        <item>Plus 10 secondes</item>
-        <item>Moins 10 secondes</item>
-        <item>Moins 15 secondes</item>
-        <item>Moins 20 secondes</item>
-        <item>Moins 30 secondes</item>
-        <item>Moins 45 secondes</item>
-        <item>Moins 60 secondes</item>
+        <item>+60 secondes</item>
+        <item>+45 secondes</item>
+        <item>+30 secondes</item>
+        <item>+20 secondes</item>
+        <item>+15 secondes</item>
+        <item>+10 secondes</item>
+        <item>-10 secondes</item>
+        <item>-15 secondes</item>
+        <item>-20 secondes</item>
+        <item>-30 secondes</item>
+        <item>-45 secondes</item>
+        <item>-60 secondes</item>
     </string-array>
 
     <string-array name="lightFlashRate">
