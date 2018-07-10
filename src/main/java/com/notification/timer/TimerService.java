@@ -89,6 +89,7 @@ public class TimerService extends Service {
     }
 
     // Settings
+    private boolean setsNumberReset;
     private boolean timerGetReadyEnable;
     private int timerGetReady;
     private long stepTime;
@@ -389,7 +390,11 @@ public class TimerService extends Service {
     void reset() {
         Log.d(TAG, "reset");
 
-        setsCurrent = 1;
+        if (setsNumberReset) {
+            setsCurrent = 1;
+        } else if (state == State.RUNNING || state == State.PAUSED) {
+            setsCurrent += 1;
+        }
         timerCurrent = timerUser;
 
         stopCountDown();
@@ -411,7 +416,11 @@ public class TimerService extends Service {
 
         timerCurrent = 0;
         timerUser = 0;
-        setsCurrent = 0;
+
+        if (setsNumberReset) {
+            setsCurrent = 0;
+        }
+
         setsUser = 0;
 
         updateStateIntent(State.WAITING);
@@ -751,6 +760,7 @@ public class TimerService extends Service {
         if (preferences != null) {
             updatePreference(getString(R.string.pref_timer_minus));
             updatePreference(getString(R.string.pref_timer_plus));
+            updatePreference(getString(R.string.pref_sets_number_reset));
             updatePreference(getString(R.string.pref_step_time));
             updatePreference(getString(R.string.pref_vibrate));
             updatePreference(getString(R.string.pref_ringtone_uri));
@@ -778,6 +788,8 @@ public class TimerService extends Service {
             timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
+        } else if (key.equals(getString(R.string.pref_sets_number_reset))) {
+            setsNumberReset = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_reset));
         } else if (key.equals(getString(R.string.pref_step_time))) { // timerMinus must be set before in updateAllPreferences()
             String timerMinusString = Long.toString(-timerMinus);
             stepTime = Long.parseLong(sharedPreferences.getString(key, timerMinusString));
@@ -862,7 +874,8 @@ public class TimerService extends Service {
         releaseWakeLock();
         unregisterReceiver(timerServiceReceiver);
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
-        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
+        setsCurrent = 0; // Always clear the timer number when quitting the app.
+        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
     @Override

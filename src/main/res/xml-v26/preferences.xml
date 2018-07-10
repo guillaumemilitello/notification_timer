@@ -22,6 +22,11 @@
         android:title="@string/sets_picker_enable"
         android:summary="@string/sets_picker_enable_summary"
         android:defaultValue="@bool/default_sets_picker"/>
+    <SwitchPreference
+        android:key="@string/pref_sets_number_reset"
+        android:title="@string/sets_number_reset"
+        android:summary="@string/sets_number_reset_summary"
+        android:defaultValue="@bool/default_sets_number_reset"/>
 
     </PreferenceCategory>
 

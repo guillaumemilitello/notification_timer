@@ -18,6 +18,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/setsTimerReset"
+        android:orderInCategory="100"
+        android:title="@string/setsTimerReset"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/keepScreenOn"
         android:title="@string/keepScreenOn"
         android:checkable="true"

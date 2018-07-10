@@ -2,6 +2,7 @@
 <resources>
     <string name="feedback">Envoyer un retour…</string>
     <string name="rateApp">Noter l\'application</string>
+    <string name="setsTimerReset">Mise à zero du nombre de minuteurs</string>
     <string name="help">Indications</string>
     <string name="settings">Paramètres</string>
     <string name="keepScreenOn">Écran toujours allumé</string>
@@ -45,6 +46,8 @@
     <string name="timer_minus">Décrémentation du temps</string>
     <string name="sets_picker_enable">Nombre de minuteurs</string>
     <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
+    <string name="sets_number_reset">Réinitialisation du nombre de minuteurs</string>
+    <string name="sets_number_reset_summary">Remise à zéro du nombre total de minuteurs à chaque nouvelle saisie d\'un minuteur</string>
     <string name="step_time">Saut de temps</string>
     <string name="step_time_increment">Incrémentation de %1$d secondes</string>
     <string name="step_time_decrement">Décrémentation de %1$d secondes</string>

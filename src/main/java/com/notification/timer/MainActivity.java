@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     // User preferences
     private boolean setsPickerEnable;
+    private boolean setsNumberReset;
     private boolean vibrationEnable;
     private Uri ringtoneUri;
     private boolean timerGetReadyEnable;
@@ -623,7 +624,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updateButtonsLayout(ButtonsLayout.WAITING_SETS);
             setsPickerBuilder.show();
         } else {
-            setsCurrent = 1;
+            if (setsNumberReset) {
+                setsCurrent = 1;
+            }
             setsUser = Integer.MAX_VALUE;
             Log.d(TAG, "onDialogHmsSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
             updateSetsDisplay();
@@ -634,7 +637,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
         int sets = number.intValue();
-        setsCurrent = 1;
+        if (setsNumberReset) {
+            setsCurrent = 1;
+        }
         setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         updateSetsDisplay();
@@ -741,7 +746,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                     setsTextView.setText(String.format(Locale.US, "%d", setsUser - setsCurrent + 1));
                 }
             } else {
-                setsTextView.setText("0");
+                setsTextView.setText(String.format(Locale.US, "%d", setsNumberReset ? 0 : setsCurrent));
             }
         }
     }
@@ -774,7 +779,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         timerCurrent = preset.getTimer();
         timerUser = timerCurrent;
-        setsCurrent = 1;
+        if (setsNumberReset) {
+            setsCurrent = 1;
+        }
         setsUser = preset.getSets();
 
         timerProgressBar.setMax((int) timerUser);
@@ -859,8 +866,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         timerUser = 0;
         timerCurrent = 0;
-        setsCurrent = 0;
         setsUser = 0;
+
+        if (setsNumberReset) {
+            setsCurrent = 0;
+        }
 
         updateButtonsLayout(ButtonsLayout.WAITING);
         updatePresetsVisibility();
@@ -1027,6 +1037,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 } catch (ActivityNotFoundException e) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
                 }
+                return true;
+            case R.id.setsTimerReset:
+                if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+                    setsCurrent = 1;
+                } else {
+                    setsCurrent = 0;
+                }
+                if (timerService != null) {
+                    timerService.setSetsCurrent(setsCurrent);
+                }
+                updateSetsDisplay();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1261,7 +1282,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 updateButtons(ButtonAction.CLEAR, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case READY:
-                buttonAction = (setsCurrent > 1)? ButtonAction.RESET : ButtonAction.CLEAR;
+                buttonAction = (setsNumberReset && setsCurrent > 1)? ButtonAction.RESET : ButtonAction.CLEAR;
                 updateButtons(buttonAction, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case RUNNING:
@@ -1528,6 +1549,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updatePreference(getString(R.string.pref_timer_minus));
             updatePreference(getString(R.string.pref_timer_plus));
             updatePreference(getString(R.string.pref_sets_picker_enable));
+            updatePreference(getString(R.string.pref_sets_number_reset));
             updatePreference(getString(R.string.pref_vibrate));
             updatePreference(getString(R.string.pref_ringtone_uri));
             updatePreference(getString(R.string.pref_timer_get_ready_enable));
@@ -1555,6 +1577,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             imageButtonTimerPlusMulti.setImageResource(resId);
         } else if (key.equals(getString(R.string.pref_sets_picker_enable))) {
             setsPickerEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_picker));
+        } else if (key.equals(getString(R.string.pref_sets_number_reset))) {
+            setsNumberReset = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_reset));
         } else if (key.equals(getString(R.string.pref_vibrate))) {
             vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
         } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
