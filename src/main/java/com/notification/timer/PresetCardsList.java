@@ -424,8 +424,10 @@ public class PresetCardsList extends Fragment {
                 alertDialog.show();
             } else {
                 int position = getAdapterPosition();
-                Log.d(TAG, "onClick: position=" + position);
-                inputPreset(getAdapterPosition());
+                Log.d(TAG, "onClick: position=" + position +", userPosition=" + userPosition);
+                if (position != userPosition) {
+                    inputPreset(getAdapterPosition());
+                }
             }
         }
     }
