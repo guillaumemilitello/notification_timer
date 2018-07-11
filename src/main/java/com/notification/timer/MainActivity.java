@@ -624,7 +624,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updateButtonsLayout(ButtonsLayout.WAITING_SETS);
             setsPickerBuilder.show();
         } else {
-            if (setsNumberReset) {
+            if (setsNumberReset || setsCurrent == 0 || setsUser != Integer.MAX_VALUE) {
                 setsCurrent = 1;
             }
             setsUser = Integer.MAX_VALUE;
@@ -637,7 +637,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
         int sets = number.intValue();
-        if (setsNumberReset) {
+        if (setsNumberReset || setsCurrent == 0 || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;
         }
         setsUser = sets;
@@ -779,10 +779,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         timerCurrent = preset.getTimer();
         timerUser = timerCurrent;
-        if (setsNumberReset) {
+        setsUser = preset.getSets();
+
+        if (setsNumberReset || setsCurrent == 0 || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;
         }
-        setsUser = preset.getSets();
 
         timerProgressBar.setMax((int) timerUser);
         terminatePickers();
@@ -799,8 +800,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (timerService != null) {
             timerService.setTimerCurrent(timerCurrent);
             timerService.setTimerUser(timerUser);
-            timerService.setSetsCurrent(setsCurrent);
             timerService.setSetsUser(setsUser);
+            timerService.setSetsCurrent(setsCurrent);
             timerService.setReadyState();
         }
     }
