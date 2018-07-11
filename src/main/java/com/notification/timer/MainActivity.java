@@ -699,7 +699,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private void updateColorLayout() {
-        int progressColor = Color.WHITE, backgroundColor = Color.WHITE;
+        int progressColor = Color.WHITE;
+        int backgroundColor = Color.WHITE;
+        int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
         switch (buttonsLayout) {
             case READY:
                 break;
@@ -717,6 +719,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             default:
             case WAITING:
             case WAITING_SETS:
+                textColor = ContextCompat.getColor(this, R.color.timer_font_color_disabled);
                 backgroundColor = ContextCompat.getColor(this, R.color.preset_card_add_background);
                 progressColor = backgroundColor;
                 timerProgressBar.setMax(1);
@@ -726,7 +729,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
         timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
 
-        int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
         timerTextViewHours.setTextColor(textColor);
         timerTextViewSeparatorHours.setTextColor(textColor);
         timerTextViewMinutes.setTextColor(textColor);
