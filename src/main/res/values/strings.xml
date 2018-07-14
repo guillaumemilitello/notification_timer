@@ -51,7 +51,7 @@
     <string name="sets_picker_enable">Timer number</string>
     <string name="sets_picker_enable_summary">Add the possibility to enter a timers number limit indicator at the creation</string>
     <string name="sets_number_reset">Timer number reset</string>
-    <string name="sets_number_reset_summary">Reset the timer number on each timer entry, works only with preset without timer number\nClosing the application still clear the number</string>
+    <string name="sets_number_reset_summary">Reset the timer number on each timer entry\nWorks only with preset without timer number</string>
     <string name="step_time">Step time</string>
     <string name="step_time_increment">%1$d seconds increment</string>
     <string name="step_time_decrement">%1$d seconds decrement</string>

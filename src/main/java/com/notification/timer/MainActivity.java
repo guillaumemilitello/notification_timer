@@ -624,10 +624,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updateButtonsLayout(ButtonsLayout.WAITING_SETS);
             setsPickerBuilder.show();
         } else {
-            if (setsNumberReset || setsCurrent == 0 || setsUser != Integer.MAX_VALUE) {
-                setsCurrent = 1;
-            }
             setsUser = Integer.MAX_VALUE;
+            if (setsNumberReset) {
+                setsCurrent = 1;
+            } else if (timerState == TimerService.State.WAITING) {
+                setsCurrent += 1;
+            }
             Log.d(TAG, "onDialogHmsSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
             updateSetsDisplay();
             terminatePickers();
@@ -636,11 +638,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
-        int sets = number.intValue();
-        if (setsNumberReset || setsCurrent == 0 || setsUser != Integer.MAX_VALUE) {
+        setsUser= number.intValue();
+        if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;
+        } else if (timerState == TimerService.State.WAITING) {
+            setsCurrent += 1;
         }
-        setsUser = sets;
         Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         updateSetsDisplay();
         terminatePickers();
@@ -783,8 +786,10 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerUser = timerCurrent;
         setsUser = preset.getSets();
 
-        if (setsNumberReset || setsCurrent == 0 || setsUser != Integer.MAX_VALUE) {
+        if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;
+        } else if (timerState == TimerService.State.WAITING) {
+            setsCurrent += 1;
         }
 
         timerProgressBar.setMax((int) timerUser);
@@ -864,7 +869,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     void clear() {
-        timerState = TimerService.State.WAITING;
         Log.d(TAG, "clear: timerState=" + timerState);
 
         timerUser = 0;
@@ -873,8 +877,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         if (setsNumberReset) {
             setsCurrent = 0;
+        } else if (timerState == TimerService.State.READY) {
+            setsCurrent -= 1;
         }
 
+        timerState = TimerService.State.WAITING;
         updateButtonsLayout(ButtonsLayout.WAITING);
         updatePresetsVisibility();
     }
