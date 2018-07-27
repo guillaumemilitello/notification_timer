@@ -1,5 +1,6 @@
 package com.notification.timer;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentCallbacks2;
@@ -152,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         CLEAR("clear"),
         CLEAR_DISABLED("clear_disabled"),
         RESET("reset"),
+        RESET_DISABLED("reset_disabled"),
         NEXT_SET("next_set"),
         NEXT_SET_DISABLED("next_set_disabled");
 
@@ -1284,6 +1286,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         buttonsLayout = layout;
         Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
         ButtonAction buttonAction;
+        ButtonAction buttonReset = !setsNumberReset && setsUser == Integer.MAX_VALUE ? ButtonAction.RESET_DISABLED : ButtonAction.RESET;
         switch (layout) {
             case WAITING:
                 updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
@@ -1297,14 +1300,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 break;
             case RUNNING:
                 buttonAction = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
-                updateButtons(ButtonAction.RESET, ButtonAction.PAUSE, buttonAction);
+                updateButtons(buttonReset, ButtonAction.PAUSE, buttonAction);
                 break;
             case PAUSED:
                 buttonAction = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
-                updateButtons(ButtonAction.RESET, ButtonAction.RESUME, buttonAction);
+                updateButtons(buttonReset, ButtonAction.RESUME, buttonAction);
                 break;
             case STOPPED:
-                updateButtons(ButtonAction.RESET, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
+                updateButtons(buttonReset, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                 break;
             default:
                 Log.e(TAG, "updateButtonsLayout: impossible layout=" + layout.toString());
@@ -1427,6 +1430,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                         return true;
                     }
                 });
+                return true;
+            case RESET_DISABLED:
+                button.setEnabled(false);
+                button.setImageResource(R.drawable.ic_chevrons_left);
+                button.setAlpha(ALPHA_DISABLED);
                 return true;
             default:
                 Log.e(TAG, "updateButton: impossible with action=" + action);

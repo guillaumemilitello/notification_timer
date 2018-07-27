@@ -390,7 +390,7 @@ public class TimerService extends Service {
     void reset() {
         Log.d(TAG, "reset");
 
-        if (setsNumberReset) {
+        if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;
         } else if (state == State.RUNNING || state == State.PAUSED) {
             setsCurrent += 1;
@@ -791,6 +791,7 @@ public class TimerService extends Service {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
         } else if (key.equals(getString(R.string.pref_sets_number_reset))) {
             setsNumberReset = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_reset));
+            interactiveNotification.setSetsNumberReset(setsNumberReset);
         } else if (key.equals(getString(R.string.pref_step_time))) { // timerMinus must be set before in updateAllPreferences()
             String timerMinusString = Long.toString(-timerMinus);
             stepTime = Long.parseLong(sharedPreferences.getString(key, timerMinusString));

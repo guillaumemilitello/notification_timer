@@ -1,6 +1,7 @@
 package com.notification.timer;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -64,6 +65,7 @@ class InteractiveNotification extends Notification {
     private int setsCurrent, setsUser;
     private String timerString, setsString;
 
+    private boolean setsNumberReset;
     private boolean timerGetReadyEnable;
     private int timerGetReady;
 
@@ -78,6 +80,10 @@ class InteractiveNotification extends Notification {
 
     void setVibrationReadyEnable(boolean vibrationReadyEnable) {
         this.vibrationReadyEnable = vibrationReadyEnable;
+    }
+
+    void setSetsNumberReset(boolean setsNumberReset) {
+        this.setsNumberReset = setsNumberReset;
     }
 
     void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
@@ -246,6 +252,7 @@ class InteractiveNotification extends Notification {
         updateButtonsLayout(ButtonsLayout.READY);
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     private void createNotificationChannels() {
         boolean doneChannelCreated = false;
         boolean readyChannelCreated = false;
@@ -278,6 +285,7 @@ class InteractiveNotification extends Notification {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     private void updateDoneChannel() {
         NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getDoneChannelId());
         Log.d(TAG, "updateDoneChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
@@ -317,6 +325,7 @@ class InteractiveNotification extends Notification {
         Log.d(TAG, "createDoneChannel: notificationChannel=" + notificationChannel);
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     private void updateReadyChannel() {
         NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getReadyChannelId());
         Log.d(TAG, "updateReadyChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
@@ -374,8 +383,14 @@ class InteractiveNotification extends Notification {
         if (buttonsLayout == ButtonsLayout.READY || buttonsLayout != layout) {
             switch (layout) {
                 case READY:
-                    button2 = (setsCurrent > 1)? ButtonAction.DISMISS : ButtonAction.NO_ACTION;
-                    button1 = (setsCurrent > 1)? ButtonAction.RESET   : ButtonAction.DISMISS;
+                    // Do not display the RESET button for the first set
+                    if ((!setsNumberReset && setsUser == Integer.MAX_VALUE) || setsCurrent <= 1) {
+                        button2 = ButtonAction.NO_ACTION;
+                        button1 = ButtonAction.DISMISS;
+                    } else {
+                        button2 = ButtonAction.DISMISS;
+                        button1 = ButtonAction.RESET;
+                    }
                     button0 = ButtonAction.START;
                     break;
                 case RUNNING:
@@ -389,8 +404,13 @@ class InteractiveNotification extends Notification {
                     button0 = ButtonAction.RESUME;
                     break;
                 case SET_DONE:
-                    button2 = ButtonAction.DISMISS;
-                    button1 = ButtonAction.RESET;
+                    if (!setsNumberReset && setsUser == Integer.MAX_VALUE) {
+                        button2 = ButtonAction.NO_ACTION;
+                        button1 = ButtonAction.DISMISS;
+                    } else {
+                        button2 = ButtonAction.DISMISS;
+                        button1 = ButtonAction.RESET;
+                    }
                     button0 = ButtonAction.START;
                     break;
                 case ALL_SETS_DONE:
@@ -593,6 +613,7 @@ class InteractiveNotification extends Notification {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     private void setCustomContent(RemoteViews remoteView, NotificationMode notificationMode, boolean layoutSetDone) {
         if (notificationMode == NotificationMode.UPDATE && headsUpUpdateCount > 0) {
             // Avoid updating the headsUpContentView when it won't be visible
