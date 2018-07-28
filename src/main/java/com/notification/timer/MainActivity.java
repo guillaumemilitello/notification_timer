@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             activityLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
+                @TargetApi(Build.VERSION_CODES.N)
                 public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     // Used for the free-form window resizing, small resize may not trigger onDestroy()
                     if (isInMultiWindowMode() && (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) &&

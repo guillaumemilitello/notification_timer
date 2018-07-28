@@ -311,7 +311,7 @@ class InteractiveNotification extends Notification {
         }
     }
 
-    @SuppressLint("InlinedApi")
+    @TargetApi(Build.VERSION_CODES.O)
     private void createDoneChannel() {
         notificationManager.deleteNotificationChannel(getDoneChannelId());
         NotificationChannel notificationChannel = new NotificationChannel(getNewDoneChannelId(), context.getString(R.string.notif_channel_done), NotificationManager.IMPORTANCE_HIGH);
@@ -345,7 +345,7 @@ class InteractiveNotification extends Notification {
         }
     }
 
-    @SuppressLint("InlinedApi")
+    @TargetApi(Build.VERSION_CODES.O)
     private void createReadyChannel() {
         notificationManager.deleteNotificationChannel(getReadyChannelId());
         NotificationChannel notificationChannel = new NotificationChannel(getNewReadyChannelId(), context.getString(R.string.notif_channel_ready), NotificationManager.IMPORTANCE_HIGH);
@@ -358,7 +358,7 @@ class InteractiveNotification extends Notification {
         Log.d(TAG, "createReadyChannel: notificationChannel=" + notificationChannel);
     }
 
-    @SuppressLint("InlinedApi")
+    @TargetApi(Build.VERSION_CODES.O)
     private void createUpdateChannel() {
         NotificationChannel notificationChannel = new NotificationChannel(updateChannelId, context.getString(R.string.notif_channel_update), NotificationManager.IMPORTANCE_LOW);
         notificationChannel.setShowBadge(false);

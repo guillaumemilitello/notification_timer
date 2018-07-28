@@ -2,6 +2,7 @@ package com.notification.timer;
 
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
@@ -209,6 +210,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         Log.d(TAG, "updateTimerGetReadySummary: summary=" + summary);
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
     private void updateNotificationChannelPreferences() {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         List<NotificationChannel> notificationChannelList = notificationManager.getNotificationChannels();

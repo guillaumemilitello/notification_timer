@@ -446,7 +446,7 @@ public class TimerService extends Service {
         timerMinus(timerMinus);
     }
 
-    void timerMinus(long timerMinus) {
+    private void timerMinus(long timerMinus) {
         timerCurrent = Math.max(timerCurrent - timerMinus, 0);
         Log.d(TAG, "timerMinus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
@@ -460,7 +460,7 @@ public class TimerService extends Service {
         timerPlus(timerPlus);
     }
 
-    void timerPlus(long timerPlus) {
+    private void timerPlus(long timerPlus) {
         timerCurrent += timerPlus;
         Log.d(TAG, "timerPlus: timerCurrent=" + timerCurrent);
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
