@@ -17,7 +17,6 @@
         android:layout_marginBottom="3dp" />
 
     <View
-        android:id="@+id/info_divider"
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="@color/default_divider_color_light"/>

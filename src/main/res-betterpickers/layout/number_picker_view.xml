@@ -16,13 +16,11 @@
         android:layout_marginBottom="3dp" />
 
     <View
-        android:id="@+id/info_divider"
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="@color/default_divider_color_light"/>
 
     <LinearLayout
-            android:id="@+id/number_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/medium_font_padding"
@@ -30,7 +28,6 @@
             android:paddingLeft="@dimen/timer_padding_left"
             android:gravity="center">
         <com.codetroopers.betterpickers.widget.AutoScrollHorizontalScrollView
-                android:id="@+id/horizontal_scroll_view"
                 android:layout_width="0dip"
                 android:layout_weight="2"
                 android:layout_height="wrap_content">
