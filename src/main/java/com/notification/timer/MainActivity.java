@@ -876,13 +876,13 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         timerUser = 0;
         timerCurrent = 0;
-        setsUser = 0;
 
-        if (setsNumberReset) {
+        if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 0;
-        } else if (timerState == TimerService.State.READY) {
+        } else if (timerState == TimerService.State.RUNNING || timerState == TimerService.State.PAUSED) {
             setsCurrent -= 1;
         }
+        setsUser = 0;
 
         timerState = TimerService.State.WAITING;
         updateButtonsLayout(ButtonsLayout.WAITING);
@@ -1433,9 +1433,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 });
                 return true;
             case RESET_DISABLED:
-                button.setEnabled(false);
+                button.setEnabled(true);
                 button.setImageResource(R.drawable.ic_chevrons_left);
                 button.setAlpha(ALPHA_DISABLED);
+                button.setOnClickListener(null);
+                button.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showAlertDialogClear();
+                        return true;
+                    }
+                });
                 return true;
             default:
                 Log.e(TAG, "updateButton: impossible with action=" + action);

@@ -416,13 +416,13 @@ public class TimerService extends Service {
 
         timerCurrent = 0;
         timerUser = 0;
-        setsUser = 0;
 
-        if (setsNumberReset) {
+        if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 0;
-        } else if (state == State.READY) {
+        } else if (state == State.RUNNING || state == State.PAUSED) {
             setsCurrent -= 1;
         }
+        setsUser = 0;
 
         updateStateIntent(State.WAITING);
         updateTimerIntent(timerCurrent, setsCurrent);
