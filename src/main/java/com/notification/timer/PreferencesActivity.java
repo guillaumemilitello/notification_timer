@@ -98,7 +98,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
         timerGetReadyPickerBuilder = new HmsPickerBuilder();
         timerGetReadyPickerBuilder.setFragmentManager(getFragmentManager());
-        timerGetReadyPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
+        timerGetReadyPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment);
         timerGetReadyPickerBuilder.setTimeInSeconds(0);
         timerGetReadyPickerBuilder.setTitleText(getString(R.string.picker_timer_get_ready));
 
@@ -112,7 +112,13 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
         }
 
-        sharedPreferencesFile = new File(Environment.getExternalStorageDirectory() + "/NotificationTimer/prefs.backup");
+        String relativePath = "/NotificationTimer/prefs.backup";
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            sharedPreferencesFile = new File(getBaseContext().getExternalFilesDir(null), relativePath);
+        } else {
+            sharedPreferencesFile = new File(getBaseContext().getFilesDir(), relativePath);
+        }
+
         restoringPreferences = false;
         overridePreferencesFile = false;
     }
@@ -409,9 +415,15 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 }
             } else {
                 Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " does not exists");
-                if(!sharedPreferencesFile.getParentFile().mkdirs() && !sharedPreferencesFile.createNewFile()) {
+                if (sharedPreferencesFile.getParentFile().mkdirs()) {
+                    if (!sharedPreferencesFile.createNewFile()) {
+                        Log.d(TAG, "saveSharedPreferencesToFile: createNewFile");
+                        Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Log.d(TAG, "saveSharedPreferencesToFile: mkdirs");
                     Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
-                    return;
                 }
             }
             objectOutputStream = new ObjectOutputStream(new FileOutputStream(sharedPreferencesFile));
