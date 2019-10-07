@@ -172,8 +172,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         updateSummaries();
         updateStepTimePreference();
         updateTimerGetReadySummary();
-        updateGetReadyPreferences();
-        updateLightColorPreference();
         updateBackupPreferences();
     }
 
@@ -190,8 +188,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         }
         updateSummaries();
         updateTimerGetReadySummary();
-        updateGetReadyPreferences();
-        updateLightColorPreference();
     }
 
     private void updatePreference(Preference preference, Object newVal) {
@@ -312,19 +308,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         });
     }
 
-    private void updateLightColorPreference() {
-        boolean lightColorEnable = sharedPreferences.getBoolean(getString(R.string.pref_light_color_enable), true);
-        enablePreference(settingsFragment.findPreference(getString(R.string.pref_light_color)), lightColorEnable);
-    }
-
-    private void updateGetReadyPreferences() {
-        boolean timerGetReadyEnable = sharedPreferences.getBoolean(getString(R.string.pref_timer_get_ready_enable), true);
-        enablePreference(settingsFragment.findPreference(getString(R.string.pref_timer_get_ready)), timerGetReadyEnable);
-        enablePreference(settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_vibrate)), timerGetReadyEnable);
-        enablePreference(settingsFragment.findPreference(getString(R.string.pref_timer_get_ready_ringtone_uri)), timerGetReadyEnable);
-        enablePreference(settingsFragment.findPreference(getString(R.string.pref_custom_color_ready)), timerGetReadyEnable);
-    }
-
     private void updateStepTimePreference() {
         ListPreference listPreference = (ListPreference) settingsFragment.findPreference(getString(R.string.pref_step_time));
         Long stepTime = Long.parseLong(listPreference.getValue());
@@ -383,14 +366,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     // preferenceChangeListener implementation
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
                     updateSummary(settingsFragment.findPreference(key));
-
-                    if (key.equals(getString(R.string.pref_timer_get_ready_enable))) {
-                        updateGetReadyPreferences();
-                    }
-
-                    if (key.equals(getString(R.string.pref_light_color_enable))) {
-                        updateLightColorPreference();
-                    }
 
                     if (key.equals(getString(R.string.pref_step_time))) {
                         updateStepTimePreference();
