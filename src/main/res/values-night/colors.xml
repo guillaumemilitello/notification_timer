@@ -39,15 +39,17 @@
     <color name="preset_card_sets_font_color">#D3D3D3</color>
     <color name="preset_fragment_background">#626886</color>
     <color name="preset_fragment_transparent_background">#BEBEBE</color>
-    <color name="preset_card_background">#5F5F5F</color>
+    <color name="preset_card_background">#505050</color>
     <color name="preset_card_user_background">#1B1B1B</color>
     <color name="preset_card_add_tint">#E2E2E2</color>
     <color name="preset_card_action_tint">#FAFAFA</color>
 
     <!-- Main activity -->
-    <color name="timer_font_color">#424242</color>
-    <color name="timer_font_color_disabled">#b1b4c8</color>
+    <color name="main_background">#1B1B1B</color>
+    <color name="timer_font_color">#e2e2e2</color>
+    <color name="timer_font_color_disabled">#66696B</color>
     <color name="presetsListEmpty">#1B1B1B</color>
+    <color name="full_buttons_tint">#e2e2e2</color>
     <!-- Menu -->
     <color name="menu_font_color">@color/white</color>
     <color name="menu_background">#1B1B1B</color>

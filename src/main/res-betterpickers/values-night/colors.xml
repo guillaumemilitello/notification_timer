@@ -3,7 +3,7 @@
     <color name="default_text_color_holo">#ffffffff</color>
     <color name="default_text_color_holo_disabled">#ff4c4c4c</color>
     <color name="default_text_label_color_holo_disabled">#262626</color>
-    <color name="default_divider_color">#28ffffff</color>
+    <color name="default_divider_color">#14FFFFFF</color>
     <color name="default_button_background">#00000000</color>
     <color name="default_button_background_pressed">#3C3C3C</color>
     <color name="default_keyboard_indicator_color">#ff33b5e5</color>

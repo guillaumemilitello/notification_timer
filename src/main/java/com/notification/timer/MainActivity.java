@@ -733,8 +733,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private void updateColorLayout() {
-        int progressColor = Color.WHITE;
-        int backgroundColor = Color.WHITE;
+        int progressColor = ContextCompat.getColor(this, R.color.main_background);
+        int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
         int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
         switch (buttonsLayout) {
             case READY:

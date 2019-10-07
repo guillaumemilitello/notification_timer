@@ -86,7 +86,8 @@
         android:id="@+id/layoutActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/actionBar">
+        android:layout_below="@+id/actionBar"
+        android:background="@color/main_background">
 
         <LinearLayout
             android:id="@+id/presetsLayout"
@@ -409,6 +410,7 @@
                     android:adjustViewBounds="true"
                     android:id="@+id/imageButtonLeft"
                     android:src="@drawable/ic_chevrons_left"
+                    android:tint="@color/full_buttons_tint"
                     android:background="?selectableItemBackgroundBorderless"
                     android:layout_gravity="center"
                     android:layout_weight="1"/>
@@ -422,6 +424,7 @@
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonCenter"
                     android:src="@drawable/ic_play_circle"
+                    android:tint="@color/full_buttons_tint"
                     android:layout_weight="3"
                     android:background="?selectableItemBackgroundBorderless" />
 
@@ -432,6 +435,7 @@
                     android:layout_gravity="center"
                     android:id="@+id/imageButtonRight"
                     android:src="@drawable/ic_chevron_right"
+                    android:tint="@color/full_buttons_tint"
                     android:scaleType="centerInside"
                     android:adjustViewBounds="true"
                     android:background="?selectableItemBackgroundBorderless"

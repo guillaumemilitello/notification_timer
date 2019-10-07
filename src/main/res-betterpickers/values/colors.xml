@@ -4,7 +4,7 @@
     <color name="default_text_color_holo">#ff000000</color>
     <color name="default_text_color_holo_disabled">#ffb2b2b2</color>
     <color name="default_text_label_color_holo_disabled">#262626</color>
-    <color name="default_divider_color">#28000000</color>
+    <color name="default_divider_color">#1F000000</color>
     <color name="default_button_background">#00000000</color>
     <color name="default_button_background_pressed">#28737373</color>
     <color name="default_keyboard_indicator_color">#ff00ddff</color>
