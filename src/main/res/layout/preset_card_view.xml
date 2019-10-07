@@ -17,6 +17,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:baselineAligned="false"
+        android:background="@color/preset_card_user_background"
         android:weightSum="2">
 
             <LinearLayout
@@ -138,7 +139,8 @@
             android:layout_width="@dimen/preset_card_icon_size"
             android:layout_height="match_parent"
             android:src="@drawable/ic_preset_add"
-            android:padding="9dp"
+            android:tint="@color/preset_card_action_tint"
+            android:padding="13dp"
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:background="?selectableItemBackgroundBorderless" />

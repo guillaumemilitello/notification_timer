@@ -3,13 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/dialog_background">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/picker_timer"
+        android:textColor="@color/title_text_color_holo"
         android:fontFamily="sans-serif-light"
         android:id="@+id/textViewTitle"
         android:gravity="center_vertical|center_horizontal"
@@ -19,7 +21,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:background="@color/default_divider_color_light"/>
+        android:background="@color/default_divider_color"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -160,19 +162,19 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:background="@drawable/key_background_dark"
+            android:background="@drawable/key_background"
             android:contentDescription="@string/timer_delete"
             android:gravity="center"
             android:scaleType="center"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:src="@drawable/ic_backspace_normal_light" />
+            android:src="@drawable/ic_backspace_normal_dark" />
     </LinearLayout>
     <View
         android:id="@+id/dividerHms"
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:background="@color/default_divider_color_light"/>
+        android:background="@color/default_divider_color"/>
 
     <include
         layout="@layout/three_keys_view"

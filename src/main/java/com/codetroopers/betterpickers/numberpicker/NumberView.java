@@ -41,7 +41,7 @@ public class NumberView extends LinearLayout {
         mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
 
         // Init defaults
-        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
+        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
     }
 
     /**

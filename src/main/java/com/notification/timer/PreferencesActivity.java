@@ -447,7 +447,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     private void showAlertDialogFileOverride() {
         Log.d(TAG, "showAlertDialogFileOverride");
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
         alertDialog.setMessage(getString(R.string.preferences_backup_override));
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
                 new DialogInterface.OnClickListener() {

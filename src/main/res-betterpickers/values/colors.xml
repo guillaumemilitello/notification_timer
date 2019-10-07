@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="default_text_color_holo_dark">#ffffffff</color>
-    <color name="default_text_color_holo_dark_disabled">#ff4c4c4c</color>
-    <color name="default_text_label_color_holo_dark_disabled">#262626</color>
-    <color name="default_divider_color_dark">#28ffffff</color>
-    <color name="default_button_background_dark">#00000000</color>
-    <color name="default_button_background_pressed_dark">#46c5c1ff</color>
-    <color name="default_keyboard_indicator_color_dark">#ff33b5e5</color>
 
-    <color name="default_text_color_holo_light">#ff000000</color>
-    <color name="default_text_color_holo_light_disabled">#ffb2b2b2</color>
-    <color name="default_divider_color_light">#28000000</color>
-    <color name="default_button_background_light">#00000000</color>
-    <color name="default_button_background_pressed_light">#28000000</color>
-    <color name="default_keyboard_indicator_color_light">#ff00ddff</color>
+    <color name="default_text_color_holo">#ff000000</color>
+    <color name="default_text_color_holo_disabled">#ffb2b2b2</color>
+    <color name="default_text_label_color_holo_disabled">#262626</color>
+    <color name="default_divider_color">#28000000</color>
+    <color name="default_button_background">#00000000</color>
+    <color name="default_button_background_pressed">#28000000</color>
+    <color name="default_keyboard_indicator_color">#ff00ddff</color>
+    <color name="dialog_text_color_holo">#ff000000</color>
+    <color name="title_text_color_holo">#5C5C5C</color>
+    <color name="dialog_background">#ffffff</color>
 
     <color name="done_text_color_disabled">#cccccc</color>
 
     <color name="bpWhite">#ffffff</color>
-    <color name="bpblack">#ff000000</color>
+    <color name="bpBlack">#ff000000</color>
     <color name="bpBlue">#33b5e5</color>
 
 

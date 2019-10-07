@@ -14,12 +14,13 @@
 
     <ListView android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent"
+        android:background="@color/preferences_background"/>
 
     <FrameLayout
         android:id="@+id/content_frame"
         android:layout_below="@+id/preferences_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

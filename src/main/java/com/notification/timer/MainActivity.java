@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -223,6 +224,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
+        if (isDarkTheme())
+        {
+            Log.d(TAG, "Dark Theme");
+            setColor(R.color.colorPrimary, R.color.colorPrimaryDark);
+        }
+        else
+        {
+            Log.d(TAG, "Light Theme");
+            setColor(R.color.colorPrimary, R.color.colorPrimaryDark);
+        }
+
         // Update system color bar and icon for the system
         Toolbar toolbar = findViewById(R.id.actionBar);
         setSupportActionBar(toolbar);
@@ -295,13 +307,13 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         timerPickerBuilder = new HmsPickerBuilder();
         timerPickerBuilder.setFragmentManager(getFragmentManager());
-        timerPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
+        timerPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment);
         timerPickerBuilder.setTimeInSeconds(0);
         timerPickerBuilder.setTitleText(getString(R.string.picker_timer));
 
         setsPickerBuilder = new NumberPickerBuilder();
         setsPickerBuilder.setFragmentManager(getFragmentManager());
-        setsPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
+        setsPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment);
         setsPickerBuilder.setDecimalVisibility(View.INVISIBLE);
         setsPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
 
@@ -397,6 +409,23 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
         if (!timerServiceBound) {
             bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
+        }
+    }
+
+    private boolean isDarkTheme() {
+        return getResources().getConfiguration().UI_MODE_NIGHT_MASK == getResources().getConfiguration().UI_MODE_NIGHT_YES;
+    }
+
+    private void setColor(int colorPrimary, int colorPrimaryDark) {
+        Toolbar toolbar = findViewById(R.id.actionBar);
+        setSupportActionBar(toolbar);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, colorPrimaryDark));
+        setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
+                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
+                ContextCompat.getColor(this, colorPrimary)));
+        if (toolbar != null) {
+            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.bpWhite));
         }
     }
 
@@ -726,7 +755,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             case WAITING:
             case WAITING_SETS:
                 textColor = ContextCompat.getColor(this, R.color.timer_font_color_disabled);
-                backgroundColor = ContextCompat.getColor(this, R.color.preset_card_add_background);
+                backgroundColor = ContextCompat.getColor(this, R.color.preset_card_background);
                 progressColor = backgroundColor;
                 timerProgressBar.setMax(1);
                 timerProgressBar.setProgress(1);
@@ -1247,7 +1276,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     private void showAlertDialogAddPreset() {
         Log.d(TAG, "showAlertDialogAddPreset");
-        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this).create();
+        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
         if (buttonsLayout == ButtonsLayout.READY) {
             alertDialog.setMessage(getString(R.string.add_preset_reset_warning));
         } else {
@@ -1453,7 +1482,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     private void showAlertDialogClear() {
         Log.d(TAG, "showAlertDialogClear");
-        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this).create();
+        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
         alertDialog.setMessage(getString(R.string.clear_long_press));
         alertDialog.setButton(android.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
                 new DialogInterface.OnClickListener() {

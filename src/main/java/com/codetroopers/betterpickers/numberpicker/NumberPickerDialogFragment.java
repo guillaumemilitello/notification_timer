@@ -151,7 +151,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
         setCancelable(true);
 
         // Init defaults
-        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
+        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
         mDialogBackgroundResId = R.drawable.dialog_full_holo_dark;
 
         if (mTheme != -1) {

@@ -81,6 +81,8 @@
     </string-array>
 
     <integer-array name="colorValues">
+        <item>@color/black</item>
+        <item>@color/charcoal</item>
         <item>@color/dark_grey</item>
         <item>@color/grey</item>
         <item>@color/blue_grey</item>

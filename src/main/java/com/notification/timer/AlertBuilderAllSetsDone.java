@@ -11,7 +11,7 @@ class AlertBuilderAllSetsDone extends AlertDialog.Builder {
     private final static String TAG = "AlertBuilderAllSetsDone";
 
     AlertBuilderAllSetsDone(final Context context) {
-        super(context);
+        super(context, R.style.AlertDialogTheme);
         setTitle(context.getString(R.string.alert_time_out));
         setMessage(context.getString(R.string.alert_all_set_done));
         setNeutralButton(context.getString(R.string.alert_extra_set),

@@ -69,12 +69,12 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         layoutInflater.inflate(getLayoutId(), this);
 
         // Init defaults
-        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
-        mTextLabelColor = getResources().getColorStateList(R.color.default_text_label_color_holo_dark_disabled);
-        mKeyBackgroundResId = R.drawable.key_background_dark;
-        mButtonBackgroundResId = R.drawable.button_background_dark;
-        mDividerColor = getResources().getColor(R.color.default_divider_color_dark);
-        mDeleteDrawableSrcResId = R.drawable.ic_backspace_dark;
+        mTextColor = getResources().getColorStateList(R.color.default_text_color_holo);
+        mTextLabelColor = getResources().getColorStateList(R.color.default_text_color_holo);
+        mKeyBackgroundResId = R.drawable.key_background_night;
+        mButtonBackgroundResId = R.drawable.button_background;
+        mDividerColor = getResources().getColor(R.color.default_divider_color);
+        mDeleteDrawableSrcResId = R.drawable.ic_backspace_normal_dark;
 
         mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
     }

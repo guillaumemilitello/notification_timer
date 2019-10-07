@@ -78,11 +78,11 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         layoutInflater.inflate(getLayoutId(), this);
 
         // Init defaults
-        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo_dark);
-        mKeyBackgroundResId = R.drawable.key_background_dark;
-        mButtonBackgroundResId = R.drawable.button_background_dark;
-        mDeleteDrawableSrcResId = R.drawable.ic_backspace_dark;
-        mDividerColor = getResources().getColor(R.color.default_divider_color_dark);
+        mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
+        mKeyBackgroundResId = R.drawable.key_background_night;
+        mButtonBackgroundResId = R.drawable.button_background;
+        mDeleteDrawableSrcResId = R.drawable.ic_backspace_normal_dark;
+        mDividerColor = getResources().getColor(R.color.default_divider_color);
 
         mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
     }

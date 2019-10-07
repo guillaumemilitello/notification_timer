@@ -112,17 +112,25 @@
                 card_view:cardCornerRadius="5dp"
                 tools:ignore="HardcodedText,ContentDescription">
 
+                <LinearLayout
+                    android:id="@+id/addPresetButtonLayout"
+                    android:layout_width="@dimen/preset_card_icon_size"
+                    android:layout_height="match_parent"
+                    android:background="@color/preset_card_user_background">
+
                 <ImageButton
                     style="?android:attr/borderlessButtonStyle"
                     android:id="@+id/imageButtonAddPreset"
-                    android:layout_width="@dimen/preset_card_icon_size"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_preset_add"
-                    android:padding="9dp"
+                    android:src="@drawable/ic_preset_add_new"
+                    android:tint="@color/preset_card_add_tint"
                     android:scaleType="centerInside"
+                    android:padding="1dp"
                     android:adjustViewBounds="true"
                     android:background="?selectableItemBackgroundBorderless" />
 
+                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
 

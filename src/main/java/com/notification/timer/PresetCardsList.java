@@ -184,7 +184,7 @@ public class PresetCardsList extends Fragment {
     }
 
     private void createAlertDialog() {
-        alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog = new AlertDialog.Builder(context, R.style.AlertDialogTheme).create();
         alertDialog.setMessage(context.getString(R.string.delete_preset));
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, context.getString(R.string.alert_no),
             new DialogInterface.OnClickListener() {
@@ -319,9 +319,11 @@ public class PresetCardsList extends Fragment {
                     presetViewHolder.textViewCardSets.setText(preset.getSetsString());
                 }
                 if (preset.equals(presetUser)) {
-                    presetViewHolder.linearLayoutCard.setBackgroundColor(Color.WHITE);
+                    Log.d(TAG, "onBindViewHolder: isPresetUser, preset=" + presetsList.getPreset(getListIndex(position)));
+                    presetViewHolder.linearLayoutCard.setBackgroundColor(ContextCompat.getColor(context, R.color.preset_card_user_background));
                 } else {
-                    presetViewHolder.linearLayoutCard.setBackgroundColor(ContextCompat.getColor(context, R.color.preset_card_add_background));
+                    Log.d(TAG, "onBindViewHolder: isNotPresetUser, preset=" + presetsList.getPreset(getListIndex(position)));
+                    presetViewHolder.linearLayoutCard.setBackgroundColor(ContextCompat.getColor(context, R.color.preset_card_background));
                 }
                 Log.d(TAG, "onBindViewHolder: position=" + position + ", preset=" + presetsList.getPreset(getListIndex(position)));
             } else {
