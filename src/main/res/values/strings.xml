@@ -85,6 +85,7 @@
     <string name="preferences_restore_success">Restore successful</string>
     <string name="preferences_permission_denied">Insufficient permissions</string>
     <string name="preferences_backup_override">Would you like to override existing backup?</string>
+    <string name="preferences_notification_summary">Configure sound and more from the system settings</string>
     <!-- Preferences -->
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
@@ -93,6 +94,7 @@
     <string name="pref_step_time" translatable="false">stepTime</string>
     <string name="pref_vibrate" translatable="false">vibrate</string>
     <string name="pref_ringtone_uri" translatable="false">ringtoneUri</string>
+    <string name="pref_done_notification" translatable="false">doneNotification</string>
     <string name="pref_light_color_enable" translatable="false">lightColorEnable</string>
     <string name="pref_light_color" translatable="false">lightColor</string>
     <string name="pref_light_flash_rate" translatable="false">lightFlashRate</string>
@@ -100,6 +102,7 @@
     <string name="pref_timer_get_ready" translatable="false">timerGetReady</string>
     <string name="pref_timer_get_ready_vibrate" translatable="false">timerGetReadyVibrate</string>
     <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyRingtone</string>
+    <string name="pref_timer_get_ready_notification" translatable="false">timerGetReadyNotification</string>
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>
