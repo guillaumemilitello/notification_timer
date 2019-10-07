@@ -4,6 +4,7 @@
     <color name="colorPrimary">#7a82b7</color>
     <color name="colorPrimaryDark">#3b457b</color>
     <color name="colorPrimaryLight">#7a82b7</color>
+    <color name="colorControlHighlight">#28737373</color>
 
     <color name="darkGrayNotification">#616161</color>
     <color name="darkerGrayNotification">#6d6d6d</color>

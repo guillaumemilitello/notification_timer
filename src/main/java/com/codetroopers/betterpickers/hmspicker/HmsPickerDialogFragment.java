@@ -30,6 +30,7 @@ import java.util.Vector;
     private int mReference = -1;
     private int mTheme = -1;
     private ColorStateList mTextColor;
+    private ColorStateList mTextButtonColor;
     private int mDialogBackgroundResId;
     private Vector<HmsPickerDialogHandlerV2> mHmsPickerDialogHandlerV2s = new Vector<HmsPickerDialogHandlerV2>();
     private int mHours;
@@ -87,6 +88,7 @@ import java.util.Vector;
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
+        mTextButtonColor = getResources().getColorStateList(R.color.dialog_button_text_color_holo);
         mDialogBackgroundResId = R.drawable.dialog_full_holo_dark;
 
         if (mTheme != -1) {
@@ -106,14 +108,14 @@ import java.util.Vector;
         Button doneButton = (Button) view.findViewById(R.id.done_button);
         Button cancelButton = (Button) view.findViewById(R.id.cancel_button);
 
-        cancelButton.setTextColor(mTextColor);
+        cancelButton.setTextColor(mTextButtonColor);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dismiss();
             }
         });
-        doneButton.setTextColor(mTextColor);
+        doneButton.setTextColor(mTextButtonColor);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

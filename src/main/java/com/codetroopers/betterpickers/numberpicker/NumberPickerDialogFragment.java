@@ -39,6 +39,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
     private int mReference = -1;
     private int mTheme = -1;
     private ColorStateList mTextColor;
+    private ColorStateList mTextButtonColor;
     private String mLabelText = "";
     private int mDialogBackgroundResId;
 
@@ -152,6 +153,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
+        mTextButtonColor = getResources().getColorStateList(R.color.dialog_button_text_color_holo);
         mDialogBackgroundResId = R.drawable.dialog_full_holo_dark;
 
         if (mTheme != -1) {
@@ -176,7 +178,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
         Button doneButton = (Button) view.findViewById(R.id.done_button);
         Button cancelButton = (Button) view.findViewById(R.id.default_button);
 
-        cancelButton.setTextColor(mTextColor);
+        cancelButton.setTextColor(mTextButtonColor);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,7 +187,7 @@ public class NumberPickerDialogFragment extends DialogFragment {
             }
         });
 
-        doneButton.setTextColor(mTextColor);
+        doneButton.setTextColor(mTextButtonColor);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
