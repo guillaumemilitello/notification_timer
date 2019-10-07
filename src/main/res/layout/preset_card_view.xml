@@ -140,7 +140,7 @@
             android:layout_height="match_parent"
             android:src="@drawable/ic_preset_add"
             android:tint="@color/preset_card_action_tint"
-            android:padding="13dp"
+            android:padding="9dp"
             android:scaleType="centerInside"
             android:adjustViewBounds="true"
             android:background="?selectableItemBackgroundBorderless" />
