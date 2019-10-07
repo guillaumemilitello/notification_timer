@@ -10,6 +10,8 @@
         <item name="actionOverflowButtonStyle">@style/dotsWhiteTheme</item>
         <item name="android:itemTextAppearance">@style/menuTextStyle</item>
         <item name="android:itemBackground">@color/menu_background</item>
+        <item name="android:dialogTheme">@style/AlertDialogTheme</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
     </style>
 
     <style name="notificationButton" parent="@android:style/Widget.Material.ProgressBar.Horizontal" >
@@ -37,9 +39,11 @@
         <item name="android:textColorSecondary">@color/preferences_text_color_secondary</item>
     </style>
 
-    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="android:background">@color/alert_dialog_background</item>
+        <item name="android:textColor">@color/alert_dialog_button_text_color</item>
         <item name="android:textColorPrimary">@color/alert_dialog_font_color</item>
         <item name="colorAccent">@color/alert_dialog_button_text_color</item>
+        <item name="android:textColorAlertDialogListItem">@color/alert_dialog_font_color</item>
     </style>
 </resources>
