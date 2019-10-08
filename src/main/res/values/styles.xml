@@ -38,6 +38,7 @@
         <item name="android:colorAccent">@color/colorPrimaryLighter</item>
         <item name="android:textColor">@color/preferences_text_color</item>
         <item name="android:textColorSecondary">@color/preferences_text_color_secondary</item>
+        <item name="android:listDivider">@color/preferences_background</item>
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
