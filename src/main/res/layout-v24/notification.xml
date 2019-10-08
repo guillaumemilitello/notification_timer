@@ -53,6 +53,7 @@
             android:layout_height="20dp"
             android:layout_below="@+id/textViewTimer_line"
             android:progressBackgroundTint="@color/progress_bar_background"
+            android:progressTint="@color/progress_bar_current"
             android:paddingStart="0dp"
             android:paddingEnd="10dp"
             android:paddingTop="5.5dp"

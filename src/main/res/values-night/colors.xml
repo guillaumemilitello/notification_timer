@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#272D50</color>
     <color name="colorPrimaryLight">#5C628A</color>
     <color name="colorControlHighlight">#28C5C5C5</color>
+    <color name="colorPrimaryLighter">#8992CC</color>
 
     <color name="darkGrayNotification">#616161</color>
     <color name="darkerGrayNotification">#6d6d6d</color>
@@ -12,7 +13,6 @@
     <color name="drawableTint">@color/white</color>
 
     <!-- Preferences -->
-    <color name="colorPrimaryPreferences">#848DC5</color>
     <color name="preferences_background">#1B1B1B</color>
     <color name="preferences_text_color">@color/white</color>
     <color name="preferences_text_color_secondary">#bbbbbb</color>
@@ -21,13 +21,14 @@
     <!-- Alert dialog -->
     <color name="alert_dialog_background">#1B1B1B</color>
     <color name="alert_dialog_font_color">@color/white</color>
-    <color name="alert_dialog_button_text_color">@color/colorPrimaryPreferences</color>
+    <color name="alert_dialog_button_text_color">@color/colorPrimaryLighter</color>
 
     <!-- Help overlay -->
     <color name="helpOverlay_background">#B0000000</color>
 
     <!-- Notification -->
     <color name="progress_bar_background">#FFDDDDDD</color>
+    <color name="progress_bar_current">@color/colorPrimaryLighter</color>
     <color name="progress_bar_get_ready">#FF0000</color>
     <color name="progress_bar_font_light_gray">#e0e0e0</color>
     <color name="progress_bar_waiting">#e0e0e0</color>

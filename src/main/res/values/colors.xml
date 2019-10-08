@@ -12,7 +12,7 @@
     <color name="drawableTint">@color/black</color>
 
     <!-- Preferences -->
-    <color name="colorPrimaryPreferences">#7a82b7</color>
+    <color name="colorPrimaryLighter">#7a82b7</color>
     <color name="preferences_background">@color/white</color>
     <color name="preferences_text_color">@color/black</color>
     <color name="preferences_text_color_secondary">#737373</color>
@@ -28,6 +28,7 @@
 
     <!-- Notification -->
     <color name="progress_bar_background">#B0B0B0</color>
+    <color name="progress_bar_current">@color/colorPrimary</color>
     <color name="progress_bar_get_ready">#FF0000</color>
     <color name="progress_bar_font_light_gray">#e0e0e0</color>
     <color name="progress_bar_waiting">#e0e0e0</color>
