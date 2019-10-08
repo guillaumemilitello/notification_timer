@@ -335,9 +335,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private void updateSummary(Preference preference) {
         if(preference != null) {
             if (preference instanceof ListPreference) {
-                Log.d(TAG, "updateSummary: key=" + preference.getKey());
                 ListPreference listPreference = (ListPreference) preference;
-                listPreference.setSummary(listPreference.getEntry());
+                CharSequence listEntry = listPreference.getEntry();
+                if (listPreference.getSummary() != listEntry) {
+                    listPreference.setSummary(listPreference.getEntry());
+                    Log.d(TAG, "updateSummary: key=" + preference.getKey() + ", summary=" + listEntry);
+                }
             }
             else if (preference instanceof RingtonePreference) {
                 Log.d(TAG, "updateSummary: key=" + preference.getKey());
@@ -357,27 +360,31 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 if (isKeyPreference(getBaseContext(), key) && !restoringPreferences) {
-                    // preferenceChangeListener implementation
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
-                    updateSummary(settingsFragment.findPreference(key));
-
-                    if (key.equals(getString(R.string.pref_step_time))) {
-                        updateStepTimePreference();
-                    }
-
                     if (key.equals(getString(R.string.pref_dark_theme_mode))) {
-                        int newDarkThemeMode = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_dark_mode)));
-                        Log.d(TAG, "SharedPreferenceChanged: dayNightMode=" + dayNightMode + ", newDarkThemeMode=" + newDarkThemeMode);
-                        if (dayNightMode != newDarkThemeMode) {
-                            dayNightMode = newDarkThemeMode;
-                            AppCompatDelegate.setDefaultNightMode(newDarkThemeMode);
-                            getDelegate().applyDayNight();
-                            recreate();
+                        // no need to update summary, if new mode recreate is called
+                        updateDayNightMode();
+                    }
+                    else {
+                        updateSummary(settingsFragment.findPreference(key));
+                        if (key.equals(getString(R.string.pref_step_time))) {
+                            updateStepTimePreference();
                         }
                     }
                 }
             }
         };
+
+    private void updateDayNightMode() {
+        int newDarkNightMode = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_dark_theme_mode), getString(R.string.default_dark_mode)));
+        Log.d(TAG, "updateDayNightMode: dayNightMode=" + dayNightMode + ", newDarkThemeMode=" + newDarkNightMode);
+        if (dayNightMode != newDarkNightMode) {
+            dayNightMode = newDarkNightMode;
+            AppCompatDelegate.setDefaultNightMode(newDarkNightMode);
+            getDelegate().applyDayNight();
+            recreate();
+        }
+    }
 
     static boolean isKeyPreference(Context context, String key) {
         return !key.contains(context.getString(R.string.pref_preset_array)) && !key.contains(context.getString(R.string.pref_timer_service))
@@ -518,6 +525,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             updateAllPreferences();
             Toast.makeText(this, getString(R.string.preferences_restore_success), Toast.LENGTH_SHORT).show();
             restoringPreferences = false;
+            updateDayNightMode();
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         } finally {
