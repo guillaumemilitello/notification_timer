@@ -82,4 +82,5 @@
     <string name="preferences_permission_denied">Autorisations insuffisantes</string>
     <string name="preferences_backup_override">Souhaitez-vous remplacer la sauvegarde existante ?</string>
     <string name="preferences_notification_summary">Configurer le son et plus depuis les réglages du système</string>
+    <string name="preferences_dark_theme">Thème sombre</string>
 </resources>

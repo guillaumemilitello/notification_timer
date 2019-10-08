@@ -13,7 +13,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -93,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private TimerTextView timerTextViewSeconds, timerTextViewLastSeconds;
 
     static Typeface typefaceLektonBold;
+
+    private static boolean updateDarkNight = false;
 
     static private float density;
 
@@ -222,17 +223,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
-
-        if (isDarkTheme())
-        {
-            Log.d(TAG, "Dark Theme");
-            setColor(R.color.colorPrimary, R.color.colorPrimaryDark);
-        }
-        else
-        {
-            Log.d(TAG, "Light Theme");
-            setColor(R.color.colorPrimary, R.color.colorPrimaryDark);
-        }
 
         // Update system color bar and icon for the system
         Toolbar toolbar = findViewById(R.id.actionBar);
@@ -411,23 +401,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
-    private boolean isDarkTheme() {
-        return getResources().getConfiguration().UI_MODE_NIGHT_MASK == getResources().getConfiguration().UI_MODE_NIGHT_YES;
-    }
-
-    private void setColor(int colorPrimary, int colorPrimaryDark) {
-        Toolbar toolbar = findViewById(R.id.actionBar);
-        setSupportActionBar(toolbar);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, colorPrimaryDark));
-        setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
-                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
-                ContextCompat.getColor(this, colorPrimary)));
-        if (toolbar != null) {
-            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.bpWhite));
-        }
-    }
-
     private void setKeepScreenOnStatus(boolean enable) {
         keepScreenOn = enable;
         Log.d(TAG, "setKeepScreenOnStatus: keepScreenOn=" + keepScreenOn);
@@ -594,7 +567,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: timerService=" + timerService);
+        Log.d(TAG, "onStart: timerService=" + timerService + ", updateDarkNight=" + updateDarkNight);
+
+        if (updateDarkNight) {
+            updateDarkNight = false;
+            recreate();
+        }
 
         mainActivityVisible = true;
 
@@ -1652,6 +1630,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             colorReady = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_ready));
         } else if (key.equals(getString(R.string.pref_custom_color_done))) {
             colorDone = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_done));
+        } else if (key.equals(getString(R.string.pref_dark_theme_mode))) {
+            // key supported only from setting changes
         } else {
             Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
@@ -1661,9 +1641,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
-                    if (PreferencesActivity.isKeyPreference(getBaseContext(), key))
-                    {
+                    if (PreferencesActivity.isKeyPreference(getBaseContext(), key)) {
                         updatePreference(key);
+                    }
+                    if (key.equals(getString(R.string.pref_dark_theme_mode))) {
+                        Log.d(TAG, "onSharedPreferenceChanged: updateDarkNight=true");
+                        updateDarkNight = true;
                     }
                 }
             };

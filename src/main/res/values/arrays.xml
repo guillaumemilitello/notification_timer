@@ -101,4 +101,15 @@
         <item>@color/red</item>
     </integer-array>
 
+    <string-array name="darkTheme">
+        <item>System setting</item>
+        <item>Always light mode</item>
+        <item>Always dark mode</item>
+    </string-array>
+
+    <string-array name="darkThemeValues" translatable="false">
+        <item>-1</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

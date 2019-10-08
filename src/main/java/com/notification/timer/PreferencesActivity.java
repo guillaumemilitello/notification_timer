@@ -27,6 +27,7 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -70,6 +71,8 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     private static SharedPreferences sharedPreferences;
 
+    private static int dayNightMode;
+
     private File sharedPreferencesFile;
     private boolean restoringPreferences;
     private boolean overridePreferencesFile;
@@ -85,7 +88,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preferences_actionbar);
@@ -129,9 +132,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     public static class TimerPreferenceFragment extends PreferenceFragment
     {
-        // Sent from the ringtone preferences
-        static final int ALERT_RINGTONE = 1000001;
-
         @Override
         public void onCreate(final Bundle savedInstanceState)
         {
@@ -319,12 +319,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         }
     }
 
-    private void enablePreference(Preference preference, boolean enable) {
-        if (preference != null) {
-            preference.setEnabled(enable);
-        }
-    }
-
     private void updateSummaries() {
         Log.d(TAG, "updateSummaries");
         if (sharedPreferences != null) {
@@ -369,6 +363,17 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
                     if (key.equals(getString(R.string.pref_step_time))) {
                         updateStepTimePreference();
+                    }
+
+                    if (key.equals(getString(R.string.pref_dark_theme_mode))) {
+                        int newDarkThemeMode = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_dark_mode)));
+                        Log.d(TAG, "SharedPreferenceChanged: dayNightMode=" + dayNightMode + ", newDarkThemeMode=" + newDarkThemeMode);
+                        if (dayNightMode != newDarkThemeMode) {
+                            dayNightMode = newDarkThemeMode;
+                            AppCompatDelegate.setDefaultNightMode(newDarkThemeMode);
+                            getDelegate().applyDayNight();
+                            recreate();
+                        }
                     }
                 }
             }

@@ -102,7 +102,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
         getDelegate().invalidateOptionsMenu();
     }
 
-    private AppCompatDelegate getDelegate() {
+    protected AppCompatDelegate getDelegate() {
         if (mDelegate == null) {
             mDelegate = AppCompatDelegate.create(this, null);
         }

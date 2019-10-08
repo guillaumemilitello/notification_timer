@@ -1,5 +1,6 @@
 package com.notification.timer;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 
@@ -125,6 +127,7 @@ public class TimerService extends Service {
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     @Override
     public void onCreate() {
         super.onCreate();
@@ -772,6 +775,7 @@ public class TimerService extends Service {
             updatePreference(getString(R.string.pref_timer_get_ready));
             updatePreference(getString(R.string.pref_timer_get_ready_vibrate));
             updatePreference(getString(R.string.pref_timer_get_ready_ringtone_uri));
+            updatePreference(getString(R.string.pref_dark_theme_mode));
             updatePreference(getString(R.string.pref_custom_color_enable));
             updatePreference(getString(R.string.pref_custom_color_running));
             updatePreference(getString(R.string.pref_custom_color_ready));
@@ -832,6 +836,9 @@ public class TimerService extends Service {
         } else if (key.equals(getString(R.string.pref_custom_color_enable))) {
             boolean colorEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_color_enable));
             interactiveNotification.setColorEnable(colorEnable);
+        } else if (key.equals(getString(R.string.pref_dark_theme_mode)) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int darkThemeMode = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_dark_mode)));
+            AppCompatDelegate.setDefaultNightMode(darkThemeMode);
         } else if (key.equals(getString(R.string.pref_custom_color_running))) {
             int colorRunning = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_running));
             interactiveNotification.setColorRunning(colorRunning);

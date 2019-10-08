@@ -90,6 +90,13 @@
 
     <PreferenceCategory android:title="@string/customization">
 
+    <ListPreference
+        android:key="@string/pref_dark_theme_mode"
+        android:title="@string/preferences_dark_theme"
+        android:defaultValue="@string/default_dark_mode"
+        android:entries="@array/darkTheme"
+        android:entryValues="@array/darkThemeValues"/>
+
     <SwitchPreference
         android:key="@string/pref_custom_color_enable"
         android:title="@string/color_enable"

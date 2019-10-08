@@ -86,6 +86,7 @@
     <string name="preferences_permission_denied">Insufficient permissions</string>
     <string name="preferences_backup_override">Would you like to override existing backup?</string>
     <string name="preferences_notification_summary">Configure sound and more from the system settings</string>
+    <string name="preferences_dark_theme">Dark theme</string>
     <!-- Preferences -->
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
@@ -122,6 +123,7 @@
     <string name="pref_timer_text_size" translatable="false">timerText_size_%1$d_%2$d</string>
     <string name="pref_backup" translatable="false">preferencesBackup</string>
     <string name="pref_restore" translatable="false">preferencesRestore</string>
+    <string name="pref_dark_theme_mode" translatable="false">darkThemeMode</string>
     <!-- Others -->
     <string name="timer_separator" translatable="false">:</string>
 </resources>
