@@ -15,7 +15,8 @@
     <ListView android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/preferences_background"/>
+        android:background="@color/preferences_background"
+        android:dividerHeight="0dp"/>
 
     <FrameLayout
         android:id="@+id/content_frame"
