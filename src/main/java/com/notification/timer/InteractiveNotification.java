@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -175,6 +176,7 @@ class InteractiveNotification extends Notification {
             this.action = action;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return action;
@@ -196,6 +198,7 @@ class InteractiveNotification extends Notification {
             this.layout = layout;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return layout;
@@ -690,7 +693,6 @@ class InteractiveNotification extends Notification {
                 notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
                 setCustomContent(remoteView, notificationMode, layoutSetDone);
             } else {
-                //noinspection deprecation
                 notificationBuilder.setContent(remoteView);
             }
 

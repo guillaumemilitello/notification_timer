@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
@@ -121,6 +122,7 @@ public class TimerService extends Service {
             this.state = state;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return state;

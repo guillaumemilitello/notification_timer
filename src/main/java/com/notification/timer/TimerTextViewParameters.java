@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -164,6 +165,7 @@ class TimerTextViewParameters {
         return size;
     }
 
+    @NonNull
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append("targetWidth=").append(targetWidth).append(", targetHeight=").append(targetHeight).append(", density=").append(density).append("\n");

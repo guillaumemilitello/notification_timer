@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -165,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             this.action = action;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return action;
@@ -187,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             this.layout = layout;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return layout;
@@ -212,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             return index;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return layout;
@@ -219,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
@@ -659,7 +662,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         terminatePickers();
     }
 
-    @SuppressWarnings("deprecation")
     private void updateTimerDisplay() {
         // TODO : merge with Preset class
         if (timerCurrent >= 3600) {
@@ -1566,9 +1568,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 // TODO: release some resources
                 break;
             case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
-                break;
             case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
-                break;
             case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
                 break;
         }
@@ -1653,9 +1653,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             colorReady = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_ready));
         } else if (key.equals(getString(R.string.pref_custom_color_done))) {
             colorDone = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_done));
-        } else if (key.equals(getString(R.string.pref_dark_theme_mode))) {
-            // key supported only from setting changes
-        } else {
+        } else if (!key.equals(getString(R.string.pref_dark_theme_mode))) {
             Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
     }

@@ -22,6 +22,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 public class PresetCardsList extends Fragment {
 
     private static final String TAG = "PresetCardsList";
@@ -43,7 +45,7 @@ public class PresetCardsList extends Fragment {
     private Context context;
     private AlertDialog alertDialog;
 
-    public void addPreset() {
+    void addPreset() {
         if (presetsList.indexOf(presetUser) == -1) {
             presetsListSize = presetsList.addPreset(0, presetUser);
             Log.d(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList);
@@ -130,7 +132,7 @@ public class PresetCardsList extends Fragment {
         }
     }
 
-    public void updateFromPreferences() {
+    void updateFromPreferences() {
         if (!presetsList.isSynced()) {
             Log.d(TAG, "updateFromPreferences: presets are not synced");
             int previousPresetsListSize = presetsListSize;
@@ -161,7 +163,7 @@ public class PresetCardsList extends Fragment {
         return addPresetButton ? index - 1 : index;
     }
 
-    public boolean isEmpty() { return presetsListSize == 0; }
+    boolean isEmpty() { return presetsListSize == 0; }
 
     private void scrollToPosition(int position) {
         Log.d(TAG, "scrollToPosition: position=" + position);
@@ -169,12 +171,12 @@ public class PresetCardsList extends Fragment {
         linearLayoutManager.scrollToPosition(userPosition);
     }
 
-    public void initContext(Context context) {
+    void initContext(Context context) {
         this.context = context;
         createAlertDialog();
     }
 
-    public void createPresetsList(SharedPreferences sharedPreferences){
+    void createPresetsList(SharedPreferences sharedPreferences){
         Log.d(TAG, "createPresetsList");
         presetsList = new PresetsList();
         presetsList.setContext(context);
@@ -233,7 +235,7 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+        public boolean onMove(@NonNull RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
             if (source.getItemViewType() != target.getItemViewType()) {
                 Log.d(TAG, "onMove: different item view type");
                 return true;
@@ -252,7 +254,7 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         }
 
         @Override
@@ -266,7 +268,7 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
-        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
             int dragFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
             return makeMovementFlags(dragFlags, 0);
         }
@@ -285,7 +287,7 @@ public class PresetCardsList extends Fragment {
 
         @Override
         public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-            ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            ((SimpleItemAnimator) Objects.requireNonNull(recyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
         }
 
         @NonNull
@@ -370,11 +372,10 @@ public class PresetCardsList extends Fragment {
         private final TextView textViewCardTimerHours;
         private final TextView textViewCardTimerSeparatorHours;
         private final TextView textViewCardTimerMinutes;
-        private final TextView textViewCardTimerSeparator;
         private final TextView textViewCardTimerSeconds;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
-        private final LinearLayout linearLayoutCard, linearLayoutTimer;
+        private final LinearLayout linearLayoutCard;
 
         private void inputPreset(int position) {
             mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
@@ -385,12 +386,12 @@ public class PresetCardsList extends Fragment {
             textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
             textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
             textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
-            textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
+            final TextView textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
             textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
             linearLayoutCard = view.findViewById(R.id.layoutCard);
-            linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
+            final LinearLayout linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
 
             Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
@@ -437,7 +438,6 @@ public class PresetCardsList extends Fragment {
         private final TextView textViewCardTimerHours;
         private final TextView textViewCardTimerSeparatorHours;
         private final TextView textViewCardTimerMinutes;
-        private final TextView textViewCardTimerSeparator;
         private final TextView textViewCardTimerSeconds;
         private final TextView textViewCardSets;
         private final ImageButton imageButtonCard;
@@ -447,7 +447,7 @@ public class PresetCardsList extends Fragment {
             textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
             textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
             textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
-            textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
+            final TextView textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
             textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);

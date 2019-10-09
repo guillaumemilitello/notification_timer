@@ -87,7 +87,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private HmsPickerBuilder timerGetReadyPickerBuilder;
 
     @Override
-    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
@@ -130,6 +129,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         overridePreferencesFile = false;
     }
 
+    @SuppressWarnings("deprecation")
     public static class TimerPreferenceFragment extends PreferenceFragment
     {
         @Override
@@ -139,6 +139,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             addPreferencesFromResource(R.xml.preferences);
         }
 
+        @TargetApi(Build.VERSION_CODES.Q)
         private void sendIntentNotificationChannel(String channelId) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
@@ -392,7 +393,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_WRITE_EXTERNAL_STORAGE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -432,7 +433,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 }
             } else {
                 Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " does not exists");
-                if (sharedPreferencesFile.getParentFile().mkdirs()) {
+                if (sharedPreferencesFile.getParentFile() != null && sharedPreferencesFile.getParentFile().mkdirs()) {
                     if (!sharedPreferencesFile.createNewFile()) {
                         Log.d(TAG, "saveSharedPreferencesToFile: createNewFile");
                         Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();

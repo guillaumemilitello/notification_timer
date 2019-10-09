@@ -1,5 +1,7 @@
 package com.notification.timer;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 class Preset {
@@ -46,6 +48,7 @@ class Preset {
         return String.format(Locale.US, "%02d", timer % 60);
     }
 
+    @NonNull
     public String toString() {
         return String.format(Locale.US, "%s:%s:%s %s", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getSetsString());
     }
@@ -57,7 +60,7 @@ class Preset {
     @Override
     public boolean equals(Object object)
     {
-        if (object != null && object instanceof Preset) {
+        if (object instanceof Preset) {
             Preset preset = (Preset)object;
             return this.timer == preset.timer && this.sets == preset.sets;
         } else {

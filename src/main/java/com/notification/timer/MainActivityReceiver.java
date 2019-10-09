@@ -30,6 +30,7 @@ public class MainActivityReceiver extends BroadcastReceiver {
                     ((MainActivity) context).stop();
                     break;
                 case IntentAction.CLEAR:
+                case IntentAction.NOTIFICATION_DISMISS:
                     ((MainActivity) context).clear();
                     break;
                 case IntentAction.NEXT_SET:
@@ -77,9 +78,6 @@ public class MainActivityReceiver extends BroadcastReceiver {
                     break;
                 case IntentAction.TIMER_REBIND:
                     ((MainActivity) context).timerServiceRebind();
-                    break;
-                case IntentAction.NOTIFICATION_DISMISS:
-                    ((MainActivity) context).clear();
                     break;
                 default:
                     Log.e(TAG, "wrong intent event=" + intent.getAction());

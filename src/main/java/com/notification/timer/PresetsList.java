@@ -3,6 +3,7 @@ package com.notification.timer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -119,6 +120,7 @@ class PresetsList {
         return otherList.equals(list);
     }
 
+    @NonNull
     public String toString() {
         StringBuilder string = new StringBuilder("{");
         for (int index = 0; index < getSize(); ++index) {
@@ -133,6 +135,6 @@ class PresetsList {
 
     @Override
     public boolean equals(Object object) {
-        return object != null && object instanceof PresetsList && this.list.equals(((PresetsList) object).list);
+        return object instanceof PresetsList && this.list.equals(((PresetsList) object).list);
     }
 }

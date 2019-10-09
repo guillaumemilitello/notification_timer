@@ -19,6 +19,7 @@ package com.notification.timer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import androidx.annotation.NonNull;
 
 /**
  * Schedule a countdown until a time in the future, with
@@ -88,7 +89,7 @@ abstract class CountDownPauseTimer {
     /**
      * Pause the countdown
      */
-    public synchronized final void pause() {
+    synchronized final void pause() {
         mPaused = true;
         mHandler.removeMessages(MSG);
     }
@@ -96,7 +97,7 @@ abstract class CountDownPauseTimer {
     /**
      * Resume the countdown
      */
-    public synchronized final void resume() {
+    synchronized final void resume() {
         mPaused = false;
         mStopTimeInFuture = SystemClock.elapsedRealtime() + mTimeLeft;
         mHandler.sendMessage(mHandler.obtainMessage(MSG));
@@ -105,7 +106,7 @@ abstract class CountDownPauseTimer {
     /**
      * Cancel the countdown.
      */
-    public synchronized final void cancel() {
+    synchronized final void cancel() {
         mCancelled = true;
         mHandler.removeMessages(MSG);
     }
@@ -163,7 +164,7 @@ abstract class CountDownPauseTimer {
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
 
             synchronized (timer) {
                 if (timer.mCancelled) {
