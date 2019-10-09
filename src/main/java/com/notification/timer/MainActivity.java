@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     // MainActivity user interface
     private static final float ALPHA_ENABLED = (float) 1.0;
-    private static final float ALPHA_DISABLED = (float) 0.2;
+    private static final float ALPHA_DISABLED = (float) 0.1;
 
     // Main user interface
     private Menu toolbarMenu;
@@ -711,36 +712,39 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private void updateColorLayout() {
-        int progressColor = ContextCompat.getColor(this, R.color.main_background);
-        int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
-        int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
-        switch (buttonsLayout) {
-            case READY:
-                break;
-            case PAUSED:
-            case RUNNING:
+        int progressColor = ContextCompat.getColor(this, R.color.main_background_waiting);
+        int backgroundColor = ContextCompat.getColor(this, R.color.main_background_waiting);
+        int textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
+        int buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_waiting);
+
+        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+            if (buttonsLayout == ButtonsLayout.STOPPED) {
+                progressColor = colorDone;
+            } else if (buttonsLayout != ButtonsLayout.READY) {
                 if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
                     progressColor = colorReady;
                 } else {
                     progressColor = colorRunning;
                 }
-                break;
-            case STOPPED:
-                progressColor = colorDone;
-                break;
-            default:
-            case WAITING:
-            case WAITING_SETS:
-                textColor = ContextCompat.getColor(this, R.color.timer_font_color_disabled);
-                backgroundColor = ContextCompat.getColor(this, R.color.preset_card_background);
-                progressColor = backgroundColor;
-                timerProgressBar.setMax(1);
-                timerProgressBar.setProgress(1);
-                break;
+            }
+            boolean progressColorIsDark = isColorDark(progressColor);
+            backgroundColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.main_background_black : R.color.main_background);
+            textColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.timer_font_color_black : R.color.timer_font_color);
+            buttonTint = ContextCompat.getColor(this, progressColorIsDark ? R.color.full_buttons_tint_black : R.color.full_buttons_tint);
         }
-        timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
-        timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
 
+        setBackgroundColor(progressColor, backgroundColor);
+        setImageButtonsColor(buttonTint);
+        setTextViewsColor(textColor);
+    }
+
+    private void setBackgroundColor(int progressColor, int backgroundColor) {
+        timerProgressBar.setProgressTintList(ColorStateList.valueOf(progressColor));
+        timerProgressBar.setProgressBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+        activityLayout.setBackgroundColor(backgroundColor);
+    }
+
+    private void setTextViewsColor(int textColor) {
         timerTextViewHours.setTextColor(textColor);
         timerTextViewSeparatorHours.setTextColor(textColor);
         timerTextViewMinutes.setTextColor(textColor);
@@ -748,6 +752,25 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerTextViewSeconds.setTextColor(textColor);
         timerTextViewLastSeconds.setTextColor(textColor);
         setsTextView.setTextColor(textColor);
+    }
+
+    private void setImageButtonsColor(int imageButtonsColor) {
+        imageButtonLeft.setColorFilter(imageButtonsColor);
+        imageButtonCenter.setColorFilter(imageButtonsColor);
+        imageButtonRight.setColorFilter(imageButtonsColor);
+        imageButtonTimerMinusMulti.setColorFilter(imageButtonsColor);
+        imageButtonTimerPlusMulti.setColorFilter(imageButtonsColor);
+        imageButtonTimerMinus.setColorFilter(imageButtonsColor);
+        imageButtonTimerPlus.setColorFilter(imageButtonsColor);
+        imageButtonKeepScreenOn.setColorFilter(imageButtonsColor);
+    }
+
+    // @todo: static for InteractiveNotification
+    private boolean isColorDark(int color) {
+        double level = Color.red(color)*0.299 + Color.green(color)*0.690 + Color.blue(color)*0.114;
+        double threshold = 175;
+        Log.d(TAG, "isColorDark: level=" + level + ", threshold=" + threshold);
+        return level <= threshold;
     }
 
     private void updateSetsDisplay() {
