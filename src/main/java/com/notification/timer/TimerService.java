@@ -777,6 +777,7 @@ public class TimerService extends Service {
             updatePreference(getString(R.string.pref_timer_get_ready));
             updatePreference(getString(R.string.pref_timer_get_ready_vibrate));
             updatePreference(getString(R.string.pref_timer_get_ready_ringtone_uri));
+            updatePreference(getString(R.string.pref_background_theme_mode));
             updatePreference(getString(R.string.pref_dark_theme_mode));
             updatePreference(getString(R.string.pref_custom_color_enable));
             updatePreference(getString(R.string.pref_custom_color_running));

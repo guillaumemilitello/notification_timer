@@ -90,13 +90,6 @@
 
     <PreferenceCategory android:title="@string/customization">
 
-    <ListPreference
-        android:key="@string/pref_dark_theme_mode"
-        android:title="@string/preferences_dark_theme"
-        android:defaultValue="@string/default_dark_mode"
-        android:entries="@array/darkTheme"
-        android:entryValues="@array/darkThemeValues"/>
-
     <SwitchPreference
         android:key="@string/pref_custom_color_enable"
         android:title="@string/color_enable"
@@ -135,6 +128,20 @@
         app:viewSize="large"
         app:numColumns="4"
         app:showDialog="true"/>
+
+    <ListPreference
+        android:key="@string/pref_background_theme_mode"
+        android:title="@string/preferences_background_theme"
+        android:defaultValue="@string/default_background_mode"
+        android:entries="@array/backgroundTheme"
+        android:entryValues="@array/backgroundThemeValues"/>
+
+    <ListPreference
+        android:key="@string/pref_dark_theme_mode"
+        android:title="@string/preferences_dark_theme"
+        android:defaultValue="@string/default_dark_mode"
+        android:entries="@array/darkTheme"
+        android:entryValues="@array/darkThemeValues"/>
 
     </PreferenceCategory>
 

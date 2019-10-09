@@ -35,6 +35,12 @@
         <item>5 secondes</item>
     </string-array>
 
+    <string-array name="backgroundTheme">
+        <item>Dynamique</item>
+        <item>Toujours clair</item>
+        <item>Toujours sombre</item>
+    </string-array>
+
     <string-array name="darkTheme">
         <item>Réglage système</item>
         <item>Toujours thème clair</item>

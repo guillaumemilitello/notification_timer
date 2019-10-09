@@ -139,6 +139,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private int colorRunning;
     private int colorReady;
     private int colorDone;
+    private int backgroundThemeMode;
+
+    private static final int BACKGROUND_THEME_DYNAMIC = 0;
+    private static final int BACKGROUND_THEME_LIGHT = 1;
+    private static final int BACKGROUND_THEME_DARK = 2;
 
     public Preset getPresetUser() {
         return new Preset(timerUser, setsUser);
@@ -712,12 +717,25 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
     }
-
     private void updateColorLayout() {
-        int progressColor = ContextCompat.getColor(this, R.color.main_background_waiting);
-        int backgroundColor = ContextCompat.getColor(this, R.color.main_background_waiting);
-        int textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
-        int buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_waiting);
+        // default: light theme
+        int progressColor = ContextCompat.getColor(this, R.color.main_background);
+        int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
+        int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
+        int buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint);
+        if (backgroundThemeMode == BACKGROUND_THEME_DARK) {
+            progressColor = ContextCompat.getColor(this, R.color.main_background_black);
+            backgroundColor = ContextCompat.getColor(this, R.color.main_background_black);
+            textColor = ContextCompat.getColor(this, R.color.timer_font_color_black);
+            buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_black);
+        } else if (backgroundThemeMode == BACKGROUND_THEME_DYNAMIC) {
+            progressColor = ContextCompat.getColor(this, R.color.main_background_waiting);
+            backgroundColor = ContextCompat.getColor(this, R.color.main_background_waiting);
+            textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
+            buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_waiting);
+        } else if (backgroundThemeMode != BACKGROUND_THEME_LIGHT) {
+            Log.e(TAG, "updateColorLayout: invalid backgroundThemeMode=" + backgroundThemeMode + ", applying light theme");
+        }
 
         if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
             if (buttonsLayout == ButtonsLayout.STOPPED) {
@@ -729,7 +747,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                     progressColor = colorRunning;
                 }
             }
-            boolean progressColorIsDark = isColorDark(progressColor);
+            boolean progressColorIsDark = false;
+            if (backgroundThemeMode == BACKGROUND_THEME_DARK) {
+                progressColorIsDark = true;
+            } else if (backgroundThemeMode == BACKGROUND_THEME_DYNAMIC) {
+                progressColorIsDark = isColorDark(progressColor);
+            }
             backgroundColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.main_background_black : R.color.main_background);
             textColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.timer_font_color_black : R.color.timer_font_color);
             buttonTint = ContextCompat.getColor(this, progressColorIsDark ? R.color.full_buttons_tint_black : R.color.full_buttons_tint);
@@ -1615,6 +1638,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updatePreference(getString(R.string.pref_custom_color_running));
             updatePreference(getString(R.string.pref_custom_color_ready));
             updatePreference(getString(R.string.pref_custom_color_done));
+            updatePreference(getString(R.string.pref_background_theme_mode));
         }
     }
 
@@ -1653,6 +1677,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             colorReady = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_ready));
         } else if (key.equals(getString(R.string.pref_custom_color_done))) {
             colorDone = sharedPreferences.getInt(key, ContextCompat.getColor(this, R.color.default_color_done));
+        } else if (key.equals(getString(R.string.pref_background_theme_mode))) {
+            backgroundThemeMode = Integer.parseInt(sharedPreferences.getString(key, getString(R.string.default_background_mode)));
         } else if (!key.equals(getString(R.string.pref_dark_theme_mode))) {
             Log.e(TAG, "updatePreference: not supported preference key=" + key);
         }
