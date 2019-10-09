@@ -109,8 +109,8 @@
 
     <string-array name="darkTheme">
         <item>System setting</item>
-        <item>Always light mode</item>
-        <item>Always dark mode</item>
+        <item>Always light</item>
+        <item>Always dark</item>
     </string-array>
 
     <string-array name="backgroundThemeValues" translatable="false">

@@ -43,8 +43,8 @@
 
     <string-array name="darkTheme">
         <item>Réglage système</item>
-        <item>Toujours thème clair</item>
-        <item>Toujours thème sombre</item>
+        <item>Toujours clair</item>
+        <item>Toujours sombre</item>
     </string-array>
 
 </resources>
