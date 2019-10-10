@@ -7,8 +7,7 @@
     <color name="colorControlHighlight">#28C5C5C5</color>
     <color name="colorPrimaryLighter">#8992CC</color>
 
-    <color name="darkGrayNotification">#616161</color>
-    <color name="darkerGrayNotification">#6d6d6d</color>
+    <color name="darkGrayNotification">#FFFFFF</color>
 
     <color name="drawableTint">@color/white</color>
 
@@ -32,7 +31,9 @@
     <color name="progress_bar_get_ready">#FF0000</color>
     <color name="progress_bar_font_light_gray">#e0e0e0</color>
     <color name="progress_bar_waiting">#e0e0e0</color>
-    <color name="icon_color_tint">#DDDDDD</color>
+    <color name="progress_bar_timer_text">@color/white</color>
+    <color name="progress_bar_set_text">#EEEEEE</color>
+    <color name="icon_color_tint">#e0e0e0</color>
     <color name="layout_background">#fafafa</color>
 
     <!-- Presets -->
