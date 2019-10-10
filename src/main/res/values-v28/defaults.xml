@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="default_color_running" translatable="false">@color/indigo_darker</color>
+    <color name="default_color_ready" translatable="false">@color/deep_orange</color>
+    <color name="default_color_done" translatable="false">@color/green</color>
+    <string name="default_dark_mode" translatable="false">-1</string>
+</resources>

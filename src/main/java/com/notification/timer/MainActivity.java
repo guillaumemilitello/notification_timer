@@ -595,15 +595,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             startTimerService();
         }
 
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P && sharedPreferences.getBoolean(getString(R.string.pref_first_run_dark_theme), true)) {
-            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            Log.d(TAG, "onStart: firstRunDarkTheme=true for android P");
-            sharedPreferencesEditor.putString(getString(R.string.pref_dark_theme_mode), String.valueOf(THEME_LIGHT));
-            Toast.makeText(this, getString(R.string.preferences_dark_theme_toast), Toast.LENGTH_SHORT).show();
-            sharedPreferencesEditor.putBoolean(getString(R.string.pref_first_run_dark_theme), false);
-            sharedPreferencesEditor.apply();
-        }
-
         updateUserInterface();
 
         if (sharedPreferences.getBoolean(getString(R.string.pref_first_run), true)) {
