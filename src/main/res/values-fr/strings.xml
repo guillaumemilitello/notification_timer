@@ -84,4 +84,5 @@
     <string name="preferences_notification_summary">Configurer le son et plus depuis les réglages du système</string>
     <string name="preferences_background_theme">Thème de l\'arrière-plan</string>
     <string name="preferences_dark_theme">Thème de l\'application</string>
+    <string name="preferences_dark_theme_toast">Thème sombre est disponible depuis les paramètres</string>
 </resources>

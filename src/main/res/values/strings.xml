@@ -88,6 +88,7 @@
     <string name="preferences_notification_summary">Configure sound and more from the system settings</string>
     <string name="preferences_background_theme">Background theme</string>
     <string name="preferences_dark_theme">Application theme</string>
+    <string name="preferences_dark_theme_toast">Dark theme is available from the settings</string>
     <!-- Preferences -->
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>

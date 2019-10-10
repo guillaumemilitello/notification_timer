@@ -605,7 +605,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             sharedPreferencesEditor.putString(getString(R.string.pref_dark_theme_mode), String.valueOf(THEME_LIGHT));
             sharedPreferencesEditor.putBoolean("firstRun_Q", false);
             sharedPreferencesEditor.apply();
-            Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.preferences_dark_theme_toast), Toast.LENGTH_SHORT).show();
         }
 
         updateUserInterface();
