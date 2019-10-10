@@ -141,9 +141,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private int colorDone;
     private int backgroundThemeMode;
 
-    private static final int BACKGROUND_THEME_DYNAMIC = 0;
-    private static final int BACKGROUND_THEME_LIGHT = 1;
-    private static final int BACKGROUND_THEME_DARK = 2;
+    private static final int THEME_DYNAMIC = 0; // only for background
+    private static final int THEME_LIGHT = 1;
+    private static final int THEME_DARK = 2;
 
     public Preset getPresetUser() {
         return new Preset(timerUser, setsUser);
@@ -595,9 +595,22 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             startTimerService();
         }
 
+        boolean firstRun = sharedPreferences.getBoolean("firstRun", true);
+        boolean firstRunQ = sharedPreferences.getBoolean("firstRun_Q", true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !firstRun && firstRunQ) {
+            Log.d(TAG, "onStart: firstRun=false, firstRun_Q=true, upgrade to android Q, applying light theme");
+            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+            sharedPreferencesEditor.putString(getString(R.string.pref_background_theme_mode), String.valueOf(THEME_LIGHT));
+            sharedPreferencesEditor.putString(getString(R.string.pref_dark_theme_mode), String.valueOf(THEME_LIGHT));
+            sharedPreferencesEditor.putBoolean("firstRun_Q", false);
+            sharedPreferencesEditor.apply();
+            Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
+        }
+
         updateUserInterface();
 
-        if (sharedPreferences.getBoolean("firstRun", true)) {
+        if (firstRun) {
             Log.d(TAG, "onStart: firstRun=true");
             helpOverlay.show();
             sharedPreferences.edit().putBoolean("firstRun", false).apply();
@@ -723,17 +736,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
         int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
         int buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint);
-        if (backgroundThemeMode == BACKGROUND_THEME_DARK) {
+        if (backgroundThemeMode == THEME_DARK) {
             progressColor = ContextCompat.getColor(this, R.color.main_background_black);
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_black);
             textColor = ContextCompat.getColor(this, R.color.timer_font_color_black);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_black);
-        } else if (backgroundThemeMode == BACKGROUND_THEME_DYNAMIC) {
+        } else if (backgroundThemeMode == THEME_DYNAMIC) {
             progressColor = ContextCompat.getColor(this, R.color.main_background_waiting);
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_waiting);
             textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_waiting);
-        } else if (backgroundThemeMode != BACKGROUND_THEME_LIGHT) {
+        } else if (backgroundThemeMode != THEME_LIGHT) {
             Log.e(TAG, "updateColorLayout: invalid backgroundThemeMode=" + backgroundThemeMode + ", applying light theme");
         }
 
@@ -748,9 +761,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 }
             }
             boolean progressColorIsDark = false;
-            if (backgroundThemeMode == BACKGROUND_THEME_DARK) {
+            if (backgroundThemeMode == THEME_DARK) {
                 progressColorIsDark = true;
-            } else if (backgroundThemeMode == BACKGROUND_THEME_DYNAMIC) {
+            } else if (backgroundThemeMode == THEME_DYNAMIC) {
                 progressColorIsDark = isColorDark(progressColor);
             }
             backgroundColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.main_background_black : R.color.main_background);
@@ -790,8 +803,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         imageButtonKeepScreenOn.setColorFilter(imageButtonsColor);
     }
 
-    // @todo: static for InteractiveNotification
-    private boolean isColorDark(int color) {
+    static boolean isColorDark(int color) {
         double level = Color.red(color)*0.299 + Color.green(color)*0.690 + Color.blue(color)*0.114;
         double threshold = 175;
         Log.d(TAG, "isColorDark: level=" + level + ", threshold=" + threshold);

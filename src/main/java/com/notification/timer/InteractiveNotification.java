@@ -510,7 +510,7 @@ class InteractiveNotification extends Notification {
     private RemoteViews createRemoteView() {
         RemoteViews remoteView;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable) {
-            if (isColorDark(getColor())) {
+            if (MainActivity.isColorDark(getColor())) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_white_text);
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_black_text);
@@ -548,9 +548,6 @@ class InteractiveNotification extends Notification {
             default: case NO_LAYOUT: case PAUSED: case RUNNING: return true;
             case READY: case SET_DONE: case ALL_SETS_DONE: return false;
         }
-    }
-    private boolean isColorDark(int color) {
-        return (Color.red(color)*0.299 + Color.green(color)*0.690 + Color.blue(color)*0.114) <= 175;
     }
 
     private Notification.Builder createDefaultNotificationBuilder() {
