@@ -36,21 +36,21 @@
     <color name="layout_background">#fafafa</color>
 
     <!-- Presets -->
-    <color name="preset_card_timer_font_color">#757575</color>
-    <color name="preset_card_sets_font_color">#9e9e9e</color>
+    <color name="preset_card_timer_font_color">#3F3F3F</color>
+    <color name="preset_card_sets_font_color">#636363</color>
     <color name="preset_fragment_background">#9fa8da</color>
     <color name="preset_fragment_transparent_background">#809fa8da</color>
     <color name="preset_card_background">#d9ddf5</color>
     <color name="preset_card_user_background">@color/white</color>
-    <color name="preset_card_add_tint">#757575</color>
-    <color name="preset_card_action_tint">#757575</color>
+    <color name="preset_card_add_tint">#3F3F3F</color>
+    <color name="preset_card_action_tint">#3F3F3F</color>
 
     <!-- Main activity -->
     <color name="main_background">@color/white</color>
     <color name="main_background_black">#1B1B1B</color>
     <color name="main_background_waiting">@color/white</color>
-    <color name="timer_font_color">#424242</color>
-    <color name="timer_font_color_black">#e2e2e2</color>
+    <color name="timer_font_color">@color/main_background_black</color>
+    <color name="timer_font_color_black">@color/main_background</color>
     <color name="timer_font_waiting">#e6e6e6</color>
     <color name="full_buttons_tint">#000000</color>
     <color name="full_buttons_tint_black">#e2e2e2</color>
@@ -78,6 +78,36 @@
     <color name="orange">#ffab40</color>
     <color name="deep_orange">#f57f17</color>
     <color name="red">#ff4336</color>
+    <!-- Background colors SDK 28+ -->
+    <color name="green_light">#C2FAB9</color>
+    <color name="green_dark">#006F37</color>
+    <color name="cyan_light">#C7F7FF</color>
+    <color name="cyan_dark">#3D7776</color>
+    <color name="cyan_darker">#315857</color>
+    <color name="indigo_light">#9498CC</color>
+    <color name="indigo_dark">#626886</color>
+    <color name="indigo_darker">#4c506b</color>
+    <color name="indigo_black">#272d50</color>
+    <color name="blue_lighter">#B3E5FF</color>
+    <color name="blue_light">#D5DBFF</color>
+    <color name="blue_dark">#3A7996</color>
+    <color name="blue_grey_light">#DDEBF0</color>
+    <color name="blue_grey_dark">#959FA5</color>
+    <color name="blue_grey_black">#6B7C83</color>
+    <color name="blue_cyan_darker">#204353</color>
+    <color name="blue_darker">#515E88</color>
+    <color name="purple_light">#D19ED6</color>
+    <color name="purple">#C444CD</color>
+    <color name="purple_dark">#87378D</color>
+    <color name="purple_darker">#531B57</color>
+    <color name="red_dark">#7E201D</color>
+    <color name="orange_dark">#9C3F00</color>
+    <color name="orange_light">#FFB272</color>
+    <color name="red_light">#FF8379</color>
+    <color name="red_lighter">#FFABA6</color>
+    <color name="yellow_light">#FFE6A3</color>
+    <color name="orange_lighter">#FFEEBD</color>
+    <color name="charcoal_light">#525252</color>
 
     <!-- LED colors -->
     <color name="led_white">#ffffffff</color>

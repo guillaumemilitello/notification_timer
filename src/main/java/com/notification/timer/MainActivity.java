@@ -802,7 +802,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     static boolean isColorDark(int color) {
         double level = Color.red(color)*0.299 + Color.green(color)*0.690 + Color.blue(color)*0.114;
         double threshold = 175;
-        Log.d(TAG, "isColorDark: level=" + level + ", threshold=" + threshold);
         return level <= threshold;
     }
 
