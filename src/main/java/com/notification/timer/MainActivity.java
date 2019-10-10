@@ -595,25 +595,21 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             startTimerService();
         }
 
-        boolean firstRun = sharedPreferences.getBoolean("firstRun", true);
-        boolean firstRunQ = sharedPreferences.getBoolean("firstRun_Q", true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !firstRun && firstRunQ) {
-            Log.d(TAG, "onStart: firstRun=false, firstRun_Q=true, upgrade to android Q, applying light theme");
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P && sharedPreferences.getBoolean(getString(R.string.pref_first_run_dark_theme), true)) {
             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            sharedPreferencesEditor.putString(getString(R.string.pref_background_theme_mode), String.valueOf(THEME_LIGHT));
+            Log.d(TAG, "onStart: firstRunDarkTheme=true for android P");
             sharedPreferencesEditor.putString(getString(R.string.pref_dark_theme_mode), String.valueOf(THEME_LIGHT));
-            sharedPreferencesEditor.putBoolean("firstRun_Q", false);
-            sharedPreferencesEditor.apply();
             Toast.makeText(this, getString(R.string.preferences_dark_theme_toast), Toast.LENGTH_SHORT).show();
+            sharedPreferencesEditor.putBoolean(getString(R.string.pref_first_run_dark_theme), false);
+            sharedPreferencesEditor.apply();
         }
 
         updateUserInterface();
 
-        if (firstRun) {
+        if (sharedPreferences.getBoolean(getString(R.string.pref_first_run), true)) {
             Log.d(TAG, "onStart: firstRun=true");
             helpOverlay.show();
-            sharedPreferences.edit().putBoolean("firstRun", false).apply();
+            sharedPreferences.edit().putBoolean(getString(R.string.pref_first_run), false).apply();
         }
     }
 

@@ -127,6 +127,8 @@
     <string name="pref_restore" translatable="false">preferencesRestore</string>
     <string name="pref_background_theme_mode" translatable="false">backgroundThemeMode</string>
     <string name="pref_dark_theme_mode" translatable="false">darkThemeMode</string>
+    <string name="pref_first_run" translatable="false">firstRun</string>
+    <string name="pref_first_run_dark_theme" translatable="false">firstRunDarkTheme</string>
     <!-- Others -->
     <string name="timer_separator" translatable="false">:</string>
 </resources>
