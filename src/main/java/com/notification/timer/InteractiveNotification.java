@@ -8,7 +8,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
@@ -530,7 +529,6 @@ class InteractiveNotification extends Notification {
         if (drawProgressBar()) {
             remoteView.setTextViewText(R.id.textViewSets, "");
             remoteView.setTextViewText(R.id.textViewSets_short, setsString);
-            remoteView.setTextViewText(R.id.textViewTimer, timerString);
             remoteView.setViewVisibility(R.id.progressBarTimer, View.VISIBLE);
             remoteView.setProgressBar(R.id.progressBarTimer, (int) timerUser, (int) (timerUser - timerCurrent), false);
         } else {
