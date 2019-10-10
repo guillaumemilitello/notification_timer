@@ -10,7 +10,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/picker_sets"
         android:textColor="@color/title_text_color_holo"
-        android:textAllCaps="true"
         android:fontFamily="sans-serif-light"
         android:id="@+id/textViewTitle"
         android:gravity="center_vertical|center_horizontal"
