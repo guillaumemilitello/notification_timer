@@ -362,12 +362,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 if (isKeyPreference(getBaseContext(), key) && !restoringPreferences) {
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
+                    updateSummary(settingsFragment.findPreference(key));
                     if (key.equals(getString(R.string.pref_dark_theme_mode))) {
-                        // no need to update summary, if new mode recreate is called
                         updateDayNightMode();
-                    }
-                    else {
-                        updateSummary(settingsFragment.findPreference(key));
+                    } else {
                         if (key.equals(getString(R.string.pref_step_time))) {
                             updateStepTimePreference();
                         }
