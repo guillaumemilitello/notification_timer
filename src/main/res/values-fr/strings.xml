@@ -6,7 +6,7 @@
     <string name="help">Indications</string>
     <string name="settings">Paramètres</string>
     <string name="keepScreenOn">Écran toujours allumé</string>
-    <string name="presets">Minuteurs sauvgardés</string>
+    <string name="presets">Minuteurs sauvegardés</string>
     <!-- Main Activity -->
     <string name="presetsListEmpty">Liste des minuteurs vide</string>
     <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le minuteur actuel ?</string>
@@ -71,12 +71,12 @@
     <string name="color_ready_summary">Couleur d\'arrière-plan avant la fin du minuteur</string>
     <string name="color_done">Minuteur terminé</string>
     <string name="color_done_summary">Couleur d\'arrière-plan lorsque le temps est écoulé</string>
-    <string name="preferences_backup">Sauvgarde</string>
-    <string name="preferences_backup_summary">Sauvgarde des paramètres et des minuteurs sauvgardés sur cet appareil</string>
+    <string name="preferences_backup">Sauvegarde</string>
+    <string name="preferences_backup_summary">Sauvegarde des paramètres et des minuteurs sauvegardés sur cet appareil</string>
     <string name="preferences_restore">Restauration</string>
-    <string name="preferences_restore_summary">Restauration des paramètres et des minuteurs sauvgardés depuis cet appareil</string>
+    <string name="preferences_restore_summary">Restauration des paramètres et des minuteurs sauvegardés depuis cet appareil</string>
     <string name="preferences_backup_error">Erreur lors de la création du fichier</string>
-    <string name="preferences_backup_success">Sauvgarde réussie</string>
+    <string name="preferences_backup_success">Sauvegarde réussie</string>
     <string name="preferences_restore_no_file">Aucun fichier trouvé</string>
     <string name="preferences_restore_success">Restauration réussie</string>
     <string name="preferences_permission_denied">Autorisations insuffisantes</string>
