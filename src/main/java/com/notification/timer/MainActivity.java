@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     enum LayoutMode {
 
         TINY(0, "tiny"),
-        COMPACT(1 , "compact"),
+        COMPACT(1, "compact"),
         FULL(2, "full");
 
         private final int index;
@@ -247,12 +247,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         density = getResources().getDisplayMetrics().density;
 
-        timerTextViewHours = new TimerTextView((TextView)findViewById(R.id.textViewTimerHours));
-        timerTextViewSeparatorHours = new TimerTextView((TextView)findViewById(R.id.textViewTimerSeparatorHours));
-        timerTextViewMinutes = new TimerTextView((TextView)findViewById(R.id.textViewTimerMinutes));
-        timerTextViewSeparator = new TimerTextView((TextView)findViewById(R.id.textViewTimerSeparator));
-        timerTextViewSeconds = new TimerTextView((TextView)findViewById(R.id.textViewTimerSeconds));
-        timerTextViewLastSeconds =  new TimerTextView((TextView)findViewById(R.id.textViewTimerLastSeconds));
+        timerTextViewHours = new TimerTextView((TextView) findViewById(R.id.textViewTimerHours));
+        timerTextViewSeparatorHours = new TimerTextView((TextView) findViewById(R.id.textViewTimerSeparatorHours));
+        timerTextViewMinutes = new TimerTextView((TextView) findViewById(R.id.textViewTimerMinutes));
+        timerTextViewSeparator = new TimerTextView((TextView) findViewById(R.id.textViewTimerSeparator));
+        timerTextViewSeconds = new TimerTextView((TextView) findViewById(R.id.textViewTimerSeconds));
+        timerTextViewLastSeconds = new TimerTextView((TextView) findViewById(R.id.textViewTimerLastSeconds));
 
         emptyPresetsTextView = findViewById(R.id.textViewEmptyPresets);
         setsTextView = findViewById(R.id.textViewSets);
@@ -470,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     private void scaleTimerProgressBar() {
         int timerProgressBarWidth = timerProgressBar.getMeasuredWidth();
-        int timerProgressBarHeight = (int)(isLayoutModeFull() ? activityLayoutHeight - getResources().getDimension(R.dimen.preset_card_total_height) : activityLayoutHeight);
+        int timerProgressBarHeight = (int) (isLayoutModeFull() ? activityLayoutHeight - getResources().getDimension(R.dimen.preset_card_total_height) : activityLayoutHeight);
         float layoutScaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
         Log.d(TAG, "scaleTimerProgressBar: layoutScaleX=" + layoutScaleX + ", timerProgressBarHeight=" + timerProgressBarHeight + ", timerProgressBarWidth=" + timerProgressBarWidth);
         timerProgressBar.setScaleX(layoutScaleX);
@@ -656,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
-        setsUser= number.intValue();
+        setsUser = number.intValue();
         if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;
         } else if (timerState == TimerService.State.WAITING) {
@@ -717,6 +717,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerProgressBar.setMax((int) timerUser);
         timerProgressBar.setProgress((int) (timerUser - timerCurrent));
     }
+
     private void updateColorLayout() {
         // default: light theme
         int progressColor = ContextCompat.getColor(this, R.color.main_background);
