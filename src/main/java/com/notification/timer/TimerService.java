@@ -457,7 +457,6 @@ public class TimerService extends Service {
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         updateTimerIntent(timerCurrent);
         notificationUpdateTimerCurrent(timerCurrent);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
@@ -471,7 +470,6 @@ public class TimerService extends Service {
         updateCountDown(TimeUnit.SECONDS.toMillis(timerCurrent));
         updateTimerIntent(timerCurrent);
         notificationUpdateTimerCurrent(timerCurrent);
-        interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.RUNNING, InteractiveNotification.NotificationMode.UPDATE);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
     }
 
