@@ -509,7 +509,7 @@ class InteractiveNotification extends Notification {
     private RemoteViews createRemoteView() {
         RemoteViews remoteView;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable) {
-            if (MainActivity.isColorDark(getColor())) {
+            if (MainActivity.isColorDark(context, getColor())) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_white_text);
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_black_text);

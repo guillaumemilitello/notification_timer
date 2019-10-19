@@ -104,7 +104,7 @@
         app:colorShape="circle"
         app:colorChoices="@array/colorValues"
         app:viewSize="large"
-        app:numColumns="4"
+        app:numColumns="6"
         app:showDialog="true"/>
 
     <com.kizitonwose.colorpreference.ColorPreference
@@ -115,7 +115,7 @@
         app:colorShape="circle"
         app:colorChoices="@array/colorValues"
         app:viewSize="large"
-        app:numColumns="4"
+        app:numColumns="6"
         app:showDialog="true"/>
 
     <com.kizitonwose.colorpreference.ColorPreference
@@ -126,7 +126,7 @@
         app:colorShape="circle"
         app:colorChoices="@array/colorValues"
         app:viewSize="large"
-        app:numColumns="4"
+        app:numColumns="6"
         app:showDialog="true"/>
 
     <ListPreference

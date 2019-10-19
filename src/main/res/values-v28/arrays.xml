@@ -1,64 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <integer-array name="colorValues" tools:ignore="InconsistentArrays">
-        <item>@color/blue_light</item>
-        <item>@color/indigo</item> <!-- legacy -->
-        <item>@color/blue</item> <!-- legacy -->
-        <item>@color/blue_darker</item> <!-- legacy -->
-
-        <item>@color/indigo_light</item>
-        <item>@color/indigo_dark</item>
-        <item>@color/indigo_darker</item>
-        <item>@color/indigo_black</item>
-
-        <item>@color/charcoal_light</item>
-        <item>@color/charcoal</item>  <!-- legacy -->
-        <item>@color/main_background_black</item>
-        <item>@color/black</item> <!-- legacy -->
-
+        <!-- 1 -->
         <item>@color/white</item> <!-- legacy -->
-        <item>@color/light_grey</item> <!-- legacy -->
-        <item>@color/grey</item> <!-- legacy -->
-        <item>@color/dark_grey</item> <!-- legacy -->
-
+        <item>@color/blue_light</item>
+        <item>@color/cyan_light</item>
+        <item>@color/orange_lighter</item>
+        <item>@color/green_light</item>
         <item>@color/blue_grey_light</item>
+        <!-- 2 -->
+        <item>@color/light_grey</item> <!-- legacy -->
+        <item>@color/indigo</item> <!-- legacy -->
+        <item>@color/cyan</item> <!-- legacy -->
+        <item>@color/yellow_light</item>
+        <item>@color/light_green</item> <!-- legacy -->
         <item>@color/blue_grey</item> <!-- legacy -->
+        <!-- 3 -->
+        <item>@color/grey</item> <!-- legacy -->
+        <item>@color/indigo_light</item>
+        <item>@color/blue_lighter</item>
+        <item>@color/yellow</item> <!-- legacy -->
+        <item>@color/green</item> <!-- legacy -->
         <item>@color/blue_grey_dark</item>
+        <!-- 4 -->
+        <item>@color/dark_grey</item> <!-- legacy -->
+        <item>@color/blue</item> <!-- legacy -->
+        <item>@color/light_blue</item> <!-- legacy -->
+        <item>@color/amber</item> <!-- legacy -->
+        <item>@color/green_dark</item>
         <item>@color/blue_grey_black</item>
 
-        <item>@color/blue_lighter</item>
-        <item>@color/light_blue</item> <!-- legacy -->
+        <!-- 1 -->
+        <item>@color/charcoal_light</item>
+        <item>@color/indigo_dark</item>
         <item>@color/blue_dark</item>
-        <item>@color/blue_cyan_darker</item>
-
-        <item>@color/green_light</item>
-        <item>@color/light_green</item> <!-- legacy -->
-        <item>@color/green</item> <!-- legacy -->
-        <item>@color/green_dark</item>
-
-        <item>@color/yellow_light</item>
-        <item>@color/yellow</item> <!-- legacy -->
-        <item>@color/amber</item> <!-- legacy -->
-        <item>@color/orange</item> <!-- legacy -->
-
-        <item>@color/orange_lighter</item>
         <item>@color/orange_light</item>
-        <item>@color/deep_orange</item> <!-- legacy -->
-        <item>@color/orange_dark</item>
-
         <item>@color/red_lighter</item>
-        <item>@color/red_light</item>
-        <item>@color/red</item> <!-- legacy -->
-        <item>@color/red_dark</item>
-
         <item>@color/purple_light</item>
-        <item>@color/purple</item> <!-- legacy -->
-        <item>@color/purple_dark</item>
-        <item>@color/purple_darker</item>
-
-        <item>@color/cyan_light</item>
-        <item>@color/cyan</item> <!-- legacy -->
+        <!-- 2 -->
+        <item>@color/charcoal</item>  <!-- legacy -->
+        <item>@color/blue_darker</item>
         <item>@color/cyan_dark</item>
+        <item>@color/orange</item> <!-- legacy -->
+        <item>@color/red_light</item>
+        <item>@color/purple</item> <!-- legacy -->
+        <!-- 3 -->
+        <item>@color/main_background_black</item>
+        <item>@color/indigo_darker</item>
         <item>@color/cyan_darker</item>
+        <item>@color/deep_orange</item> <!-- legacy -->
+        <item>@color/red</item> <!-- legacy -->
+        <item>@color/purple_dark</item>
+        <!-- 4 -->
+        <item>@color/black</item> <!-- legacy -->
+        <item>@color/indigo_black</item>
+        <item>@color/blue_cyan_darker</item>
+        <item>@color/orange_dark</item>
+        <item>@color/red_dark</item>
+        <item>@color/purple_darker</item>
     </integer-array>
 </resources>

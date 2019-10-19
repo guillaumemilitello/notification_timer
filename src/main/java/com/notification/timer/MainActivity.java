@@ -13,7 +13,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -50,6 +49,7 @@ import com.notification.timer.TimerService.TimerBinder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -751,7 +751,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             if (backgroundThemeMode == THEME_DARK) {
                 progressColorIsDark = true;
             } else if (backgroundThemeMode == THEME_DYNAMIC) {
-                progressColorIsDark = isColorDark(progressColor);
+                progressColorIsDark = isColorDark(this, progressColor);
             }
             backgroundColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.main_background_black : R.color.main_background);
             textColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.timer_font_color_black : R.color.timer_font_color);
@@ -790,10 +790,38 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         imageButtonKeepScreenOn.setColorFilter(imageButtonsColor);
     }
 
-    static boolean isColorDark(int color) {
-        double level = Color.red(color)*0.299 + Color.green(color)*0.690 + Color.blue(color)*0.114;
-        double threshold = 175;
-        return level <= threshold;
+    static boolean isColorDark(final Context context, int color) {
+        final ArrayList<Integer> darkColors = new ArrayList<Integer>() {
+            {
+                add(context.getResources().getColor(R.color.black));
+                add(context.getResources().getColor(R.color.blue));
+                add(context.getResources().getColor(R.color.charcoal));
+                add(context.getResources().getColor(R.color.deep_orange));
+                add(context.getResources().getColor(R.color.red));
+                add(context.getResources().getColor(R.color.indigo_light));
+                add(context.getResources().getColor(R.color.dark_grey));
+                add(context.getResources().getColor(R.color.green_dark));
+                add(context.getResources().getColor(R.color.cyan_dark));
+                add(context.getResources().getColor(R.color.cyan_darker));
+                add(context.getResources().getColor(R.color.indigo_dark));
+                add(context.getResources().getColor(R.color.indigo_darker));
+                add(context.getResources().getColor(R.color.indigo_black));
+                add(context.getResources().getColor(R.color.blue_dark));
+                add(context.getResources().getColor(R.color.blue_grey_dark));
+                add(context.getResources().getColor(R.color.blue_grey_black));
+                add(context.getResources().getColor(R.color.blue_cyan_darker));
+                add(context.getResources().getColor(R.color.blue_darker));
+                add(context.getResources().getColor(R.color.purple_light));
+                add(context.getResources().getColor(R.color.purple));
+                add(context.getResources().getColor(R.color.purple_dark));
+                add(context.getResources().getColor(R.color.purple_darker));
+                add(context.getResources().getColor(R.color.red_light));
+                add(context.getResources().getColor(R.color.red_dark));
+                add(context.getResources().getColor(R.color.orange_dark));
+                add(context.getResources().getColor(R.color.charcoal_light));
+            }
+        };
+        return darkColors.contains(color);
     }
 
     private void updateSetsDisplay() {
