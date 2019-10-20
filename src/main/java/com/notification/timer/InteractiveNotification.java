@@ -508,7 +508,7 @@ class InteractiveNotification extends Notification {
 
     private RemoteViews createRemoteView() {
         RemoteViews remoteView;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable && buttonsLayout != ButtonsLayout.READY) {
             if (MainActivity.isColorDark(context, getColor())) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_white_text);
             } else {
@@ -560,21 +560,21 @@ class InteractiveNotification extends Notification {
                             .setSmallIcon(R.drawable.ic_notification)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
-                            .setColorized(colorEnable)
+                            .setColorized(colorEnable && buttonsLayout != ButtonsLayout.READY)
                             .setColor(getColor());
                 case READY:
                     return new Builder(context, getReadyChannelId())
                             .setSmallIcon(R.drawable.ic_notification)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
-                            .setColorized(colorEnable)
+                            .setColorized(colorEnable && buttonsLayout != ButtonsLayout.READY)
                             .setColor(getColor());
                 default:
                     return new Builder(context, updateChannelId)
                             .setSmallIcon(R.drawable.ic_notification)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
-                            .setColorized(colorEnable)
+                            .setColorized(colorEnable && buttonsLayout != ButtonsLayout.READY)
                             .setColor(getColor());
             }
         } else {
@@ -635,7 +635,6 @@ class InteractiveNotification extends Notification {
             switch (buttonsLayout) {
                 case NO_LAYOUT:
                 case READY:
-                    return ContextCompat.getColor(context, R.color.progress_bar_waiting);
                 case PAUSED:
                 case RUNNING:
                     if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {

@@ -28,13 +28,9 @@
     <!-- Notification -->
     <color name="progress_bar_background">#FFDDDDDD</color>
     <color name="progress_bar_current">@color/colorPrimaryLighter</color>
-    <color name="progress_bar_get_ready">#FF0000</color>
-    <color name="progress_bar_font_light_gray">#e0e0e0</color>
-    <color name="progress_bar_waiting">#e0e0e0</color>
     <color name="progress_bar_timer_text">@color/white</color>
     <color name="progress_bar_set_text">#EEEEEE</color>
     <color name="icon_color_tint">#e0e0e0</color>
-    <color name="layout_background">#fafafa</color>
 
     <!-- Presets -->
     <color name="preset_card_timer_font_color">#E2E2E2</color>

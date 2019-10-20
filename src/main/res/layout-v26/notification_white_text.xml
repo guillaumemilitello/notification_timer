@@ -42,7 +42,7 @@
                 android:paddingEnd="0dp"
                 android:gravity="center_vertical"
                 android:textSize="14sp"
-                android:textColor="@color/progress_bar_font_light_gray"
+                android:textColor="@color/progress_bar_set_text_white"
                 android:text="v0.15 template"
                 android:id="@+id/textViewSets_short" />
 
@@ -68,7 +68,7 @@
             android:layout_below="@+id/textViewTimer_line"
             android:gravity="center_vertical"
             android:textSize="14sp"
-            android:textColor="@color/progress_bar_font_light_gray"
+            android:textColor="@color/progress_bar_set_text_white"
             android:text="v0.13 template"
             android:id="@+id/textViewSets" />
 

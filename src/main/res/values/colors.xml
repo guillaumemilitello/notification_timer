@@ -30,10 +30,10 @@
     <color name="progress_bar_background_light">#B0B0B0</color>
     <color name="progress_bar_current">@color/colorPrimary</color>
     <color name="progress_bar_get_ready">#FF0000</color>
-    <color name="progress_bar_font_light_gray">#e0e0e0</color>
-    <color name="progress_bar_waiting">#e0e0e0</color>
     <color name="progress_bar_timer_text">@color/black</color>
-    <color name="progress_bar_set_text">#6d6d6d</color>
+    <color name="progress_bar_set_text">#111111</color>
+    <color name="progress_bar_set_text_white">#EEEEEE</color>
+    <color name="progress_bar_set_text_black">#111111</color>
     <color name="icon_color_tint_light">#424242</color>
     <color name="icon_color_tint">#424242</color>
     <color name="layout_background">#fafafa</color>
