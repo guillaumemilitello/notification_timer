@@ -685,7 +685,7 @@ class InteractiveNotification extends Notification {
 
             RemoteViews remoteView = createRemoteView();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                notificationBuilder.setStyle(new DecoratedMediaCustomViewStyle());
+                notificationBuilder.setStyle(new DecoratedCustomViewStyle());
                 setCustomContent(remoteView, notificationMode, layoutSetDone);
             } else {
                 notificationBuilder.setContent(remoteView);
