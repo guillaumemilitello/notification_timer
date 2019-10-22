@@ -723,22 +723,31 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         int progressColor = ContextCompat.getColor(this, R.color.main_background);
         int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
         int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
+        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
+        }
         int buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint);
         if (backgroundThemeMode == THEME_DARK) {
             progressColor = ContextCompat.getColor(this, R.color.main_background_black);
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_black);
             textColor = ContextCompat.getColor(this, R.color.timer_font_color_black);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_black);
+            if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+                textColor = ContextCompat.getColor(this, R.color.timer_font_waiting_black);
+            }
         } else if (backgroundThemeMode == THEME_DYNAMIC) {
-            progressColor = ContextCompat.getColor(this, R.color.main_background_waiting);
-            backgroundColor = ContextCompat.getColor(this, R.color.main_background_waiting);
-            textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
-            buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_waiting);
+            progressColor = ContextCompat.getColor(this, R.color.main_background_dynamic);
+            backgroundColor = ContextCompat.getColor(this, R.color.main_background_dynamic);
+            textColor = ContextCompat.getColor(this, R.color.timer_font_color_dynamic);
+            buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_dynamic);
+            if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+                textColor = ContextCompat.getColor(this, R.color.timer_font_waiting_dynamic);
+            }
         } else if (backgroundThemeMode != THEME_LIGHT) {
             Log.e(TAG, "updateColorLayout: invalid backgroundThemeMode=" + backgroundThemeMode + ", applying light theme");
         }
 
-        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS && buttonsLayout != ButtonsLayout.READY) {
             if (buttonsLayout == ButtonsLayout.STOPPED) {
                 progressColor = colorDone;
             } else if (buttonsLayout != ButtonsLayout.READY) {

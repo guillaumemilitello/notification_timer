@@ -43,11 +43,12 @@
     <color name="preset_card_action_tint">#FAFAFA</color>
 
     <!-- Main activity -->
-    <color name="main_background_waiting">#1B1B1B</color>
-    <color name="timer_font_waiting">#2e2e2e</color>
+    <color name="main_background_dynamic">#1B1B1B</color>
+    <color name="timer_font_color_dynamic">@color/timer_font_color_black</color>
+    <color name="timer_font_waiting_dynamic">@color/timer_font_waiting_black</color>
+    <color name="full_buttons_tint_dynamic">#e2e2e2</color>
 
     <!-- Menu -->
     <color name="menu_font_color">@color/white</color>
     <color name="menu_background">#1B1B1B</color>
-    <color name="full_buttons_tint_waiting">#e2e2e2</color>
 </resources>

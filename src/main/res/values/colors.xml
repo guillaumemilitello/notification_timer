@@ -51,13 +51,16 @@
     <!-- Main activity -->
     <color name="main_background">@color/white</color>
     <color name="main_background_black">#1B1B1B</color>
-    <color name="main_background_waiting">@color/white</color>
+    <color name="main_background_dynamic">@color/white</color>
     <color name="timer_font_color">@color/main_background_black</color>
     <color name="timer_font_color_black">@color/main_background</color>
+    <color name="timer_font_color_dynamic">#2e2e2e</color>
     <color name="timer_font_waiting">#e6e6e6</color>
+    <color name="timer_font_waiting_black">#2e2e2e</color>
+    <color name="timer_font_waiting_dynamic">@color/timer_font_waiting</color>
     <color name="full_buttons_tint">#000000</color>
     <color name="full_buttons_tint_black">#e2e2e2</color>
-    <color name="full_buttons_tint_waiting">#000000</color>
+    <color name="full_buttons_tint_dynamic">#000000</color>
     <color name="presetsListEmpty">#eeeeee</color>
     <!-- Menu -->
     <color name="menu_font_color">@color/black</color>
