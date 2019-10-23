@@ -829,6 +829,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 add(context.getResources().getColor(R.color.red_dark));
                 add(context.getResources().getColor(R.color.orange_dark));
                 add(context.getResources().getColor(R.color.charcoal_light));
+                add(context.getResources().getColor(R.color.main_background_black));
             }
         };
         return darkColors.contains(color);
