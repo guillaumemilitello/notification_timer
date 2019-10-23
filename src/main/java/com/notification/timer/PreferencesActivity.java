@@ -9,7 +9,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -23,7 +22,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
 import androidx.annotation.NonNull;
@@ -32,7 +30,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
 
-import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -137,30 +134,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
-        }
-
-        @TargetApi(Build.VERSION_CODES.Q)
-        private void sendIntentNotificationChannel(String channelId) {
-            Intent intent = new Intent();
-            intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
-            intent.putExtra("android.provider.extra.APP_PACKAGE", BuildConfig.APPLICATION_ID);
-            startActivity(intent);
-        }
-
-        @Override
-        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            if (preference.getKey().equals(getString(R.string.pref_done_notification))) {
-                sendIntentNotificationChannel(InteractiveNotification.getDoneChannelId());
-                return true;
-            } else if (preference.getKey().equals(getString(R.string.pref_timer_get_ready_notification))) {
-                sendIntentNotificationChannel(InteractiveNotification.getReadyChannelId());
-                return true;
-            }
-            else
-            {
-                return super.onPreferenceTreeClick(preferenceScreen, preference);
-            }
         }
     }
 
