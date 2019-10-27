@@ -10,6 +10,8 @@
 
     <color name="drawableTint">@color/black</color>
 
+    <color name="status_bar">@color/colorPrimaryDark</color>
+
     <!-- Preferences -->
     <color name="colorPrimaryLighter">#7a82b7</color>
     <color name="preferences_background">@color/white</color>

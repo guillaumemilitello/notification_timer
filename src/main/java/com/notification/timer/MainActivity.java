@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         Toolbar toolbar = findViewById(R.id.actionBar);
         setSupportActionBar(toolbar);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.status_bar));
         setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                 ContextCompat.getColor(this, R.color.colorPrimary)));
