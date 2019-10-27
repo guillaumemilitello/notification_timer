@@ -750,12 +750,10 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS && buttonsLayout != ButtonsLayout.READY) {
             if (buttonsLayout == ButtonsLayout.STOPPED) {
                 progressColor = colorDone;
-            } else if (buttonsLayout != ButtonsLayout.READY) {
-                if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
-                    progressColor = colorReady;
-                } else {
-                    progressColor = colorRunning;
-                }
+            } else if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                progressColor = colorReady;
+            } else {
+                progressColor = colorRunning;
             }
             boolean progressColorIsDark = false;
             if (backgroundThemeMode == THEME_DARK) {
