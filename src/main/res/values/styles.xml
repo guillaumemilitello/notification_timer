@@ -13,6 +13,7 @@
         <item name="android:itemBackground">@color/menu_background</item>
         <item name="android:dialogTheme">@style/AlertDialogTheme</item>
         <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="android:navigationBarColor">@color/black</item>
     </style>
 
     <style name="notificationButton" parent="@android:style/Widget.Material.ProgressBar.Horizontal" >
