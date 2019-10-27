@@ -506,9 +506,13 @@ class InteractiveNotification extends Notification {
         build(NotificationMode.UPDATE);
     }
 
+    private boolean isColorEnable() {
+        return colorEnable && buttonsLayout != ButtonsLayout.READY;
+    }
+
     private RemoteViews createRemoteView() {
         RemoteViews remoteView;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable && buttonsLayout != ButtonsLayout.READY) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isColorEnable()) {
             if (MainActivity.isColorDark(context, getColor())) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_white_text);
             } else {
@@ -560,21 +564,21 @@ class InteractiveNotification extends Notification {
                             .setSmallIcon(R.drawable.ic_notification)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
-                            .setColorized(colorEnable && buttonsLayout != ButtonsLayout.READY)
+                            .setColorized(isColorEnable())
                             .setColor(getColor());
                 case READY:
                     return new Builder(context, getReadyChannelId())
                             .setSmallIcon(R.drawable.ic_notification)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
-                            .setColorized(colorEnable && buttonsLayout != ButtonsLayout.READY)
+                            .setColorized(isColorEnable())
                             .setColor(getColor());
                 default:
                     return new Builder(context, updateChannelId)
                             .setSmallIcon(R.drawable.ic_notification)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
-                            .setColorized(colorEnable && buttonsLayout != ButtonsLayout.READY)
+                            .setColorized(isColorEnable())
                             .setColor(getColor());
             }
         } else {
@@ -631,7 +635,7 @@ class InteractiveNotification extends Notification {
     }
 
     private int getColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && colorEnable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isColorEnable()) {
             switch (buttonsLayout) {
                 case NO_LAYOUT:
                 case READY:
