@@ -521,8 +521,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 break;
         }
 
+        float fontScale = getResources().getConfiguration().fontScale;
+        if (fontScale < 0) {
+            Log.e(TAG, "scaleTextViews: fontScale=" + fontScale);
+            fontScale = 1;
+        }
+
         // TimerTextViewParams generates parameters for the Lekton typeface
-        TimerTextViewParameters timerTextViewParams = new TimerTextViewParameters(layoutMode, timerLayoutWidth, timerLayoutHeight, density, this, sharedPreferences);
+        TimerTextViewParameters timerTextViewParams = new TimerTextViewParameters(layoutMode, timerLayoutWidth, timerLayoutHeight, fontScale * density, this, sharedPreferences);
         Log.d(TAG, "scaleTextViews: timerTextViewParams=" + timerTextViewParams);
 
         timerTextViewHours.setParameters(timerTextViewParams, false);

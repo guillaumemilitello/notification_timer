@@ -16,7 +16,7 @@ public class HmsView extends LinearLayout {
     private ZeroTopPaddingTextView mHoursOnes, mHoursTens;
     private ZeroTopPaddingTextView mMinutesOnes, mMinutesTens;
     private ZeroTopPaddingTextView mSecondsOnes, mSecondsTens;
-    private ZeroTopPaddingTextView mMinusLabel, mMinuteLabel, mHourLabel;
+    private ZeroTopPaddingTextView mMinuteLabel, mHourLabel;
     private final Typeface mTypefaceLekton, mTypefaceLektonBold;
 
     private ColorStateList mTextColor;
@@ -80,9 +80,6 @@ public class HmsView extends LinearLayout {
         if (mSecondsTens != null) {
             mSecondsTens.setTextColor(mTextColor);
         }
-        if (mMinusLabel != null) {
-            mMinusLabel.setTextColor(mTextColor);
-        }
     }
 
     @Override
@@ -95,7 +92,6 @@ public class HmsView extends LinearLayout {
         mMinutesOnes = (ZeroTopPaddingTextView) findViewById(R.id.minutes_ones);
         mSecondsTens = (ZeroTopPaddingTextView) findViewById(R.id.seconds_tens);
         mSecondsOnes = (ZeroTopPaddingTextView) findViewById(R.id.seconds_ones);
-        mMinusLabel = (ZeroTopPaddingTextView) findViewById(R.id.minus_label);
         mHourLabel = (ZeroTopPaddingTextView) findViewById(R.id.hours_label);
         mMinuteLabel = (ZeroTopPaddingTextView) findViewById(R.id.minutes_label);
 
@@ -155,8 +151,6 @@ public class HmsView extends LinearLayout {
 
     public void setTime(boolean isNegative, int hoursTensDigit, int hoursOnesDigit, int minutesTensDigit, int minutesOnesDigit, int secondsTensDigit,
             int secondsOnesDigit) {
-
-        mMinusLabel.setVisibility(isNegative ? View.VISIBLE : View.GONE);
 
         if (mHoursTens != null) {
             mHoursTens.setText(String.format("%d", hoursTensDigit));

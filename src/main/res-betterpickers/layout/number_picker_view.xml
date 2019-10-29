@@ -27,6 +27,7 @@
             android:paddingTop="@dimen/medium_font_padding"
             android:paddingBottom="@dimen/medium_font_padding"
             android:paddingLeft="@dimen/timer_padding_left"
+            android:weightSum="3"
             android:gravity="center">
         <com.codetroopers.betterpickers.widget.AutoScrollHorizontalScrollView
                 android:layout_width="0dip"
@@ -43,48 +44,14 @@
                     android:baselineAligned="false"
                     android:gravity="top">
                 <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
-                        android:id="@+id/number"
-                        android:maxLines="1"
-                        android:ellipsize="none"
-                        style="@style/medium_light_hms"
-                        android:layout_height="48dp"
-                        android:layout_width="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="0"/>
-                <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
-                        android:id="@+id/decimal_separator"
-                        android:maxLines="1"
-                        android:ellipsize="none"
-                        style="@style/medium_light"
-                        android:text="@string/number_picker_seperator"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"/>
-                <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
-                        android:id="@+id/decimal"
-                        android:maxLines="1"
-                        android:ellipsize="none"
-                        android:text="0"
-                        style="@style/medium_bold"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"/>
-                <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
-                        android:id="@+id/label"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:maxLines="1"
-                        android:ellipsize="none"
-                        style="@style/label"
-                        android:gravity="top"/>
-                <com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView
-                        android:id="@+id/minus_label"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:maxLines="1"
-                        android:ellipsize="none"
-                        style="@style/label"
-                        android:gravity="top"
-                        android:text="@string/number_picker_minus_label"/>
+                    android:id="@+id/number"
+                    android:singleLine="true"
+                    style="@style/medium_light_hms"
+                    android:layout_height="@dimen/medium_font_size_height"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="0"/>
             </com.codetroopers.betterpickers.numberpicker.NumberView>
         </com.codetroopers.betterpickers.widget.AutoScrollHorizontalScrollView>
         <ImageButton

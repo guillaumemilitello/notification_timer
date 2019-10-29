@@ -6,7 +6,7 @@
     <!-- Main activity layout -->
     <dimen name="full_mode_threshold">510dp</dimen>
     <dimen name="compact_mode_threshold">270dp</dimen>
-    <dimen name="pickers_threshold">450dp</dimen>
+    <dimen name="pickers_threshold">380dp</dimen>
 
     <!-- Preset card -->
     <dimen name="preset_card_height">56dp</dimen>

@@ -29,7 +29,7 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
     protected final Context mContext;
 
     private TextView mTitle;
-    private TextView mHoursLabel, mMinutesLabel, mSecondsLabel;
+    private TextView mHoursLabel, mMinutesLabel;
     private Button mSetButton;
 
     protected View mDivider;
@@ -124,10 +124,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
             mMinutesLabel.setTextColor(mTextLabelColor);
             mMinutesLabel.setBackgroundResource(mKeyBackgroundResId);
         }
-        if (mSecondsLabel != null) {
-            mSecondsLabel.setTextColor(mTextLabelColor);
-            mSecondsLabel.setBackgroundResource(mKeyBackgroundResId);
-        }
         if (mDelete != null) {
             mDelete.setBackgroundResource(mButtonBackgroundResId);
             mDelete.setImageDrawable(getResources().getDrawable(mDeleteDrawableSrcResId));
@@ -186,7 +182,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
 
         mHoursLabel = (TextView) findViewById(R.id.hours_label);
         mMinutesLabel = (TextView) findViewById(R.id.minutes_label);
-        mSecondsLabel = (TextView) findViewById(R.id.seconds_label);
         mDivider = findViewById(R.id.dividerHms);
 
         restyleViews();

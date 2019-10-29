@@ -13,9 +13,7 @@ import com.notification.timer.R;
 
 public class NumberView extends LinearLayout {
 
-    private ZeroTopPaddingTextView mNumber, mDecimal;
-    private ZeroTopPaddingTextView mDecimalSeperator;
-    private ZeroTopPaddingTextView mMinusLabel;
+    private ZeroTopPaddingTextView mNumber;
     private final Typeface mTypefaceLekton;
 
     private ColorStateList mTextColor;
@@ -63,15 +61,6 @@ public class NumberView extends LinearLayout {
         if (mNumber != null) {
             mNumber.setTextColor(mTextColor);
         }
-        if (mDecimal != null) {
-            mDecimal.setTextColor(mTextColor);
-        }
-        if (mDecimalSeperator != null) {
-            mDecimalSeperator.setTextColor(mTextColor);
-        }
-        if (mMinusLabel != null) {
-            mMinusLabel.setTextColor(mTextColor);
-        }
     }
 
     @Override
@@ -79,16 +68,10 @@ public class NumberView extends LinearLayout {
         super.onFinishInflate();
 
         mNumber = (ZeroTopPaddingTextView) findViewById(R.id.number);
-        mDecimal = (ZeroTopPaddingTextView) findViewById(R.id.decimal);
-        mDecimalSeperator = (ZeroTopPaddingTextView) findViewById(R.id.decimal_separator);
-        mMinusLabel = (ZeroTopPaddingTextView) findViewById(R.id.minus_label);
         // Set the lowest time unit with thin font
         if (mNumber != null) {
             mNumber.setTypeface(mTypefaceLekton);
             mNumber.updatePaddingForBoldDate();
-        }
-        if (mDecimal != null) {
-            mDecimal.updatePadding();
         }
 
         restyleViews();
@@ -104,7 +87,6 @@ public class NumberView extends LinearLayout {
      */
     public void setNumber(String numbersDigit, String decimalDigit, boolean showDecimal,
             boolean isNegative) {
-        mMinusLabel.setVisibility(isNegative ? View.VISIBLE : View.GONE);
         if (mNumber != null) {
             if (numbersDigit.equals("")) {
                 // Set to -
@@ -125,21 +107,6 @@ public class NumberView extends LinearLayout {
                 mNumber.updatePaddingForBoldDate();
                 mNumber.setVisibility(View.VISIBLE);
             }
-        }
-        if (mDecimal != null) {
-            // Hide digit
-            if (decimalDigit.equals("")) {
-                mDecimal.setVisibility(View.GONE);
-            } else {
-                mDecimal.setText(decimalDigit);
-                mDecimal.setEnabled(true);
-                mDecimal.updatePadding();
-                mDecimal.setVisibility(View.VISIBLE);
-            }
-        }
-        if (mDecimalSeperator != null) {
-            // Hide separator
-            mDecimalSeperator.setVisibility(showDecimal ? View.VISIBLE : View.GONE);
         }
     }
 }
