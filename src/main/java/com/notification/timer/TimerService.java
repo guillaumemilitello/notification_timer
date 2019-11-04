@@ -424,7 +424,7 @@ public class TimerService extends Service {
 
         if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 0;
-        } else if (state == State.RUNNING || state == State.PAUSED) {
+        } else if (state != State.WAITING) {
             setsCurrent -= 1;
         }
         setsUser = 0;

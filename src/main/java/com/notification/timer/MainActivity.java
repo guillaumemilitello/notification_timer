@@ -974,7 +974,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 0;
-        } else if (timerState == TimerService.State.RUNNING || timerState == TimerService.State.PAUSED) {
+        } else if (timerState != TimerService.State.WAITING) {
             setsCurrent -= 1;
         }
         setsUser = 0;
