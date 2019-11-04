@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="time_separator_padding">-9dp</dimen>
-    <dimen name="medium_font_padding">6dp</dimen>
-    <dimen name="medium_font_size">50sp</dimen>
-    <dimen name="medium_font_size_hms">50sp</dimen>
+    <dimen name="medium_font_padding">12dp</dimen>
+    <dimen name="medium_font_size">52sp</dimen>
+    <dimen name="medium_font_size_hms">52sp</dimen>
     <dimen name="medium_font_size_height">46sp</dimen>
     <dimen name="medium_font_size_hms_separator">46sp</dimen>
     <dimen name="label_font_size">14sp</dimen>
