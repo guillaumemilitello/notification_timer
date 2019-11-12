@@ -725,7 +725,10 @@ class InteractiveNotification extends Notification {
     }
 
     void updateNameUser(String name) {
+        Log.d(TAG, "updateNameUser: nameUser=" + nameUser);
         nameUser = name;
+        updateSetsTextView();
+        build(NotificationMode.UPDATE);
     }
 
     void updateSetsCurrent(int sets, NotificationMode notificationMode) {
@@ -768,31 +771,31 @@ class InteractiveNotification extends Notification {
             case RUNNING:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if (setsUser == Integer.MAX_VALUE) {
-                        setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
+                        setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent);
                     } else {
-                        setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
+                        setsString = String.format(context.getString(R.string.notif_timer_info), nameUser, setsCurrent, setsUser);
                     }
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
+                    setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent);
                 }
                 break;
             case READY:
                 if (setsUser == Integer.MAX_VALUE) {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent);
+                    setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent);
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_info), nameUser, setsCurrent, setsUser);
                 }
                 break;
             case ALL_SETS_DONE:
             case SET_DONE:
                 if (setsUser == Integer.MAX_VALUE) {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), setsCurrent - 1);
+                    setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent - 1);
                 } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), setsCurrent - 1, setsUser);
+                    setsString = String.format(context.getString(R.string.notif_timer_info), nameUser, setsCurrent - 1, setsUser);
                 }
                 break;
         }
-        Log.d(TAG, "updateSetsTextView: setsString='" + setsString + "'");
+        Log.d(TAG, "updateSetsTextView: nameUser=" + nameUser + "setsString='" + setsString + "'");
     }
 
     void dismiss() {

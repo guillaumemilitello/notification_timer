@@ -937,7 +937,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         nameEditText.setText(nameUser);
     }
 
-    static String getSetsText(int setsUser, int setsCurrent) {
+    private String getSetsText(int setsUser, int setsCurrent) {
         // waiting mode
         if (setsUser == -1 && setsCurrent == -1) {
             return "";
@@ -945,7 +945,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (setsUser == Integer.MAX_VALUE || setsCurrent > setsUser) {
             return String.format(Locale.US, "%d", setsCurrent);
         } else {
-            return String.format(Locale.US, "%d of %d", setsCurrent, setsUser);
+            return String.format(Locale.US, getString(R.string.sets_text), setsCurrent, setsUser);
         }
     }
 

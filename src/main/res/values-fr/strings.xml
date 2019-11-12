@@ -13,6 +13,7 @@
     <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le minuteur actuel ?</string>
     <string name="add_preset_reset_warning">Êtes-vous sûr de vouloir remettre à zéro le minuteur actuel ?</string>
     <string name="add_preset_stop_reset_warning">Êtes-vous sûr de vouloir arrêter et remettre à zéro le minuteur actuel ?</string>
+    <string name="sets_text">%1$d sur %2$d</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
     <string name="picker_sets">Limite de minuteurs</string>
@@ -31,8 +32,8 @@
     <string name="alert_yes">OUI</string>
     <string name="alert_no">NON</string>
     <!-- Notification -->
-    <string name="notif_timer_number">Minuteur %1$d</string>
-    <string name="notif_timer_info">Minuteur %1$d sur %2$d</string>
+    <string name="notif_timer_number">%1$s %2$d</string>
+    <string name="notif_timer_info">%1$s %2$d sur %3$d</string>
     <string name="notif_timer_done">Temps écoulé !</string>
     <!-- HelpOverlay -->
     <string name="help_tap_to_continue">Appuyez pour continuer</string>

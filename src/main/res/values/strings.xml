@@ -14,6 +14,7 @@
     <string name="clear_long_press">Would you like to clear the current timer?</string>
     <string name="add_preset_reset_warning">Would you like to reset the current timer to add a new one?</string>
     <string name="add_preset_stop_reset_warning">Would you like to stop and reset the current timer to add a new one?</string>
+    <string name="sets_text">%1$d of %2$d</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timers number limit</string>
@@ -32,8 +33,8 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="notif_timer_number">Timer %1$d</string>
-    <string name="notif_timer_info">Timer %1$d of %2$d total</string>
+    <string name="notif_timer_number">%1$s %2$d</string>
+    <string name="notif_timer_info">%1$s %2$d of %3$d</string>
     <string name="notif_timer_done">Time out!</string>
     <string name="notif_channel_done" translatable="false">Time out</string>
     <string name="notif_channel_ready" translatable="false">Extra notification</string>
