@@ -8,6 +8,7 @@
     <string name="keepScreenOn">Écran toujours allumé</string>
     <string name="presets">Minuteurs sauvegardés</string>
     <!-- Main Activity -->
+    <string name="default_timer_name">Minuteur</string>
     <string name="presetsListEmpty">Liste des minuteurs vide</string>
     <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le minuteur actuel ?</string>
     <string name="add_preset_reset_warning">Êtes-vous sûr de vouloir remettre à zéro le minuteur actuel ?</string>

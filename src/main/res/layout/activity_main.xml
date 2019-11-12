@@ -98,9 +98,7 @@
             android:background="@color/preset_fragment_background"
             android:orientation="horizontal">
 
-            <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:layout_width="wrap_content"
                 android:paddingStart="8dp"
                 android:elevation="2dp"
@@ -149,8 +147,7 @@
                 android:textColor="@color/presetsListEmpty" />
 
             <!-- Preset timers -->
-            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
+            <FrameLayout
                 android:id="@+id/frameLayoutPresets"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/preset_card_total_height"
@@ -199,17 +196,59 @@
                 android:weightSum="5"
                 android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:text=""
                     android:gravity="center"
-                    android:maxLines="1"
-                    android:textSize="50sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/bpRed"
-                    android:id="@+id/textViewSets"/>
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Timer"
+                        android:includeFontPadding="false"
+                        android:gravity="end|center_vertical"
+                        android:maxLines="1"
+                        android:textSize="50sp"
+                        android:textStyle="bold"
+                        android:scrollHorizontally="false"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true"
+                        android:textColor="@android:color/transparent"
+                        android:inputType="textNoSuggestions"
+                        android:maxLength="25"
+                        android:focusableInTouchMode="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="@android:color/transparent"
+                        android:id="@+id/textViewName"
+                        android:importantForAutofill="no"
+                        tools:ignore="LabelFor" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text=" "
+                        android:gravity="start|center_vertical"
+                        android:maxLines="1"
+                        android:textSize="50sp"
+                        android:textStyle="bold"
+                        android:background="@android:color/transparent"
+                        android:id="@+id/textViewSpace"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text=""
+                        android:gravity="start|center_vertical"
+                        android:maxLines="1"
+                        android:textSize="50sp"
+                        android:textStyle="bold"
+                        android:background="@android:color/transparent"
+                        android:id="@+id/textViewSets"/>
+
+                </LinearLayout>
 
                 <RelativeLayout
                     android:id="@+id/layoutTimer"

@@ -35,6 +35,17 @@ class PresetsList {
         return getSize();
     }
 
+    void updatePresetName(int index, String name) {
+        Log.d(TAG, "updatePresetName: index=" + index + ", name='" + name + "'");
+        Preset preset = getPreset(index);
+        Preset loadedPreset = loadPreset(index);
+        if (loadedPreset.isValid() && loadedPreset.equals(preset)) {
+            Log.d(TAG, "updatePresetName: saving preset=" + preset);
+            preset.setName(name);
+            savePreset(index, preset);
+        }
+    }
+
     int removePreset(int index) {
         Log.d(TAG, "removePreset: index=" + index);
         list.remove(index);
@@ -59,7 +70,10 @@ class PresetsList {
     }
 
     Preset getPreset(int index) {
-        return list.get(index);
+        if (index >= 0 && index < list.size()) {
+            return list.get(index);
+        }
+        return new Preset();
     }
 
     private int getSize() { return list.size(); }
@@ -69,6 +83,7 @@ class PresetsList {
             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
             sharedPreferencesEditor.putLong(String.format(Locale.US, context.getString(R.string.pref_preset_array_timer), index), preset.getTimer());
             sharedPreferencesEditor.putInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_sets), index), preset.getSets());
+            sharedPreferencesEditor.putString(String.format(Locale.US, context.getString(R.string.pref_preset_array_name), index), preset.getName());
             sharedPreferencesEditor.apply();
             Log.d(TAG, "savePreset: index=" + index + ", preset='" + preset + "'");
         }
@@ -78,7 +93,8 @@ class PresetsList {
         if (sharedPreferences != null) {
             long timer = sharedPreferences.getLong(String.format(Locale.US, context.getString(R.string.pref_preset_array_timer), index), -1);
             int sets = sharedPreferences.getInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_sets), index), -1);
-            Preset preset = new Preset(timer, sets);
+            String name = sharedPreferences.getString(String.format(Locale.US, context.getString(R.string.pref_preset_array_name), index), context.getString(R.string.default_timer_name));
+            Preset preset = new Preset(timer, sets, name);
             Log.d(TAG, "loadPreset: index=" + index + ", preset='" + preset + "'");
             return preset;
         } else {
@@ -103,6 +119,20 @@ class PresetsList {
             }
         }
         return getSize();
+    }
+
+    int find(Preset preset) {
+        if (preset.isValid()) {
+            int duplicateIndex = 0;
+            while (duplicateIndex < list.size()) {
+                Preset duplicatePreset = list.get(duplicateIndex);
+                if (duplicatePreset.equals(preset)) {
+                    return duplicateIndex;
+                }
+                ++duplicateIndex;
+            }
+        }
+        return -1;
     }
 
     boolean isSynced() {

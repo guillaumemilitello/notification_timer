@@ -63,6 +63,7 @@ public class TimerService extends Service {
     private long timerUser = 0;
     private int setsCurrent = 0;
     private int setsUser = 1;
+    private String nameUser = "";
     private State state = State.WAITING;
 
     public long getTimerCurrent() {
@@ -79,6 +80,10 @@ public class TimerService extends Service {
 
     public int getSetsUser() {
         return setsUser;
+    }
+
+    public String getNameUser() {
+        return nameUser;
     }
 
     public State getState() {
@@ -106,6 +111,7 @@ public class TimerService extends Service {
     private static final int CONTEXT_PREFERENCE_TIMER_USER = 0x02;
     private static final int CONTEXT_PREFERENCE_SETS_CURRENT = 0x04;
     private static final int CONTEXT_PREFERENCE_SETS_USER = 0x08;
+    private static final int CONTEXT_PREFERENCE_NAME_USER = 0x10;
     private static final int CONTEXT_PREFERENCE_STATE = 0x20;
     private static final int CONTEXT_PREFERENCE_MAIN_ACTIVITY_VISIBLE = 0x40;
 
@@ -429,6 +435,8 @@ public class TimerService extends Service {
         }
         setsUser = 0;
 
+        nameUser = "";
+
         updateStateIntent(State.WAITING);
         updateTimerIntent(timerCurrent, setsCurrent);
 
@@ -436,7 +444,7 @@ public class TimerService extends Service {
         stopNotificationForeground();
         releaseWakeLock();
 
-        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_TIMER_USER | CONTEXT_PREFERENCE_SETS_CURRENT | CONTEXT_PREFERENCE_SETS_USER);
+        saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_TIMER_USER | CONTEXT_PREFERENCE_SETS_CURRENT | CONTEXT_PREFERENCE_SETS_USER | CONTEXT_PREFERENCE_NAME_USER);
     }
 
     void stepTime() {
@@ -517,6 +525,13 @@ public class TimerService extends Service {
         timerCurrent = timer;
         notificationUpdateTimerCurrent(timerCurrent);
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
+    }
+
+    public void setNameUser(String name) {
+        Log.d(TAG, "setNameUser: nameUser=" + name);
+        nameUser = name;
+        interactiveNotification.updateNameUser(name);
+        saveContextPreferences(CONTEXT_PREFERENCE_NAME_USER);
     }
 
     private void notificationUpdateTimerCurrent(long time) {
@@ -690,6 +705,10 @@ public class TimerService extends Service {
             sharedPreferencesEditor.putInt(getString(R.string.pref_timer_service_sets_user), setsUser);
             Log.d(TAG, "saveContextPreferences: setsUser=" + setsUser);
         }
+        if ((flags & CONTEXT_PREFERENCE_NAME_USER) == CONTEXT_PREFERENCE_NAME_USER) {
+            sharedPreferencesEditor.putString(getString(R.string.pref_timer_service_name_user), nameUser);
+            Log.d(TAG, "saveContextPreferences: nameUser=" + nameUser);
+        }
         if ((flags & CONTEXT_PREFERENCE_STATE) == CONTEXT_PREFERENCE_STATE) {
             sharedPreferencesEditor.putString(getString(R.string.pref_timer_service_state), state.toString());
             Log.d(TAG, "saveContextPreferences: state=" + state);
@@ -707,10 +726,11 @@ public class TimerService extends Service {
         setTimerUser(sharedPreferences.getLong(getString(R.string.pref_timer_service_timer_user), timerUser));
         setSetsCurrent(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_current), setsCurrent));
         setSetsUser(sharedPreferences.getInt(getString(R.string.pref_timer_service_sets_user), setsUser));
+        setNameUser(sharedPreferences.getString(getString(R.string.pref_timer_service_name_user), nameUser));
         state = State.valueOf(sharedPreferences.getString(getString(R.string.pref_timer_service_state), state.toString()).toUpperCase(Locale.US));
         mainActivityVisible = sharedPreferences.getBoolean(getString(R.string.pref_timer_service_main_activity_visible), mainActivityVisible);
         Log.d(TAG, "loadContextPreferences: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser + ", setsCurrent=" + setsCurrent
-        + ", setsUser=" + setsUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
+        + ", setsUser=" + setsUser + ", nameUser=" + nameUser + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
 
         if (state == State.RUNNING) {
             long remainingTime = TimeUnit.MILLISECONDS.toSeconds(timerEnd - System.currentTimeMillis());

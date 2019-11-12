@@ -76,6 +76,14 @@ public class PresetCardsList extends Fragment {
         }
     }
 
+    private void removeDuplicatedPreset(int position) {
+        int index = getListIndex(position);
+        Log.d(TAG, "removeDuplicatedPreset: position=" + position + ", index=" + index + ", presetList=" + presetsList);
+        presetsListSize = presetsList.removePreset(index);
+        adapter.notifyItemRemoved(position);
+        notifyItemRangeChanged(position);
+    }
+
     public void update() {
         Preset currentPreset = mainActivity.getPresetUser();
         if (!currentPreset.equals(presetUser)) {
@@ -164,6 +172,36 @@ public class PresetCardsList extends Fragment {
     }
 
     boolean isEmpty() { return presetsListSize == 0; }
+
+    void setCurrentPresetName(String name) {
+        int listIndex = getListIndex(userPosition);
+        if (listIndex < 0) {
+            Log.e(TAG, "setCurrentPresetName: invalid listIndex=" + listIndex + ", name=" + name);
+            return;
+        }
+        // duplicates can be creates while renaming a timer
+        if (!removeDuplicate(name)) {
+            presetsList.updatePresetName(listIndex, name);
+        }
+        Log.d(TAG, "setCurrentPresetName: listIndex=" + listIndex + ", name=" + name);
+    }
+
+    private boolean removeDuplicate(String name) {
+        Preset renamedPreset = mainActivity.getPresetUser();
+        renamedPreset.setName(name);
+        Log.d(TAG, "removeDuplicate: userPositionPreset=" + renamedPreset);
+        if (renamedPreset.isValid()) {
+            int duplicateIndex = presetsList.find(renamedPreset);
+            if (duplicateIndex != -1) {
+                Log.d(TAG, "removeDuplicate: duplicateIndex=" + duplicateIndex + "userPositionPreset=" + renamedPreset + ", userPosition=" + userPosition);
+                removeDuplicatedPreset(userPosition);
+                return true;
+            }
+        } else {
+            Log.e(TAG, "invalid renamedPreset=" + renamedPreset);
+        }
+        return false;
+    }
 
     private void scrollToPosition(int position) {
         Log.d(TAG, "scrollToPosition: position=" + position);

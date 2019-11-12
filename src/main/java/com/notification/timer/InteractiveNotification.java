@@ -63,6 +63,7 @@ class InteractiveNotification extends Notification {
     // Timer service related
     private long timerCurrent, timerUser;
     private int setsCurrent, setsUser;
+    private String nameUser;
     private String timerString, setsString;
 
     private boolean setsNumberReset;
@@ -721,6 +722,10 @@ class InteractiveNotification extends Notification {
 
     void updateSetsCurrent(int sets) {
         updateSetsCurrent(sets, NotificationMode.NONE);
+    }
+
+    void updateNameUser(String name) {
+        nameUser = name;
     }
 
     void updateSetsCurrent(int sets, NotificationMode notificationMode) {

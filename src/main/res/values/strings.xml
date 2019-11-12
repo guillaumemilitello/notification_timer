@@ -9,6 +9,7 @@
     <string name="keepScreenOn">Keep Screen On</string>
     <string name="presets">Presets</string>
     <!-- Main Activity -->
+    <string name="default_timer_name">Timer</string>
     <string name="presetsListEmpty">Timers list empty</string>
     <string name="clear_long_press">Would you like to clear the current timer?</string>
     <string name="add_preset_reset_warning">Would you like to reset the current timer to add a new one?</string>
@@ -106,12 +107,14 @@
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>
+    <string name="pref_preset_array_name" translatable="false">presetArray_%1$d_name</string>
     <string name="pref_timer_service" translatable="false">timerService_</string>
     <string name="pref_timer_service_timer_end" translatable="false">timerService_timerEnd</string>
     <string name="pref_timer_service_timer_current" translatable="false">timerService_timerCurrent</string>
     <string name="pref_timer_service_timer_user" translatable="false">timerService_timerUser</string>
     <string name="pref_timer_service_sets_current" translatable="false">timerService_setsCurrent</string>
     <string name="pref_timer_service_sets_user" translatable="false">timerService_setUser</string>
+    <string name="pref_timer_service_name_user" translatable="false">timerService_nameUser</string>
     <string name="pref_timer_service_state" translatable="false">timerService_state</string>
     <string name="pref_timer_service_main_activity_visible" translatable="false">timerService_mainActivityVisible</string>
     <string name="pref_custom_color_enable" translatable="false">colorEnable</string>

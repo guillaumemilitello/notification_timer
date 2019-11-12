@@ -8,19 +8,30 @@ class Preset {
 
     private final long timer;
     private final int sets;
+    private String name;
 
     Preset() {
         this.timer = -1;
         this.sets = -1;
+        this.name = "";
     }
 
-    Preset(long timer, int sets) {
+    Preset(long timer, int sets, String name) {
         this.timer = timer;
         this.sets = sets;
+        this.name = name;
     }
 
     int getSets() {
         return sets;
+    }
+
+    String getName() {
+        return name;
+    }
+
+    void setName(String name) {
+        this.name = name;
     }
 
     boolean isInfinity() {
@@ -50,7 +61,7 @@ class Preset {
 
     @NonNull
     public String toString() {
-        return String.format(Locale.US, "%s:%s:%s %s", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getSetsString());
+        return String.format(Locale.US, "(%s:%s:%s|%s|%s)", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getName(), getSetsString());
     }
 
     boolean isValid() {
@@ -62,7 +73,7 @@ class Preset {
     {
         if (object instanceof Preset) {
             Preset preset = (Preset)object;
-            return this.timer == preset.timer && this.sets == preset.sets;
+            return this.timer == preset.timer && this.sets == preset.sets && this.name.equals(preset.name);
         } else {
             return false;
         }
