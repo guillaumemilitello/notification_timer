@@ -121,6 +121,22 @@
                         android:singleLine="true"
                         android:maxLines="1" />
 
+                    <TextView
+                        android:id="@+id/textViewCardTimerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:textSize="@dimen/preset_card_timer_font_size"
+                        android:includeFontPadding="false"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/preset_card_timer_font_color"
+                        android:text="Timer"
+                        android:visibility="gone"
+                        android:lineSpacingExtra="0dp"
+                        android:singleLine="true"
+                        android:maxLines="1" />
+
                 </LinearLayout>
 
                 <TextView

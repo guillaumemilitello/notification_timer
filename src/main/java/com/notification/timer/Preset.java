@@ -6,20 +6,33 @@ import java.util.Locale;
 
 class Preset {
 
+    static final int DISPLAY_MODE_TIMER = 0;
+    static final int DISPLAY_MODE_NAME = 1;
+
     private final long timer;
     private final int sets;
     private String name;
+    private int displayMode;
 
     Preset() {
         this.timer = -1;
         this.sets = -1;
         this.name = "";
+        this.displayMode = DISPLAY_MODE_TIMER;
     }
 
     Preset(long timer, int sets, String name) {
         this.timer = timer;
         this.sets = sets;
         this.name = name;
+        this.displayMode = DISPLAY_MODE_TIMER;
+    }
+
+    Preset(long timer, int sets, String name, int displayMode) {
+        this.timer = timer;
+        this.sets = sets;
+        this.name = name;
+        this.displayMode = displayMode;
     }
 
     int getSets() {
@@ -32,6 +45,21 @@ class Preset {
 
     void setName(String name) {
         this.name = name;
+    }
+
+    int getDisplayMode() {
+        if (this.name.isEmpty()){
+            return DISPLAY_MODE_TIMER;
+        }
+        return displayMode;
+    }
+
+    void changeDisplayMode() {
+        if (this.displayMode == DISPLAY_MODE_TIMER) {
+            this.displayMode = DISPLAY_MODE_NAME;
+        } else {
+            this.displayMode = DISPLAY_MODE_TIMER;
+        }
     }
 
     boolean isInfinity() {
@@ -61,7 +89,7 @@ class Preset {
 
     @NonNull
     public String toString() {
-        return String.format(Locale.US, "(%s:%s:%s|%s|%s)", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getName(), getSetsString());
+        return String.format(Locale.US, "[%s:%s:%s|%s|%s|%d]", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getName(), getSetsString(), getDisplayMode());
     }
 
     boolean isValid() {

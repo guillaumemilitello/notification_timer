@@ -186,6 +186,15 @@ public class PresetCardsList extends Fragment {
         Log.d(TAG, "setCurrentPresetName: listIndex=" + listIndex + ", name=" + name);
     }
 
+    private void changeDisplayModePreset(int position) {
+        presetUser.changeDisplayMode();
+        int listIndex = getListIndex(position);
+        if (listIndex >= 0) {
+            presetsList.updatePresetDisplayMode(listIndex);
+            Log.d(TAG, "changeDisplayModePreset: listIndex=" + listIndex);
+        }
+    }
+
     private boolean removeDuplicate(String name) {
         Preset renamedPreset = mainActivity.getPresetUser();
         renamedPreset.setName(name);
@@ -342,21 +351,10 @@ public class PresetCardsList extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
+                Preset preset = presetsList.getPreset(getListIndex(position));
+                updateTextViews((BaseViewHolder)holder, preset);
                 PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
                 presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_delete);
-                Preset preset = presetsList.getPreset(getListIndex(position));
-                boolean hours = preset.getTimer() >= 3600;
-                presetViewHolder.textViewCardTimerHours.setVisibility(hours ? View.VISIBLE : View.GONE);
-                presetViewHolder.textViewCardTimerSeparatorHours.setVisibility(hours ? View.VISIBLE : View.GONE);
-                presetViewHolder.textViewCardTimerHours.setText(preset.getTimerHoursString());
-                presetViewHolder.textViewCardTimerMinutes.setText(preset.getTimerMinutesString(hours));
-                presetViewHolder.textViewCardTimerSeconds.setText(preset.getTimerSecondsString());
-                if (preset.isInfinity()) {
-                    presetViewHolder.textViewCardSets.setVisibility(View.GONE);
-                } else {
-                    presetViewHolder.textViewCardSets.setVisibility(View.VISIBLE);
-                    presetViewHolder.textViewCardSets.setText(preset.getSetsString());
-                }
                 if (preset.equals(presetUser)) {
                     Log.d(TAG, "onBindViewHolder: isPresetUser, preset=" + presetsList.getPreset(getListIndex(position)));
                     presetViewHolder.linearLayoutCard.setBackgroundColor(ContextCompat.getColor(context, R.color.preset_card_user_background));
@@ -368,20 +366,9 @@ public class PresetCardsList extends Fragment {
             } else {
                 AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
                 addPresetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_add);
-                boolean hours = presetUser.getTimer() >= 3600;
-                addPresetViewHolder.textViewCardTimerHours.setVisibility(hours ? View.VISIBLE : View.GONE);
-                addPresetViewHolder.textViewCardTimerSeparatorHours.setVisibility(hours ? View.VISIBLE : View.GONE);
-                addPresetViewHolder.textViewCardTimerHours.setText(presetUser.getTimerHoursString());
-                addPresetViewHolder.textViewCardTimerMinutes.setText(presetUser.getTimerMinutesString(hours));
-                addPresetViewHolder.textViewCardTimerSeconds.setText(presetUser.getTimerSecondsString());
-                if (presetUser.isInfinity()) {
-                    addPresetViewHolder.textViewCardSets.setVisibility(View.GONE);
-                } else {
-                    addPresetViewHolder.textViewCardSets.setVisibility(View.VISIBLE);
-                    addPresetViewHolder.textViewCardSets.setText(presetUser.getSetsString());
-                }
-                Log.d(TAG, "onBindViewHolder: position=" + position + ", presetUser=" + presetUser);
+                updateTextViews((BaseViewHolder) holder, presetUser);
             }
+            Log.d(TAG, "onBindViewHolder: position=" + position + ", presetUser=" + presetUser);
         }
 
         @Override
@@ -406,13 +393,111 @@ public class PresetCardsList extends Fragment {
         }
     }
 
-    private class PresetViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView textViewCardTimerHours;
-        private final TextView textViewCardTimerSeparatorHours;
-        private final TextView textViewCardTimerMinutes;
-        private final TextView textViewCardTimerSeconds;
-        private final TextView textViewCardSets;
-        private final ImageButton imageButtonCard;
+    private void updateTextViews(BaseViewHolder holder, Preset preset) {
+        int displayMode = preset.getDisplayMode();
+        if (displayMode == Preset.DISPLAY_MODE_TIMER) {
+            final boolean hours = preset.getTimer() >= 3600;
+            final int timerHoursVisibility = hours ? View.VISIBLE : View.GONE;
+            updateTextViewsVisibility(holder, timerHoursVisibility, View.VISIBLE, View.GONE);
+            holder.textViewCardTimerHours.setText(preset.getTimerHoursString());
+            holder.textViewCardTimerMinutes.setText(preset.getTimerMinutesString(hours));
+            holder.textViewCardTimerSeconds.setText(preset.getTimerSecondsString());
+            if (preset.isInfinity()) {
+                holder.textViewCardSets.setVisibility(View.GONE);
+            } else {
+                holder.textViewCardSets.setVisibility(View.VISIBLE);
+                holder.textViewCardSets.setText(preset.getSetsString());
+            }
+        } else if (displayMode == Preset.DISPLAY_MODE_NAME) {
+            updateTextViewsVisibility(holder, View.GONE, View.GONE, View.VISIBLE);
+            holder.textViewCardSets.setVisibility(View.GONE);
+            holder.textViewCardTimerName.setText(preset.getName());
+        } else {
+            Log.e(TAG, "updateTextViewsVisibility: invalid displayMode=" + displayMode);
+        }
+    }
+
+    private void updateTextViewsVisibility(BaseViewHolder holder, final int timerHoursVisibility, final int timerVisibility, final int nameVisibility) {
+        holder.textViewCardTimerHours.setVisibility(timerHoursVisibility);
+        holder.textViewCardTimerSeparatorHours.setVisibility(timerHoursVisibility);
+
+        holder.textViewCardTimerMinutes.setVisibility(timerVisibility);
+        holder.textViewCardTimerSeparator.setVisibility(timerVisibility);
+        holder.textViewCardTimerSeconds.setVisibility(timerVisibility);
+        holder.textViewCardTimerName.setVisibility(nameVisibility);
+    }
+
+    private class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        final TextView textViewCardTimerHours;
+        final TextView textViewCardTimerSeparatorHours;
+        final TextView textViewCardTimerMinutes;
+        final TextView textViewCardTimerSeparator;
+        final TextView textViewCardTimerSeconds;
+        final TextView textViewCardTimerName;
+        final TextView textViewCardSets;
+        final ImageButton imageButtonCard;
+
+        void changeDisplayMode(int position) {
+            changeDisplayModePreset(position);
+            notifyItemChanged(position);
+        }
+
+        BaseViewHolder(final View view) {
+            super(view);
+            textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
+            textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
+            textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
+            textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
+            textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
+            textViewCardTimerName = view.findViewById(R.id.textViewCardTimerName);
+            textViewCardSets = view.findViewById(R.id.textViewCardSets);
+            imageButtonCard = view.findViewById(R.id.imageButtonCard);
+
+            Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
+            Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
+            textViewCardTimerHours.setTypeface(typeface);
+            textViewCardTimerSeparatorHours.setTypeface(typeface);
+            textViewCardTimerMinutes.setTypeface(typeface);
+            textViewCardTimerSeparator.setTypeface(typeface);
+            textViewCardTimerSeconds.setTypeface(typeface);
+            textViewCardTimerName.setTypeface(typeface);
+            textViewCardSets.setTypeface(typefaceLight);
+
+            textViewCardTimerHours.setOnClickListener(this);
+            textViewCardTimerSeparatorHours.setOnClickListener(this);
+            textViewCardTimerMinutes.setOnClickListener(this);
+            textViewCardTimerSeparator.setOnClickListener(this);
+            textViewCardTimerSeconds.setOnClickListener(this);
+            textViewCardTimerName.setOnClickListener(this);
+            textViewCardSets.setOnClickListener(this);
+            imageButtonCard.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            final int position = getAdapterPosition();
+            if (view.getId() == imageButtonCard.getId()) {
+                onClickImageButtonCard(position);
+            } else {
+                onClickView(position);
+            }
+        }
+
+        protected void onClickImageButtonCard(final int position) {
+            Log.e(TAG, "onClickImageButtonCard: no action position=" + position);
+        }
+
+        protected void onClickView(final int position) {
+            Log.d(TAG, "onClickView: position=" + position +", userPosition=" + userPosition);
+            if (position == userPosition) {
+                changeDisplayMode(position);
+            }
+        }
+    }
+
+    private class PresetViewHolder extends BaseViewHolder {
+
         private final LinearLayout linearLayoutCard;
 
         private void inputPreset(int position) {
@@ -421,91 +506,43 @@ public class PresetCardsList extends Fragment {
 
         PresetViewHolder(final View view) {
             super(view);
-            textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
-            textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
-            textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
-            final TextView textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
-            textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
-            textViewCardSets = view.findViewById(R.id.textViewCardSets);
-            imageButtonCard = view.findViewById(R.id.imageButtonCard);
             linearLayoutCard = view.findViewById(R.id.layoutCard);
             final LinearLayout linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
 
-            Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimerHours.setTypeface(typeface);
-            textViewCardTimerSeparatorHours.setTypeface(typeface);
-            textViewCardTimerMinutes.setTypeface(typeface);
-            textViewCardTimerSeparator.setTypeface(typeface);
-            textViewCardTimerSeconds.setTypeface(typeface);
-            textViewCardSets.setTypeface(typefaceLight);
-
             linearLayoutTimer.setOnClickListener(this);
-            textViewCardTimerHours.setOnClickListener(this);
-            textViewCardTimerSeparatorHours.setOnClickListener(this);
-            textViewCardTimerMinutes.setOnClickListener(this);
-            textViewCardTimerSeparator.setOnClickListener(this);
-            textViewCardTimerSeconds.setOnClickListener(this);
-            textViewCardSets.setOnClickListener(this);
-            imageButtonCard.setOnClickListener(this);
         }
 
         @Override
-        public void onClick(View view) {
-            if (view.getId() == imageButtonCard.getId()) {
-                final int position = getAdapterPosition();
-                Log.d(TAG, "onClick: delete preset position=" + position);
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
+        protected void onClickImageButtonCard(final int position) {
+            Log.d(TAG, "onClickImageButtonCard: delete preset position=" + position);
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             removePreset(position);
                         }
                     });
-                alertDialog.show();
-            } else {
-                int position = getAdapterPosition();
-                Log.d(TAG, "onClick: position=" + position +", userPosition=" + userPosition);
-                if (position != userPosition) {
-                    inputPreset(getAdapterPosition());
-                }
+            alertDialog.show();
+        }
+
+        @Override
+        protected void onClickView(final int position) {
+            super.onClickView(position);
+            if (position != userPosition) {
+                inputPreset(position);
             }
         }
     }
 
-    private class AddPresetViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewCardTimerHours;
-        private final TextView textViewCardTimerSeparatorHours;
-        private final TextView textViewCardTimerMinutes;
-        private final TextView textViewCardTimerSeconds;
-        private final TextView textViewCardSets;
-        private final ImageButton imageButtonCard;
+    private class AddPresetViewHolder extends BaseViewHolder implements View.OnClickListener {
 
         AddPresetViewHolder(final View view) {
             super(view);
-            textViewCardTimerHours = view.findViewById(R.id.textViewCardTimerHours);
-            textViewCardTimerSeparatorHours = view.findViewById(R.id.textViewCardTimerSeparatorHours);
-            textViewCardTimerMinutes = view.findViewById(R.id.textViewCardTimerMinutes);
-            final TextView textViewCardTimerSeparator = view.findViewById(R.id.textViewCardTimerSeparator);
-            textViewCardTimerSeconds = view.findViewById(R.id.textViewCardTimerSeconds);
-            textViewCardSets = view.findViewById(R.id.textViewCardSets);
-            imageButtonCard = view.findViewById(R.id.imageButtonCard);
+        }
 
-            Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimerHours.setTypeface(typeface);
-            textViewCardTimerSeparatorHours.setTypeface(typeface);
-            textViewCardTimerMinutes.setTypeface(typeface);
-            textViewCardTimerSeparator.setTypeface(typeface);
-            textViewCardTimerSeconds.setTypeface(typeface);
-            textViewCardSets.setTypeface(typefaceLight);
-
-            imageButtonCard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "OnClick: add preset");
-                    mainActivity.addPreset();
-                }
-            });
+        @Override
+        protected void onClickImageButtonCard(final int position) {
+            Log.d(TAG, "onClickImageButtonCard: add preset");
+            mainActivity.addPreset();
         }
     }
 }

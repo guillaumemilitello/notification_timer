@@ -46,6 +46,17 @@ class PresetsList {
         }
     }
 
+    void updatePresetDisplayMode(int index) {
+        Log.d(TAG, "updatePresetDisplayMode: index=" + index);
+        Preset preset = getPreset(index);
+        Preset loadedPreset = loadPreset(index);
+        if (loadedPreset.isValid() && loadedPreset.equals(preset)) {
+            Log.d(TAG, "updatePresetDisplayMode: saving preset=" + preset);
+            preset.changeDisplayMode();
+            savePreset(index, preset);
+        }
+    }
+
     int removePreset(int index) {
         Log.d(TAG, "removePreset: index=" + index);
         list.remove(index);
@@ -84,6 +95,7 @@ class PresetsList {
             sharedPreferencesEditor.putLong(String.format(Locale.US, context.getString(R.string.pref_preset_array_timer), index), preset.getTimer());
             sharedPreferencesEditor.putInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_sets), index), preset.getSets());
             sharedPreferencesEditor.putString(String.format(Locale.US, context.getString(R.string.pref_preset_array_name), index), preset.getName());
+            sharedPreferencesEditor.putInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_displayMode), index), preset.getDisplayMode());
             sharedPreferencesEditor.apply();
             Log.d(TAG, "savePreset: index=" + index + ", preset='" + preset + "'");
         }
@@ -94,7 +106,8 @@ class PresetsList {
             long timer = sharedPreferences.getLong(String.format(Locale.US, context.getString(R.string.pref_preset_array_timer), index), -1);
             int sets = sharedPreferences.getInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_sets), index), -1);
             String name = sharedPreferences.getString(String.format(Locale.US, context.getString(R.string.pref_preset_array_name), index), context.getString(R.string.default_timer_name));
-            Preset preset = new Preset(timer, sets, name);
+            int displayMode = sharedPreferences.getInt(String.format(Locale.US, context.getString(R.string.pref_preset_array_displayMode), index), Preset.DISPLAY_MODE_TIMER);
+            Preset preset = new Preset(timer, sets, name, displayMode);
             Log.d(TAG, "loadPreset: index=" + index + ", preset='" + preset + "'");
             return preset;
         } else {

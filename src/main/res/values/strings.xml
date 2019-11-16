@@ -109,6 +109,7 @@
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>
     <string name="pref_preset_array_name" translatable="false">presetArray_%1$d_name</string>
+    <string name="pref_preset_array_displayMode" translatable="false">presetArray_%1$d_displayMode</string>
     <string name="pref_timer_service" translatable="false">timerService_</string>
     <string name="pref_timer_service_timer_end" translatable="false">timerService_timerEnd</string>
     <string name="pref_timer_service_timer_current" translatable="false">timerService_timerCurrent</string>
