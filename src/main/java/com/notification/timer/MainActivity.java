@@ -949,15 +949,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private String getSetsText(int setsUser, int setsCurrent) {
-        // waiting mode
-        if (setsUser == -1 && setsCurrent == -1) {
-            return "";
-        }
-        if (setsUser == Integer.MAX_VALUE || setsCurrent > setsUser) {
+        Log.d(TAG, "getSetsText: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent + ", timerState=" + timerState);
+        if (timerState == TimerService.State.WAITING || setsUser == Integer.MAX_VALUE) {
             return String.format(Locale.US, "%d", setsCurrent);
-        } else {
-            return String.format(Locale.US, getString(R.string.sets_text), setsCurrent, setsUser);
         }
+        return String.format(Locale.US, getString(R.string.sets_text), setsCurrent, setsUser);
     }
 
     private void terminatePickers() {
