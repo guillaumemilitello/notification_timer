@@ -186,13 +186,15 @@ public class PresetCardsList extends Fragment {
         Log.d(TAG, "setCurrentPresetName: listIndex=" + listIndex + ", name=" + name);
     }
 
-    private void changeDisplayModePreset(int position) {
-        presetUser.changeDisplayMode();
+    private void switchDisplayModePreset(int position) {
+        presetUser.switchDisplayMode();
+        int displayMode = presetUser.getDisplayMode();
         int listIndex = getListIndex(position);
         if (listIndex >= 0) {
-            presetsList.updatePresetDisplayMode(listIndex);
-            Log.d(TAG, "changeDisplayModePreset: listIndex=" + listIndex);
+            Log.d(TAG, "switchDisplayModePreset: listIndex=" + listIndex + ", displayMode=" + displayMode);
+            presetsList.switchPresetDisplayMode(listIndex, displayMode);
         }
+        mainActivity.updateDisplayMode(displayMode);
     }
 
     private boolean removeDuplicate(String name) {
@@ -437,9 +439,11 @@ public class PresetCardsList extends Fragment {
         final TextView textViewCardTimerName;
         final TextView textViewCardSets;
         final ImageButton imageButtonCard;
+        final LinearLayout linearLayoutCard;
+        final LinearLayout linearLayoutTimer;
 
         void changeDisplayMode(int position) {
-            changeDisplayModePreset(position);
+            switchDisplayModePreset(position);
             notifyItemChanged(position);
         }
 
@@ -453,6 +457,8 @@ public class PresetCardsList extends Fragment {
             textViewCardTimerName = view.findViewById(R.id.textViewCardTimerName);
             textViewCardSets = view.findViewById(R.id.textViewCardSets);
             imageButtonCard = view.findViewById(R.id.imageButtonCard);
+            linearLayoutCard = view.findViewById(R.id.layoutCard);
+            linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
 
             Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
             Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
@@ -472,6 +478,8 @@ public class PresetCardsList extends Fragment {
             textViewCardTimerName.setOnClickListener(this);
             textViewCardSets.setOnClickListener(this);
             imageButtonCard.setOnClickListener(this);
+            linearLayoutCard.setOnClickListener(this);
+            linearLayoutTimer.setOnClickListener(this);
         }
 
         @Override
@@ -498,18 +506,8 @@ public class PresetCardsList extends Fragment {
 
     private class PresetViewHolder extends BaseViewHolder {
 
-        private final LinearLayout linearLayoutCard;
-
-        private void inputPreset(int position) {
-            mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
-        }
-
         PresetViewHolder(final View view) {
             super(view);
-            linearLayoutCard = view.findViewById(R.id.layoutCard);
-            final LinearLayout linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
-
-            linearLayoutTimer.setOnClickListener(this);
         }
 
         @Override
@@ -528,7 +526,7 @@ public class PresetCardsList extends Fragment {
         protected void onClickView(final int position) {
             super.onClickView(position);
             if (position != userPosition) {
-                inputPreset(position);
+                mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
             }
         }
     }

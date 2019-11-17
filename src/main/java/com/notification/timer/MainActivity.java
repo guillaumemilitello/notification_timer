@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private int setsCurrent;
     private int setsUser;
     private String nameUser;
+    private int displayMode;
 
     static final long TIMER_MAX = 359999;
     private long timerPlus = 0;
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private static final int THEME_DARK = 2;
 
     public Preset getPresetUser() {
-        return new Preset(timerUser, setsUser, nameUser);
+        return new Preset(timerUser, setsUser, nameUser, displayMode);
     }
 
     private SharedPreferences sharedPreferences;
@@ -309,8 +310,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerTextViewSeconds.setTypeface(typefaceLekton);
         timerTextViewLastSeconds.setTypeface(typefaceLektonBold);
 
-        setsTextView.setTypeface(typefaceLektonBold);
-        spaceTextView.setTypeface(typefaceLektonBold);
+        setsTextView.setTypeface(typefaceLekton);
+        spaceTextView.setTypeface(typefaceJulius);
 
         nameEditText.setTypeface(typefaceLektonBold);
         nameEditText.setOnEditorActionListener(new DoneOnEditorActionListener());
@@ -621,6 +622,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         setsCurrent = 0;
         setsUser = 0;
         nameUser = getString(R.string.default_timer_name);
+        displayMode = Preset.DISPLAY_MODE_TIMER;
         timerState = TimerService.State.WAITING;
 
         if (timerService == null) {
@@ -647,9 +649,10 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 setsCurrent = timerService.getSetsCurrent();
                 setsUser = timerService.getSetsUser();
                 nameUser = timerService.getNameUser();
+                displayMode = timerService.getDisplayMode();
                 timerState = timerService.getState();
                 Log.d(TAG, "updateUserInterface: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser +
-                        ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", nameUser=" + nameUser + ", timerState=" + timerState);
+                        ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", nameUser=" + nameUser + ", displayMode=" + displayMode + ", timerState=" + timerState);
                 updateButtonsLayout();
             }
         }
@@ -919,15 +922,18 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     private void updateSetsDisplay() {
         Log.d(TAG, "updateSetsDisplay: buttonsLayout=" + buttonsLayout);
-        if (buttonsLayout != ButtonsLayout.STOPPED)
+        if (buttonsLayout != ButtonsLayout.STOPPED) {
             if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
                 setsTextView.setVisibility(View.GONE);
                 spaceTextView.setVisibility(View.GONE);
             } else {
                 setsTextView.setVisibility(View.VISIBLE);
                 spaceTextView.setVisibility(View.VISIBLE);
-                setsTextView.setText(getSetsText(setsUser, setsCurrent));
             }
+            setsTextView.setVisibility(View.VISIBLE);
+            spaceTextView.setVisibility(View.VISIBLE);
+            setsTextView.setText(getSetsText(setsUser, setsCurrent));
+        }
     }
 
     private void updateNameDisplay() {
@@ -935,6 +941,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             nameUser = getString(R.string.default_timer_name);
         }
         nameEditText.setText(nameUser);
+    }
+
+    void updateDisplayMode(int displayMode) {
+        Log.d(TAG, "updateDisplayMode: displayMode=" + displayMode);
+        this.displayMode = displayMode;
     }
 
     private String getSetsText(int setsUser, int setsCurrent) {
@@ -979,6 +990,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerUser = timerCurrent;
         setsUser = preset.getSets();
         nameUser = preset.getName();
+        displayMode = preset.getDisplayMode();
 
         if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
             setsCurrent = 1;

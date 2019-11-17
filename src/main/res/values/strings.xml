@@ -14,7 +14,7 @@
     <string name="clear_long_press">Would you like to clear the current timer?</string>
     <string name="add_preset_reset_warning">Would you like to reset the current timer to add a new one?</string>
     <string name="add_preset_stop_reset_warning">Would you like to stop and reset the current timer to add a new one?</string>
-    <string name="sets_text">%1$d of %2$d</string>
+    <string name="sets_text" translatable="false">%1$d|%2$d</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timers number limit</string>
@@ -34,7 +34,7 @@
     <string name="alert_no">NO</string>
     <!-- Notification -->
     <string name="notif_timer_number">%1$s %2$d</string>
-    <string name="notif_timer_info">%1$s %2$d of %3$d</string>
+    <string name="notif_timer_info" translatable="false">%1$s %2$d/%3$d</string>
     <string name="notif_timer_done">Time out!</string>
     <string name="notif_channel_done" translatable="false">Time out</string>
     <string name="notif_channel_ready" translatable="false">Extra notification</string>
@@ -117,6 +117,7 @@
     <string name="pref_timer_service_sets_current" translatable="false">timerService_setsCurrent</string>
     <string name="pref_timer_service_sets_user" translatable="false">timerService_setUser</string>
     <string name="pref_timer_service_name_user" translatable="false">timerService_nameUser</string>
+    <string name="pref_timer_service_displayMode" translatable="false">timerService_displayMode</string>
     <string name="pref_timer_service_state" translatable="false">timerService_state</string>
     <string name="pref_timer_service_main_activity_visible" translatable="false">timerService_mainActivityVisible</string>
     <string name="pref_custom_color_enable" translatable="false">colorEnable</string>

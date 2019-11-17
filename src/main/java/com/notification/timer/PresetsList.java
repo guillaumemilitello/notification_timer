@@ -46,13 +46,13 @@ class PresetsList {
         }
     }
 
-    void updatePresetDisplayMode(int index) {
-        Log.d(TAG, "updatePresetDisplayMode: index=" + index);
+    void switchPresetDisplayMode(int index, int displayMode) {
+        Log.d(TAG, "switchPresetDisplayMode: index=" + index);
         Preset preset = getPreset(index);
         Preset loadedPreset = loadPreset(index);
         if (loadedPreset.isValid() && loadedPreset.equals(preset)) {
-            Log.d(TAG, "updatePresetDisplayMode: saving preset=" + preset);
-            preset.changeDisplayMode();
+            Log.d(TAG, "switchPresetDisplayMode: saving preset=" + preset);
+            preset.setDisplayMode(displayMode);
             savePreset(index, preset);
         }
     }

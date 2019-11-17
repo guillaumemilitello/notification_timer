@@ -21,13 +21,6 @@ class Preset {
         this.displayMode = DISPLAY_MODE_TIMER;
     }
 
-    Preset(long timer, int sets, String name) {
-        this.timer = timer;
-        this.sets = sets;
-        this.name = name;
-        this.displayMode = DISPLAY_MODE_TIMER;
-    }
-
     Preset(long timer, int sets, String name, int displayMode) {
         this.timer = timer;
         this.sets = sets;
@@ -48,13 +41,14 @@ class Preset {
     }
 
     int getDisplayMode() {
-        if (this.name.isEmpty()){
-            return DISPLAY_MODE_TIMER;
-        }
-        return displayMode;
+        return this.displayMode;
     }
 
-    void changeDisplayMode() {
+    void setDisplayMode(int displayMode) {
+        this.displayMode = displayMode;
+    }
+
+    void switchDisplayMode() {
         if (this.displayMode == DISPLAY_MODE_TIMER) {
             this.displayMode = DISPLAY_MODE_NAME;
         } else {
