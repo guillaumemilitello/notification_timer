@@ -946,6 +946,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     void updateDisplayMode(int displayMode) {
         Log.d(TAG, "updateDisplayMode: displayMode=" + displayMode);
         this.displayMode = displayMode;
+        if (timerService != null) {
+            timerService.setDisplayMode(displayMode);
+        }
     }
 
     private String getSetsText(int setsUser, int setsCurrent) {
@@ -1011,6 +1014,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             timerService.setTimerUser(timerUser);
             timerService.setSetsUser(setsUser);
             timerService.setNameUser(nameUser);
+            timerService.setDisplayMode(displayMode);
             timerService.setSetsCurrent(setsCurrent);
             timerService.setReadyState();
         }
@@ -1085,6 +1089,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         setsUser = 0;
 
         nameUser = getString(R.string.default_timer_name);
+
+        displayMode = Preset.DISPLAY_MODE_TIMER;
 
         timerState = TimerService.State.WAITING;
         updateButtonsLayout(ButtonsLayout.WAITING);
