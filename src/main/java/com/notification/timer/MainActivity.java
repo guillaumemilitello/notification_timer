@@ -128,6 +128,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private String nameUser;
     private int displayMode;
 
+    // Preset from time picker
+    private long timerPicker;
+
     static final long TIMER_MAX = 359999;
     private long timerPlus = 0;
 
@@ -193,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private enum ButtonsLayout {
 
         WAITING("waiting"),
-        WAITING_SETS("waiting_sets"),
         READY("ready"),
         RUNNING("running"),
         PAUSED("paused"),
@@ -717,39 +719,22 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     @Override
     public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
-        long timer = Math.min(hours * 3600 + minutes * 60 + seconds, TIMER_MAX); // limit to 99'59'59
-        timerUser = timer;
-        timerCurrent = timer;
-        Log.d(TAG, "onDialogHmsSet: timerUser=" + timerUser);
-        timerProgressBar.setMax((int) timerUser);
-        updateServiceTimers();
+        final long time = Math.min(hours * 3600 + minutes * 60 + seconds, TIMER_MAX); // limit to 99'59'59
+
         if (setsPickerEnable) {
-            updateButtonsLayout(ButtonsLayout.WAITING_SETS);
+            timerPicker = time;
             setsPickerBuilder.show();
-        } else {
-            setsUser = Integer.MAX_VALUE;
-            if (setsNumberReset) {
-                setsCurrent = 1;
-            } else if (timerState == TimerService.State.WAITING) {
-                setsCurrent += 1;
-            }
-            Log.d(TAG, "onDialogHmsSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
-            updateSetsDisplay();
-            terminatePickers();
+            return;
         }
+
+        inputPreset(new Preset(time, Integer.MAX_VALUE, getString(R.string.default_timer_name), Preset.DISPLAY_MODE_TIMER));
+        presetCardsList.update();
     }
 
     @Override
     public void onDialogNumberSet(int reference, BigInteger number, double decimal, boolean isNegative, BigDecimal fullNumber) {
-        setsUser = number.intValue();
-        if (setsNumberReset || setsUser != Integer.MAX_VALUE) {
-            setsCurrent = 1;
-        } else if (timerState == TimerService.State.WAITING) {
-            setsCurrent += 1;
-        }
-        Log.d(TAG, "onDialogNumberSet: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
-        updateSetsDisplay();
-        terminatePickers();
+        inputPreset(new Preset(timerPicker, number.intValue(), getString(R.string.default_timer_name), Preset.DISPLAY_MODE_TIMER));
+        presetCardsList.update();
     }
 
     private void updateTimerDisplay() {
@@ -808,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         int progressColor = ContextCompat.getColor(this, R.color.main_background);
         int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
         int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
-        if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+        if (buttonsLayout == ButtonsLayout.WAITING) {
             textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
         }
         int buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint);
@@ -817,7 +802,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_black);
             textColor = ContextCompat.getColor(this, R.color.timer_font_color_black);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_black);
-            if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            if (buttonsLayout == ButtonsLayout.WAITING) {
                 textColor = ContextCompat.getColor(this, R.color.timer_font_waiting_black);
             }
         } else if (backgroundThemeMode == THEME_DYNAMIC) {
@@ -825,14 +810,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_dynamic);
             textColor = ContextCompat.getColor(this, R.color.timer_font_color_dynamic);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_dynamic);
-            if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            if (buttonsLayout == ButtonsLayout.WAITING) {
                 textColor = ContextCompat.getColor(this, R.color.timer_font_waiting_dynamic);
             }
         } else if (backgroundThemeMode != THEME_LIGHT) {
             Log.e(TAG, "updateColorLayout: invalid backgroundThemeMode=" + backgroundThemeMode + ", applying light theme");
         }
 
-        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS && buttonsLayout != ButtonsLayout.READY) {
+        if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.READY) {
             if (buttonsLayout == ButtonsLayout.STOPPED) {
                 progressColor = colorDone;
             } else if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
@@ -923,7 +908,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private void updateSetsDisplay() {
         Log.d(TAG, "updateSetsDisplay: buttonsLayout=" + buttonsLayout);
         if (buttonsLayout != ButtonsLayout.STOPPED) {
-            if (buttonsLayout == ButtonsLayout.WAITING || buttonsLayout == ButtonsLayout.WAITING_SETS) {
+            if (buttonsLayout == ButtonsLayout.WAITING) {
                 setsTextView.setVisibility(View.GONE);
                 spaceTextView.setVisibility(View.GONE);
             } else {
@@ -959,27 +944,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         return String.format(Locale.US, getString(R.string.sets_text), setsCurrent, setsUser);
     }
 
-    private void terminatePickers() {
-        timerState = TimerService.State.READY;
-        updateServiceState();
-        updateButtonsLayout();
-        updatePresetsVisibility();
-    }
-
-    private void launchPickers() {
-        switch (buttonsLayout) {
-            case WAITING:
-                timerPickerBuilder.show();
-                break;
-            case WAITING_SETS:
-                setsPickerBuilder.show();
-                break;
-            default:
-                Log.e(TAG, "launchPickers: buttonsLayout=" + buttonsLayout);
-                break;
-        }
-    }
-
     public void inputPreset(Preset preset) {
         Log.d(TAG, "inputPreset: preset=" + preset);
 
@@ -998,14 +962,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
 
         timerProgressBar.setMax((int) timerUser);
-        terminatePickers();
-    }
 
-    private void updateServiceTimers() {
-        if (timerService != null) {
-            timerService.setTimerCurrent(timerCurrent);
-            timerService.setTimerUser(timerUser);
-        }
+        timerState = TimerService.State.READY;
+        updateServiceState();
+
+        updateButtonsLayout(ButtonsLayout.READY);
+        updatePresetsVisibility();
     }
 
     private void updateServiceState() {
@@ -1017,20 +979,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             timerService.setDisplayMode(displayMode);
             timerService.setSetsCurrent(setsCurrent);
             timerService.setReadyState();
-        }
-    }
-
-    public void addPreset() {
-        switch (buttonsLayout) {
-            case WAITING:
-                Toast.makeText(this, getString(R.string.picker_toast_all), Toast.LENGTH_SHORT).show();
-                break;
-            case WAITING_SETS:
-                Toast.makeText(this, getString(R.string.picker_toast_sets), Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                presetCardsList.addPreset();
-                break;
         }
     }
 
@@ -1260,7 +1208,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 }
                 return true;
             case R.id.setsTimerReset:
-                if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
+                if (buttonsLayout != ButtonsLayout.WAITING) {
                     setsCurrent = 1;
                 } else {
                     setsCurrent = 0;
@@ -1434,11 +1382,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             imageButtonAddPreset.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (buttonsLayout != ButtonsLayout.WAITING && buttonsLayout != ButtonsLayout.WAITING_SETS) {
-                        showAlertDialogAddPreset();
-                    } else {
-                        launchPickers();
-                    }
+                    timerPickerBuilder.show();
                 }
             });
         }
@@ -1453,37 +1397,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         super.sendBroadcast(intent);
     }
 
-    private void showAlertDialogAddPreset() {
-        Log.d(TAG, "showAlertDialogAddPreset");
-        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
-        if (buttonsLayout == ButtonsLayout.READY) {
-            alertDialog.setMessage(getString(R.string.add_preset_reset_warning));
-        } else {
-            alertDialog.setMessage(getString(R.string.add_preset_stop_reset_warning));
-        }
-        alertDialog.setButton(android.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Update directly the layout to WAITING to be able to launch the pickers
-                        updateButtonsLayout(ButtonsLayout.WAITING);
-                        sendBroadcast(new Intent(IntentAction.CLEAR));
-                        launchPickers();
-                    }
-                });
-        alertDialog.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }
-
     private void updateButtonsLayout() {
         ButtonsLayout layout = ButtonsLayout.valueOf(timerState.toString().toUpperCase(Locale.US));
-        if (layout == ButtonsLayout.WAITING && timerUser > 0) {
-            layout = ButtonsLayout.WAITING_SETS;
-        }
         if (timerState != TimerService.State.WAITING && timerCurrent == 0 && setsCurrent == 0) {
             Log.e(TAG, "updateButtonsLayout: wrong layout timerState=" + timerState + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
             return;
@@ -1499,9 +1414,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         switch (layout) {
             case WAITING:
                 updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
-                break;
-            case WAITING_SETS:
-                updateButtons(ButtonAction.CLEAR, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case READY:
                 buttonAction = (setsNumberReset && setsCurrent > 1)? ButtonAction.RESET : ButtonAction.CLEAR;

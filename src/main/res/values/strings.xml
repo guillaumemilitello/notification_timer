@@ -12,15 +12,11 @@
     <string name="default_timer_name">Timer</string>
     <string name="presetsListEmpty">Timers list empty</string>
     <string name="clear_long_press">Would you like to clear the current timer?</string>
-    <string name="add_preset_reset_warning">Would you like to reset the current timer to add a new one?</string>
-    <string name="add_preset_stop_reset_warning">Would you like to stop and reset the current timer to add a new one?</string>
     <string name="sets_text" translatable="false">%1$d|%2$d</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timers number limit</string>
     <string name="picker_timer_get_ready">Extra notification time</string>
-    <string name="picker_toast_all">Add a timer first</string>
-    <string name="picker_toast_sets">Add a sets number first</string>
     <string name="picker_split_screen">Increase the height of the window to create a timer</string>
     <!-- Alerts -->
     <string name="delete_preset">Are you sure you want to delete the selected timer?</string>

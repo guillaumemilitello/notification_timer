@@ -45,7 +45,7 @@ public class PresetCardsList extends Fragment {
     private Context context;
     private AlertDialog alertDialog;
 
-    void addPreset() {
+    private void addPreset() {
         if (presetsList.indexOf(presetUser) == -1) {
             presetsListSize = presetsList.addPreset(0, presetUser);
             Log.d(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList);
@@ -109,6 +109,7 @@ public class PresetCardsList extends Fragment {
                 else {
                     // Preset is already selected
                     Log.d(TAG, "update: userPosition=" + userPosition);
+                    notifyItemChanged(0);
                     userPosition = USER_POSITION_NONE;
                 }
             } else {
@@ -540,7 +541,7 @@ public class PresetCardsList extends Fragment {
         @Override
         protected void onClickImageButtonCard(final int position) {
             Log.d(TAG, "onClickImageButtonCard: add preset");
-            mainActivity.addPreset();
+            addPreset();
         }
     }
 }

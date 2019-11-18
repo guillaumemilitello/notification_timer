@@ -11,14 +11,10 @@
     <string name="default_timer_name">Minuteur</string>
     <string name="presetsListEmpty">Liste des minuteurs vide</string>
     <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le minuteur actuel ?</string>
-    <string name="add_preset_reset_warning">Êtes-vous sûr de vouloir remettre à zéro le minuteur actuel ?</string>
-    <string name="add_preset_stop_reset_warning">Êtes-vous sûr de vouloir arrêter et remettre à zéro le minuteur actuel ?</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
     <string name="picker_sets">Limite de minuteurs</string>
     <string name="picker_timer_get_ready">Temps de la notification</string>
-    <string name="picker_toast_all">Ajoutez un minuteur d\'abord</string>
-    <string name="picker_toast_sets">Ajoutez un nombre de minuteurs d\'abord</string>
     <string name="picker_split_screen">Augmentez la hauteur de la fenêtre pour créer un minuteur</string>
     <!-- Alerts -->
     <string name="delete_preset">Êtes-vous sûr de vouloir supprimer le minuteur sélectionné ?</string>
