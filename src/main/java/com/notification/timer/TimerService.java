@@ -544,9 +544,9 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_NAME_USER);
     }
 
-    public void setDisplayMode(int displayMode) {
-        Log.d(TAG, "displayMode: displayMode=" + displayMode);
-        displayMode = displayMode;
+    public void setDisplayMode(int mode) {
+        Log.d(TAG, "displayMode: displayMode=" + mode);
+        displayMode = mode;
         saveContextPreferences(CONTEXT_PREFERENCE_DISPLAY_MODE);
     }
 
