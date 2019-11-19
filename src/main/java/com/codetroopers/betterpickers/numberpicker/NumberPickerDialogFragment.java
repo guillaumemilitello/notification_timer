@@ -165,13 +165,6 @@ public class NumberPickerDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
-        //When you touch outside of dialog bounds,
-        //the dialog gets canceled and this method executes.
-        returnMaxValue();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.number_picker_dialog, null);
