@@ -110,7 +110,7 @@ public class PresetCardsList extends Fragment {
                     // Preset is already selected
                     Log.d(TAG, "update: userPosition=" + userPosition);
                     notifyItemChanged(0);
-                    userPosition = USER_POSITION_NONE;
+                    userPosition = 0;
                 }
             } else {
                 // Preset is invalid, MainActivity layout is WAITING
@@ -175,16 +175,13 @@ public class PresetCardsList extends Fragment {
     boolean isEmpty() { return presetsListSize == 0; }
 
     void setCurrentPresetName(String name) {
+        Log.d(TAG, "setCurrentPresetName: userPosition=" + userPosition + ", name=" + name);
         int listIndex = getListIndex(userPosition);
-        if (listIndex < 0) {
-            Log.e(TAG, "setCurrentPresetName: invalid listIndex=" + listIndex + ", name=" + name);
-            return;
-        }
-        // duplicates can be creates while renaming a timer
-        if (!removeDuplicate(name)) {
+        if (listIndex >= 0 && !removeDuplicate(name)) {
+            // duplicates can be creates while renaming a timer
             presetsList.updatePresetName(listIndex, name);
         }
-        Log.d(TAG, "setCurrentPresetName: listIndex=" + listIndex + ", name=" + name);
+        notifyItemChanged(userPosition);
     }
 
     private void switchDisplayModePreset(int position) {
@@ -528,6 +525,7 @@ public class PresetCardsList extends Fragment {
             super.onClickView(position);
             if (position != userPosition) {
                 mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
+                userPosition = position;
             }
         }
     }
