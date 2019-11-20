@@ -465,14 +465,15 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             return;
         }
 
-        // Nothing entered - disable
-        if (mInputPointer == -1) {
-            mSetButton.setEnabled(false);
-            return;
+        boolean enabled = true;
+
+        // Nothing entered - disable, or = 0
+        if (mInputPointer == -1 || mInputPointer < 0) {
+            enabled = false;
         }
 
-        // If the user entered 1 digits or more
-        mSetButton.setEnabled(mInputPointer >= 0);
+        mSetButton.setEnabled(enabled);
+        mSetButton.setAlpha(enabled? (float) 1: (float) 0.4);
     }
 
     /**

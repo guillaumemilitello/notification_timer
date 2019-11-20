@@ -32,6 +32,8 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
     private TextView mHoursLabel, mMinutesLabel;
     private Button mSetButton;
 
+    private Button mDoneButton;
+
     protected View mDivider;
     private ColorStateList mTextColor, mTextLabelColor;
     private int mKeyBackgroundResId;
@@ -307,13 +309,15 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
             return;
         }
 
-        // Nothing entered - disable
-        if (mInputPointer == -1) {
-            mSetButton.setEnabled(false);
-            return;
+        boolean enabled = true;
+
+        // Nothing entered - disable, or = 0
+        if (mInputPointer == -1 || mInputPointer < 0) {
+            enabled = false;
         }
 
-        mSetButton.setEnabled(mInputPointer >= 0);
+        mSetButton.setEnabled(enabled);
+        mSetButton.setAlpha(enabled? (float) 1: (float) 0.4);
     }
 
     /**
