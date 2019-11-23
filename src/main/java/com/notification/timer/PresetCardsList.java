@@ -38,6 +38,8 @@ public class PresetCardsList extends Fragment {
     private static final int USER_POSITION_NONE = -1;
     private int userPosition;
 
+    private static final int ITEM_VIEW_TYPE_PRESET = 1;
+
     private LinearLayoutManager linearLayoutManager;
     private RecycleViewAdapter adapter;
     private boolean addPresetButton;
@@ -316,8 +318,10 @@ public class PresetCardsList extends Fragment {
 
         @Override
         public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-            int dragFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-            return makeMovementFlags(dragFlags, 0);
+            if (viewHolder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
+                return makeMovementFlags(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
+            }
+            return 0;
         }
     }
 
@@ -325,7 +329,6 @@ public class PresetCardsList extends Fragment {
     private class RecycleViewAdapter extends RecyclerView.Adapter {
 
         private static final int ITEM_VIEW_TYPE_PRESET_ADD = 0;
-        private static final int ITEM_VIEW_TYPE_PRESET = 1;
 
         @Override
         public int getItemViewType(int position) {
@@ -349,11 +352,11 @@ public class PresetCardsList extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
-            if (holder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
+        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int position) {
+            if (viewHolder.getItemViewType() == ITEM_VIEW_TYPE_PRESET) {
                 Preset preset = presetsList.getPreset(getListIndex(position));
-                updateTextViews((BaseViewHolder)holder, preset);
-                PresetViewHolder presetViewHolder = (PresetViewHolder)holder;
+                updateTextViews((BaseViewHolder)viewHolder, preset);
+                PresetViewHolder presetViewHolder = (PresetViewHolder)viewHolder;
                 presetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_delete);
                 if (preset.equals(presetUser)) {
                     Log.d(TAG, "onBindViewHolder: isPresetUser, preset=" + presetsList.getPreset(getListIndex(position)));
@@ -364,9 +367,9 @@ public class PresetCardsList extends Fragment {
                 }
                 Log.d(TAG, "onBindViewHolder: position=" + position + ", preset=" + presetsList.getPreset(getListIndex(position)));
             } else {
-                AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)holder;
+                AddPresetViewHolder addPresetViewHolder = (AddPresetViewHolder)viewHolder;
                 addPresetViewHolder.imageButtonCard.setImageResource(R.drawable.ic_preset_add);
-                updateTextViews((BaseViewHolder) holder, presetUser);
+                updateTextViews((BaseViewHolder) viewHolder, presetUser);
             }
             Log.d(TAG, "onBindViewHolder: position=" + position + ", presetUser=" + presetUser);
         }
