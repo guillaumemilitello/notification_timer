@@ -27,7 +27,6 @@
     <string name="alert_yes">OUI</string>
     <string name="alert_no">NON</string>
     <!-- Notification -->
-    <string name="notif_timer_number">%1$s %2$d</string>
     <string name="notif_timer_done">Temps écoulé !</string>
     <!-- HelpOverlay -->
     <string name="help_tap_to_continue">Appuyez pour continuer</string>
@@ -40,10 +39,15 @@
     <string name="extra_notification_summary">Notification supplémentaire avant la fin du minuteur</string>
     <string name="timer_plus">Incrémentation du temps</string>
     <string name="timer_minus">Décrémentation du temps</string>
-    <string name="sets_picker_enable">Nombre de minuteurs</string>
-    <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
+    <string name="sets_pref_category">Nombre de minuteurs</string>
+    <string name="sets_name_layout_display_enable">Informations</string>
+    <string name="sets_name_layout_display_enable_summary">Afficher le nom et le nombre de minuteurs au dessus du temps restant</string>
+    <string name="sets_number_display_enable">Afficher le nombre de minuteurs</string>
+    <string name="sets_number_display_enable_summary">Affichage du nombre de minuteurs. Toujours affiché si il y a un indicateur de limite de minuteurs</string>
     <string name="sets_number_reset">Réinitialisation du nombre de minuteurs</string>
-    <string name="sets_number_reset_summary">Remise à zéro du nombre total de minuteurs à chaque saisie d\'un minuteur\nFonctionne uniquement avec des minuteurs sans limite</string>
+    <string name="sets_number_reset_summary">Remise à zéro du nombre total de minuteurs au début de chaque nouveau minuteur. Fonctionne uniquement avec des minuteurs sans indicateur de limite</string>
+    <string name="sets_picker_enable">Limite de minuteurs</string>
+    <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
     <string name="step_time">Saut de temps</string>
     <string name="step_time_increment">Incrémentation de %1$d secondes</string>
     <string name="step_time_decrement">Décrémentation de %1$d secondes</string>

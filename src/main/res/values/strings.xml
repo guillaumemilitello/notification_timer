@@ -28,8 +28,6 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="notif_timer_number">%1$s - %2$d</string>
-    <string name="notif_timer_info" translatable="false">%1$s - %2$d/%3$d</string>
     <string name="notif_timer_done">Time out!</string>
     <string name="notif_channel_done" translatable="false">Time out</string>
     <string name="notif_channel_ready" translatable="false">Extra notification</string>
@@ -45,10 +43,15 @@
     <string name="extra_notification_summary">Extra notification before the end of the timer</string>
     <string name="timer_plus">Step time increment</string>
     <string name="timer_minus">Step time decrement</string>
-    <string name="sets_picker_enable">Timer number</string>
-    <string name="sets_picker_enable_summary">Add the possibility to enter a timers number limit indicator at the creation</string>
+    <string name="sets_pref_category">Timer number</string>
+    <string name="sets_name_layout_display_enable">Information</string>
+    <string name="sets_name_layout_display_enable_summary">Display the name and the timer number on top of the running timer</string>
+    <string name="sets_number_display_enable">Display current timer number</string>
+    <string name="sets_number_display_enable_summary">Display current running timer number. Always displayed when there is a limit indicator</string>
     <string name="sets_number_reset">Timer number reset</string>
-    <string name="sets_number_reset_summary">Reset the timer number on each timer entry\nWorks only with preset without timer number</string>
+    <string name="sets_number_reset_summary">Reset the timer number when starting a new timer. Works only with timers without limit indicator</string>
+    <string name="sets_picker_enable">Limit indicator</string>
+    <string name="sets_picker_enable_summary">Add the possibility to enter a timers number limit indicator during the timer creation</string>
     <string name="step_time">Step time</string>
     <string name="step_time_increment">%1$d seconds increment</string>
     <string name="step_time_decrement">%1$d seconds decrement</string>
@@ -88,6 +91,8 @@
     <!-- Preferences -->
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
+    <string name="pref_sets_number_display_enable" translatable="false">setNumberDisplayEnable</string>
+    <string name="pref_sets_name_layout_display_enable" translatable="false">setsNameLayoutDisplayEnable</string>
     <string name="pref_sets_picker_enable" translatable="false">setPickerEnable</string>
     <string name="pref_sets_number_reset" translatable="false">setNumberReset</string>
     <string name="pref_step_time" translatable="false">stepTime</string>

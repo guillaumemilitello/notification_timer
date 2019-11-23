@@ -18,6 +18,21 @@
         android:entries="@array/timerMinusPlus"
         android:entryValues="@array/timerMinusPlusValues"/>
     <SwitchPreference
+        android:key="@string/pref_sets_name_layout_display_enable"
+        android:title="@string/sets_name_layout_display_enable"
+        android:summary="@string/sets_name_layout_display_enable_summary"
+        android:defaultValue="@bool/default_sets_name_layout_display_enable"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/sets_pref_category">
+
+    <SwitchPreference
+        android:key="@string/pref_sets_number_display_enable"
+        android:title="@string/sets_number_display_enable"
+        android:summary="@string/sets_number_display_enable_summary"
+        android:defaultValue="@bool/default_sets_number_display_enable"/>
+    <SwitchPreference
         android:key="@string/pref_sets_picker_enable"
         android:title="@string/sets_picker_enable"
         android:summary="@string/sets_picker_enable_summary"

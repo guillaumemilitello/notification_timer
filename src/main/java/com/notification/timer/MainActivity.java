@@ -142,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     static final long[] vibrationPattern = {0, 400, 200, 400,};
 
     // User preferences
+    private boolean setsNameLayoutDisplayEnable;
+    private boolean setsNumberDisplayEnable;
     private boolean setsPickerEnable;
     private boolean setsNumberReset;
     private boolean vibrationEnable;
@@ -520,9 +522,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 layoutWeight = 3;
                 break;
         }
+
+        if (!setsNameLayoutDisplayEnable && layoutMode != LayoutMode.TINY) {
+            setsNameLayout.setVisibility(View.GONE);
+            layoutWeight += 1;
+        }
+
         LinearLayout.LayoutParams timerLayoutParams = (LinearLayout.LayoutParams) timerLayout.getLayoutParams();
         timerLayoutParams.weight = layoutWeight;
-        Log.d(TAG, "scaleLayouts: layoutMode=" + layoutMode + ", layoutWeight=" + layoutWeight);
+        Log.d(TAG, "scaleLayouts: layoutMode=" + layoutMode + ", layoutWeight=" + layoutWeight + ", setsNameLayoutDisplayEnable=" + setsNameLayoutDisplayEnable);
     }
 
     private void scaleTextViews() {
@@ -910,8 +918,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private void updateSetsDisplay() {
-        Log.d(TAG, "updateSetsDisplay: buttonsLayout=" + buttonsLayout);
-        if (buttonsLayout == ButtonsLayout.WAITING) {
+        final boolean setsUserDisplayEnabled = setsUser != Integer.MAX_VALUE;
+        Log.d(TAG, "updateSetsDisplay: buttonsLayout=" + buttonsLayout + ", setsUserDisplayEnabled=" + setsUserDisplayEnabled + ", setsNumberDisplayEnable=" + setsNumberDisplayEnable);
+        if ((!setsNumberDisplayEnable && !setsUserDisplayEnabled) || buttonsLayout == ButtonsLayout.WAITING) {
             setsTextView.setVisibility(View.GONE);
             setsUserTextView.setVisibility(View.GONE);
             spaceTextView.setVisibility(View.GONE);
@@ -921,11 +930,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
             spaceTextView.setVisibility(View.VISIBLE);
 
-            if (setsUser == Integer.MAX_VALUE) {
-                setsUserTextView.setVisibility(View.GONE);
-            } else {
+            if (setsUserDisplayEnabled) {
                 setsUserTextView.setVisibility(View.VISIBLE);
                 setsUserTextView.setText(String.format(Locale.US, "/%d", setsUser));
+            } else {
+                setsUserTextView.setVisibility(View.GONE);
             }
         }
     }
@@ -1696,6 +1705,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             // Force default values
             updatePreference(getString(R.string.pref_timer_minus));
             updatePreference(getString(R.string.pref_timer_plus));
+            updatePreference(getString(R.string.pref_sets_number_display_enable));
+            updatePreference(getString(R.string.pref_sets_name_layout_display_enable));
             updatePreference(getString(R.string.pref_sets_picker_enable));
             updatePreference(getString(R.string.pref_sets_number_reset));
             updatePreference(getString(R.string.pref_vibrate));
@@ -1724,6 +1735,10 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             int resId = getTimerPlusResId(timerPlus);
             imageButtonTimerPlus.setImageResource(resId);
             imageButtonTimerPlusMulti.setImageResource(resId);
+        } else if (key.equals(getString(R.string.pref_sets_name_layout_display_enable))) {
+            setsNameLayoutDisplayEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_name_layout_display_enable));
+        } else if (key.equals(getString(R.string.pref_sets_number_display_enable))) {
+            setsNumberDisplayEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_display_enable));
         } else if (key.equals(getString(R.string.pref_sets_picker_enable))) {
             setsPickerEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_picker));
         } else if (key.equals(getString(R.string.pref_sets_number_reset))) {

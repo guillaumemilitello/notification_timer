@@ -805,6 +805,7 @@ public class TimerService extends Service {
         if (preferences != null) {
             updatePreference(getString(R.string.pref_timer_minus));
             updatePreference(getString(R.string.pref_timer_plus));
+            updatePreference(getString(R.string.pref_sets_number_display_enable));
             updatePreference(getString(R.string.pref_sets_number_reset));
             updatePreference(getString(R.string.pref_step_time));
             updatePreference(getString(R.string.pref_vibrate));
@@ -835,6 +836,9 @@ public class TimerService extends Service {
             timerMinus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_minus)));
         } else if (key.equals(getString(R.string.pref_timer_plus))) {
             timerPlus = Long.parseLong(sharedPreferences.getString(key, getString(R.string.default_timer_plus)));
+        } else if (key.equals(getString(R.string.pref_sets_number_display_enable))) {
+            final boolean setsNumberDisplayEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_display_enable));
+            interactiveNotification.setSetsNumberDisplayEnable(setsNumberDisplayEnable);
         } else if (key.equals(getString(R.string.pref_sets_number_reset))) {
             setsNumberReset = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_reset));
             interactiveNotification.setSetsNumberReset(setsNumberReset);

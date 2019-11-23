@@ -66,6 +66,7 @@ class InteractiveNotification extends Notification {
     private String nameUser;
     private String timerString, setsString;
 
+    private boolean setsNumberDisplayEnable;
     private boolean setsNumberReset;
     private boolean timerGetReadyEnable;
     private int timerGetReady;
@@ -85,6 +86,10 @@ class InteractiveNotification extends Notification {
 
     void setSetsNumberReset(boolean setsNumberReset) {
         this.setsNumberReset = setsNumberReset;
+    }
+
+    void setSetsNumberDisplayEnable(boolean setsNumberDisplayEnable) {
+        this.setsNumberDisplayEnable = setsNumberDisplayEnable;
     }
 
     void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
@@ -764,36 +769,18 @@ class InteractiveNotification extends Notification {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private void updateSetsTextView() {
-        switch (buttonsLayout) {
-            case NO_LAYOUT:
-            case PAUSED:
-            case RUNNING:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    if (setsUser == Integer.MAX_VALUE) {
-                        setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent);
-                    } else {
-                        setsString = String.format(context.getString(R.string.notif_timer_info), nameUser, setsCurrent, setsUser);
-                    }
-                } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent);
-                }
-                break;
-            case READY:
-                if (setsUser == Integer.MAX_VALUE) {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent);
-                } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), nameUser, setsCurrent, setsUser);
-                }
-                break;
-            case ALL_SETS_DONE:
-            case SET_DONE:
-                if (setsUser == Integer.MAX_VALUE) {
-                    setsString = String.format(context.getString(R.string.notif_timer_number), nameUser, setsCurrent - 1);
-                } else {
-                    setsString = String.format(context.getString(R.string.notif_timer_info), nameUser, setsCurrent - 1, setsUser);
-                }
-                break;
+        final boolean setsUserDisplayEnabled = setsUser != Integer.MAX_VALUE;
+        if (!setsNumberDisplayEnable && !setsUserDisplayEnabled) {
+            setsString = nameUser;
+        } else {
+            final int setsCurrentDisplay = (buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE) ? setsCurrent - 1 : setsCurrent;
+            if (setsUserDisplayEnabled) {
+                setsString = String.format("%s | %d/%d", nameUser, setsCurrentDisplay, setsUser);
+            } else {
+                setsString = String.format("%s | %d", nameUser, setsCurrentDisplay);
+            }
         }
         Log.d(TAG, "updateSetsTextView: nameUser=" + nameUser + "setsString='" + setsString + "'");
     }
