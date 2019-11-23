@@ -1410,14 +1410,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         buttonsLayout = layout;
         Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
         ButtonAction buttonAction;
-        ButtonAction buttonReset = !setsNumberReset && setsUser == Integer.MAX_VALUE ? ButtonAction.RESET_DISABLED : ButtonAction.RESET;
+        ButtonAction buttonReset = (setsUser != Integer.MAX_VALUE && setsCurrent >= 1) ? ButtonAction.RESET : ButtonAction.CLEAR;
+        Log.d(TAG, "updateButtonsLayout: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         switch (layout) {
             case WAITING:
                 updateButtons(ButtonAction.CLEAR_DISABLED, ButtonAction.NO_ACTION, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case READY:
-                buttonAction = (setsNumberReset && setsCurrent > 1)? ButtonAction.RESET : ButtonAction.CLEAR;
-                updateButtons(buttonAction, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
+                buttonReset = (setsUser != Integer.MAX_VALUE && setsCurrent > 1) ? ButtonAction.RESET : ButtonAction.CLEAR;
+                updateButtons(buttonReset, ButtonAction.START, ButtonAction.NEXT_SET_DISABLED);
                 break;
             case RUNNING:
                 buttonAction = (setsCurrent < setsUser) ? ButtonAction.NEXT_SET : ButtonAction.NEXT_SET_DISABLED;
