@@ -75,7 +75,7 @@
             android:scaleX="0.7"
             android:scaleY="0.7"
             android:src="@drawable/ic_backspace_normal_dark"
-            android:background="@android:color/transparent"
+            android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/number_delete"
             android:layout_height="match_parent"/>
 
