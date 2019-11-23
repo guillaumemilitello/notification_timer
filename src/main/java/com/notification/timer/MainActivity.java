@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     // Main user interface
     private Menu toolbarMenu;
-    private TextView emptyPresetsTextView, setsTextView, spaceTextView;
+    private TextView emptyPresetsTextView, setsTextView, setsUserTextView, spaceTextView;
     private EditText nameEditText;
     private ProgressBar timerProgressBar;
     private ButtonsLayout buttonsLayout;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinusMulti, imageButtonTimerPlusMulti;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonKeepScreenOn;
-    private LinearLayout mainLayout, bottomButtonsLayout, fullButtonsLayout;
+    private LinearLayout mainLayout, bottomButtonsLayout, fullButtonsLayout, setsNameLayout;
     private RelativeLayout activityLayout, timerLayout;
     private FrameLayout presetsFrameLayout;
     private ImageButton imageButtonAddPreset;
@@ -269,7 +269,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         emptyPresetsTextView = findViewById(R.id.textViewEmptyPresets);
         setsTextView = findViewById(R.id.textViewSets);
+        setsUserTextView = findViewById(R.id.textViewSetsUser);
         spaceTextView = findViewById(R.id.textViewSpace);
+        spaceTextView.setText("|");
 
         nameEditText = findViewById(R.id.textViewName);
 
@@ -280,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         mainLayout = findViewById(R.id.layoutMain);
         fullButtonsLayout = findViewById(R.id.layoutFullButtons);
         bottomButtonsLayout = findViewById(R.id.layoutBottomButtons);
+        setsNameLayout = findViewById(R.id.setsNameLinearLayout);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             activityLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -312,8 +315,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerTextViewSeconds.setTypeface(typefaceLekton);
         timerTextViewLastSeconds.setTypeface(typefaceLektonBold);
 
-        setsTextView.setTypeface(typefaceLekton);
-        spaceTextView.setTypeface(typefaceJulius);
+        setsTextView.setTypeface(typefaceLektonBold);
+        setsUserTextView.setTypeface(typefaceLekton);
+        spaceTextView.setTypeface(typefaceLekton);
 
         nameEditText.setTypeface(typefaceLektonBold);
         nameEditText.setOnEditorActionListener(new DoneOnEditorActionListener());
@@ -501,24 +505,18 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         switch (layoutMode) {
             case TINY:
                 updateFullLayoutVisibility(View.GONE);
-                setsTextView.setVisibility(View.GONE);
-                spaceTextView.setVisibility(View.GONE);
-                nameEditText.setVisibility(View.GONE);
+                setsNameLayout.setVisibility(View.GONE);
                 layoutWeight = 5;
                 break;
             case COMPACT:
                 updateFullLayoutVisibility(View.GONE);
-                setsTextView.setVisibility(View.VISIBLE);
-                spaceTextView.setVisibility(View.VISIBLE);
-                nameEditText.setVisibility(View.VISIBLE);
+                setsNameLayout.setVisibility(View.VISIBLE);
                 layoutWeight = 4;
                 break;
             default:
             case FULL:
                 updateFullLayoutVisibility(View.VISIBLE);
-                setsTextView.setVisibility(View.VISIBLE);
-                spaceTextView.setVisibility(View.VISIBLE);
-                nameEditText.setVisibility(View.VISIBLE);
+                setsNameLayout.setVisibility(View.VISIBLE);
                 layoutWeight = 3;
                 break;
         }
@@ -566,13 +564,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         updateTimerDisplay();
 
-        float setsLayoutHeight = setsTextView.getMeasuredHeight() / density;
+        float setsNameLayoutHeight = setsNameLayout.getMeasuredHeight() / density;
         // Threshold are fixed for the Typeface Lekton
-        float setsTextSize = isLayoutModeFull() ? setsLayoutHeight / 2 : setsLayoutHeight / 1.3f;
-        Log.d(TAG, "scaleTextViews: setsLayoutHeight=" + setsLayoutHeight + ", setsTextSize=" + setsTextSize);
-        setsTextView.setTextSize(setsTextSize);
-        spaceTextView.setTextSize(setsTextSize);
-        nameEditText.setTextSize(setsTextSize);
+        float setsNameTextSize = isLayoutModeFull() ? setsNameLayoutHeight / 2 : setsNameLayoutHeight / 1.3f;
+        Log.d(TAG, "scaleTextViews: setsNameLayoutHeight=" + setsNameLayoutHeight + ", setsNameTextSize=" + setsNameTextSize);
+        setsTextView.setTextSize(setsNameTextSize);
+        setsUserTextView.setTextSize(setsNameTextSize / 1.5f);
+        spaceTextView.setTextSize(setsNameTextSize);
+        nameEditText.setTextSize(setsNameTextSize);
     }
 
     private void updateFullLayoutVisibility(int visible) {
@@ -793,6 +792,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         int progressColor = ContextCompat.getColor(this, R.color.main_background);
         int backgroundColor = ContextCompat.getColor(this, R.color.main_background);
         int textColor = ContextCompat.getColor(this, R.color.timer_font_color);
+        int setsTextColor = ContextCompat.getColor(this, R.color.sets_font_color);
         if (buttonsLayout == ButtonsLayout.WAITING) {
             textColor = ContextCompat.getColor(this, R.color.timer_font_waiting);
         }
@@ -801,6 +801,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             progressColor = ContextCompat.getColor(this, R.color.main_background_black);
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_black);
             textColor = ContextCompat.getColor(this, R.color.timer_font_color_black);
+            setsTextColor = ContextCompat.getColor(this, R.color.sets_font_color_black);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_black);
             if (buttonsLayout == ButtonsLayout.WAITING) {
                 textColor = ContextCompat.getColor(this, R.color.timer_font_waiting_black);
@@ -809,6 +810,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             progressColor = ContextCompat.getColor(this, R.color.main_background_dynamic);
             backgroundColor = ContextCompat.getColor(this, R.color.main_background_dynamic);
             textColor = ContextCompat.getColor(this, R.color.timer_font_color_dynamic);
+            setsTextColor = ContextCompat.getColor(this, R.color.sets_font_color_dynamic);
             buttonTint = ContextCompat.getColor(this, R.color.full_buttons_tint_dynamic);
             if (buttonsLayout == ButtonsLayout.WAITING) {
                 textColor = ContextCompat.getColor(this, R.color.timer_font_waiting_dynamic);
@@ -833,12 +835,13 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             }
             backgroundColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.main_background_black : R.color.main_background);
             textColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.timer_font_color_black : R.color.timer_font_color);
+            setsTextColor = ContextCompat.getColor(this, progressColorIsDark ? R.color.sets_font_color_black : R.color.sets_font_color);
             buttonTint = ContextCompat.getColor(this, progressColorIsDark ? R.color.full_buttons_tint_black : R.color.full_buttons_tint);
         }
 
         setBackgroundColor(progressColor, backgroundColor);
         setImageButtonsColor(buttonTint);
-        setTextViewsColor(textColor);
+        setTextViewsColor(textColor, setsTextColor);
     }
 
     private void setBackgroundColor(int progressColor, int backgroundColor) {
@@ -847,7 +850,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         activityLayout.setBackgroundColor(backgroundColor);
     }
 
-    private void setTextViewsColor(int textColor) {
+    private void setTextViewsColor(int textColor, int setsTextColor) {
         timerTextViewHours.setTextColor(textColor);
         timerTextViewSeparatorHours.setTextColor(textColor);
         timerTextViewMinutes.setTextColor(textColor);
@@ -855,6 +858,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerTextViewSeconds.setTextColor(textColor);
         timerTextViewLastSeconds.setTextColor(textColor);
         setsTextView.setTextColor(textColor);
+        setsUserTextView.setTextColor(setsTextColor);
         spaceTextView.setTextColor(textColor);
         nameEditText.setTextColor(textColor);
     }
@@ -907,17 +911,22 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     private void updateSetsDisplay() {
         Log.d(TAG, "updateSetsDisplay: buttonsLayout=" + buttonsLayout);
-        if (buttonsLayout != ButtonsLayout.STOPPED) {
-            if (buttonsLayout == ButtonsLayout.WAITING) {
-                setsTextView.setVisibility(View.GONE);
-                spaceTextView.setVisibility(View.GONE);
-            } else {
-                setsTextView.setVisibility(View.VISIBLE);
-                spaceTextView.setVisibility(View.VISIBLE);
-            }
+        if (buttonsLayout == ButtonsLayout.WAITING) {
+            setsTextView.setVisibility(View.GONE);
+            setsUserTextView.setVisibility(View.GONE);
+            spaceTextView.setVisibility(View.GONE);
+        } else {
             setsTextView.setVisibility(View.VISIBLE);
+            setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
+
             spaceTextView.setVisibility(View.VISIBLE);
-            setsTextView.setText(getSetsText(setsUser, setsCurrent));
+
+            if (setsUser == Integer.MAX_VALUE) {
+                setsUserTextView.setVisibility(View.GONE);
+            } else {
+                setsUserTextView.setVisibility(View.VISIBLE);
+                setsUserTextView.setText(String.format(Locale.US, "|%d", setsUser));
+            }
         }
     }
 
@@ -934,14 +943,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (timerService != null) {
             timerService.setDisplayMode(displayMode);
         }
-    }
-
-    private String getSetsText(int setsUser, int setsCurrent) {
-        Log.d(TAG, "getSetsText: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent + ", timerState=" + timerState);
-        if (timerState == TimerService.State.WAITING || setsUser == Integer.MAX_VALUE) {
-            return String.format(Locale.US, "%d", setsCurrent);
-        }
-        return String.format(Locale.US, getString(R.string.sets_text), setsCurrent, setsUser);
     }
 
     public void inputPreset(Preset preset) {

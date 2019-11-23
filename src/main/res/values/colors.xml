@@ -60,6 +60,9 @@
     <color name="timer_font_waiting">#e6e6e6</color>
     <color name="timer_font_waiting_black">#2e2e2e</color>
     <color name="timer_font_waiting_dynamic">@color/timer_font_waiting</color>
+    <color name="sets_font_color">#5E5E5E</color>
+    <color name="sets_font_color_black">#BEBEBE</color>
+    <color name="sets_font_color_dynamic">@color/sets_font_color</color>
     <color name="full_buttons_tint">#000000</color>
     <color name="full_buttons_tint_black">#e2e2e2</color>
     <color name="full_buttons_tint_dynamic">#000000</color>

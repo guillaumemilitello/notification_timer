@@ -46,6 +46,7 @@
     <color name="main_background_dynamic">#1B1B1B</color>
     <color name="timer_font_color_dynamic">@color/timer_font_color_black</color>
     <color name="timer_font_waiting_dynamic">@color/timer_font_waiting_black</color>
+    <color name="sets_font_color_dynamic">@color/sets_font_color_black</color>
     <color name="full_buttons_tint_dynamic">#e2e2e2</color>
 
     <!-- Menu -->
