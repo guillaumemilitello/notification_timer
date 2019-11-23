@@ -925,7 +925,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 setsUserTextView.setVisibility(View.GONE);
             } else {
                 setsUserTextView.setVisibility(View.VISIBLE);
-                setsUserTextView.setText(String.format(Locale.US, "|%d", setsUser));
+                setsUserTextView.setText(String.format(Locale.US, "/%d", setsUser));
             }
         }
     }

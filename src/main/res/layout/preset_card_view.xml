@@ -145,13 +145,18 @@
                     android:layout_height="match_parent"
                     android:gravity="center|start"
                     android:fontFamily="sans-serif-condensed"
-                    android:visibility="gone"
-                    android:textSize="@dimen/preset_card_timer_font_size"
+                    android:textSize="@dimen/preset_card_sets_font_size"
                     android:includeFontPadding="false"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="3dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="@dimen/preset_card_sets_padding_right"
                     android:textColor="@color/preset_card_sets_font_color"
-                    android:text="x12" />
+                    android:text="|x40"
+                    android:visibility="visible"
+                    android:lineSpacingExtra="0dp"
+                    android:singleLine="true"
+                    android:maxLines="1" />
 
             </LinearLayout>
 
