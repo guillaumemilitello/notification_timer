@@ -45,8 +45,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
 
     protected View mDivider;
     private ColorStateList mTextColor;
-    private int mKeyBackgroundResId;
-    private int mButtonBackgroundResId;
     private int mDividerColor;
     private int mDeleteDrawableSrcResId;
     private int mTheme = -1;
@@ -78,8 +76,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
-        mKeyBackgroundResId = R.drawable.key_background_night;
-        mButtonBackgroundResId = R.drawable.button_background;
         mDeleteDrawableSrcResId = R.drawable.ic_backspace_normal_dark;
         mDividerColor = getResources().getColor(R.color.default_divider_color);
 
@@ -101,8 +97,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             TypedArray a = getContext().obtainStyledAttributes(themeResId, R.styleable.BetterPickersDialogFragment);
 
             mTextColor = a.getColorStateList(R.styleable.BetterPickersDialogFragment_bpTextColor);
-            mKeyBackgroundResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpKeyBackground, mKeyBackgroundResId);
-            mButtonBackgroundResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpButtonBackground, mButtonBackgroundResId);
             mDividerColor = a.getColor(R.styleable.BetterPickersDialogFragment_bpDividerColor, mDividerColor);
             mDeleteDrawableSrcResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpDeleteIcon, mDeleteDrawableSrcResId);
         }
@@ -115,22 +109,15 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
             if (number != null) {
                 number.setTextColor(mTextColor);
                 number.setTypeface(mTypefaceLekton);
-                number.setBackgroundResource(mKeyBackgroundResId);
             }
-        }
-        if (mDivider != null) {
-            mDivider.setBackgroundColor(mDividerColor);
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
-            mLeft.setBackgroundResource(mKeyBackgroundResId);
         }
         if (mRight != null) {
             mRight.setTextColor(mTextColor);
-            mRight.setBackgroundResource(mKeyBackgroundResId);
         }
         if (mDelete != null) {
-            mDelete.setBackgroundResource(mButtonBackgroundResId);
             mDelete.setImageDrawable(getResources().getDrawable(mDeleteDrawableSrcResId));
         }
         if (mEnteredNumber != null) {

@@ -5,7 +5,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:layout_height="64dip"
-        android:background="@color/dialog_background">
+        android:background="@android:color/transparent">
     <Button
             android:id="@+id/key_left"
             android:layout_width="0dip"

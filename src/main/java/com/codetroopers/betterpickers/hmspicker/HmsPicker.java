@@ -36,8 +36,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
 
     protected View mDivider;
     private ColorStateList mTextColor, mTextLabelColor;
-    private int mKeyBackgroundResId;
-    private int mButtonBackgroundResId;
     private int mDividerColor;
     private int mDeleteDrawableSrcResId;
     private int mTheme = -1;
@@ -73,8 +71,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.default_text_color_holo);
         mTextLabelColor = getResources().getColorStateList(R.color.default_text_color_holo);
-        mKeyBackgroundResId = R.drawable.key_background_night;
-        mButtonBackgroundResId = R.drawable.button_background;
         mDividerColor = getResources().getColor(R.color.default_divider_color);
         mDeleteDrawableSrcResId = R.drawable.ic_backspace_normal_dark;
 
@@ -95,10 +91,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         if (mTheme != -1) {
             TypedArray a = getContext().obtainStyledAttributes(themeResId, R.styleable.BetterPickersDialogFragment);
             mTextColor = a.getColorStateList(R.styleable.BetterPickersDialogFragment_bpTextColor);
-            mKeyBackgroundResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpKeyBackground,
-                    mKeyBackgroundResId);
-            mButtonBackgroundResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpButtonBackground,
-                    mButtonBackgroundResId);
             mDividerColor = a.getColor(R.styleable.BetterPickersDialogFragment_bpDividerColor, mDividerColor);
             mDeleteDrawableSrcResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpDeleteIcon,
                     mDeleteDrawableSrcResId);
@@ -112,22 +104,15 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
             if (number != null) {
                 number.setTextColor(mTextColor);
                 number.setTypeface(mTypefaceLekton);
-                number.setBackgroundResource(mKeyBackgroundResId);
             }
-        }
-        if (mDivider != null) {
-            mDivider.setBackgroundColor(mDividerColor);
         }
         if (mHoursLabel != null) {
             mHoursLabel.setTextColor(mTextLabelColor);
-            mHoursLabel.setBackgroundResource(mKeyBackgroundResId);
         }
         if (mMinutesLabel != null) {
             mMinutesLabel.setTextColor(mTextLabelColor);
-            mMinutesLabel.setBackgroundResource(mKeyBackgroundResId);
         }
         if (mDelete != null) {
-            mDelete.setBackgroundResource(mButtonBackgroundResId);
             mDelete.setImageDrawable(getResources().getDrawable(mDeleteDrawableSrcResId));
         }
         if (mEnteredHms != null) {
@@ -135,7 +120,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
-            mLeft.setBackgroundResource(mKeyBackgroundResId);
         }
     }
 

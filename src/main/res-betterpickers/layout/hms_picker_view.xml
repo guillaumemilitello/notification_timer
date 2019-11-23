@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <TextView
@@ -12,6 +13,7 @@
         android:text="@string/picker_timer"
         android:textColor="@color/title_text_color_holo"
         android:fontFamily="sans-serif-light"
+        android:background="@android:color/transparent"
         android:id="@+id/textViewTitle"
         android:gravity="center_vertical|center_horizontal"
         android:layout_marginTop="3dp"
@@ -26,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:background="@android:color/transparent"
         android:paddingBottom="@dimen/medium_font_padding"
         android:weightSum="3"
         android:paddingTop="@dimen/medium_font_padding">
@@ -37,6 +40,7 @@
             android:layout_weight="1"
             android:baselineAligned="true"
             android:weightSum="8"
+            android:background="@android:color/transparent"
             android:gravity="center"
             android:paddingBottom="@dimen/medium_font_padding"
             android:paddingLeft="@dimen/timer_padding_left"
@@ -143,7 +147,9 @@
             android:scaleX="0.7"
             android:scaleY="0.7"
             android:src="@drawable/ic_backspace_normal_dark" />
+
     </LinearLayout>
+
     <View
         android:id="@+id/dividerHms"
         android:layout_width="match_parent"
@@ -162,4 +168,5 @@
     <include
         layout="@layout/three_keys_view"
         android:id="@+id/fourth"/>
+
 </LinearLayout>

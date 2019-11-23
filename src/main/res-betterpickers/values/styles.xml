@@ -7,9 +7,11 @@
     </style>
     <style name="medium_bold_hms" parent="medium_bold">
         <item name="android:textSize">@dimen/medium_font_size_hms</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
     <style name="medium_bold_hms_separator" parent="medium_bold">
         <item name="android:textSize">@dimen/medium_font_size_hms_separator</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:layout_marginLeft">2dp</item>
     </style>
     <style name="medium_light">
@@ -19,6 +21,7 @@
 
     <style name="medium_light_hms" parent="medium_light">
         <item name="android:textSize">@dimen/medium_font_size_hms</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="label">

@@ -28,8 +28,8 @@
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
     <!-- Notification -->
-    <string name="notif_timer_number">%1$s %2$d</string>
-    <string name="notif_timer_info" translatable="false">%1$s %2$d/%3$d</string>
+    <string name="notif_timer_number">%1$s - %2$d</string>
+    <string name="notif_timer_info" translatable="false">%1$s - %2$d/%3$d</string>
     <string name="notif_timer_done">Time out!</string>
     <string name="notif_channel_done" translatable="false">Time out</string>
     <string name="notif_channel_ready" translatable="false">Extra notification</string>

@@ -2,7 +2,6 @@
 <resources>
 
     <style name="BetterPickersDialogFragment">
-        <item name="bpDialogBackground">@drawable/dialog_full_holo_light</item>
         <item name="bpTitleColor">@color/dialog_text_color_holo</item>
         <item name="bpTextColor">@color/dialog_text_color_holo</item>
         <item name="bpDeleteIcon">@drawable/ic_backspace_normal_light</item>

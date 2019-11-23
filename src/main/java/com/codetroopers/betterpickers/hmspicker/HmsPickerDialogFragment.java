@@ -89,13 +89,12 @@ import java.util.Vector;
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
         mTextButtonColor = getResources().getColorStateList(R.color.dialog_button_text_color_holo);
-        mDialogBackgroundResId = R.drawable.dialog_full_holo_dark;
+        mDialogBackgroundResId = R.drawable.dialog_background;
 
         if (mTheme != -1) {
             TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(mTheme, R.styleable.BetterPickersDialogFragment);
 
             mTextColor = a.getColorStateList(R.styleable.BetterPickersDialogFragment_bpTextColor);
-            mDialogBackgroundResId = a.getResourceId(R.styleable.BetterPickersDialogFragment_bpDialogBackground, mDialogBackgroundResId);
         }
     }
 
