@@ -1769,16 +1769,20 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener =
-            new SharedPreferences.OnSharedPreferenceChangeListener() {
-                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
-                    if (PreferencesActivity.isKeyPreference(getBaseContext(), key)) {
-                        updatePreference(key);
-                    }
-                    if (key.equals(getString(R.string.pref_dark_theme_mode))) {
-                        Log.d(TAG, "onSharedPreferenceChanged: updateDarkNight=true");
-                        updateDarkNight = true;
-                    }
+        new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
+                if (PreferencesActivity.isKeyPreference(getBaseContext(), key)) {
+                    updatePreference(key);
                 }
-            };
+                if (key.equals(getString(R.string.pref_dark_theme_mode))) {
+                    Log.d(TAG, "onSharedPreferenceChanged: updateDarkNight=true");
+                    updateDarkNight = true;
+                }
+                if (key.equals(getString(R.string.pref_sets_name_layout_display_enable))) {
+                    scaleLayouts();
+                }
+            }
+        };
+
 }
