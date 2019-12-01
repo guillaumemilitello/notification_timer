@@ -200,11 +200,11 @@ public class PresetCardsList extends Fragment {
     private boolean removeDuplicate(String name) {
         Preset renamedPreset = mainActivity.getPresetUser();
         renamedPreset.setName(name);
-        Log.d(TAG, "removeDuplicate: userPositionPreset=" + renamedPreset);
+        Log.d(TAG, "removeDuplicate: renamedPreset=" + renamedPreset);
         if (renamedPreset.isValid()) {
             int duplicateIndex = presetsList.find(renamedPreset);
-            if (duplicateIndex != -1) {
-                Log.d(TAG, "removeDuplicate: duplicateIndex=" + duplicateIndex + "userPositionPreset=" + renamedPreset + ", userPosition=" + userPosition);
+            Log.d(TAG, "removeDuplicate: duplicateIndex=" + duplicateIndex + ", userPosition=" + userPosition);
+            if (duplicateIndex != -1 && duplicateIndex != userPosition) {
                 removeDuplicatedPreset(userPosition);
                 return true;
             }
