@@ -27,13 +27,13 @@
         android:weightSum="10">
 
         <TextView
-            android:id="@+id/textViewHelpButtonInfo"
+            android:id="@+id/textViewHelpAbove"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/help_tap_to_continue"
+            android:text="@string/help_tap_to_quit"
             android:textColor="@color/white"
             android:clickable="false"
             android:focusable="false"
@@ -52,33 +52,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
-                android:src="@drawable/help_0_add_background"/>
+                android:src="@drawable/help_background"/>
 
             <ImageView
                 android:id="@+id/imageViewHelpForeground"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
-                android:src="@drawable/help_0_add_text"/>
+                android:src="@drawable/help"/>
 
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/textViewHelpButtonDone"
+            android:id="@+id/textViewHelpBelow"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/help_quit"
+            android:text="@string/help_tap_to_quit"
             android:textColor="@color/white"
             android:clickable="true"
             android:focusable="true"
             android:visibility="visible"
             android:background="?selectableItemBackgroundBorderless"
             android:includeFontPadding="false"
-            android:textStyle="bold"
-            android:textSize="24sp"/>
+            android:textSize="16sp"/>
 
     </LinearLayout>
 

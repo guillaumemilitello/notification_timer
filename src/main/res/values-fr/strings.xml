@@ -29,8 +29,7 @@
     <!-- Notification -->
     <string name="notif_timer_done">Temps écoulé !</string>
     <!-- HelpOverlay -->
-    <string name="help_tap_to_continue">Appuyez pour continuer</string>
-    <string name="help_quit">QUITTER</string>
+    <string name="help_tap_to_quit">Appuyez pour quitter les indications</string>
     <!-- Settings -->
     <string name="notification">Notification</string>
     <string name="extra_notification">Notification supplémentaire</string>
