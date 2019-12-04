@@ -867,7 +867,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerTextViewLastSeconds.setTextColor(textColor);
         setsTextView.setTextColor(textColor);
         setsUserTextView.setTextColor(setsTextColor);
-        spaceTextView.setTextColor(textColor);
+        spaceTextView.setTextColor(setsTextColor);
         nameEditText.setTextColor(textColor);
     }
 
