@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private ImageButton imageButtonLeft, imageButtonCenter, imageButtonRight;
     private ImageButton imageButtonTimerMinusMulti, imageButtonTimerPlusMulti;
     private ImageButton imageButtonTimerMinus, imageButtonTimerPlus, imageButtonKeepScreenOn;
-    private LinearLayout mainLayout, bottomButtonsLayout, fullButtonsLayout, setsNameLayout;
+    private LinearLayout mainLayout, bottomButtonsLayout, fullButtonsLayout, setsLayout;
     private RelativeLayout activityLayout, timerLayout;
     private FrameLayout presetsFrameLayout;
     private ImageButton imageButtonAddPreset;
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     static final long[] vibrationPattern = {0, 400, 200, 400,};
 
     // User preferences
-    private boolean setsNameLayoutDisplayEnable;
+    private boolean setsNameDisplayEnable;
     private boolean setsNumberDisplayEnable;
     private boolean setsPickerEnable;
     private boolean setsNumberReset;
@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         mainLayout = findViewById(R.id.layoutMain);
         fullButtonsLayout = findViewById(R.id.layoutFullButtons);
         bottomButtonsLayout = findViewById(R.id.layoutBottomButtons);
-        setsNameLayout = findViewById(R.id.setsNameLinearLayout);
+        setsLayout = findViewById(R.id.setsLinearLayout);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             activityLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -507,30 +507,30 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         switch (layoutMode) {
             case TINY:
                 updateFullLayoutVisibility(View.GONE);
-                setsNameLayout.setVisibility(View.GONE);
+                setsLayout.setVisibility(View.GONE);
                 layoutWeight = 5;
                 break;
             case COMPACT:
                 updateFullLayoutVisibility(View.GONE);
-                setsNameLayout.setVisibility(View.VISIBLE);
+                setsLayout.setVisibility(View.VISIBLE);
                 layoutWeight = 4;
                 break;
             default:
             case FULL:
                 updateFullLayoutVisibility(View.VISIBLE);
-                setsNameLayout.setVisibility(View.VISIBLE);
+                setsLayout.setVisibility(View.VISIBLE);
                 layoutWeight = 3;
                 break;
         }
 
-        if (!setsNameLayoutDisplayEnable && layoutMode != LayoutMode.TINY) {
-            setsNameLayout.setVisibility(View.GONE);
+        if (!isSetsLayoutDisplayEnable() && layoutMode != LayoutMode.TINY) {
+            setsLayout.setVisibility(View.GONE);
             layoutWeight += 1;
         }
 
         LinearLayout.LayoutParams timerLayoutParams = (LinearLayout.LayoutParams) timerLayout.getLayoutParams();
         timerLayoutParams.weight = layoutWeight;
-        Log.d(TAG, "scaleLayouts: layoutMode=" + layoutMode + ", layoutWeight=" + layoutWeight + ", setsNameLayoutDisplayEnable=" + setsNameLayoutDisplayEnable);
+        Log.d(TAG, "scaleLayouts: layoutMode=" + layoutMode + ", layoutWeight=" + layoutWeight + ", setsNameDisplayEnable=" + setsNameDisplayEnable);
     }
 
     private void scaleTextViews() {
@@ -572,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         updateTimerDisplay();
 
-        float setsNameLayoutHeight = setsNameLayout.getMeasuredHeight() / density;
+        float setsNameLayoutHeight = setsLayout.getMeasuredHeight() / density;
         // Threshold are fixed for the Typeface Lekton
         float setsNameTextSize = isLayoutModeFull() ? setsNameLayoutHeight / 2 : setsNameLayoutHeight / 1.3f;
         Log.d(TAG, "scaleTextViews: setsNameLayoutHeight=" + setsNameLayoutHeight + ", setsNameTextSize=" + setsNameTextSize);
@@ -917,8 +917,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         return darkColors.contains(color);
     }
 
+    private boolean isSetsUserDisplayEnabled() {
+        return setsUser != Integer.MAX_VALUE;
+    }
+
+    private boolean isSetsLayoutDisplayEnable() {
+        Log.d(TAG, "isSetsLayoutDisplayEnable: setsNumberDisplayEnable=" + setsNumberDisplayEnable + ", setsNameDisplayEnable=" + setsNameDisplayEnable + ", setsUserDisplayEnabled=" + isSetsUserDisplayEnabled());
+        return setsNumberDisplayEnable || setsNameDisplayEnable || isSetsUserDisplayEnabled();
+    }
+
     private void updateSetsDisplay() {
-        final boolean setsUserDisplayEnabled = setsUser != Integer.MAX_VALUE;
+        final boolean setsUserDisplayEnabled = isSetsUserDisplayEnabled();
         Log.d(TAG, "updateSetsDisplay: buttonsLayout=" + buttonsLayout + ", setsUserDisplayEnabled=" + setsUserDisplayEnabled + ", setsNumberDisplayEnable=" + setsNumberDisplayEnable);
         if ((!setsNumberDisplayEnable && !setsUserDisplayEnabled) || buttonsLayout == ButtonsLayout.WAITING) {
             setsTextView.setVisibility(View.GONE);
@@ -928,7 +937,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             setsTextView.setVisibility(View.VISIBLE);
             setsTextView.setText(String.format(Locale.US, "%d", setsCurrent));
 
-            spaceTextView.setVisibility(View.VISIBLE);
+            if (setsNameDisplayEnable) {
+                spaceTextView.setVisibility(View.VISIBLE);
+            } else {
+                spaceTextView.setVisibility(View.GONE);
+            }
 
             if (setsUserDisplayEnabled) {
                 setsUserTextView.setVisibility(View.VISIBLE);
@@ -940,10 +953,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     private void updateNameDisplay() {
-        if (TextUtils.isEmpty(nameUser)) {
-            nameUser = getString(R.string.default_timer_name);
+        if (setsNameDisplayEnable) {
+            nameEditText.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(nameUser)) {
+                nameUser = getString(R.string.default_timer_name);
+            }
+            nameEditText.setText(nameUser);
+        } else {
+            nameEditText.setVisibility(View.GONE);
         }
-        nameEditText.setText(nameUser);
     }
 
     void updateDisplayMode(int displayMode) {
@@ -976,6 +994,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerState = TimerService.State.READY;
         updateServiceState();
 
+        scaleLayouts();
         updateButtonsLayout(ButtonsLayout.READY);
         updatePresetsVisibility();
     }
@@ -1706,7 +1725,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updatePreference(getString(R.string.pref_timer_minus));
             updatePreference(getString(R.string.pref_timer_plus));
             updatePreference(getString(R.string.pref_sets_number_display_enable));
-            updatePreference(getString(R.string.pref_sets_name_layout_display_enable));
+            updatePreference(getString(R.string.pref_sets_name_display_enable));
             updatePreference(getString(R.string.pref_sets_picker_enable));
             updatePreference(getString(R.string.pref_sets_number_reset));
             updatePreference(getString(R.string.pref_vibrate));
@@ -1735,8 +1754,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             int resId = getTimerPlusResId(timerPlus);
             imageButtonTimerPlus.setImageResource(resId);
             imageButtonTimerPlusMulti.setImageResource(resId);
-        } else if (key.equals(getString(R.string.pref_sets_name_layout_display_enable))) {
-            setsNameLayoutDisplayEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_name_layout_display_enable));
+        } else if (key.equals(getString(R.string.pref_sets_name_display_enable))) {
+            setsNameDisplayEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_name_display_enable));
         } else if (key.equals(getString(R.string.pref_sets_number_display_enable))) {
             setsNumberDisplayEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_display_enable));
         } else if (key.equals(getString(R.string.pref_sets_picker_enable))) {
@@ -1779,7 +1798,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                     Log.d(TAG, "onSharedPreferenceChanged: updateDarkNight=true");
                     updateDarkNight = true;
                 }
-                if (key.equals(getString(R.string.pref_sets_name_layout_display_enable))) {
+                if (key.equals(getString(R.string.pref_sets_name_display_enable)) || key.equals(getString(R.string.pref_sets_number_display_enable))) {
                     scaleLayouts();
                 }
             }

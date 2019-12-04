@@ -2,7 +2,7 @@
 <resources>
     <string name="default_timer_minus" translatable="false">20</string>
     <string name="default_timer_plus" translatable="false">20</string>
-    <bool name="default_sets_name_layout_display_enable">true</bool>
+    <bool name="default_sets_name_display_enable">true</bool>
     <bool name="default_sets_picker">false</bool>
     <bool name="default_sets_number_display_enable">true</bool>
     <bool name="default_sets_number_reset">true</bool>

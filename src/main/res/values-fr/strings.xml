@@ -38,9 +38,9 @@
     <string name="extra_notification_summary">Notification supplémentaire avant la fin du minuteur</string>
     <string name="timer_plus">Incrémentation du temps</string>
     <string name="timer_minus">Décrémentation du temps</string>
-    <string name="sets_pref_category">Nombre de minuteurs</string>
-    <string name="sets_name_layout_display_enable">Informations</string>
-    <string name="sets_name_layout_display_enable_summary">Afficher le nom et le nombre de minuteurs au dessus du temps restant</string>
+    <string name="sets_pref_category">Information du minuteurs</string>
+    <string name="sets_name_display_enable">Affichage du nom du minuteur</string>
+    <string name="sets_name_display_enable_summary">Afficher le nom du minuteur au dessus du temps restant</string>
     <string name="sets_number_display_enable">Afficher le nombre de minuteurs</string>
     <string name="sets_number_display_enable_summary">Affichage du nombre de minuteurs. Toujours affiché si il y a un indicateur de limite de minuteurs</string>
     <string name="sets_number_reset">Réinitialisation du nombre de minuteurs</string>
