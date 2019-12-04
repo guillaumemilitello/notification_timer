@@ -777,9 +777,9 @@ class InteractiveNotification extends Notification {
         } else {
             final int setsCurrentDisplay = (buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE) ? setsCurrent - 1 : setsCurrent;
             if (setsUserDisplayEnabled) {
-                setsString = String.format("%s | %d/%d", nameUser, setsCurrentDisplay, setsUser);
+                setsString = String.format("%s %d/%d", nameUser, setsCurrentDisplay, setsUser);
             } else {
-                setsString = String.format("%s | %d", nameUser, setsCurrentDisplay);
+                setsString = String.format("%s %d", nameUser, setsCurrentDisplay);
             }
         }
         Log.d(TAG, "updateSetsTextView: nameUser=" + nameUser + "setsString='" + setsString + "'");
