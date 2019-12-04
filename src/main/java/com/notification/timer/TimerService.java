@@ -585,20 +585,11 @@ public class TimerService extends Service {
         // Complete timer action
         if (state == State.RUNNING && timerCurrent == 0)
         {
-            if (setsCurrent <= setsUser) {
-                if (mainActivityVisible) {
-                    Log.d(TAG, "notificationDeleted: sending STOP action");
-                    getBaseContext().sendBroadcast(new Intent(IntentAction.STOP));
-                }
-                stop();
-            } else {
-                interactiveNotification.dismiss();
-                if (mainActivityVisible) {
-                    Log.d(TAG, "notificationDeleted: sending CLEAR action");
-                    getBaseContext().sendBroadcast(new Intent(IntentAction.CLEAR));
-                }
-                reset();
+            if (mainActivityVisible) {
+                Log.d(TAG, "notificationDeleted: sending STOP action");
+                getBaseContext().sendBroadcast(new Intent(IntentAction.STOP));
             }
+            stop();
         }
     }
 
