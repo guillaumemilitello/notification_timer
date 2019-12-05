@@ -90,6 +90,7 @@ class InteractiveNotification extends Notification {
 
     void setSetsNumberDisplayEnable(boolean setsNumberDisplayEnable) {
         this.setsNumberDisplayEnable = setsNumberDisplayEnable;
+        updateSetsTextView();
     }
 
     void setTimerGetReadyEnable(boolean timerGetReadyEnable) {
