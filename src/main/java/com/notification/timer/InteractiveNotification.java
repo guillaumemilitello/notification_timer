@@ -510,6 +510,8 @@ class InteractiveNotification extends Notification {
     void setVisible() {
         Log.d(TAG, "setVisible");
         visible = true;
+        // force recreation of the builder when activity is dismissed
+        notificationBuilder = createNotificationBuilder(NotificationMode.UPDATE);
         build(NotificationMode.UPDATE);
     }
 
@@ -526,7 +528,7 @@ class InteractiveNotification extends Notification {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_black_text);
             }
         } else {
-            if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+            if (isColorGetReady()) {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_red_text);
             } else {
                 remoteView = new RemoteViews(context.getPackageName(), R.layout.notification);
@@ -648,7 +650,7 @@ class InteractiveNotification extends Notification {
                 case READY:
                 case PAUSED:
                 case RUNNING:
-                    if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                    if (isColorGetReady()) {
                         return colorReady;
                     } else {
                         return colorRunning;
@@ -664,7 +666,7 @@ class InteractiveNotification extends Notification {
                     return ContextCompat.getColor(context, R.color.progress_bar_current);
                 case PAUSED:
                 case RUNNING:
-                    if (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady) {
+                    if (isColorGetReady()) {
                         return ContextCompat.getColor(context, R.color.progress_bar_get_ready);
                     } else {
                         return ContextCompat.getColor(context, R.color.progress_bar_current);
@@ -675,6 +677,10 @@ class InteractiveNotification extends Notification {
             }
         }
         return colorRunning;
+    }
+
+    boolean isColorGetReady() {
+        return timerCurrent == 0 || (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady);
     }
 
     void updateNotificationBuilder() {

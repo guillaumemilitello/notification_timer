@@ -662,7 +662,17 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 timerState = timerService.getState();
                 Log.d(TAG, "updateUserInterface: timerCurrent=" + timerCurrent + ", timerUser=" + timerUser +
                         ", setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + ", nameUser=" + nameUser + ", displayMode=" + displayMode + ", timerState=" + timerState);
-                updateButtonsLayout();
+                if (timerState == TimerService.State.RUNNING && timerCurrent == 0) {
+                    updateButtonsLayout(ButtonsLayout.STOPPED);
+                    if (setsCurrent <= setsUser) {
+                        alertSetDone.show();
+                    } else {
+                        alertAllSetsDone.show();
+                    }
+                }
+                else {
+                    updateButtonsLayout();
+                }
             }
         }
     }
@@ -1015,6 +1025,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
         updateButtonsLayout();
+        dismissAlertDialog();
     }
 
     void pause() {
@@ -1072,6 +1083,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerState = TimerService.State.WAITING;
         updateButtonsLayout(ButtonsLayout.WAITING);
         updatePresetsVisibility();
+        dismissAlertDialog();
     }
 
     void reset() {
@@ -1079,12 +1091,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         Log.d(TAG, "reset: timerState=" + timerState);
 
         updateButtonsLayout(ButtonsLayout.READY);
+        dismissAlertDialog();
     }
 
     void extraSet() {
         Log.d(TAG, "extraSet: setsCurrent=" + setsCurrent);
 
         updateButtonsLayout(ButtonsLayout.RUNNING);
+        dismissAlertDialog();
     }
 
     void timerMinus() {
@@ -1602,6 +1616,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         return false;
     }
 
+    private void dismissAlertDialog() {
+        if (alertSetDone.isShowing()){
+            alertSetDone.dismiss();
+        }
+        if (alertAllSetsDone.isShowing()){
+            alertAllSetsDone.dismiss();
+        }
+    }
+
     private void showAlertDialogClear() {
         Log.d(TAG, "showAlertDialogClear");
         android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
@@ -1630,15 +1653,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (timerService != null) {
             timerService.updateNotificationVisibility(true);
         }
-
-        // Complete ongoing pop-up action
-        if (alertSetDone.isShowing()) {
-            sendBroadcast(new Intent(new Intent(IntentAction.STOP)));
-            alertSetDone.dismiss();
-        } else if (alertAllSetsDone.isShowing()) {
-            sendBroadcast(new Intent(new Intent(IntentAction.CLEAR)));
-            alertAllSetsDone.dismiss();
-        }
     }
 
     @Override
@@ -1655,12 +1669,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             timerServiceBound = false;
         }
 
-        if (alertSetDone.isShowing()){
-            alertSetDone.dismiss();
-        }
-        if (alertAllSetsDone.isShowing()){
-            alertAllSetsDone.dismiss();
-        }
+        dismissAlertDialog();
 
         unregisterReceiver(mainActivityReceiver);
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);

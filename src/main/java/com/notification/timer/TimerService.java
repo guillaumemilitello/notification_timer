@@ -582,15 +582,6 @@ public class TimerService extends Service {
         interactiveNotificationAlertDone = true;
         Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " state=" + state);
         interactiveNotification.dismiss();
-        // Complete timer action
-        if (state == State.RUNNING && timerCurrent == 0)
-        {
-            if (mainActivityVisible) {
-                Log.d(TAG, "notificationDeleted: sending STOP action");
-                getBaseContext().sendBroadcast(new Intent(IntentAction.STOP));
-            }
-            stop();
-        }
     }
 
     public void stopCountDown(){
