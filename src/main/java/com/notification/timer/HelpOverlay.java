@@ -11,18 +11,16 @@ class HelpOverlay {
     private static final String TAG = "HelpOverlay";
 
     private final LinearLayout layout;
-    private final ImageView imageViewForeground;
-    private final ImageView imageViewBackground;
+    private final ImageView imageView;
 
     private int currentImageClick;
 
     HelpOverlay(MainActivity mainActivity) {
         layout = mainActivity.findViewById(R.id.layoutHelp);
-        imageViewBackground = mainActivity.findViewById(R.id.imageViewHelpBackground);
-        imageViewForeground = mainActivity.findViewById(R.id.imageViewHelpForeground);
+        imageView = mainActivity.findViewById(R.id.imageViewHelp);
         TextView textViewAbove = mainActivity.findViewById(R.id.textViewHelpAbove);
         TextView textViewBelow = mainActivity.findViewById(R.id.textViewHelpBelow);
-        imageViewForeground.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 next();
@@ -46,16 +44,14 @@ class HelpOverlay {
         Log.d(TAG, "setVisible: visible=" + visible);
         int visibility = visible? View.VISIBLE : View.INVISIBLE;
         layout.setVisibility(visibility);
-        imageViewBackground.setVisibility(visibility);
-        imageViewForeground.setVisibility(visibility);
+        imageView.setVisibility(visibility);
     }
 
     void show() {
         Log.d(TAG, "show");
         setVisible(true);
         currentImageClick = 0;
-        imageViewForeground.setImageResource(R.drawable.help);
-        imageViewBackground.setImageResource(R.drawable.help_background);
+        imageView.setImageResource(R.drawable.help);
     }
 
     private void next() {

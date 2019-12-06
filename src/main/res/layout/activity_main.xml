@@ -48,14 +48,7 @@
             android:layout_weight="8">
 
             <ImageView
-                android:id="@+id/imageViewHelpBackground"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/help_background"/>
-
-            <ImageView
-                android:id="@+id/imageViewHelpForeground"
+                android:id="@+id/imageViewHelp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
