@@ -46,6 +46,8 @@ class InteractiveNotification extends Notification {
     private static int doneChannelNbId = 0;
     private static int readyChannelNbId = 0;
 
+    private static boolean notificationBuilt = false;
+
     @SuppressLint("DefaultLocale")
     static String getDoneChannelId() {  return String.format("%s%d", doneChannelId, doneChannelNbId); }
     @SuppressLint("DefaultLocale")
@@ -510,8 +512,6 @@ class InteractiveNotification extends Notification {
     void setVisible() {
         Log.d(TAG, "setVisible");
         visible = true;
-        // force recreation of the builder when activity is dismissed
-        notificationBuilder = createNotificationBuilder(NotificationMode.UPDATE);
         build(NotificationMode.UPDATE);
     }
 
@@ -690,30 +690,42 @@ class InteractiveNotification extends Notification {
     }
 
     private void build(NotificationMode notificationMode) {
-        if (visible && notificationMode != NotificationMode.NONE) {
+        if (notificationMode != NotificationMode.NONE) {
+            final boolean layoutSetDone = buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE;
+            if (visible) {
+                // Do not recreate the notification when updating a DONE notification to preserve the chronometer counter
+                if (notificationMode != NotificationMode.UPDATE || !layoutSetDone || (layoutSetDone && !notificationBuilt)) {
+                    notificationBuilder = createNotificationBuilder(notificationMode);
+                    notificationBuilt = true;
+                }
 
-            boolean layoutSetDone = buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE;
+                RemoteViews remoteView = createRemoteView();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    notificationBuilder.setStyle(new DecoratedCustomViewStyle());
+                    setCustomContent(remoteView, notificationMode, layoutSetDone);
+                } else {
+                    notificationBuilder.setContent(remoteView);
+                }
 
-            // Do not recreate the notification when updating a DONE notification to preserve the chronometer counter
-            if(notificationMode != NotificationMode.UPDATE || !layoutSetDone) {
-                notificationBuilder = createNotificationBuilder(notificationMode);
-            }
+                notificationManager.notify(ID, notificationBuilder.build());
 
-            RemoteViews remoteView = createRemoteView();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                notificationBuilder.setStyle(new DecoratedCustomViewStyle());
-                setCustomContent(remoteView, notificationMode, layoutSetDone);
-            } else {
-                notificationBuilder.setContent(remoteView);
-            }
+                if (layoutSetDone) {
+                    if (notificationMode == NotificationMode.DONE) {
+                        notificationBuilt = true;
+                    }
+                } else {
+                    notificationBuilt = false;
+                }
 
-            notificationManager.notify(ID, notificationBuilder.build());
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notificationBuilder.setChannelId(updateChannelId);
-            } else {
-                notificationBuilder.setSound(null);
-                notificationBuilder.setVibrate(null);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    notificationBuilder.setChannelId(updateChannelId);
+                } else {
+                    notificationBuilder.setSound(null);
+                    notificationBuilder.setVibrate(null);
+                }
+            } else if(layoutSetDone) {
+                // layoutSetDone should be recreated on the next update if visible
+                notificationBuilt = false;
             }
         }
     }
