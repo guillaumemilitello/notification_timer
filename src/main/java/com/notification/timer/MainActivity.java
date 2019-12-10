@@ -458,8 +458,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (updateLayoutMode()) {
             updatePresetsLayout();
             scaleTimerProgressBar();
-            scaleLayouts();
-            scaleTextViews();
+            scaleLayoutsTextViews();
             updateAddButtonPreset();
         }
     }
@@ -502,6 +501,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerProgressBar.setScaleX(layoutScaleX);
     }
 
+    private void scaleLayoutsTextViews() {
+        scaleLayouts();
+        scaleTextViews();
+    }
+
     private void scaleLayouts() {
         int layoutWeight;
         switch (layoutMode) {
@@ -523,14 +527,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 break;
         }
 
-        if (!isSetsLayoutDisplayEnable() && layoutMode != LayoutMode.TINY) {
+        final boolean setsLayoutDisplayEnabled = isSetsLayoutDisplayEnable();
+        if (!setsLayoutDisplayEnabled && layoutMode != LayoutMode.TINY) {
             setsLayout.setVisibility(View.GONE);
             layoutWeight += 1;
         }
 
+        Log.d(TAG, "scaleLayouts: layoutWeight=" + layoutWeight + ", layoutMode=" + layoutMode + ", setsLayoutDisplayEnabled=" + setsLayoutDisplayEnabled);
         LinearLayout.LayoutParams timerLayoutParams = (LinearLayout.LayoutParams) timerLayout.getLayoutParams();
         timerLayoutParams.weight = layoutWeight;
-        Log.d(TAG, "scaleLayouts: layoutMode=" + layoutMode + ", layoutWeight=" + layoutWeight + ", setsNameDisplayEnable=" + setsNameDisplayEnable);
     }
 
     private void scaleTextViews() {
@@ -1004,7 +1009,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerState = TimerService.State.READY;
         updateServiceState();
 
-        scaleLayouts();
+        scaleLayoutsTextViews();
         updateButtonsLayout(ButtonsLayout.READY);
         updatePresetsVisibility();
     }
@@ -1808,7 +1813,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                     updateDarkNight = true;
                 }
                 if (key.equals(getString(R.string.pref_sets_name_display_enable)) || key.equals(getString(R.string.pref_sets_number_display_enable))) {
-                    scaleLayouts();
+                    scaleLayoutsTextViews();
                 }
             }
         };
