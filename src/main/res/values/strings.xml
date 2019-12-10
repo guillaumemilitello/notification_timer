@@ -129,7 +129,7 @@
     <string name="pref_restore" translatable="false">preferencesRestore</string>
     <string name="pref_background_theme_mode" translatable="false">backgroundThemeMode</string>
     <string name="pref_dark_theme_mode" translatable="false">darkThemeMode</string>
-    <string name="pref_first_run" translatable="false">firstRun</string>
+    <string name="pref_first_run" translatable="false">firstRun_10400</string> <!-- display new help from 10400 version code to all users -->
     <!-- Others -->
     <string name="timer_separator" translatable="false">:</string>
 </resources>
