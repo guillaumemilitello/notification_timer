@@ -130,7 +130,7 @@ public class PresetCardsList extends Fragment {
                 addPresetButton = false;
                 adapter.notifyItemRemoved(0);
                 notifyItemRangeChanged(0);
-                userPosition = index;
+                scrollToPosition(index);
             } else if (userPosition != index) {
                 // Update both positions
                 notifyItemChanged(userPosition);
