@@ -11,5 +11,4 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent" />
 
-    <include layout="@layout/layout_ok_default_buttons" />
 </LinearLayout>

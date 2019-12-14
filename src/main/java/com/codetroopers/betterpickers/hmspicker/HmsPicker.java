@@ -34,7 +34,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
 
     private Button mDoneButton;
 
-    protected View mDivider;
     private ColorStateList mTextColor, mTextLabelColor;
     private int mDividerColor;
     private int mDeleteDrawableSrcResId;
@@ -120,6 +119,11 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
+            mLeft.setTypeface(mTypefaceLekton);
+        }
+        if (mRight != null) {
+            mRight.setTextColor(mTextColor);
+            mRight.setTypeface(mTypefaceLekton);
         }
     }
 
@@ -127,30 +131,27 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View v1 = findViewById(R.id.first);
-        View v2 = findViewById(R.id.second);
-        View v3 = findViewById(R.id.third);
-        View v4 = findViewById(R.id.fourth);
+        View hmsPickerView = findViewById(R.id.hmsPickerView);
         mEnteredHms = (HmsView) findViewById(R.id.hms_text);
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
         mDelete.setOnLongClickListener(this);
 
-        mNumbers[1] = (Button) v1.findViewById(R.id.key_left);
-        mNumbers[2] = (Button) v1.findViewById(R.id.key_middle);
-        mNumbers[3] = (Button) v1.findViewById(R.id.key_right);
+        mNumbers[1] = hmsPickerView.findViewById(R.id.key_1);
+        mNumbers[2] = hmsPickerView.findViewById(R.id.key_2);
+        mNumbers[3] = hmsPickerView.findViewById(R.id.key_3);
 
-        mNumbers[4] = (Button) v2.findViewById(R.id.key_left);
-        mNumbers[5] = (Button) v2.findViewById(R.id.key_middle);
-        mNumbers[6] = (Button) v2.findViewById(R.id.key_right);
+        mNumbers[4] = hmsPickerView.findViewById(R.id.key_4);
+        mNumbers[5] = hmsPickerView.findViewById(R.id.key_5);
+        mNumbers[6] = hmsPickerView.findViewById(R.id.key_6);
 
-        mNumbers[7] = (Button) v3.findViewById(R.id.key_left);
-        mNumbers[8] = (Button) v3.findViewById(R.id.key_middle);
-        mNumbers[9] = (Button) v3.findViewById(R.id.key_right);
+        mNumbers[7] = hmsPickerView.findViewById(R.id.key_7);
+        mNumbers[8] = hmsPickerView.findViewById(R.id.key_8);
+        mNumbers[9] = hmsPickerView.findViewById(R.id.key_9);
 
-        mLeft = (Button) v4.findViewById(R.id.key_left);
-        mNumbers[0] = (Button) v4.findViewById(R.id.key_middle);
-        mRight = (Button) v4.findViewById(R.id.key_right);
+        mLeft = hmsPickerView.findViewById(R.id.key_left);
+        mNumbers[0] = hmsPickerView.findViewById(R.id.key_0);
+        mRight = hmsPickerView.findViewById(R.id.key_right);
         setRightEnabled(false);
 
         mTitle = (TextView) findViewById(R.id.textViewTitle);
@@ -168,7 +169,6 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
 
         mHoursLabel = (TextView) findViewById(R.id.hours_label);
         mMinutesLabel = (TextView) findViewById(R.id.minutes_label);
-        mDivider = findViewById(R.id.dividerHms);
 
         restyleViews();
         updateKeypad();

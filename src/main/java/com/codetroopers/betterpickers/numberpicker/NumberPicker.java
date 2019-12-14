@@ -43,7 +43,6 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
 
     private final Typeface mTypefaceLekton;
 
-    protected View mDivider;
     private ColorStateList mTextColor;
     private int mDividerColor;
     private int mDeleteDrawableSrcResId;
@@ -113,9 +112,11 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
+            mLeft.setTypeface(mTypefaceLekton);
         }
         if (mRight != null) {
             mRight.setTextColor(mTextColor);
+            mRight.setTypeface(mTypefaceLekton);
         }
         if (mDelete != null) {
             mDelete.setImageDrawable(getResources().getDrawable(mDeleteDrawableSrcResId));
@@ -129,36 +130,31 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mDivider = findViewById(R.id.dividerNumber);
-
         for (int i = 0; i < mInput.length; i++) {
             mInput[i] = -1;
         }
 
-        View v1 = findViewById(R.id.first);
-        View v2 = findViewById(R.id.second);
-        View v3 = findViewById(R.id.third);
-        View v4 = findViewById(R.id.fourth);
+        View numberPickerView = findViewById(R.id.numberPickerView);
         mEnteredNumber = (NumberView) findViewById(R.id.number_text);
         mDelete = (ImageButton) findViewById(R.id.delete);
         mDelete.setOnClickListener(this);
         mDelete.setOnLongClickListener(this);
 
-        mNumbers[1] = (Button) v1.findViewById(R.id.key_left);
-        mNumbers[2] = (Button) v1.findViewById(R.id.key_middle);
-        mNumbers[3] = (Button) v1.findViewById(R.id.key_right);
+        mNumbers[1] = numberPickerView.findViewById(R.id.key_1);
+        mNumbers[2] = numberPickerView.findViewById(R.id.key_2);
+        mNumbers[3] = numberPickerView.findViewById(R.id.key_3);
 
-        mNumbers[4] = (Button) v2.findViewById(R.id.key_left);
-        mNumbers[5] = (Button) v2.findViewById(R.id.key_middle);
-        mNumbers[6] = (Button) v2.findViewById(R.id.key_right);
+        mNumbers[4] = numberPickerView.findViewById(R.id.key_4);
+        mNumbers[5] = numberPickerView.findViewById(R.id.key_5);
+        mNumbers[6] = numberPickerView.findViewById(R.id.key_6);
 
-        mNumbers[7] = (Button) v3.findViewById(R.id.key_left);
-        mNumbers[8] = (Button) v3.findViewById(R.id.key_middle);
-        mNumbers[9] = (Button) v3.findViewById(R.id.key_right);
+        mNumbers[7] = numberPickerView.findViewById(R.id.key_7);
+        mNumbers[8] = numberPickerView.findViewById(R.id.key_8);
+        mNumbers[9] = numberPickerView.findViewById(R.id.key_9);
 
-        mLeft = (Button) v4.findViewById(R.id.key_left);
-        mNumbers[0] = (Button) v4.findViewById(R.id.key_middle);
-        mRight = (Button) v4.findViewById(R.id.key_right);
+        mLeft = numberPickerView.findViewById(R.id.key_left);
+        mNumbers[0] = numberPickerView.findViewById(R.id.key_0);
+        mRight = numberPickerView.findViewById(R.id.key_right);
         setLeftRightEnabled();
 
         for (int i = 0; i < 10; i++) {
