@@ -646,8 +646,8 @@ class InteractiveNotification extends Notification {
     private int getColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isColorEnable()) {
             switch (buttonsLayout) {
+                default:
                 case NO_LAYOUT:
-                case READY:
                 case PAUSED:
                 case RUNNING:
                     if (isColorGetReady()) {
@@ -679,7 +679,7 @@ class InteractiveNotification extends Notification {
         return colorRunning;
     }
 
-    boolean isColorGetReady() {
+    private boolean isColorGetReady() {
         return timerCurrent == 0 || (timerGetReadyEnable && timerCurrent <= timerGetReady && timerUser > timerGetReady);
     }
 
@@ -694,7 +694,7 @@ class InteractiveNotification extends Notification {
             final boolean layoutSetDone = buttonsLayout == ButtonsLayout.ALL_SETS_DONE || buttonsLayout == ButtonsLayout.SET_DONE;
             if (visible) {
                 // Do not recreate the notification when updating a DONE notification to preserve the chronometer counter
-                if (notificationMode != NotificationMode.UPDATE || !layoutSetDone || (layoutSetDone && !notificationBuilt)) {
+                if (notificationMode != NotificationMode.UPDATE || !layoutSetDone || !notificationBuilt) {
                     notificationBuilder = createNotificationBuilder(notificationMode);
                     notificationBuilt = true;
                 }
