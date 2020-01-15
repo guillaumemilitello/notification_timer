@@ -974,6 +974,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 nameUser = getString(R.string.default_timer_name);
             }
             nameEditText.setText(nameUser);
+            nameEditText.setEnabled(buttonsLayout != ButtonsLayout.WAITING);
+            nameEditText.clearFocus();
         } else {
             nameEditText.setVisibility(View.GONE);
         }
@@ -1012,6 +1014,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         scaleLayoutsTextViews();
         updateButtonsLayout(ButtonsLayout.READY);
         updatePresetsVisibility();
+        clearNameEditFocus();
     }
 
     private void updateServiceState() {
