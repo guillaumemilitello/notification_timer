@@ -303,9 +303,11 @@ class InteractiveNotification extends Notification {
         Uri uri = currentNotificationChannel.getSound();
         if (ringtone != null && uri != null && !ringtone.equals(uri)) {
             Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=" + uri);
+            ringtone = uri;
             createDoneChannel();
         } else if (ringtone == null && uri != null) {
             Log.d(TAG, "updateDoneChannel: ringtone=null, uri=" + uri);
+            ringtone = uri;
             createDoneChannel();
         } else if (ringtone != null && uri == null) {
             Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=null");
@@ -343,9 +345,11 @@ class InteractiveNotification extends Notification {
         Uri uri = currentNotificationChannel.getSound();
         if (ringtoneReady != null && uri != null && !ringtoneReady.equals(uri)) {
             Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=" + uri);
+            ringtoneReady = uri;
             createReadyChannel();
         } else if (ringtoneReady == null && uri != null) {
             Log.d(TAG, "updateReadyChannel: ringtoneReady=null, uri=" + uri);
+            ringtoneReady = uri;
             createReadyChannel();
         } else if (ringtoneReady != null && uri == null) {
             Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=null");
