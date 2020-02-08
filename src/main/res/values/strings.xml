@@ -57,6 +57,7 @@
     <string name="vibrate">Vibrate</string>
     <string name="vibrate_summary">Vibrate when the time is out</string>
     <string name="ringtone">Sound</string>
+    <string name="channel">Sound and Vibration</string>
     <string name="light_color_enable">Light</string>
     <string name="light_color_enable_summary">Light when the time is out</string>
     <string name="light_color">Light color</string>
@@ -97,6 +98,7 @@
     <string name="pref_step_time" translatable="false">stepTime</string>
     <string name="pref_vibrate" translatable="false">vibrate</string>
     <string name="pref_ringtone_uri" translatable="false">ringtoneUri</string>
+    <string name="pref_done_channel" translatable="false">doneChannel</string>
     <string name="pref_light_color_enable" translatable="false">lightColorEnable</string>
     <string name="pref_light_color" translatable="false">lightColor</string>
     <string name="pref_light_flash_rate" translatable="false">lightFlashRate</string>
@@ -104,6 +106,7 @@
     <string name="pref_timer_get_ready" translatable="false">timerGetReady</string>
     <string name="pref_timer_get_ready_vibrate" translatable="false">timerGetReadyVibrate</string>
     <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyRingtone</string>
+    <string name="pref_ready_channel" translatable="false">readyChannel</string>
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>

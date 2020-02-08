@@ -9,6 +9,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -30,6 +31,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -82,6 +84,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private NotificationManager notificationManager;
 
     private HmsPickerBuilder timerGetReadyPickerBuilder;
+
+    private static final int NOTIFICATION_CHANNEL_ACTIVITY_REQUEST = 51;
+    private static String doneChannelUriString;
+    private static boolean doneChannelVibrate = false;
+    private static String readyChannelUriString;
+    private static boolean readyChannelVibrate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,11 +150,30 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         super.onPostCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updateNotificationChannelPreferences();
+            createChannelPreferences();
         }
         updateSummaries();
         updateStepTimePreference();
         updateTimerGetReadySummary();
         updateBackupPreferences();
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createChannelPreferences() {
+        Preference doneChannelPreference = settingsFragment.findPreference(getString(R.string.pref_done_channel));
+        doneChannelPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                openChannelSettings(InteractiveNotification.getDoneChannelId());
+                return true;
+            }
+        });
+        Preference readyChannelPreference = settingsFragment.findPreference(getString(R.string.pref_ready_channel));
+        readyChannelPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                openChannelSettings(InteractiveNotification.getReadyChannelId());
+                return true;
+            }
+        });
     }
 
     private void updateAllPreferences() {
@@ -180,7 +207,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == android.R.id.home) {
             finish();
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -196,6 +222,14 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.O)
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NOTIFICATION_CHANNEL_ACTIVITY_REQUEST) {
+            updateNotificationChannelPreferences();
+        }
+    }
+
+    @Override
     public void onDialogHmsSet(int reference, boolean isNegative, int hours, int minutes, int seconds) {
         Log.d(TAG, "onDialogMsSet: hours=" + hours + ", minutes=" + minutes + ", seconds=" + seconds);
         int timerGetReady = hours * 3600 + minutes * 60 + seconds; // TODO: use time lib
@@ -203,6 +237,15 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready), String.valueOf(timerGetReady));
         sharedPreferencesEditor.apply();
         updateTimerGetReadySummary(timerGetReady);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private void openChannelSettings(String channelId) {
+        Log.d(TAG, "openChannelSettings: channelId=" + channelId);
+        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
+        startActivityForResult(intent, NOTIFICATION_CHANNEL_ACTIVITY_REQUEST);
     }
 
     private void updateTimerGetReadySummary() {
@@ -223,36 +266,43 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         for (NotificationChannel notificationChannel : notificationChannelList) {
             if (notificationChannel.getId().equals(InteractiveNotification.getDoneChannelId())) {
                 Log.d(TAG, "updateNotificationChannelPreferences: notificationId=" + notificationChannel.getId());
-                sharedPreferencesEditor.putBoolean(getString(R.string.pref_vibrate), notificationChannel.shouldVibrate());
-                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_vibrate) + ", bool=" + notificationChannel.shouldVibrate());
-                Uri uri = notificationChannel.getSound();
-                if (uri != null) {
-                    sharedPreferencesEditor.putString(getString(R.string.pref_ringtone_uri), uri.toString());
-                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=" + notificationChannel.getSound().toString());
-                } else {
-                    sharedPreferencesEditor.putString(getString(R.string.pref_ringtone_uri), getString(R.string.default_timer_get_ready_ringtone_uri));
-                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=default");
-                }
-                sharedPreferencesEditor.putBoolean(getString(R.string.pref_light_color_enable), notificationChannel.shouldShowLights());
-                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color_enable) + ", bool=" + notificationChannel.shouldShowLights());
-                sharedPreferencesEditor.putInt(getString(R.string.pref_light_color), notificationChannel.getLightColor());
-                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", color=" + notificationChannel.getLightColor());
+                doneChannelVibrate = notificationChannel.shouldVibrate();
+                doneChannelUriString = getUriString(notificationChannel);
+                final boolean lightColorEnable = notificationChannel.shouldShowLights();
+                final int lightColor = notificationChannel.getLightColor();
+
+                sharedPreferencesEditor.putBoolean(getString(R.string.pref_vibrate), doneChannelVibrate);
+                sharedPreferencesEditor.putString(getString(R.string.pref_ringtone_uri), doneChannelUriString);
+                sharedPreferencesEditor.putBoolean(getString(R.string.pref_light_color_enable), lightColorEnable);
+                sharedPreferencesEditor.putInt(getString(R.string.pref_light_color), lightColor);
+
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_vibrate) + ", bool=" + doneChannelVibrate);
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=" + doneChannelUriString);
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color_enable) + ", bool=" + lightColorEnable);
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_light_color) + ", color=" + lightColor);
             }
             else if (notificationChannel.getId().equals(InteractiveNotification.getReadyChannelId())) {
                 Log.d(TAG, "updateNotificationChannelPreferences: notificationId=" + notificationChannel.getId());
-                sharedPreferencesEditor.putBoolean(getString(R.string.pref_timer_get_ready_vibrate), notificationChannel.shouldVibrate());
-                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_timer_get_ready_vibrate) + ", bool=" + notificationChannel.shouldVibrate());
-                Uri uri = notificationChannel.getSound();
-                if (uri != null) {
-                    sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready_ringtone_uri), uri.toString());
-                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=" + notificationChannel.getSound().toString());
-                } else {
-                    sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready_ringtone_uri), getString(R.string.default_timer_get_ready_ringtone_uri));
-                    Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_ringtone_uri) + ", string=default");
-                }
+                readyChannelVibrate = notificationChannel.shouldVibrate();
+                readyChannelUriString = getUriString(notificationChannel);
+
+                sharedPreferencesEditor.putBoolean(getString(R.string.pref_timer_get_ready_vibrate), readyChannelVibrate);
+                sharedPreferencesEditor.putString(getString(R.string.pref_timer_get_ready_ringtone_uri), readyChannelUriString);
+
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_timer_get_ready_vibrate) + ", bool=" + readyChannelVibrate);
+                Log.d(TAG, "updateNotificationChannelPreferences: key=" + getString(R.string.pref_timer_get_ready_ringtone_uri) + ", string=" + readyChannelUriString);
             }
         }
         sharedPreferencesEditor.apply();
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private String getUriString(NotificationChannel notificationChannel) {
+        Uri uri = notificationChannel.getSound();
+        if (uri == null) {
+            return getString(R.string.default_ringtone_uri);
+        }
+        return uri.toString();
     }
 
     private void updateBackupPreferences() {
@@ -300,13 +350,18 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 String key = preference.getKey();
                 if (isKeyPreference(getBaseContext(), key)) {
                     Log.d(TAG, "updateSummaries: key=" + key);
-                    updateSummary(settingsFragment.findPreference(key));
+                    updateSummary(key);
                 }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
+                updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
             }
         }
     }
 
-    private void updateSummary(Preference preference) {
+    private void updateSummary(String key) {
+        Preference preference = settingsFragment.findPreference(key);
         if(preference != null) {
             if (preference instanceof ListPreference) {
                 ListPreference listPreference = (ListPreference) preference;
@@ -330,17 +385,35 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         }
     }
 
+    private void updateSummaryNotificationChannelIntent(String key, String uriString, boolean vibrate) {
+        String summary = RingtoneManager.getRingtone(getBaseContext(), Uri.parse(uriString)).getTitle(getBaseContext());
+        if (summary.equals("Unknown")) {
+            summary = "None";
+        }
+        if (vibrate) {
+            summary += "\n" + getString(R.string.vibrate);
+        }
+        Log.d(TAG, "updateSummaryNotificationChannelIntent: key=" + key + ", uriString=" + uriString + ", vibrate=" + vibrate + ",\nsummary=" + summary);
+        Preference intentPreference = settingsFragment.findPreference(key);
+        intentPreference.setSummary(summary);
+    }
+
     private final SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 if (isKeyPreference(getBaseContext(), key) && !restoringPreferences) {
                     Log.d(TAG, "SharedPreferenceChanged: key=" + key);
-                    updateSummary(settingsFragment.findPreference(key));
+                    updateSummary(key);
                     if (key.equals(getString(R.string.pref_dark_theme_mode))) {
                         updateDayNightMode();
-                    } else {
-                        if (key.equals(getString(R.string.pref_step_time))) {
-                            updateStepTimePreference();
+                    } else if (key.equals(getString(R.string.pref_step_time))) {
+                        updateStepTimePreference();
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        if (key.equals(getString(R.string.pref_ringtone_uri)) || key.equals(getString(R.string.pref_vibrate))) {
+                            updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
+                        } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri)) || key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+                            updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
                         }
                     }
                 }
