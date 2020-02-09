@@ -55,6 +55,8 @@
     <string name="step_time_increment">%1$d seconds increment</string>
     <string name="step_time_decrement">%1$d seconds decrement</string>
     <string name="vibrate">Vibrate</string>
+    <string name="vibrate_on">Vibration on</string>
+    <string name="vibrate_off">Vibration off</string>
     <string name="vibrate_summary">Vibrate when the time is out</string>
     <string name="ringtone">Sound</string>
     <string name="channel">Sound and Vibration</string>
@@ -88,6 +90,7 @@
     <string name="preferences_notification_summary">Configure sound and more from the system settings</string>
     <string name="preferences_background_theme">Background theme</string>
     <string name="preferences_dark_theme">Application theme</string>
+    <string name="preferences_external_media">- External media - Grant storage access from the system application permissions to display the title</string>
     <!-- Preferences -->
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
