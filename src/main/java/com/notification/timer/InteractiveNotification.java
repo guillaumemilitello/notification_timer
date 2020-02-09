@@ -611,8 +611,8 @@ class InteractiveNotification extends Notification {
                             .setDeleteIntent(pendingIntentDeleted)
                             .setPriority(PRIORITY_MAX)
                             .setLights(lightColorEnable ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
-                            .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
-                            .setSound(ringtoneReady)
+                            .setVibrate(vibrationEnable ? MainActivity.vibrationPattern : null)
+                            .setSound(ringtone)
                             .setColor(getColor());
                 case READY:
                     return new Builder(context)
