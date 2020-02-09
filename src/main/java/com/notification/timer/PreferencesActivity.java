@@ -88,9 +88,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     private static final int DONE_CHANNEL_ACTIVITY_REQUEST = 51;
     private static final int READY_CHANNEL_ACTIVITY_REQUEST = 52;
-    private static String doneChannelUriString;
+    private static String doneChannelUriString = "";
     private static boolean doneChannelVibrate = false;
-    private static String readyChannelUriString;
+    private static String readyChannelUriString = "";
     private static boolean readyChannelVibrate = false;
 
     @Override
@@ -153,7 +153,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updateDoneNotificationChannelPreferences();
             updateReadyNotificationChannelPreferences();
-            createPreferenceIntents();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                createPreferenceIntents();
+            }
         }
         updateSummaries();
         updateStepTimePreference();
@@ -161,7 +163,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         updateBackupPreferences();
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @TargetApi(Build.VERSION_CODES.P)
     private void createPreferenceIntents() {
         Preference doneChannelPreference = settingsFragment.findPreference(getString(R.string.pref_done_channel));
         doneChannelPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -372,7 +374,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     updateSummary(key);
                 }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
                 updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
             }
@@ -420,7 +422,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     }
 
     private boolean isRingtoneInaccessible(String uriString) {
-        if (!uriString.matches("(.*)media/external(.*)")) {
+        if (uriString != null && !uriString.matches("(.*)media/external(.*)")) {
             return false;
         }
         final int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -439,7 +441,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     } else if (key.equals(getString(R.string.pref_step_time))) {
                         updateStepTimePreference();
                     }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         if (key.equals(getString(R.string.pref_ringtone_uri)) || key.equals(getString(R.string.pref_vibrate))) {
                             updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
                         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri)) || key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
