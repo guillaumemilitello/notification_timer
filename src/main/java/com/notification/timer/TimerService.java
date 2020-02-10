@@ -19,8 +19,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TimerService extends Service {
@@ -783,31 +784,29 @@ public class TimerService extends Service {
 
     private void updateAllPreferences() {
         Log.d(TAG, "updateAllPreferences");
-        Map<String, ?> preferences = sharedPreferences.getAll();
-        if (preferences != null) {
-            updatePreference(getString(R.string.pref_timer_minus));
-            updatePreference(getString(R.string.pref_timer_plus));
-            updatePreference(getString(R.string.pref_sets_number_display_enable));
-            updatePreference(getString(R.string.pref_sets_number_reset));
-            updatePreference(getString(R.string.pref_step_time));
-            updatePreference(getString(R.string.pref_vibrate));
-            updatePreference(getString(R.string.pref_ringtone_uri));
-            updatePreference(getString(R.string.pref_light_color_enable));
-            updatePreference(getString(R.string.pref_light_color));
-            updatePreference(getString(R.string.pref_light_flash_rate));
-            updatePreference(getString(R.string.pref_timer_get_ready_enable));
-            updatePreference(getString(R.string.pref_timer_get_ready));
-            updatePreference(getString(R.string.pref_timer_get_ready_vibrate));
-            updatePreference(getString(R.string.pref_timer_get_ready_ringtone_uri));
-            updatePreference(getString(R.string.pref_background_theme_mode));
-            updatePreference(getString(R.string.pref_dark_theme_mode));
-            updatePreference(getString(R.string.pref_custom_color_enable));
-            updatePreference(getString(R.string.pref_custom_color_running));
-            updatePreference(getString(R.string.pref_custom_color_ready));
-            updatePreference(getString(R.string.pref_custom_color_done));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                interactiveNotification.updateNotificationChannels();
-            }
+        updatePreference(getString(R.string.pref_timer_minus));
+        updatePreference(getString(R.string.pref_timer_plus));
+        updatePreference(getString(R.string.pref_sets_number_display_enable));
+        updatePreference(getString(R.string.pref_sets_number_reset));
+        updatePreference(getString(R.string.pref_step_time));
+        updatePreference(getString(R.string.pref_vibrate));
+        updatePreference(getString(R.string.pref_ringtone_uri));
+        updatePreference(getString(R.string.pref_light_color_enable));
+        updatePreference(getString(R.string.pref_light_color));
+        updatePreference(getString(R.string.pref_light_flash_rate));
+        updatePreference(getString(R.string.pref_timer_get_ready_enable));
+        updatePreference(getString(R.string.pref_timer_get_ready));
+        updatePreference(getString(R.string.pref_timer_get_ready_vibrate));
+        updatePreference(getString(R.string.pref_timer_get_ready_ringtone_uri));
+        updatePreference(getString(R.string.pref_background_theme_mode));
+        updatePreference(getString(R.string.pref_dark_theme_mode));
+        updatePreference(getString(R.string.pref_custom_color_enable));
+        updatePreference(getString(R.string.pref_custom_color_running));
+        updatePreference(getString(R.string.pref_custom_color_ready));
+        updatePreference(getString(R.string.pref_custom_color_done));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            interactiveNotification.updateDoneChannel();
+            interactiveNotification.updateReadyChannel();
         }
     }
 
@@ -889,7 +888,16 @@ public class TimerService extends Service {
                     {
                         updatePreference(key);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            interactiveNotification.updateNotificationChannels();
+                            final List<String> doneChannelPrefList = Arrays.asList(getString(R.string.pref_ringtone_uri), getString(R.string.pref_vibrate),
+                                    getString(R.string.pref_light_color_enable), getString(R.string.pref_light_color));
+                            if (doneChannelPrefList.contains(key)) {
+                                interactiveNotification.updateDoneChannel();
+                            }
+                            final List<String> readyChannelPrefList = Arrays.asList(getString(R.string.pref_timer_get_ready_ringtone_uri),
+                                    getString(R.string.pref_timer_get_ready_vibrate));
+                            if (readyChannelPrefList.contains(key)) {
+                                interactiveNotification.updateReadyChannel();
+                            }
                         }
                     }
                 }

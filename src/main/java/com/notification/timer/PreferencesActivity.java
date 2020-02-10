@@ -148,8 +148,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    protected void onPostResume() {
+        Log.d(TAG, "onPostResume");
+        super.onPostResume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updateDoneNotificationChannelPreferences();
             updateReadyNotificationChannelPreferences();
@@ -157,7 +158,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         }
         updateSummaries();
         updateStepTimePreference();
-        updateTimerGetReadySummary();
         updateBackupPreferences();
     }
 
@@ -191,7 +191,6 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             }
         }
         updateSummaries();
-        updateTimerGetReadySummary();
     }
 
     private void updatePreference(Preference preference, Object newVal) {
@@ -372,10 +371,11 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     updateSummary(key);
                 }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
-                updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
-            }
+        }
+        updateTimerGetReadySummary();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
+            updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
         }
     }
 
@@ -585,7 +585,14 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 Object value = entry.getValue();
                 Log.d(TAG, "loadSharedPreferencesFromFile: key=" + key + ", value=" + value);
                 if (value instanceof Boolean) {
+                    final boolean valueBoolean = (Boolean) value;
                     sharedPreferencesEditor.putBoolean(key, (Boolean) value);
+                    if (key.equals(getString(R.string.pref_vibrate))) {
+                        doneChannelVibrate = valueBoolean;
+                    }
+                    if (key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+                        readyChannelVibrate = valueBoolean;
+                    }
                 } else if (value instanceof Float) {
                     sharedPreferencesEditor.putFloat(key, (Float) value);
                 } else if (value instanceof Integer) {
@@ -593,7 +600,14 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 } else if (value instanceof Long) {
                     sharedPreferencesEditor.putLong(key, (Long) value);
                 } else if (value instanceof String) {
-                    sharedPreferencesEditor.putString(key, (String) value);
+                    final String valueString = (String) value;
+                    sharedPreferencesEditor.putString(key, valueString);
+                    if (key.equals(getString(R.string.pref_ringtone_uri))) {
+                        doneChannelUriString = valueString;
+                    }
+                    if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri))) {
+                        readyChannelUriString = valueString;
+                    }
                 }
             }
             sharedPreferencesEditor.apply();

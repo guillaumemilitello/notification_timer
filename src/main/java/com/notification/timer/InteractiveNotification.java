@@ -146,13 +146,6 @@ class InteractiveNotification extends Notification {
         this.stepTimeResId = stepTime > 0 ? MainActivity.getTimerPlusResId(stepTime) : MainActivity.getTimerMinusResId(-stepTime);
     }
 
-    void updateNotificationChannels() {
-        if (notificationManager != null) {
-            updateDoneChannel();
-            updateReadyChannel();
-        }
-    }
-
     // Settings options
     private boolean vibrationEnable;
     private boolean vibrationReadyEnable;
@@ -297,30 +290,30 @@ class InteractiveNotification extends Notification {
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    private void updateDoneChannel() {
-        NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getDoneChannelId());
-        Log.d(TAG, "updateDoneChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
-        Uri uri = currentNotificationChannel.getSound();
-        if (ringtone != null && uri != null && !ringtone.equals(uri)) {
-            Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=" + uri);
-            ringtone = uri;
-            createDoneChannel();
-        } else if (ringtone == null && uri != null) {
-            Log.d(TAG, "updateDoneChannel: ringtone=null, uri=" + uri);
-            ringtone = uri;
-            createDoneChannel();
-        } else if (ringtone != null && uri == null) {
-            Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=null");
-            createDoneChannel();
-        } else if (currentNotificationChannel.shouldVibrate() != vibrationEnable) {
-            Log.d(TAG, "updateDoneChannel: vibrationEnable=" + vibrationEnable);
-            createDoneChannel();
-        } else if (currentNotificationChannel.shouldShowLights() != lightColorEnable) {
-            Log.d(TAG, "updateDoneChannel: lightColorEnable=" + lightColorEnable);
-            createDoneChannel();
-        } else if (currentNotificationChannel.getLightColor() != lightColor) {
-            Log.d(TAG, "updateDoneChannel: color=" + color + ", lightColor=" + lightColor);
-            createDoneChannel();
+    void updateDoneChannel() {
+        if (notificationManager != null) {
+            NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getDoneChannelId());
+            Log.d(TAG, "updateDoneChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
+            Uri uri = currentNotificationChannel.getSound();
+            if (ringtone != null && uri != null && !ringtone.equals(uri)) {
+                Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=" + uri);
+                createDoneChannel();
+            } else if (ringtone == null && uri != null) {
+                Log.d(TAG, "updateDoneChannel: ringtone=null, uri=" + uri);
+                createDoneChannel();
+            } else if (ringtone != null && uri == null) {
+                Log.d(TAG, "updateDoneChannel: ringtone=" + ringtone + ", uri=null");
+                createDoneChannel();
+            } else if (currentNotificationChannel.shouldVibrate() != vibrationEnable) {
+                Log.d(TAG, "updateDoneChannel: vibrationEnable=" + vibrationEnable);
+                createDoneChannel();
+            } else if (currentNotificationChannel.shouldShowLights() != lightColorEnable) {
+                Log.d(TAG, "updateDoneChannel: lightColorEnable=" + lightColorEnable);
+                createDoneChannel();
+            } else if (currentNotificationChannel.getLightColor() != lightColor) {
+                Log.d(TAG, "updateDoneChannel: color=" + color + ", lightColor=" + lightColor);
+                createDoneChannel();
+            }
         }
     }
 
@@ -339,24 +332,24 @@ class InteractiveNotification extends Notification {
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    private void updateReadyChannel() {
-        NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getReadyChannelId());
-        Log.d(TAG, "updateReadyChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
-        Uri uri = currentNotificationChannel.getSound();
-        if (ringtoneReady != null && uri != null && !ringtoneReady.equals(uri)) {
-            Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=" + uri);
-            ringtoneReady = uri;
-            createReadyChannel();
-        } else if (ringtoneReady == null && uri != null) {
-            Log.d(TAG, "updateReadyChannel: ringtoneReady=null, uri=" + uri);
-            ringtoneReady = uri;
-            createReadyChannel();
-        } else if (ringtoneReady != null && uri == null) {
-            Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=null");
-            createReadyChannel();
-        } else if (currentNotificationChannel.shouldVibrate() != vibrationReadyEnable) {
-            Log.d(TAG, "updateReadyChannel: vibrationReadyEnable=" + vibrationReadyEnable);
-            createReadyChannel();
+    void updateReadyChannel() {
+        if (notificationManager != null) {
+            NotificationChannel currentNotificationChannel = notificationManager.getNotificationChannel(getReadyChannelId());
+            Log.d(TAG, "updateReadyChannel: currentNotificationChannelId=" + currentNotificationChannel.getId());
+            Uri uri = currentNotificationChannel.getSound();
+            if (ringtoneReady != null && uri != null && !ringtoneReady.equals(uri)) {
+                Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=" + uri);
+                createReadyChannel();
+            } else if (ringtoneReady == null && uri != null) {
+                Log.d(TAG, "updateReadyChannel: ringtoneReady=null, uri=" + uri);
+                createReadyChannel();
+            } else if (ringtoneReady != null && uri == null) {
+                Log.d(TAG, "updateReadyChannel: ringtoneReady=" + ringtoneReady + ", uri=null");
+                createReadyChannel();
+            } else if (currentNotificationChannel.shouldVibrate() != vibrationReadyEnable) {
+                Log.d(TAG, "updateReadyChannel: vibrationReadyEnable=" + vibrationReadyEnable);
+                createReadyChannel();
+            }
         }
     }
 
