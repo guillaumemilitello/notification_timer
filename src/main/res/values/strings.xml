@@ -59,7 +59,7 @@
     <string name="vibrate_off">Vibration off</string>
     <string name="vibrate_summary">Vibrate when the time is out</string>
     <string name="ringtone">Sound</string>
-    <string name="channel">Sound and Vibration</string>
+    <string name="channel">Sound and vibration</string>
     <string name="light_color_enable">Light</string>
     <string name="light_color_enable_summary">Light when the time is out</string>
     <string name="light_color">Light color</string>

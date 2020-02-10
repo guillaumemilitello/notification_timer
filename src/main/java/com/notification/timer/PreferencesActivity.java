@@ -153,9 +153,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             updateDoneNotificationChannelPreferences();
             updateReadyNotificationChannelPreferences();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                createPreferenceIntents();
-            }
+            createPreferenceIntents();
         }
         updateSummaries();
         updateStepTimePreference();
@@ -163,7 +161,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         updateBackupPreferences();
     }
 
-    @TargetApi(Build.VERSION_CODES.P)
+    @TargetApi(Build.VERSION_CODES.O)
     private void createPreferenceIntents() {
         Preference doneChannelPreference = settingsFragment.findPreference(getString(R.string.pref_done_channel));
         doneChannelPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -374,7 +372,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     updateSummary(key);
                 }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
                 updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
             }
@@ -441,7 +439,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     } else if (key.equals(getString(R.string.pref_step_time))) {
                         updateStepTimePreference();
                     }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         if (key.equals(getString(R.string.pref_ringtone_uri)) || key.equals(getString(R.string.pref_vibrate))) {
                             updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
                         } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri)) || key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {

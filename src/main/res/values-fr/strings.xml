@@ -55,7 +55,7 @@
     <string name="vibrate_off">Vibreur désactivé</string>
     <string name="vibrate_summary">Vibration lorsque le temps est écoulé</string>
     <string name="ringtone">Son</string>
-    <string name="channel">Son et Vibreur</string>
+    <string name="channel">Son et vibreur</string>
     <string name="light_color_enable">Voyant</string>
     <string name="light_color_enable_summary">Voyant lorsque le temps est écoulé</string>
     <string name="light_color">Couleur du voyant</string>
