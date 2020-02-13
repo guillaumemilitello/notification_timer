@@ -23,32 +23,9 @@ Save timer presets to easily switch between the timers you always use.
 
 ## Download
 
-https://play.google.com/store/apps/details?id=com.notification.timer
-
-## Screenshots
-
-### Notification
-
-#### Android 5.0+
-
-<img src="screenshots/Notifications_API21.png" width="350"/>
-
-#### Android 7.0+
-
-<img src="screenshots/Notifications_API24.png" width="350"/>
-
-#### Android 8.0+
-The background color can be customized or disabled from the settings. These colors match the progress bar background color of the activity.
-
-<img src="screenshots/Notifications_API26.png" width="350"/>
-
-### Activity
-
-<img src="screenshots/Activity_running.png" width="350"/> <img src="screenshots/Activity_running_get_ready.png" width="350"/> <img src="screenshots/Activity_running_multi.png" width="350"/> <img src="screenshots/Notification_screen_locked.png" width="350"/> <img src="screenshots/Activity_running_landscape.png" width="350"/>
-
-### Tutorial
-
-<img src="src/main/res/drawable-xxxhdpi/help_0_add.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_1_ready.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_2_running.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_3_running.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_4_ready.png" width="350"/> <img src="src/main/res/drawable-xxxhdpi/help_5_running.png" width="350"/>
+<a href="https://play.google.com/store/apps/details?id=com.notification.timer">
+  <img alt="NotificationTimer on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="140" />
+</a>
 
 ## License
 
