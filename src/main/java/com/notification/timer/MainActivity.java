@@ -11,10 +11,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Icon;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -24,6 +27,7 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -60,6 +64,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements HmsPickerDialogFragment.HmsPickerDialogHandlerV2,
         NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
@@ -164,6 +169,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     public Preset getPresetUser() {
         return new Preset(timerUser, setsUser, nameUser, displayMode);
     }
+
+    // Shortcuts
+    private static final String SHORTCUT_ID = "shortcutId";
+
+    private static final String INTENT_EXTRA_TIMER = "timer";
+    private static final String INTENT_EXTRA_SETS = "sets";
+    private static final String INTENT_EXTRA_NAME = "name";
+    private static final String INTENT_EXTRA_DISPLAY_MODE = "displayMode";
 
     private SharedPreferences sharedPreferences;
 
@@ -390,6 +403,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         mainActivityReceiver = new MainActivityReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(IntentAction.START);
+        filter.addAction(IntentAction.START_TIMER);
         filter.addAction(IntentAction.STOP);
         filter.addAction(IntentAction.PAUSE);
         filter.addAction(IntentAction.RESUME);
@@ -423,6 +437,43 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         fragmentManager.beginTransaction().replace(R.id.frameLayoutPresets, presetCardsList).commit();
 
         helpOverlay = new HelpOverlay(this);
+
+        layoutMode = LayoutMode.FULL;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            updateShortcuts();
+        }
+
+        Log.d(TAG, "onCreate: action=" + getIntent().getAction());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    void updateShortcuts() {
+        ArrayList<Preset> presetsList = presetCardsList.getPresetsList();
+        ArrayList<ShortcutInfo> shortcutsList = new ArrayList<>();
+        for (int i = 0; i < presetsList.size(); i++) {
+            if (i == 4) { break; } // only adding 4 shortcuts max
+            shortcutsList.add(createShortcut(presetsList.get(i), i));
+        }
+        Log.d(TAG, "updateShortcuts: shortcutsList=" + shortcutsList.toString());
+        Objects.requireNonNull(getSystemService(ShortcutManager.class)).setDynamicShortcuts(shortcutsList);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    private ShortcutInfo createShortcut(Preset preset, int presetIndex) {
+        Intent intent = new Intent(this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setAction(IntentAction.START_TIMER);
+        intent.putExtra(INTENT_EXTRA_TIMER, preset.getTimer());
+        intent.putExtra(INTENT_EXTRA_SETS, preset.getSets());
+        intent.putExtra(INTENT_EXTRA_NAME, preset.getName());
+        intent.putExtra(INTENT_EXTRA_DISPLAY_MODE, preset.getDisplayMode());
+        Log.d(TAG, "createShortcut: preset=" + preset + ", presetIndex=" + presetIndex + ", intent=" + intent.toString());
+        return new ShortcutInfo.Builder(this, SHORTCUT_ID + presetIndex)
+                .setShortLabel(preset.getName())
+                .setLongLabel(preset.getShortcutString())
+                .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
+                .setIntent(intent)
+                .build();
     }
 
     private void startTimerService() {
@@ -496,9 +547,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private void scaleTimerProgressBar() {
         int timerProgressBarWidth = timerProgressBar.getMeasuredWidth();
         int timerProgressBarHeight = (int) (isLayoutModeFull() ? activityLayoutHeight - getResources().getDimension(R.dimen.preset_card_total_height) : activityLayoutHeight);
-        float layoutScaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
-        Log.d(TAG, "scaleTimerProgressBar: layoutScaleX=" + layoutScaleX + ", timerProgressBarHeight=" + timerProgressBarHeight + ", timerProgressBarWidth=" + timerProgressBarWidth);
-        timerProgressBar.setScaleX(layoutScaleX);
+        if (timerProgressBarWidth != 0) {
+            float layoutScaleX = (float) timerProgressBarHeight / timerProgressBarWidth;
+            Log.d(TAG, "scaleTimerProgressBar: layoutScaleX=" + layoutScaleX + ", timerProgressBarHeight=" + timerProgressBarHeight + ", timerProgressBarWidth=" + timerProgressBarWidth);
+            timerProgressBar.setScaleX(layoutScaleX);
+        }
     }
 
     private void scaleLayoutsTextViews() {
@@ -622,7 +675,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: timerService=" + timerService + ", updateDarkNight=" + updateDarkNight);
+        Log.d(TAG, "onStart: timerService=" + timerService + ", updateDarkNight=" + updateDarkNight + ", intent=" + getIntent().toString());
 
         if (updateDarkNight) {
             updateDarkNight = false;
@@ -641,6 +694,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         if (timerService == null) {
             startTimerService();
+        } else {
+            startAction(getIntent());
         }
 
         updateUserInterface();
@@ -649,6 +704,21 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             Log.d(TAG, "onStart: firstRun=true");
             helpOverlay.show();
             sharedPreferences.edit().putBoolean(getString(R.string.pref_first_run), false).apply();
+        }
+    }
+
+    private void startAction(Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null && extras.containsKey(INTENT_EXTRA_TIMER) && extras.containsKey(INTENT_EXTRA_SETS)
+                && extras.containsKey(INTENT_EXTRA_NAME) && extras.containsKey(INTENT_EXTRA_DISPLAY_MODE)) {
+            Log.d(TAG, "startAction: intentExtra=" + intent.getExtras().toString());
+            long timer = intent.getLongExtra(INTENT_EXTRA_TIMER, 0);
+            int sets = intent.getIntExtra(INTENT_EXTRA_SETS, 0);
+            String name = intent.getStringExtra(INTENT_EXTRA_NAME);
+            int displayMode = intent.getIntExtra(INTENT_EXTRA_DISPLAY_MODE, Preset.DISPLAY_MODE_TIMER);
+            inputPreset(new Preset(timer, sets, name, displayMode));
+        } else {
+            Log.d(TAG, "startAction: extras empty or missing a key");
         }
     }
 
@@ -1731,6 +1801,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updateUserInterface();
             scaleActivity();
             updateColorLayout();
+            startAction(getIntent());
         }
     };
 

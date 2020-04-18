@@ -19,6 +19,7 @@ class IntentAction {
     static final String STEP_TIME = "com.notification.timer.action.STEP_TIME";
     static final String SETS_MINUS = "com.notification.timer.action.SETS_MINUS";
     static final String SETS_PLUS = "com.notification.timer.action.SETS_PLUS";
+    static final String START_TIMER = "com.notification.timer.action.START_TIMER";
 
     // Sent from the TimerService to launch Alerts
     static final String SET_DONE = "com.notification.timer.action.SET_DONE";

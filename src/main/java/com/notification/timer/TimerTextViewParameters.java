@@ -112,7 +112,7 @@ class TimerTextViewParameters {
         } else {
             sizeHigh = size;
             size /= 2;
-            while (!doesRectFit(digits, size)) {
+            while (!doesRectFit(digits, size) && size > 10) {
                 sizeHigh = size;
                 size /= 2;
             }

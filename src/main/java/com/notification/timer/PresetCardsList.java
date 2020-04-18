@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class PresetCardsList extends Fragment {
@@ -57,6 +59,9 @@ public class PresetCardsList extends Fragment {
         } else {
             Log.e(TAG, "addPreset: presetUser=" + presetUser + ", presetList=" + presetsList + " already exists, index=" + presetsList.indexOf(presetUser));
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            mainActivity.updateShortcuts();
+        }
     }
 
     private void removePreset(int position) {
@@ -75,6 +80,9 @@ public class PresetCardsList extends Fragment {
         }
         if (position == 0) {
             mainActivity.updatePresetsVisibility();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            mainActivity.updateShortcuts();
         }
     }
 
@@ -141,6 +149,10 @@ public class PresetCardsList extends Fragment {
                 Log.d(TAG, "update: userPosition=" + userPosition + ", position=" + index);
             }
         }
+    }
+
+    ArrayList<Preset> getPresetsList() {
+        return presetsList.getPresetsList();
     }
 
     void updateFromPreferences() {
@@ -393,6 +405,9 @@ public class PresetCardsList extends Fragment {
                 }
             }
             presetsListSize = presetsList.swapPreset(fromListIndex, toListIndex);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                mainActivity.updateShortcuts();
+            }
         }
     }
 

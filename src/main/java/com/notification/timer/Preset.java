@@ -81,6 +81,20 @@ class Preset {
         return String.format(Locale.US, "%02d", timer % 60);
     }
 
+    String getShortcutString() {
+        String timerString;
+        if (timer >= 3600) {
+            timerString = String.format(Locale.US, "%s:%s:%s", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString());
+        } else {
+            timerString = String.format(Locale.US, "%s:%s", getTimerMinutesString(false), getTimerSecondsString());
+        }
+        if (isInfinity()) {
+            return String.format(Locale.US, "%s | %s", getName(), timerString);
+        } else {
+            return String.format(Locale.US, "%s | %s x%d", getName(), timerString, getSets());
+        }
+    }
+
     @NonNull
     public String toString() {
         return String.format(Locale.US, "[%s:%s:%s|%s|%s|%d]", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getName(), getSetsString(), getDisplayMode());

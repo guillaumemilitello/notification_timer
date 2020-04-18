@@ -87,6 +87,10 @@ class PresetsList {
         return new Preset();
     }
 
+    ArrayList<Preset> getPresetsList() {
+        return list;
+    }
+
     private int getSize() { return list.size(); }
 
     private void savePreset(int index, final Preset preset) {
