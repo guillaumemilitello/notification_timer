@@ -468,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         return new ShortcutInfo.Builder(this, preset.getShortcutId())
                 .setShortLabel(preset.getName())
                 .setLongLabel(preset.getShortcutString())
-                .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
+                .setIcon(Icon.createWithResource(this, R.mipmap.ic_add_launcher))
                 .setIntent(intent)
                 .build();
     }
