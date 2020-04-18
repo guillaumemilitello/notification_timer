@@ -171,8 +171,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     }
 
     // Shortcuts
-    private static final String SHORTCUT_ID = "shortcutId";
-
     private static final String INTENT_EXTRA_TIMER = "timer";
     private static final String INTENT_EXTRA_SETS = "sets";
     private static final String INTENT_EXTRA_NAME = "name";
@@ -455,7 +453,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             if (i == 4) { break; } // only adding 4 shortcuts max
             shortcutsList.add(createShortcut(presetsList.get(i), i));
         }
-        Log.d(TAG, "updateShortcuts: shortcutsList=" + shortcutsList.toString());
         Objects.requireNonNull(getSystemService(ShortcutManager.class)).setDynamicShortcuts(shortcutsList);
     }
 
@@ -468,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         intent.putExtra(INTENT_EXTRA_NAME, preset.getName());
         intent.putExtra(INTENT_EXTRA_DISPLAY_MODE, preset.getDisplayMode());
         Log.d(TAG, "createShortcut: preset=" + preset + ", presetIndex=" + presetIndex + ", intent=" + intent.toString());
-        return new ShortcutInfo.Builder(this, SHORTCUT_ID + presetIndex)
+        return new ShortcutInfo.Builder(this, preset.getShortcutId())
                 .setShortLabel(preset.getName())
                 .setLongLabel(preset.getShortcutString())
                 .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
@@ -694,8 +691,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         if (timerService == null) {
             startTimerService();
-        } else {
-            startAction(getIntent());
+        } else { // action is otherwise started when timerService is bound
+            startAction();
         }
 
         updateUserInterface();
@@ -707,18 +704,22 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
-    private void startAction(Intent intent) {
-        Bundle extras = intent.getExtras();
-        if (extras != null && extras.containsKey(INTENT_EXTRA_TIMER) && extras.containsKey(INTENT_EXTRA_SETS)
-                && extras.containsKey(INTENT_EXTRA_NAME) && extras.containsKey(INTENT_EXTRA_DISPLAY_MODE)) {
-            Log.d(TAG, "startAction: intentExtra=" + intent.getExtras().toString());
-            long timer = intent.getLongExtra(INTENT_EXTRA_TIMER, 0);
-            int sets = intent.getIntExtra(INTENT_EXTRA_SETS, 0);
-            String name = intent.getStringExtra(INTENT_EXTRA_NAME);
-            int displayMode = intent.getIntExtra(INTENT_EXTRA_DISPLAY_MODE, Preset.DISPLAY_MODE_TIMER);
-            inputPreset(new Preset(timer, sets, name, displayMode));
-        } else {
-            Log.d(TAG, "startAction: extras empty or missing a key");
+    private void startAction() {
+        final Intent intent = getIntent();
+        if (Objects.equals(intent.getAction(), IntentAction.START_TIMER)) {
+            Bundle extras = intent.getExtras();
+            if (extras != null && extras.containsKey(INTENT_EXTRA_TIMER) && extras.containsKey(INTENT_EXTRA_SETS)
+                    && extras.containsKey(INTENT_EXTRA_NAME) && extras.containsKey(INTENT_EXTRA_DISPLAY_MODE)) {
+                Log.d(TAG, "startAction: intentExtra=" + intent.getExtras().toString());
+                getIntent().setAction(""); // clear the action
+                long timer = intent.getLongExtra(INTENT_EXTRA_TIMER, 0);
+                int sets = intent.getIntExtra(INTENT_EXTRA_SETS, 0);
+                String name = intent.getStringExtra(INTENT_EXTRA_NAME);
+                int displayMode = intent.getIntExtra(INTENT_EXTRA_DISPLAY_MODE, Preset.DISPLAY_MODE_TIMER);
+                inputPreset(new Preset(timer, sets, name, displayMode));
+            } else {
+                Log.d(TAG, "startAction: extras empty or missing a key");
+            }
         }
     }
 
@@ -791,6 +792,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
         presetCardsList.setCurrentPresetName(timerName);
         presetCardsList.update();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            updateShortcuts();
+        }
     }
 
     private void clearNameEditFocus() {
@@ -1801,7 +1805,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updateUserInterface();
             scaleActivity();
             updateColorLayout();
-            startAction(getIntent());
+            startAction();
         }
     };
 

@@ -95,6 +95,10 @@ class Preset {
         }
     }
 
+    String getShortcutId() {
+        return String.format(Locale.US, "%s_%d_%d", getName().substring(0, Math.min(getName().length(), 16)), getTimer(), getSets());
+    }
+
     @NonNull
     public String toString() {
         return String.format(Locale.US, "[%s:%s:%s|%s|%s|%d]", getTimerHoursString(), getTimerMinutesString(true), getTimerSecondsString(), getName(), getSetsString(), getDisplayMode());
