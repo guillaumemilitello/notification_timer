@@ -1354,6 +1354,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         // Update the preset in case of preferences restore
         presetCardsList.updateFromPreferences();
         updatePresetsVisibility();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            updateShortcuts();
+        }
     }
 
     private void vibrate() {
