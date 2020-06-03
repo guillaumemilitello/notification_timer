@@ -506,7 +506,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         if (updateLayoutMode()) {
             updatePresetsLayout();
             scaleTimerProgressBar();
-            scaleLayoutsTextViews();
+            scaleLayouts();
+            scaleTextViews();
             updateAddButtonPreset();
         }
     }
@@ -549,11 +550,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             Log.d(TAG, "scaleTimerProgressBar: layoutScaleX=" + layoutScaleX + ", timerProgressBarHeight=" + timerProgressBarHeight + ", timerProgressBarWidth=" + timerProgressBarWidth);
             timerProgressBar.setScaleX(layoutScaleX);
         }
-    }
-
-    private void scaleLayoutsTextViews() {
-        scaleLayouts();
-        scaleTextViews();
     }
 
     private void scaleLayouts() {
@@ -1085,7 +1081,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerState = TimerService.State.READY;
         updateServiceState();
 
-        scaleLayoutsTextViews();
+        scaleActivity();
         updateButtonsLayout(ButtonsLayout.READY);
         updatePresetsVisibility();
         clearNameEditFocus();
@@ -1894,7 +1890,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                     updateDarkNight = true;
                 }
                 if (key.equals(getString(R.string.pref_sets_name_display_enable)) || key.equals(getString(R.string.pref_sets_number_display_enable))) {
-                    scaleLayoutsTextViews();
+                    scaleActivity();
                 }
             }
         };
