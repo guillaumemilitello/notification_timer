@@ -17,6 +17,7 @@
     <string name="picker_timer_get_ready">Temps de la notification</string>
     <string name="picker_split_screen">Augmentez la hauteur de la fenêtre pour créer un minuteur</string>
     <!-- Alerts -->
+    <string name="select_preset">Êtes-vous sûr de vouloir arrêter le minuteur en cours pour celui sélectionné ?</string>
     <string name="delete_preset">Êtes-vous sûr de vouloir supprimer le minuteur sélectionné ?</string>
     <string name="alert_time_out">Temps écoulé !</string>
     <string name="alert_set_done">Voulez-vous lancer le prochain minuteur?</string>
@@ -26,6 +27,7 @@
     <string name="alert_clear">REMISE À ZÉRO</string>
     <string name="alert_yes">OUI</string>
     <string name="alert_no">NON</string>
+    <string name="alert_stop_asking">ARRÊTER DE DEMANDER</string>
     <!-- Notification -->
     <string name="notif_timer_done">Temps écoulé !</string>
     <!-- HelpOverlay -->
@@ -47,6 +49,8 @@
     <string name="sets_number_reset_summary">Remise à zéro du nombre total de minuteurs au début de chaque nouveau minuteur. Fonctionne uniquement avec des minuteurs sans indicateur de limite</string>
     <string name="sets_picker_enable">Limite de minuteurs</string>
     <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
+    <string name="preset_select_asking">Alerte lors de la sélection de minuteur</string>
+    <string name="preset_select_asking_summary">Afficher une alerte lors de la sélection d\'un nouveau minteur alors qu\'un minuteur est déjà en cours</string>
     <string name="step_time">Saut de temps</string>
     <string name="step_time_increment">Incrémentation de %1$d secondes</string>
     <string name="step_time_decrement">Décrémentation de %1$d secondes</string>

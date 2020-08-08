@@ -18,6 +18,7 @@
     <string name="picker_timer_get_ready">Extra notification time</string>
     <string name="picker_split_screen">Increase the height of the window to create a timer</string>
     <!-- Alerts -->
+    <string name="select_preset">Are you sure you want to stop the current timer to select this one?</string>
     <string name="delete_preset">Are you sure you want to delete the selected timer?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
@@ -27,6 +28,7 @@
     <string name="alert_clear">RESET</string>
     <string name="alert_yes">YES</string>
     <string name="alert_no">NO</string>
+    <string name="alert_stop_asking">STOP ASKING</string>
     <!-- Notification -->
     <string name="notif_timer_done">Time out!</string>
     <string name="notif_channel_done" translatable="false">Time out</string>
@@ -51,6 +53,8 @@
     <string name="sets_number_reset_summary">Reset the timer number when starting a new timer. Works only with timers without limit indicator</string>
     <string name="sets_picker_enable">Limit indicator</string>
     <string name="sets_picker_enable_summary">Add the possibility to enter a limit indicator for the timer number during creation</string>
+    <string name="preset_select_asking">Timer selection alert</string>
+    <string name="preset_select_asking_summary">Display an alert dialog when selecting a new timer in the list if the current timer is running</string>
     <string name="step_time">Step time</string>
     <string name="step_time_increment">%1$d seconds increment</string>
     <string name="step_time_decrement">%1$d seconds decrement</string>
@@ -110,6 +114,7 @@
     <string name="pref_timer_get_ready_vibrate" translatable="false">timerGetReadyVibrate</string>
     <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyRingtone</string>
     <string name="pref_ready_channel" translatable="false">readyChannel</string>
+    <string name="pref_preset_select_asking" translatable="false">selectAsking</string>
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>

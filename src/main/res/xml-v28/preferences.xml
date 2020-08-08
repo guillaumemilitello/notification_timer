@@ -42,6 +42,11 @@
         android:title="@string/sets_number_reset"
         android:summary="@string/sets_number_reset_summary"
         android:defaultValue="@bool/default_sets_number_reset"/>
+    <SwitchPreference
+        android:key="@string/pref_preset_select_asking"
+        android:title="@string/preset_select_asking"
+        android:summary="@string/preset_select_asking_summary"
+        android:defaultValue="@bool/default_preset_select_asking"/>
 
     </PreferenceCategory>
 

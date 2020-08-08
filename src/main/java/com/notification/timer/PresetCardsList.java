@@ -47,7 +47,10 @@ public class PresetCardsList extends Fragment {
     private boolean addPresetButton;
 
     private Context context;
-    private AlertDialog alertDialog;
+    private AlertDialog deleteAlertDialog;
+    private AlertDialog selectAlertDialog;
+
+    private SharedPreferences sharedPreferences;
 
     private void addPreset() {
         if (presetsList.indexOf(presetUser) == -1) {
@@ -234,21 +237,34 @@ public class PresetCardsList extends Fragment {
 
     void initContext(Context context) {
         this.context = context;
-        createAlertDialog();
+        createDeleteAlertDialog();
+        createSelectAlertDialog();
     }
 
     void createPresetsList(SharedPreferences sharedPreferences){
         Log.d(TAG, "createPresetsList");
+        this.sharedPreferences = sharedPreferences;
         presetsList = new PresetsList();
         presetsList.setContext(context);
         presetsList.setSharedPreferences(sharedPreferences);
         presetsListSize = presetsList.initPresets();
     }
 
-    private void createAlertDialog() {
-        alertDialog = new AlertDialog.Builder(context, R.style.AlertDialogTheme).create();
-        alertDialog.setMessage(context.getString(R.string.delete_preset));
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, context.getString(R.string.alert_no),
+    private void createDeleteAlertDialog() {
+        deleteAlertDialog = new AlertDialog.Builder(context, R.style.AlertDialogTheme).create();
+        deleteAlertDialog.setMessage(context.getString(R.string.delete_preset));
+        deleteAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, context.getString(R.string.alert_no),
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+    }
+
+    private void createSelectAlertDialog() {
+        selectAlertDialog = new AlertDialog.Builder(context, R.style.AlertDialogTheme).create();
+        selectAlertDialog.setMessage(context.getString(R.string.select_preset));
+        selectAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, context.getString(R.string.alert_no),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -526,24 +542,50 @@ public class PresetCardsList extends Fragment {
             super(view);
         }
 
+        void selectPosition(final int position) {
+            if (position != userPosition) {
+                mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
+                userPosition = position;
+            }
+        }
+
         @Override
         protected void onClickImageButtonCard(final int position) {
             Log.d(TAG, "onClickImageButtonCard: delete preset position=" + position);
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
+            deleteAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             removePreset(position);
                         }
                     });
-            alertDialog.show();
+            deleteAlertDialog.show();
         }
 
         @Override
         protected void onClickView(final int position) {
             super.onClickView(position);
-            if (position != userPosition) {
-                mainActivity.inputPreset(presetsList.getPreset(getListIndex(position)));
-                userPosition = position;
+            final boolean ask = sharedPreferences.getBoolean(context.getString(R.string.pref_preset_select_asking), true);
+            Log.d(TAG, "onClickView: ask=" + ask + ", position=" + position);
+            if (ask && mainActivity.isCurrentTimerRunning()) {
+                selectAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, context.getString(R.string.alert_yes),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPosition(position);
+                            }
+                        });
+                selectAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, context.getString(R.string.alert_stop_asking),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d(TAG, "createSelectAlertDialog: stop asking");
+                                SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                                sharedPreferencesEditor.putBoolean(context.getString(R.string.pref_preset_select_asking), false);
+                                sharedPreferencesEditor.apply();
+                                selectPosition(position);
+                            }
+                        });
+                selectAlertDialog.show();
+            } else {
+                selectPosition(position);
             }
         }
     }

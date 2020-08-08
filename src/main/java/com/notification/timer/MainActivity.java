@@ -1099,6 +1099,10 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
+    public boolean isCurrentTimerRunning() {
+        return TimerService.State.RUNNING == timerState || TimerService.State.PAUSED == timerState;
+    }
+
     void start() {
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "start: timerState=" + timerState);
