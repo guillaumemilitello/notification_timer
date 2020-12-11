@@ -571,6 +571,7 @@ class InteractiveNotification extends Notification {
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
                             .setColorized(isColorEnable())
+                            .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
                 case READY:
                     return new Builder(context, getReadyChannelId())
@@ -578,6 +579,7 @@ class InteractiveNotification extends Notification {
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
                             .setColorized(isColorEnable())
+                            .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
                 default:
                     return new Builder(context, updateChannelId)
@@ -585,6 +587,7 @@ class InteractiveNotification extends Notification {
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
                             .setColorized(isColorEnable())
+                            .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
             }
         } else {
@@ -598,6 +601,7 @@ class InteractiveNotification extends Notification {
                             .setLights(lightColorEnable ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
                             .setVibrate(vibrationEnable ? MainActivity.vibrationPattern : null)
                             .setSound(ringtone)
+                            .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
                 case READY:
                     return new Builder(context)
@@ -608,6 +612,7 @@ class InteractiveNotification extends Notification {
                             .setLights(COLOR_DEFAULT, 0, 0)
                             .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
                             .setSound(ringtoneReady)
+                            .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
                 default:
                     return new Builder(context)
@@ -616,6 +621,7 @@ class InteractiveNotification extends Notification {
                             .setDeleteIntent(pendingIntentDeleted)
                             .setPriority(PRIORITY_MAX)
                             .setLights(COLOR_DEFAULT, 0, 0)
+                            .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
             }
         }
