@@ -805,8 +805,12 @@ public class TimerService extends Service {
         updatePreference(getString(R.string.pref_custom_color_ready));
         updatePreference(getString(R.string.pref_custom_color_done));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            interactiveNotification.updateDoneChannel();
-            interactiveNotification.updateReadyChannel();
+            if (interactiveNotification != null){
+                interactiveNotification.updateDoneChannel();
+                interactiveNotification.updateReadyChannel();
+            } else {
+                Log.e(TAG, "updateAllPreferences: interactiveNotification is null");
+            }
         }
     }
 

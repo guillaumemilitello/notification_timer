@@ -195,7 +195,7 @@ public class PresetCardsList extends Fragment {
         Log.d(TAG, "setCurrentPresetName: userPosition=" + userPosition + ", name=" + name);
         int listIndex = getListIndex(userPosition);
         if (listIndex >= 0 && !removeDuplicate(name)) {
-            // duplicates can be creates while renaming a timer
+            // duplicates can be created while renaming a timer
             presetsList.updatePresetName(listIndex, name);
         }
         notifyItemChanged(userPosition);

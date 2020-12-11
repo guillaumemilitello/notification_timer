@@ -477,7 +477,11 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         Log.d(TAG, "startTimerService");
         Intent intent = new Intent(this, TimerService.class);
         if (timerService == null) {
-            startService(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
         }
         if (!timerServiceBound) {
             bindService(intent, serviceConnection, Context.BIND_ABOVE_CLIENT);
