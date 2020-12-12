@@ -29,7 +29,7 @@ public class TimerService extends Service {
     private static final String TAG = "TimerService";
 
     // margin for not missing the notification
-    private static final long WAKELOCK_TIME_APPROX = 5;
+    private static final long WAKELOCK_TIME_APPROX = 2;
 
     private boolean running = false;
 
@@ -334,8 +334,6 @@ public class TimerService extends Service {
         setsCurrent++;
         doneInteractiveNotification(InteractiveNotification.NotificationMode.DONE);
 
-        releaseWakeLock();
-
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
@@ -351,8 +349,6 @@ public class TimerService extends Service {
         updateTimerIntent(timerUser, setsCurrent);
 
         doneInteractiveNotification(InteractiveNotification.NotificationMode.UPDATE);
-
-        releaseWakeLock();
 
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
@@ -385,8 +381,6 @@ public class TimerService extends Service {
         updateTimerIntent(timerUser, setsCurrent);
 
         interactiveNotification.update(setsCurrent, timerCurrent, InteractiveNotification.ButtonsLayout.RUNNING);
-
-        releaseWakeLock();
 
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
@@ -424,8 +418,6 @@ public class TimerService extends Service {
         updateStateIntent(State.READY);
         updateTimerIntent(timerCurrent, setsCurrent);
 
-        releaseWakeLock();
-
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
@@ -453,7 +445,6 @@ public class TimerService extends Service {
 
         // remove the notification and reset the timer to init state
         stopNotificationForeground();
-        releaseWakeLock();
 
         saveContextPreferences(CONTEXT_PREFERENCE_ALL);
     }
@@ -573,7 +564,6 @@ public class TimerService extends Service {
                 saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT);
             }
             if (timerGetReadyEnable && timerCurrent == timerGetReady) {
-                releaseWakeLock();
                 setupAlarmManager();
             }
         }
@@ -592,49 +582,43 @@ public class TimerService extends Service {
     }
 
     private void setupAlarmManager() {
-        long time = 0;
-
-        if (timerGetReadyEnable && timerCurrent - WAKELOCK_TIME_APPROX > timerGetReady) {
-            time = TimeUnit.SECONDS.toMillis(timerCurrent - WAKELOCK_TIME_APPROX - timerGetReady);
-        } else if (timerGetReadyEnable && timerCurrent > timerGetReady) {
-            time = TimeUnit.SECONDS.toMillis(timerCurrent - timerGetReady);
-        } else if (timerCurrent - WAKELOCK_TIME_APPROX > 0) {
-            time = TimeUnit.SECONDS.toMillis(timerCurrent - WAKELOCK_TIME_APPROX);
-        } else if (timerCurrent > 0){
-            time = TimeUnit.SECONDS.toMillis(timerCurrent);
+        long timerNow = timerCurrent;
+        if (timerNow == 0) {
+            timerNow = timerUser;
         }
 
-        if (time > 0){
-            cancelAlarmManager();
-            Log.d(TAG, "setupAlarmManager: wakeup the device in=" + (time / 1000) + ", at=" + (timerCurrent - (time / 1000)));
-            time += System.currentTimeMillis();
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntentAlarm);
+        long timeout = timerNow - WAKELOCK_TIME_APPROX;
+
+        // wake up for the extra notification
+        if (timerGetReadyEnable && timeout > timerGetReady) {
+            timeout -= timerGetReady;
         }
+
+        // still set an alarm within WAKELOCK_TIME_APPROX
+        if (timeout <= 0) {
+            timeout = timerNow;
+        }
+
+        cancelAlarmManager();
+        Log.d(TAG, "setupAlarmManager: setting alarm to wakeup the device in=" + timeout + ", for timerCurrent=" + (timerNow - timeout));
+        final long triggerAtMillis = TimeUnit.SECONDS.toMillis(timeout) + System.currentTimeMillis();
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntentAlarm);
     }
 
     private void cancelAlarmManager() {
-        alarmManager.cancel(pendingIntentAlarm);
-        releaseWakeLock();
         Log.d(TAG, "cancelAlarmManager: canceling alarm");
+        alarmManager.cancel(pendingIntentAlarm);
     }
 
     void acquireWakeLock() {
         if (wakeLock != null) {
-            if (!wakeLock.isHeld()) {
-                Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
-                wakeLock.acquire(TimeUnit.MINUTES.toMillis(10));
-            } else {
-                Log.e(TAG, "acquireWakeLock: wakeLock isHeld=true");
+            Log.d(TAG, "acquireWakeLock: timerCurrent=" + timerCurrent);
+            if (wakeLock.isHeld()) {
+                Log.d(TAG, "acquireWakeLock: isHeld=true");
+                wakeLock.release();
             }
-        }
-    }
-
-    private void releaseWakeLock() {
-        if (wakeLock != null) {
-          if (wakeLock.isHeld()) {
-              Log.d(TAG, "releaseWakeLock: timerCurrent=" + timerCurrent);
-              wakeLock.release();
-          }
+            // making sure we don't miss the notification, wake lock will auto release
+            wakeLock.acquire(TimeUnit.SECONDS.toMillis(2 * WAKELOCK_TIME_APPROX));
         }
     }
 
@@ -920,7 +904,6 @@ public class TimerService extends Service {
         Log.v(TAG, "onDestroy");
 
         stopNotificationForeground();
-        releaseWakeLock();
         unregisterReceiver(timerServiceReceiver);
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
         setsCurrent = 0; // Always clear the timer number when quitting the app.
