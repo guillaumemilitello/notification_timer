@@ -19,6 +19,7 @@
     <!-- Alerts -->
     <string name="select_preset">Êtes-vous sûr de vouloir arrêter le minuteur en cours pour celui sélectionné ?</string>
     <string name="delete_preset">Êtes-vous sûr de vouloir supprimer le minuteur sélectionné ?</string>
+    <string name="clear_preset">Êtes-vous sûr de vouloir arrêter et supprimer le minuteur en cours ?</string>
     <string name="alert_time_out">Temps écoulé !</string>
     <string name="alert_set_done">Voulez-vous lancer le prochain minuteur?</string>
     <string name="alert_all_set_done">Quelle action aimeriez-vous faire ensuite?</string>
@@ -51,6 +52,8 @@
     <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
     <string name="preset_select_asking">Alerte lors de la sélection de minuteur</string>
     <string name="preset_select_asking_summary">Afficher une alerte lors de la sélection d\'un nouveau minteur alors qu\'un minuteur est déjà en cours</string>
+    <string name="clear_asking">Alerte lors de la réinitialization du minuteur</string>
+    <string name="clear_asking_summary">Afficher une alerte lors de l\'arrêt et de la réinitialization du minutuer en cours</string>
     <string name="step_time">Saut de temps</string>
     <string name="step_time_increment">Incrémentation de %1$d secondes</string>
     <string name="step_time_decrement">Décrémentation de %1$d secondes</string>

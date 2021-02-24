@@ -47,6 +47,11 @@
         android:title="@string/preset_select_asking"
         android:summary="@string/preset_select_asking_summary"
         android:defaultValue="@bool/default_preset_select_asking"/>
+    <SwitchPreference
+        android:key="@string/pref_clear_asking"
+        android:title="@string/clear_asking"
+        android:summary="@string/clear_asking_summary"
+        android:defaultValue="@bool/default_clear_asking"/>
 
     </PreferenceCategory>
 

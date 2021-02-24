@@ -20,6 +20,7 @@
     <!-- Alerts -->
     <string name="select_preset">Are you sure you want to stop the current timer to select this one?</string>
     <string name="delete_preset">Are you sure you want to delete the selected timer?</string>
+    <string name="clear_preset">Are you sure you want to stop and clear the current timer?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
@@ -55,6 +56,8 @@
     <string name="sets_picker_enable_summary">Add the possibility to enter a limit indicator for the timer number during creation</string>
     <string name="preset_select_asking">Timer selection alert</string>
     <string name="preset_select_asking_summary">Display an alert dialog when selecting a new timer in the list if the current timer is running</string>
+    <string name="clear_asking">Timer reinitialization alert</string>
+    <string name="clear_asking_summary">Display an alert dialog when clearing and reinitializing the current running timer</string>
     <string name="step_time">Step time</string>
     <string name="step_time_increment">%1$d seconds increment</string>
     <string name="step_time_decrement">%1$d seconds decrement</string>
@@ -115,6 +118,7 @@
     <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyRingtone</string>
     <string name="pref_ready_channel" translatable="false">readyChannel</string>
     <string name="pref_preset_select_asking" translatable="false">selectAsking</string>
+    <string name="pref_clear_asking" translatable="false">clearAsking</string>
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>

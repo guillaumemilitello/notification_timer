@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private static boolean timerServiceBound = false;
 
     // Timer done alerts
-    private AlertDialog alertSetDone, alertAllSetsDone;
+    private AlertDialog alertSetDone, alertAllSetsDone, clearAlertDialog;
 
     // MainActivity user interface
     private static final float ALPHA_ENABLED = (float) 1.0;
@@ -339,6 +339,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         AlertBuilderAllSetsDone alertBuilderAllSetsDone = new AlertBuilderAllSetsDone(this);
         alertSetDone = alertBuilderSetDone.create();
         alertAllSetsDone = alertBuilderAllSetsDone.create();
+
+        clearAlertDialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
+        clearAlertDialog.setMessage(getString(R.string.clear_preset));
+        clearAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
         timerPickerBuilder = new HmsPickerBuilder();
         timerPickerBuilder.setFragmentManager(getFragmentManager());
@@ -1639,7 +1648,28 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sendBroadcast(new Intent(IntentAction.CLEAR));
+                        final boolean ask = sharedPreferences.getBoolean(getString(R.string.pref_clear_asking), true);
+                        if (ask && isCurrentTimerRunning()) {
+                            clearAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            sendBroadcast(new Intent(IntentAction.CLEAR));
+                                        }
+                                    });
+                            clearAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.alert_stop_asking),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Log.d(TAG, "createClearAlertDialog: stop asking");
+                                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                                            sharedPreferencesEditor.putBoolean(getString(R.string.pref_clear_asking), false);
+                                            sharedPreferencesEditor.apply();
+                                            sendBroadcast(new Intent(IntentAction.CLEAR));
+                                        }
+                                    });
+                            clearAlertDialog.show();
+                        } else {
+                            sendBroadcast(new Intent(IntentAction.CLEAR));
+                        }
                     }
                 });
                 return true;
