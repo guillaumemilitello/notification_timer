@@ -1,5 +1,6 @@
 package com.notification.timer;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private static boolean timerServiceBound = false;
 
     // Timer done alerts
-    private AlertDialog alertSetDone, alertAllSetsDone, clearAlertDialog;
+    private AlertDialog alertSetDone, alertAllSetsDone, clearAlertDialog, resetAlertDialog;
 
     // MainActivity user interface
     private static final float ALPHA_ENABLED = (float) 1.0;
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private boolean setsNumberDisplayEnable;
     private boolean setsPickerEnable;
     private boolean setsNumberReset;
+    private boolean resetEnable;
     private boolean vibrationEnable;
     private Uri ringtoneUri;
     private boolean timerGetReadyEnable;
@@ -343,6 +345,15 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         clearAlertDialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
         clearAlertDialog.setMessage(getString(R.string.clear_preset));
         clearAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        resetAlertDialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
+        resetAlertDialog.setMessage(getString(R.string.reset_preset));
+        resetAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -1300,6 +1311,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -1493,6 +1505,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void updatePresetsExpandButton(boolean expand) {
         if (toolbarMenu != null) {
             if (expand) {
@@ -1547,7 +1560,10 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         buttonsLayout = layout;
         Log.d(TAG, "updateButtonsLayout: buttonsLayout=" + buttonsLayout.toString());
         ButtonAction buttonAction;
-        ButtonAction buttonReset = (setsUser != Integer.MAX_VALUE && setsCurrent >= 1) ? ButtonAction.RESET : ButtonAction.CLEAR;
+        ButtonAction buttonReset = ButtonAction.CLEAR;
+        if (resetEnable && setsUser != Integer.MAX_VALUE && setsCurrent >= 1) {
+           buttonReset = ButtonAction.RESET;
+        }
         Log.d(TAG, "updateButtonsLayout: setsUser=" + setsUser + ", setsCurrent=" + setsCurrent);
         switch (layout) {
             case WAITING:
@@ -1648,28 +1664,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final boolean ask = sharedPreferences.getBoolean(getString(R.string.pref_clear_asking), true);
-                        if (ask && isCurrentTimerRunning()) {
-                            clearAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            sendBroadcast(new Intent(IntentAction.CLEAR));
-                                        }
-                                    });
-                            clearAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.alert_stop_asking),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Log.d(TAG, "createClearAlertDialog: stop asking");
-                                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-                                            sharedPreferencesEditor.putBoolean(getString(R.string.pref_clear_asking), false);
-                                            sharedPreferencesEditor.apply();
-                                            sendBroadcast(new Intent(IntentAction.CLEAR));
-                                        }
-                                    });
-                            clearAlertDialog.show();
-                        } else {
-                            sendBroadcast(new Intent(IntentAction.CLEAR));
-                        }
+                        showAlertDialogClear();
                     }
                 });
                 return true;
@@ -1701,7 +1696,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sendBroadcast(new Intent(IntentAction.RESET));
+                        showAlertDialogReset();
                     }
                 });
                 button.setOnLongClickListener(new View.OnLongClickListener() {
@@ -1740,23 +1735,54 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         }
     }
 
+    private void showAlertDialogReset() {
+        final boolean ask = sharedPreferences.getBoolean(getString(R.string.pref_clear_asking), true);
+        if (ask && isCurrentTimerRunning()) {
+            resetAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            sendBroadcast(new Intent(IntentAction.RESET));
+                        }
+                    });
+            resetAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.alert_stop_asking),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d(TAG, "createClearAlertDialog: stop asking");
+                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                            sharedPreferencesEditor.putBoolean(getString(R.string.pref_clear_asking), false);
+                            sharedPreferencesEditor.apply();
+                            sendBroadcast(new Intent(IntentAction.RESET));
+                        }
+                    });
+            resetAlertDialog.show();
+        } else {
+            sendBroadcast(new Intent(IntentAction.RESET));
+        }
+    }
+
     private void showAlertDialogClear() {
-        Log.d(TAG, "showAlertDialogClear");
-        android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
-        alertDialog.setMessage(getString(R.string.clear_long_press));
-        alertDialog.setButton(android.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        sendBroadcast(new Intent(IntentAction.CLEAR));
-                    }
-                });
-        alertDialog.setButton(android.app.AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
+        final boolean ask = sharedPreferences.getBoolean(getString(R.string.pref_clear_asking), true);
+        if (ask && isCurrentTimerRunning()) {
+            clearAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            sendBroadcast(new Intent(IntentAction.CLEAR));
+                        }
+                    });
+            clearAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.alert_stop_asking),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d(TAG, "createClearAlertDialog: stop asking");
+                            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+                            sharedPreferencesEditor.putBoolean(getString(R.string.pref_clear_asking), false);
+                            sharedPreferencesEditor.apply();
+                            sendBroadcast(new Intent(IntentAction.CLEAR));
+                        }
+                    });
+            clearAlertDialog.show();
+        } else {
+            sendBroadcast(new Intent(IntentAction.CLEAR));
+        }
     }
 
     @Override
@@ -1853,6 +1879,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updatePreference(getString(R.string.pref_sets_name_display_enable));
             updatePreference(getString(R.string.pref_sets_picker_enable));
             updatePreference(getString(R.string.pref_sets_number_reset));
+            updatePreference(getString(R.string.pref_reset));
             updatePreference(getString(R.string.pref_vibrate));
             updatePreference(getString(R.string.pref_ringtone_uri));
             updatePreference(getString(R.string.pref_timer_get_ready_enable));
@@ -1887,7 +1914,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             setsPickerEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_picker));
         } else if (key.equals(getString(R.string.pref_sets_number_reset))) {
             setsNumberReset = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_sets_number_reset));
-        } else if (key.equals(getString(R.string.pref_vibrate))) {
+        } else if (key.equals(getString(R.string.pref_reset))) {
+            resetEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_reset));
+        }else if (key.equals(getString(R.string.pref_vibrate))) {
             vibrationEnable = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.default_vibrate));
         } else if (key.equals(getString(R.string.pref_ringtone_uri))) {
             ringtoneUri = Uri.parse(sharedPreferences.getString(key, getString(R.string.default_ringtone_uri)));

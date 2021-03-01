@@ -11,7 +11,6 @@
     <!-- Main Activity -->
     <string name="default_timer_name">Timer</string>
     <string name="presetsListEmpty">Timers list empty</string>
-    <string name="clear_long_press">Would you like to clear the current timer?</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timers number limit</string>
@@ -20,7 +19,8 @@
     <!-- Alerts -->
     <string name="select_preset">Are you sure you want to stop the current timer to select this one?</string>
     <string name="delete_preset">Are you sure you want to delete the selected timer?</string>
-    <string name="clear_preset">Are you sure you want to stop and clear the current timer?</string>
+    <string name="reset_preset">Are you sure you want to reinitialize the limit indicator?</string>
+    <string name="clear_preset">Are you sure you want to clear the current timer and reinitialize the timer number or limit indicator?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
@@ -52,8 +52,10 @@
     <string name="sets_number_display_enable_summary">Display current running timer number. Always displayed when there is a limit indicator</string>
     <string name="sets_number_reset">Timer number reset</string>
     <string name="sets_number_reset_summary">Reset the timer number when starting a new timer. Works only with timers without limit indicator</string>
+    <string name="reset">Limit indicator reinitialization</string>
+    <string name="reset_summary">Reinitialize the timer number with timers with limit indicator. Use long press to reinitialize the timer</string>
     <string name="sets_picker_enable">Limit indicator</string>
-    <string name="sets_picker_enable_summary">Add the possibility to enter a limit indicator for the timer number during creation</string>
+    <string name="sets_picker_enable_summary">Add the possibility to enter a limit indicator for the timer number during the timer creation</string>
     <string name="preset_select_asking">Timer selection alert</string>
     <string name="preset_select_asking_summary">Display an alert dialog when selecting a new timer in the list if the current timer is running</string>
     <string name="clear_asking">Timer reinitialization alert</string>
@@ -119,6 +121,7 @@
     <string name="pref_ready_channel" translatable="false">readyChannel</string>
     <string name="pref_preset_select_asking" translatable="false">selectAsking</string>
     <string name="pref_clear_asking" translatable="false">clearAsking</string>
+    <string name="pref_reset" translatable="false">resetButton</string>
     <string name="pref_preset_array" translatable="false">presetArray_</string>
     <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
     <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>

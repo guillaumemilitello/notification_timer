@@ -10,7 +10,6 @@
     <!-- Main Activity -->
     <string name="default_timer_name">Minuteur</string>
     <string name="presetsListEmpty">Liste des minuteurs vide</string>
-    <string name="clear_long_press">Êtes-vous sûr de vouloir supprimer le minuteur actuel ?</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
     <string name="picker_sets">Limite de minuteurs</string>
@@ -19,6 +18,7 @@
     <!-- Alerts -->
     <string name="select_preset">Êtes-vous sûr de vouloir arrêter le minuteur en cours pour celui sélectionné ?</string>
     <string name="delete_preset">Êtes-vous sûr de vouloir supprimer le minuteur sélectionné ?</string>
+    <string name="reset_preset">Êtes-vous sûr de vouloir réinitializer l\'indicateur de limite de minuteurs ?</string>
     <string name="clear_preset">Êtes-vous sûr de vouloir arrêter et supprimer le minuteur en cours ?</string>
     <string name="alert_time_out">Temps écoulé !</string>
     <string name="alert_set_done">Voulez-vous lancer le prochain minuteur?</string>
@@ -48,6 +48,8 @@
     <string name="sets_number_display_enable_summary">Affichage du nombre de minuteurs. Toujours affiché si il y a un indicateur de limite de minuteurs</string>
     <string name="sets_number_reset">Réinitialisation du nombre de minuteurs</string>
     <string name="sets_number_reset_summary">Remise à zéro du nombre total de minuteurs au début de chaque nouveau minuteur. Fonctionne uniquement avec des minuteurs sans indicateur de limite</string>
+    <string name="reset">Réinitialisation du nombre de minuteurs</string>
+    <string name="reset_summary">Réinitialise le nombre de minuteurs si il y a un indicateur de limite de minuteurs. Appui long pour réinitializer le timer</string>
     <string name="sets_picker_enable">Limite de minuteurs</string>
     <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
     <string name="preset_select_asking">Alerte lors de la sélection de minuteur</string>
