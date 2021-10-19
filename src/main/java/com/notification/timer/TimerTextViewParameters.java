@@ -92,8 +92,8 @@ class TimerTextViewParameters {
 
     private void updateMargins(int digitsIndex) {
         // Ratios are fixed for the Typeface Recursive
-        topMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.21);
-        bottomMargin[digitsIndex] = (int)(topMargin[digitsIndex] * 0.8);
+        topMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.35);
+        bottomMargin[digitsIndex] = (int)(topMargin[digitsIndex] * 0.9);
         leftMargin[digitsIndex] = 0;
         rightMargin[digitsIndex] = 0;
     }
@@ -139,7 +139,7 @@ class TimerTextViewParameters {
         paint.getTextBounds("00:00:00", 0, digits > 4 ? digits + 2 : digits > 2 ? digits + 1 : digits, rectBounds);
         // Threshold are fixed for the Typeface Recursive including font padding
         int width = (int)(rectBounds.width() * density * ((digits == 2)? 1.215 : 0.925));
-        int height = (int)(rectBounds.height() * density * 1.5);
+        int height = (int)(rectBounds.height() * density * 1.7);
         return width < targetWidth && height < targetHeight;
     }
 

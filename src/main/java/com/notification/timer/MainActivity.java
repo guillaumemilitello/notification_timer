@@ -324,12 +324,12 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         Typeface typefaceMonoRegular = Typeface.createFromAsset(getAssets(), "fonts/Recursive_Monospace-Regular.ttf");
         Typeface typefaceLight = Typeface.createFromAsset(getAssets(), "fonts/Recursive-Light.ttf");
         Typeface typefaceMedium = Typeface.createFromAsset(getAssets(), "fonts/Recursive-Medium.ttf");
-        timerTextViewHours.setTypeface(typefaceMonoBold);
-        timerTextViewSeparatorHours.setTypeface(typefaceLight);
-        timerTextViewMinutes.setTypeface(typefaceMonoBold);
-        timerTextViewSeparator.setTypeface(typefaceLight);
-        timerTextViewSeconds.setTypeface(typefaceMonoRegular);
-        timerTextViewLastSeconds.setTypeface(typefaceMonoBold);
+        timerTextViewHours.setTypeface(typefaceMonoBold, true);
+        timerTextViewSeparatorHours.setTypeface(typefaceLight, false);
+        timerTextViewMinutes.setTypeface(typefaceMonoBold, true);
+        timerTextViewSeparator.setTypeface(typefaceLight, false);
+        timerTextViewSeconds.setTypeface(typefaceMonoRegular, false);
+        timerTextViewLastSeconds.setTypeface(typefaceMonoBold, true);
 
         setsTextView.setTypeface(typefaceMedium);
         setsUserTextView.setTypeface(typefaceLight);

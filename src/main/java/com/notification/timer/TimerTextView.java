@@ -18,6 +18,7 @@ class TimerTextView {
 
     private int digits = 0;
     private String text = "";
+    private boolean bold = false;
     private int color = Color.BLACK;
     private int visibility = View.GONE;
     private boolean sideMargins = false;
@@ -55,11 +56,12 @@ class TimerTextView {
         }
     }
 
-    void setTypeface(Typeface typeface) {
+    void setTypeface(Typeface typeface, boolean bold) {
         if (this.typeface != typeface) {
             this.typeface = typeface;
             textView.setTypeface(typeface);
         }
+        this.bold = bold;
     }
 
     void setDigits(int digits) {
@@ -73,9 +75,15 @@ class TimerTextView {
                 final int sideMargin = (int) textSize / -5;
                 textViewLayoutParams.leftMargin = sideMargin;
                 textViewLayoutParams.rightMargin = sideMargin;
+                textViewLayoutParams.bottomMargin = (int)(textViewLayoutParams.topMargin * 0.725);
                 textView.setLayoutParams(textViewLayoutParams);
             } else {
                 layoutParams.setMargins(0, parameters.getTopMargin(digits), 0, parameters.getBottomMargin(digits));
+                if (!bold) {
+                    LinearLayout.LayoutParams textViewLayoutParams = (LinearLayout.LayoutParams) textView.getLayoutParams();
+                    textViewLayoutParams.bottomMargin = (int)(textViewLayoutParams.topMargin * 0.88125);
+                    textView.setLayoutParams(textViewLayoutParams);
+                }
             }
             Log.d(TAG, "setDigits: digits=" + digits + ", textSize=" + textSize + ",sideMargins=" + sideMargins + " parameters=" + parameters);
         }
