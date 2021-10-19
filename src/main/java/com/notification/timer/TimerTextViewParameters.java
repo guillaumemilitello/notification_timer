@@ -64,7 +64,7 @@ class TimerTextViewParameters {
         bottomMargin = new int[SIZE_COUNT];
 
         paint = new Paint();
-        paint.setTypeface(MainActivity.typefaceLektonBold);
+        paint.setTypeface(MainActivity.typefaceMonoBold);
         rectBounds = new Rect();
 
         float[] loadedSize = loadSizes(layoutMode);
@@ -91,11 +91,11 @@ class TimerTextViewParameters {
     }
 
     private void updateMargins(int digitsIndex) {
-        // Ratios are fixed for the Typeface Lekton
-        topMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.425);
-        bottomMargin[digitsIndex] = (int)(topMargin[digitsIndex] * 1.125);
-        leftMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.05);
-        rightMargin[digitsIndex] = leftMargin[digitsIndex];
+        // Ratios are fixed for the Typeface Recursive
+        topMargin[digitsIndex] = (int)(size[digitsIndex] * density * -0.21);
+        bottomMargin[digitsIndex] = (int)(topMargin[digitsIndex] * 0.8);
+        leftMargin[digitsIndex] = 0;
+        rightMargin[digitsIndex] = 0;
     }
 
     private float findBestRectFontSize(int digits) {
@@ -137,8 +137,8 @@ class TimerTextViewParameters {
     private boolean doesRectFit(int digits, float rectTextSize) {
         paint.setTextSize(rectTextSize);
         paint.getTextBounds("00:00:00", 0, digits > 4 ? digits + 2 : digits > 2 ? digits + 1 : digits, rectBounds);
-        // Threshold are fixed for the Typeface Lekton including font padding
-        int width = (int)(rectBounds.width() * density * ((digits == 2)? 1.125 : 0.925));
+        // Threshold are fixed for the Typeface Recursive including font padding
+        int width = (int)(rectBounds.width() * density * ((digits == 2)? 1.215 : 0.925));
         int height = (int)(rectBounds.height() * density * 1.5);
         return width < targetWidth && height < targetHeight;
     }

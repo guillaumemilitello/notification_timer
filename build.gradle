@@ -10,8 +10,8 @@ android {
         applicationId "com.notification.timer"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 10508
-        versionName "1.5.8"
+        versionCode 10509
+        versionName "1.5.9"
         multiDexEnabled true
     }
     flavorDimensions "versionCode"

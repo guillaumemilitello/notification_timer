@@ -65,13 +65,19 @@ class TimerTextView {
     void setDigits(int digits) {
         if (parameters != null && this.digits != digits) {
             this.digits = digits;
-            textView.setTextSize(parameters.getTextSize(digits));
-            if (sideMargins) {
+            final float textSize = parameters.getTextSize(digits);
+            textView.setTextSize(textSize);
+            if (sideMargins) { // separators
                 layoutParams.setMargins(parameters.getLeftMargin(digits), parameters.getTopMargin(digits), parameters.getRightMargin(digits), parameters.getBottomMargin(digits));
+                LinearLayout.LayoutParams textViewLayoutParams = (LinearLayout.LayoutParams) textView.getLayoutParams();
+                final int sideMargin = (int) textSize / -5;
+                textViewLayoutParams.leftMargin = sideMargin;
+                textViewLayoutParams.rightMargin = sideMargin;
+                textView.setLayoutParams(textViewLayoutParams);
             } else {
                 layoutParams.setMargins(0, parameters.getTopMargin(digits), 0, parameters.getBottomMargin(digits));
             }
-            Log.d(TAG, "setDigits: digits=" + digits + ", sideMargins=" + sideMargins + " parameters=" + parameters);
+            Log.d(TAG, "setDigits: digits=" + digits + ", textSize=" + textSize + ",sideMargins=" + sideMargins + " parameters=" + parameters);
         }
     }
 }

@@ -43,7 +43,7 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
     public static final int SIGN_POSITIVE = 0;
     public static final int SIGN_NEGATIVE = 1;
 
-    private final Typeface mTypefaceLekton;
+    private final Typeface mTypefaceMono;
 
     /**
      * Instantiates an HmsPicker object
@@ -73,7 +73,7 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         mDividerColor = getResources().getColor(R.color.default_divider_color);
         mDeleteDrawableSrcResId = R.drawable.ic_backspace_normal_dark;
 
-        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
+        mTypefaceMono = Typeface.createFromAsset(context.getAssets(), "fonts/Recursive_Monospace-Regular.ttf");
     }
 
     protected int getLayoutId() {
@@ -102,7 +102,7 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         for (Button number : mNumbers) {
             if (number != null) {
                 number.setTextColor(mTextColor);
-                number.setTypeface(mTypefaceLekton);
+                number.setTypeface(mTypefaceMono);
             }
         }
         if (mHoursLabel != null) {
@@ -119,11 +119,11 @@ public class HmsPicker extends LinearLayout implements Button.OnClickListener, B
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
-            mLeft.setTypeface(mTypefaceLekton);
+            mLeft.setTypeface(mTypefaceMono);
         }
         if (mRight != null) {
             mRight.setTextColor(mTextColor);
-            mRight.setTypeface(mTypefaceLekton);
+            mRight.setTypeface(mTypefaceMono);
         }
     }
 

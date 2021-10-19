@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.notification.timer.R;
 
@@ -41,7 +40,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
     public static final int SIGN_POSITIVE = 0;
     public static final int SIGN_NEGATIVE = 1;
 
-    private final Typeface mTypefaceLekton;
+    private final Typeface mTypefaceMono;
 
     private ColorStateList mTextColor;
     private int mDividerColor;
@@ -78,7 +77,7 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         mDeleteDrawableSrcResId = R.drawable.ic_backspace_normal_dark;
         mDividerColor = getResources().getColor(R.color.default_divider_color);
 
-        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
+        mTypefaceMono = Typeface.createFromAsset(context.getAssets(), "fonts/Recursive_Monospace-Regular.ttf");
     }
 
     protected int getLayoutId() {
@@ -107,16 +106,16 @@ public class NumberPicker extends LinearLayout implements Button.OnClickListener
         for (Button number : mNumbers) {
             if (number != null) {
                 number.setTextColor(mTextColor);
-                number.setTypeface(mTypefaceLekton);
+                number.setTypeface(mTypefaceMono);
             }
         }
         if (mLeft != null) {
             mLeft.setTextColor(mTextColor);
-            mLeft.setTypeface(mTypefaceLekton);
+            mLeft.setTypeface(mTypefaceMono);
         }
         if (mRight != null) {
             mRight.setTextColor(mTextColor);
-            mRight.setTypeface(mTypefaceLekton);
+            mRight.setTypeface(mTypefaceMono);
         }
         if (mDelete != null) {
             mDelete.setImageDrawable(getResources().getDrawable(mDeleteDrawableSrcResId));

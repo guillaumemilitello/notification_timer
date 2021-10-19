@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.codetroopers.betterpickers.widget.ZeroTopPaddingTextView;
@@ -17,7 +16,7 @@ public class HmsView extends LinearLayout {
     private ZeroTopPaddingTextView mMinutesOnes, mMinutesTens;
     private ZeroTopPaddingTextView mSecondsOnes, mSecondsTens;
     private ZeroTopPaddingTextView mMinuteLabel, mHourLabel;
-    private final Typeface mTypefaceLekton, mTypefaceLektonBold;
+    private final Typeface mTypefaceMono, mTypefaceMonoBold;
 
     private ColorStateList mTextColor;
 
@@ -39,8 +38,8 @@ public class HmsView extends LinearLayout {
     public HmsView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
-        mTypefaceLektonBold = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Bold.ttf");
+        mTypefaceMono = Typeface.createFromAsset(context.getAssets(), "fonts/Recursive_Monospace-Regular.ttf");
+        mTypefaceMonoBold = Typeface.createFromAsset(context.getAssets(), "fonts/Recursive_Monospace-Bold.ttf");
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
@@ -96,38 +95,38 @@ public class HmsView extends LinearLayout {
         mMinuteLabel = (ZeroTopPaddingTextView) findViewById(R.id.minutes_label);
 
         if (mHoursTens != null) {
-            mHoursTens.setTypeface(mTypefaceLektonBold);
+            mHoursTens.setTypeface(mTypefaceMonoBold);
             mHoursTens.updatePaddingForBoldDate();
         }
         if (mHoursOnes != null) {
-            mHoursOnes.setTypeface(mTypefaceLektonBold);
+            mHoursOnes.setTypeface(mTypefaceMonoBold);
             mHoursOnes.updatePaddingForBoldDate();
         }
         if (mMinutesTens != null) {
-            mMinutesTens.setTypeface(mTypefaceLektonBold);
+            mMinutesTens.setTypeface(mTypefaceMonoBold);
             mMinutesTens.updatePaddingForBoldDate();
         }
         if (mMinutesOnes != null) {
-            mMinutesOnes.setTypeface(mTypefaceLektonBold);
+            mMinutesOnes.setTypeface(mTypefaceMonoBold);
             mMinutesOnes.updatePaddingForBoldDate();
         }
         // Set the lowest time unit with thin font (excluding hundredths)
         if (mSecondsTens != null) {
-            mSecondsTens.setTypeface(mTypefaceLekton);
+            mSecondsTens.setTypeface(mTypefaceMono);
             mSecondsTens.updatePaddingForBoldDate();
         }
         if (mSecondsOnes != null) {
-            mSecondsOnes.setTypeface(mTypefaceLekton);
+            mSecondsOnes.setTypeface(mTypefaceMono);
             mSecondsOnes.updatePaddingForBoldDate();
         }
         if (mHourLabel != null) {
-            mHourLabel.setTypeface(mTypefaceLekton);
+            mHourLabel.setTypeface(mTypefaceMono);
             mHourLabel.updatePaddingForBoldDate();
             mHourLabel.setPaddingLeft((int)getResources().getDimension(R.dimen.time_separator_padding));
             mHourLabel.setPaddingRight((int)getResources().getDimension(R.dimen.time_separator_padding));
         }
         if (mMinuteLabel != null) {
-            mMinuteLabel.setTypeface(mTypefaceLekton);
+            mMinuteLabel.setTypeface(mTypefaceMono);
             mMinuteLabel.updatePaddingForBoldDate();
             mMinuteLabel.setPaddingLeft((int)getResources().getDimension(R.dimen.time_separator_padding));
             mMinuteLabel.setPaddingRight((int)getResources().getDimension(R.dimen.time_separator_padding));

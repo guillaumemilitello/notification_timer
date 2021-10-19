@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
     private TimerTextView timerTextViewMinutes, timerTextViewSeparator;
     private TimerTextView timerTextViewSeconds, timerTextViewLastSeconds;
 
-    static Typeface typefaceLektonBold;
+    static Typeface typefaceMonoBold;
 
     private static boolean updateDarkNight = false;
 
@@ -320,21 +320,22 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
         buttonsLayout = ButtonsLayout.WAITING;
 
-        typefaceLektonBold = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Bold.ttf");
-        Typeface typefaceLekton = Typeface.createFromAsset(getAssets(), "fonts/Lekton-Regular.ttf");
-        Typeface typefaceJulius = Typeface.createFromAsset(getAssets(), "fonts/JuliusSansOne-Regular.ttf");
-        timerTextViewHours.setTypeface(typefaceLektonBold);
-        timerTextViewSeparatorHours.setTypeface(typefaceJulius);
-        timerTextViewMinutes.setTypeface(typefaceLektonBold);
-        timerTextViewSeparator.setTypeface(typefaceJulius);
-        timerTextViewSeconds.setTypeface(typefaceLekton);
-        timerTextViewLastSeconds.setTypeface(typefaceLektonBold);
+        typefaceMonoBold = Typeface.createFromAsset(getAssets(), "fonts/Recursive_Monospace-Bold.ttf");
+        Typeface typefaceMonoRegular = Typeface.createFromAsset(getAssets(), "fonts/Recursive_Monospace-Regular.ttf");
+        Typeface typefaceLight = Typeface.createFromAsset(getAssets(), "fonts/Recursive-Light.ttf");
+        Typeface typefaceMedium = Typeface.createFromAsset(getAssets(), "fonts/Recursive-Medium.ttf");
+        timerTextViewHours.setTypeface(typefaceMonoBold);
+        timerTextViewSeparatorHours.setTypeface(typefaceLight);
+        timerTextViewMinutes.setTypeface(typefaceMonoBold);
+        timerTextViewSeparator.setTypeface(typefaceLight);
+        timerTextViewSeconds.setTypeface(typefaceMonoRegular);
+        timerTextViewLastSeconds.setTypeface(typefaceMonoBold);
 
-        setsTextView.setTypeface(typefaceLektonBold);
-        setsUserTextView.setTypeface(typefaceLekton);
-        spaceTextView.setTypeface(typefaceLekton);
+        setsTextView.setTypeface(typefaceMedium);
+        setsUserTextView.setTypeface(typefaceLight);
+        spaceTextView.setTypeface(typefaceMonoRegular);
 
-        nameEditText.setTypeface(typefaceLektonBold);
+        nameEditText.setTypeface(typefaceLight);
         nameEditText.setOnEditorActionListener(new DoneOnEditorActionListener());
 
         AlertBuilderSetDone alertBuilderSetDone = new AlertBuilderSetDone(this);
@@ -630,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             fontScale = 1;
         }
 
-        // TimerTextViewParams generates parameters for the Lekton typeface
+        // TimerTextViewParams generates parameters for the Typeface Recursive
         TimerTextViewParameters timerTextViewParams = new TimerTextViewParameters(layoutMode, timerLayoutWidth, timerLayoutHeight, fontScale * density, this, sharedPreferences);
         Log.d(TAG, "scaleTextViews: timerTextViewParams=" + timerTextViewParams);
 
@@ -644,13 +645,21 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         updateTimerDisplay();
 
         float setsNameLayoutHeight = setsLayout.getMeasuredHeight() / density;
-        // Threshold are fixed for the Typeface Lekton
-        float setsNameTextSize = isLayoutModeFull() ? setsNameLayoutHeight / 2 : setsNameLayoutHeight / 1.3f;
+        // Threshold are fixed for the Typeface Recursive
+        float setsNameTextSize = isLayoutModeFull() ? setsNameLayoutHeight / 2.2f : setsNameLayoutHeight / 1.7f;
         Log.d(TAG, "scaleTextViews: setsNameLayoutHeight=" + setsNameLayoutHeight + ", setsNameTextSize=" + setsNameTextSize);
         setsTextView.setTextSize(setsNameTextSize);
         setsUserTextView.setTextSize(setsNameTextSize / 1.5f);
         spaceTextView.setTextSize(setsNameTextSize);
         nameEditText.setTextSize(setsNameTextSize);
+
+        LinearLayout.LayoutParams spaceTextViewLayoutParams = (LinearLayout.LayoutParams) spaceTextView.getLayoutParams();
+        spaceTextViewLayoutParams.bottomMargin = (int) setsNameLayoutHeight / 40;
+        spaceTextView.setLayoutParams(spaceTextViewLayoutParams);
+
+        LinearLayout.LayoutParams nameEditTextLayoutParams = (LinearLayout.LayoutParams) nameEditText.getLayoutParams();
+        nameEditTextLayoutParams.topMargin = (int) setsNameLayoutHeight / 15;
+        nameEditText.setLayoutParams(nameEditTextLayoutParams);
     }
 
     private void updateFullLayoutVisibility(int visible) {
@@ -965,9 +974,9 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     private void setTextViewsColor(int textColor, int setsTextColor) {
         timerTextViewHours.setTextColor(textColor);
-        timerTextViewSeparatorHours.setTextColor(textColor);
+        timerTextViewSeparatorHours.setTextColor(setsTextColor);
         timerTextViewMinutes.setTextColor(textColor);
-        timerTextViewSeparator.setTextColor(textColor);
+        timerTextViewSeparator.setTextColor(setsTextColor);
         timerTextViewSeconds.setTextColor(textColor);
         timerTextViewLastSeconds.setTextColor(textColor);
         setsTextView.setTextColor(textColor);

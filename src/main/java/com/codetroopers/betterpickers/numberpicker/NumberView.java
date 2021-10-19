@@ -14,7 +14,7 @@ import com.notification.timer.R;
 public class NumberView extends LinearLayout {
 
     private ZeroTopPaddingTextView mNumber;
-    private final Typeface mTypefaceLekton;
+    private final Typeface mTypefaceMono;
 
     private ColorStateList mTextColor;
 
@@ -36,7 +36,7 @@ public class NumberView extends LinearLayout {
     public NumberView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mTypefaceLekton = Typeface.createFromAsset(context.getAssets(), "fonts/Lekton-Regular.ttf");
+        mTypefaceMono = Typeface.createFromAsset(context.getAssets(), "fonts/Recursive_Monospace-Regular.ttf");
 
         // Init defaults
         mTextColor = getResources().getColorStateList(R.color.dialog_text_color_holo);
@@ -70,7 +70,7 @@ public class NumberView extends LinearLayout {
         mNumber = (ZeroTopPaddingTextView) findViewById(R.id.number);
         // Set the lowest time unit with thin font
         if (mNumber != null) {
-            mNumber.setTypeface(mTypefaceLekton);
+            mNumber.setTypeface(mTypefaceMono);
             mNumber.updatePaddingForBoldDate();
         }
 

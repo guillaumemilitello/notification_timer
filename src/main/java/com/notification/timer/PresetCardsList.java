@@ -492,15 +492,16 @@ public class PresetCardsList extends Fragment {
             linearLayoutCard = view.findViewById(R.id.layoutCard);
             linearLayoutTimer = view.findViewById(R.id.layoutCardTimer);
 
-            Typeface typeface = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Bold.ttf");
-            Typeface typefaceLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Lekton-Regular.ttf");
-            textViewCardTimerHours.setTypeface(typeface);
-            textViewCardTimerSeparatorHours.setTypeface(typeface);
-            textViewCardTimerMinutes.setTypeface(typeface);
-            textViewCardTimerSeparator.setTypeface(typeface);
-            textViewCardTimerSeconds.setTypeface(typeface);
-            textViewCardTimerName.setTypeface(typeface);
-            textViewCardSets.setTypeface(typefaceLight);
+            Typeface typefaceMonoSemiBold = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Recursive_Monospace-SemiBold.ttf");
+            Typeface typefaceMonoLight = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Recursive_Monospace-Light.ttf");
+            Typeface typefaceSemiBold = Typeface.createFromAsset(mainActivity.getAssets(), "fonts/Recursive-SemiBold.ttf");
+            textViewCardTimerHours.setTypeface(typefaceMonoSemiBold);
+            textViewCardTimerSeparatorHours.setTypeface(typefaceMonoSemiBold);
+            textViewCardTimerMinutes.setTypeface(typefaceMonoSemiBold);
+            textViewCardTimerSeparator.setTypeface(typefaceMonoSemiBold);
+            textViewCardTimerSeconds.setTypeface(typefaceMonoSemiBold);
+            textViewCardTimerName.setTypeface(typefaceSemiBold);
+            textViewCardSets.setTypeface(typefaceMonoLight);
 
             textViewCardTimerHours.setOnClickListener(this);
             textViewCardTimerSeparatorHours.setOnClickListener(this);
