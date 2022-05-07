@@ -72,7 +72,7 @@ class TimerTextView {
             if (sideMargins) { // separators
                 layoutParams.setMargins(parameters.getLeftMargin(digits), parameters.getTopMargin(digits), parameters.getRightMargin(digits), parameters.getBottomMargin(digits));
                 LinearLayout.LayoutParams textViewLayoutParams = (LinearLayout.LayoutParams) textView.getLayoutParams();
-                final int sideMargin = (int) textSize / -5;
+                final int sideMargin = (int) (textSize / (2.5 * parameters.getDensity() - 12));
                 textViewLayoutParams.leftMargin = sideMargin;
                 textViewLayoutParams.rightMargin = sideMargin;
                 textViewLayoutParams.bottomMargin = (int)(textViewLayoutParams.topMargin * 0.725);

@@ -49,6 +49,8 @@ class TimerTextViewParameters {
         return bottomMargin[digits - 2];
     }
 
+    float getDensity() { return density; }
+
     TimerTextViewParameters(MainActivity.LayoutMode layoutMode, int targetWidth, int targetHeight, float density, Context context, SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
         this.context = context;
