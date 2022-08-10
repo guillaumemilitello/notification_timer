@@ -263,6 +263,7 @@ class InteractiveNotification extends Notification {
         boolean updateChannelCreated = false;
         List<NotificationChannel> notificationChannelList = notificationManager.getNotificationChannels();
         for (NotificationChannel notificationChannel : notificationChannelList) {
+            Log.d(TAG, "createNotificationChannels: notificationChannel=" + notificationChannel.toString());
             if (notificationChannel.getId().contains(doneChannelId)) {
                 doneChannelNbId = Integer.parseInt(notificationChannel.getId().replaceAll("[^0-9]", ""));
                 doneChannelCreated = true;
@@ -274,6 +275,7 @@ class InteractiveNotification extends Notification {
                 Log.d(TAG, "createNotificationChannels: " + notificationChannel.getId() + ", readyChannelNbId=" + readyChannelNbId);
             }
             else if (notificationChannel.getId().equals(updateChannelId)) {
+                Log.d(TAG, "createNotificationChannels: " + notificationChannel.getId() + ", updateChannelNbId=" + readyChannelNbId);
                 updateChannelCreated = true;
             }
         }
@@ -368,9 +370,10 @@ class InteractiveNotification extends Notification {
 
     @TargetApi(Build.VERSION_CODES.O)
     private void createUpdateChannel() {
-        NotificationChannel notificationChannel = new NotificationChannel(updateChannelId, context.getString(R.string.notif_channel_update), NotificationManager.IMPORTANCE_LOW);
+        NotificationChannel notificationChannel = new NotificationChannel(updateChannelId, context.getString(R.string.notif_channel_update), NotificationManager.IMPORTANCE_DEFAULT);
         notificationChannel.setShowBadge(false);
         notificationChannel.enableVibration(false);
+        notificationChannel.setSound(null, audioAttributes);
         notificationChannel.enableLights(false);
         notificationManager.createNotificationChannel(notificationChannel);
         Log.d(TAG, "createUpdateChannel: notificationChannel=" + notificationChannel);
