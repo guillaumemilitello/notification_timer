@@ -155,7 +155,7 @@ public class TimerService extends Service {
 
         alarmManager = (AlarmManager) getBaseContext().getSystemService(Context.ALARM_SERVICE);
         powerManager = (PowerManager) getBaseContext().getSystemService(Context.POWER_SERVICE);
-        pendingIntentAlarm = PendingIntent.getBroadcast(getBaseContext(), 0, new Intent(IntentAction.ACQUIRE_WAKELOCK), 0);
+        pendingIntentAlarm = PendingIntent.getBroadcast(getBaseContext(), 0, new Intent(IntentAction.ACQUIRE_WAKELOCK), PendingIntent.FLAG_IMMUTABLE);
 
         if (powerManager != null) {
             wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SimpleWorkoutTimerWakeLock");
