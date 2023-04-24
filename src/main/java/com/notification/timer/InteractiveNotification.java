@@ -237,10 +237,10 @@ class InteractiveNotification extends Notification {
 
         // pending intent to go back to the main activity from the notification
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         // pending intent when the notification is deleted
-        pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntentDeleted = PendingIntent.getBroadcast(context, 0, new Intent().setAction(IntentAction.NOTIFICATION_DISMISS), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         // attributes used to setup notification channels with sound
         audioAttributes = (new AudioAttributes.Builder()).setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN).setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
@@ -505,7 +505,7 @@ class InteractiveNotification extends Notification {
                 return;
         }
         remoteView.setImageViewResource(id, iconId);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         remoteView.setOnClickPendingIntent(id, pendingIntent);
     }
 
