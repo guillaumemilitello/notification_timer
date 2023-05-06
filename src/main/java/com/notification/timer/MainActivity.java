@@ -1000,32 +1000,35 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         final ArrayList<Integer> darkColors = new ArrayList<Integer>() {
             {
                 add(context.getResources().getColor(R.color.black));
-                add(context.getResources().getColor(R.color.blue));
                 add(context.getResources().getColor(R.color.charcoal));
-                add(context.getResources().getColor(R.color.deep_orange));
-                add(context.getResources().getColor(R.color.red));
-                add(context.getResources().getColor(R.color.indigo_light));
-                add(context.getResources().getColor(R.color.dark_grey));
                 add(context.getResources().getColor(R.color.green_dark));
                 add(context.getResources().getColor(R.color.cyan_dark));
                 add(context.getResources().getColor(R.color.cyan_darker));
-                add(context.getResources().getColor(R.color.indigo_dark));
                 add(context.getResources().getColor(R.color.indigo_darker));
                 add(context.getResources().getColor(R.color.indigo_black));
-                add(context.getResources().getColor(R.color.blue_dark));
-                add(context.getResources().getColor(R.color.blue_grey_dark));
-                add(context.getResources().getColor(R.color.blue_grey_black));
                 add(context.getResources().getColor(R.color.blue_cyan_darker));
                 add(context.getResources().getColor(R.color.blue_darker));
-                add(context.getResources().getColor(R.color.purple_light));
-                add(context.getResources().getColor(R.color.purple));
                 add(context.getResources().getColor(R.color.purple_dark));
                 add(context.getResources().getColor(R.color.purple_darker));
-                add(context.getResources().getColor(R.color.red_light));
                 add(context.getResources().getColor(R.color.red_dark));
                 add(context.getResources().getColor(R.color.orange_dark));
                 add(context.getResources().getColor(R.color.charcoal_light));
                 add(context.getResources().getColor(R.color.main_background_black));
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                    add(context.getResources().getColor(R.color.indigo_light));
+                    add(context.getResources().getColor(R.color.indigo_dark));
+                    add(context.getResources().getColor(R.color.blue));
+                    add(context.getResources().getColor(R.color.blue_dark));
+                    add(context.getResources().getColor(R.color.deep_orange));
+                    add(context.getResources().getColor(R.color.red_light));
+                    add(context.getResources().getColor(R.color.red));
+                    add(context.getResources().getColor(R.color.dark_grey));
+                    add(context.getResources().getColor(R.color.blue_grey_dark));
+                    add(context.getResources().getColor(R.color.blue_grey_black));
+                    add(context.getResources().getColor(R.color.purple_light));
+                    add(context.getResources().getColor(R.color.purple));
+                }
             }
         };
         return darkColors.contains(color);
