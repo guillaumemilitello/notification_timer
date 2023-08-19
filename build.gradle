@@ -5,13 +5,13 @@ android {
         releaseConfig {
         }
     }
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.notification.timer"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 10512
-        versionName "1.5.12"
+        targetSdkVersion 33
+        versionCode 10513
+        versionName "1.5.13"
         multiDexEnabled true
     }
     flavorDimensions "versionCode"
