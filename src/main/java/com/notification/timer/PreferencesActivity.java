@@ -77,8 +77,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private boolean restoringPreferences;
     private boolean overridePreferencesFile;
 
-    private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
-    private static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
+    private static final String WRITE_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private static final String READ_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE;
+
+    private static final int WRITE_PERMISSION_REQUEST_CODE = 1;
+    private static final int READ_PERMISSION_REQUEST_CODE = 2;
+    private static final int NOTIFICATION_SETTINGS_REQUEST_CODE = 100;
 
     private TimerPreferenceFragment settingsFragment;
 
@@ -187,7 +191,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                         Log.d(TAG, "onPreferenceClick: request notification permission");
                         Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
                         intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-                        startActivityForResult(intent, 568);
+                        startActivityForResult(intent, NOTIFICATION_SETTINGS_REQUEST_CODE);
                     }
                     return true;
                 }
@@ -442,7 +446,8 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         if (uriString != null && !uriString.matches("(.*)media/external(.*)")) {
             return false;
         }
-        final int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        final String permission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE;
+        final int permissionCheck = ContextCompat.checkSelfPermission(this, permission);
         Log.d(TAG, "isRingtoneInaccessible : permissionCheck=" + permissionCheck);
         return permissionCheck == PERMISSION_DENIED;
     }
@@ -502,25 +507,16 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_WRITE_EXTERNAL_STORAGE || requestCode == PERMISSION_READ_EXTERNAL_STORAGE) {
+        if (requestCode == WRITE_PERMISSION_REQUEST_CODE || requestCode == READ_PERMISSION_REQUEST_CODE) {
             for (int i = 0; i < permissions.length; i++) {
                 String permission = permissions[i];
-                int grantResult = grantResults[i];
-
-                if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                if (permission.equals(WRITE_PERMISSION) || permission.equals(READ_PERMISSION)) {
+                    int grantResult = grantResults[i];
                     if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
+                        Log.d(TAG, "onRequestPermissionsResult : permission=" + permission + " requestCode=" + requestCode + " granted");
                         saveSharedPreferencesToFile();
                     } else {
-                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
-                        Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
-                    }
-                } else if (permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
-                        loadSharedPreferencesFromFile();
-                    } else {
-                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
+                        Log.d(TAG, "onRequestPermissionsResult : permission=" + permission + " requestCode=" + requestCode + " denied");
                         Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -531,10 +527,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private void saveSharedPreferencesToFile() {
         ObjectOutputStream objectOutputStream = null;
         try {
-            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            final int permissionCheck = ContextCompat.checkSelfPermission(this, WRITE_PERMISSION);
             Log.d(TAG, "saveSharedPreferencesToFile: permissionCheck=" + permissionCheck);
             if (permissionCheck == PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
+                ActivityCompat.requestPermissions(this, new String[]{WRITE_PERMISSION}, WRITE_PERMISSION_REQUEST_CODE);
                 return;
             }
             if (sharedPreferencesFile.exists()) {
@@ -599,10 +595,10 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private void loadSharedPreferencesFromFile() {
         ObjectInputStream objectInputStream = null;
         try {
-            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            final int permissionCheck = ContextCompat.checkSelfPermission(this, READ_PERMISSION);
             Log.d(TAG, "loadSharedPreferencesFromFile : permissionCheck=" + permissionCheck);
             if (permissionCheck == PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
+                ActivityCompat.requestPermissions(this, new String[]{READ_PERMISSION}, READ_PERMISSION_REQUEST_CODE);
                 return;
             }
             Log.d(TAG, "loadSharedPreferencesFromFile: " + sharedPreferencesFile.getAbsolutePath());
