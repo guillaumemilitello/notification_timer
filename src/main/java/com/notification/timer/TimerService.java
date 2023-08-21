@@ -872,19 +872,20 @@ public class TimerService extends Service {
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
-                    if (PreferencesActivity.isKeyPreference(getBaseContext(), key))
-                    {
-                        updatePreference(key);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            final List<String> doneChannelPrefList = Arrays.asList(getString(R.string.pref_ringtone_uri), getString(R.string.pref_vibrate),
-                                    getString(R.string.pref_light_color_enable), getString(R.string.pref_light_color));
-                            if (doneChannelPrefList.contains(key)) {
-                                interactiveNotification.updateDoneChannel();
-                            }
-                            final List<String> readyChannelPrefList = Arrays.asList(getString(R.string.pref_timer_get_ready_ringtone_uri),
-                                    getString(R.string.pref_timer_get_ready_vibrate));
-                            if (readyChannelPrefList.contains(key)) {
-                                interactiveNotification.updateReadyChannel();
+                    if (key != null) {
+                        if (PreferencesActivity.isKeyPreference(getBaseContext(), key)) {
+                            updatePreference(key);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                final List<String> doneChannelPrefList = Arrays.asList(getString(R.string.pref_ringtone_uri), getString(R.string.pref_vibrate),
+                                        getString(R.string.pref_light_color_enable), getString(R.string.pref_light_color));
+                                if (doneChannelPrefList.contains(key)) {
+                                    interactiveNotification.updateDoneChannel();
+                                }
+                                final List<String> readyChannelPrefList = Arrays.asList(getString(R.string.pref_timer_get_ready_ringtone_uri),
+                                        getString(R.string.pref_timer_get_ready_vibrate));
+                                if (readyChannelPrefList.contains(key)) {
+                                    interactiveNotification.updateReadyChannel();
+                                }
                             }
                         }
                     }

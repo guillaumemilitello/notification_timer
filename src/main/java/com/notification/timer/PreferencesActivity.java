@@ -463,19 +463,21 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     private final SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if (isKeyPreference(getBaseContext(), key) && !restoringPreferences) {
-                    Log.d(TAG, "SharedPreferenceChanged: key=" + key);
-                    updateSummary(key);
-                    if (key.equals(getString(R.string.pref_dark_theme_mode))) {
-                        updateDayNightMode();
-                    } else if (key.equals(getString(R.string.pref_step_time))) {
-                        updateStepTimePreference();
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        if (key.equals(getString(R.string.pref_ringtone_uri)) || key.equals(getString(R.string.pref_vibrate))) {
-                            updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
-                        } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri)) || key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
-                            updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
+                if (key != null) {
+                    if (isKeyPreference(getBaseContext(), key) && !restoringPreferences) {
+                        Log.d(TAG, "onSharedPreferenceChanged: key=" + key);
+                        updateSummary(key);
+                        if (key.equals(getString(R.string.pref_dark_theme_mode))) {
+                            updateDayNightMode();
+                        } else if (key.equals(getString(R.string.pref_step_time))) {
+                            updateStepTimePreference();
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (key.equals(getString(R.string.pref_ringtone_uri)) || key.equals(getString(R.string.pref_vibrate))) {
+                                updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
+                            } else if (key.equals(getString(R.string.pref_timer_get_ready_ringtone_uri)) || key.equals(getString(R.string.pref_timer_get_ready_vibrate))) {
+                                updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
+                            }
                         }
                     }
                 }
@@ -494,7 +496,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     }
 
     static boolean isKeyPreference(Context context, String key) {
-        return !key.contains(context.getString(R.string.pref_preset_array)) && !key.contains(context.getString(R.string.pref_timer_service))
+        return key != null && !key.contains(context.getString(R.string.pref_preset_array)) && !key.contains(context.getString(R.string.pref_timer_service))
                 && !key.contains(context.getString(R.string.pref_timer_text));
     }
 
