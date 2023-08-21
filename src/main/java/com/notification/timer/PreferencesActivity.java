@@ -177,6 +177,22 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                 return true;
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Preference notificationPermissionPreference = settingsFragment.findPreference(getString(R.string.pref_notification_permission));
+            notificationPermissionPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    int notificationPermissionState = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS);
+                    if (notificationPermissionState == PackageManager.PERMISSION_DENIED) {
+                        Log.d(TAG, "onPreferenceClick: request notification permission");
+                        Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                        startActivityForResult(intent, 568);
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
     private void updateAllPreferences() {
@@ -377,6 +393,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             updateSummaryNotificationChannelIntent(getString(R.string.pref_done_channel), doneChannelUriString, doneChannelVibrate);
             updateSummaryNotificationChannelIntent(getString(R.string.pref_ready_channel), readyChannelUriString, readyChannelVibrate);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            updateSummaryNotificationPermissionIntent(getString(R.string.pref_notification_permission));
+        }
     }
 
     private void updateSummary(String key) {
@@ -428,6 +447,19 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         return permissionCheck == PERMISSION_DENIED;
     }
 
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
+    private void updateSummaryNotificationPermissionIntent(String key) {
+        int notificationPermissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS);
+        Log.d(TAG, "updateSummaryNotificationPermissionIntent: notificationPermissionState=" + notificationPermissionState);
+        Preference intentPreference = settingsFragment.findPreference(key);
+        if (notificationPermissionState == PackageManager.PERMISSION_GRANTED) {
+            intentPreference.setSummary(getString(R.string.preferences_permission_granted));
+        }
+        else {
+            intentPreference.setSummary(getString(R.string.preferences_permission_denied));
+        }
+    }
+
     private final SharedPreferences.OnSharedPreferenceChangeListener listener =
         new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -468,25 +500,29 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_WRITE_EXTERNAL_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
-                    saveSharedPreferencesToFile();
-                } else {
-                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
-                    Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
+        if (requestCode == PERMISSION_WRITE_EXTERNAL_STORAGE || requestCode == PERMISSION_READ_EXTERNAL_STORAGE) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                int grantResult = grantResults[i];
+
+                if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
+                        saveSharedPreferencesToFile();
+                    } else {
+                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
+                        Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
+                    }
+                } else if (permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
+                        loadSharedPreferencesFromFile();
+                    } else {
+                        Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
+                        Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
+                    }
                 }
-                break;
-            case PERMISSION_READ_EXTERNAL_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " granted");
-                    loadSharedPreferencesFromFile();
-                } else {
-                    Log.d(TAG, "onRequestPermissionsResult : requestCode=" + requestCode + " denied");
-                    Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
-                }
-                break;
+            }
         }
     }
 

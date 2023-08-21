@@ -91,9 +91,11 @@
     <string name="preferences_restore_no_file">Aucun fichier trouvé</string>
     <string name="preferences_restore_success">Restauration réussie</string>
     <string name="preferences_permission_denied">Autorisations insuffisantes</string>
+    <string name="preferences_permission_granted">Autorisations suffisantes</string>
     <string name="preferences_backup_override">Souhaitez-vous remplacer la sauvegarde existante ?</string>
     <string name="preferences_notification_summary">Configurer le son et plus depuis les réglages du système</string>
     <string name="preferences_background_theme">Thème de l\'arrière-plan</string>
     <string name="preferences_dark_theme">Thème de l\'application</string>
     <string name="preferences_external_media"> - Média externe - Autoriser l\'accès au contenu depuis les permissions de l\'application pour afficher le titre</string>
+    <string name="preferences_notification_permission">Permission</string>
 </resources>
