@@ -11,6 +11,7 @@
     <!-- Main Activity -->
     <string name="default_timer_name">Timer</string>
     <string name="presetsListEmpty">Timers list empty</string>
+    <string name="notification_permission_denied">Insufficient notification permission. Check application settings.</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timers number limit</string>

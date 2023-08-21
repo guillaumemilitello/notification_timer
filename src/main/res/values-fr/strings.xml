@@ -10,6 +10,7 @@
     <!-- Main Activity -->
     <string name="default_timer_name">Minuteur</string>
     <string name="presetsListEmpty">Liste des minuteurs vide</string>
+    <string name="notification_permission_denied">Autorisations insuffisantes pour les notifications. Vérifiez les paramètres.</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
     <string name="picker_sets">Limite de minuteurs</string>

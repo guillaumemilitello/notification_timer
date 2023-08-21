@@ -1,5 +1,6 @@
 package com.notification.timer;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.ColorStateList;
@@ -29,6 +31,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         NumberPickerDialogFragment.NumberPickerDialogHandlerV2 {
 
     private static final String TAG = "MainActivity";
+
+    private static final int PERMISSION_POST_NOTIFICATIONS = 0;
 
     private boolean mainActivityVisible;
 
@@ -463,6 +468,14 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             updateShortcuts();
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            int notificationPermissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS);
+            Log.d(TAG, "onCreate: notificationPermissionState=" + notificationPermissionState);
+            if (notificationPermissionState == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_POST_NOTIFICATIONS);
+            }
+        }
+
         Log.d(TAG, "onCreate: action=" + getIntent().getAction());
     }
 
@@ -726,6 +739,23 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
             Log.d(TAG, "onStart: firstRun=true");
             helpOverlay.show();
             sharedPreferences.edit().putBoolean(getString(R.string.pref_first_run), false).apply();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_POST_NOTIFICATIONS) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                int grantResult = grantResults[i];
+                if (permission.equals(Manifest.permission.POST_NOTIFICATIONS)) {
+                    Log.d(TAG, "onRequestPermissionsResult: notificationPermission grantResult=" + grantResult);
+                    if (grantResult == PackageManager.PERMISSION_DENIED) {
+                        Toast.makeText(this, getString(R.string.notification_permission_denied), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
         }
     }
 
