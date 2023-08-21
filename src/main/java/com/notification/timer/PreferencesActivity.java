@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
 
 import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -461,7 +462,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             intentPreference.setSummary(getString(R.string.preferences_permission_granted));
         }
         else {
-            intentPreference.setSummary(getString(R.string.preferences_permission_denied));
+            intentPreference.setSummary(Html.fromHtml("<font color='red'>" + getString(R.string.preferences_notification_permission_denied) + "</font>"));
         }
     }
 

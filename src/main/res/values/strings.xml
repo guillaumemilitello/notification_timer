@@ -11,7 +11,7 @@
     <!-- Main Activity -->
     <string name="default_timer_name">Timer</string>
     <string name="presetsListEmpty">Timers list empty</string>
-    <string name="notification_permission_denied">Insufficient notification permission. Check application settings.</string>
+    <string name="notification_permission_denied">Insufficient permission to use notifications, check settings</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
     <string name="picker_sets">Timers number limit</string>
@@ -96,6 +96,7 @@
     <string name="preferences_restore_no_file">No backup file found</string>
     <string name="preferences_restore_success">Restore successful</string>
     <string name="preferences_permission_denied">Insufficient permissions</string>
+    <string name="preferences_notification_permission_denied">Insufficient permissions, click to enable</string>
     <string name="preferences_permission_granted">Sufficient permissions</string>
     <string name="preferences_backup_override">Would you like to override existing backup?</string>
     <string name="preferences_notification_summary">Configure sound and more from the system settings</string>

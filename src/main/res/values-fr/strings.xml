@@ -10,7 +10,7 @@
     <!-- Main Activity -->
     <string name="default_timer_name">Minuteur</string>
     <string name="presetsListEmpty">Liste des minuteurs vide</string>
-    <string name="notification_permission_denied">Autorisations insuffisantes pour les notifications. Vérifiez les paramètres.</string>
+    <string name="notification_permission_denied">Autorisation insuffisante pour l\'utilisation des notifications, vérifiez les paramètres.</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
     <string name="picker_sets">Limite de minuteurs</string>
@@ -92,6 +92,7 @@
     <string name="preferences_restore_no_file">Aucun fichier trouvé</string>
     <string name="preferences_restore_success">Restauration réussie</string>
     <string name="preferences_permission_denied">Autorisations insuffisantes</string>
+    <string name="preferences_notification_permission_denied">Autorisations insuffisantes, cliquez pour activer</string>
     <string name="preferences_permission_granted">Autorisations suffisantes</string>
     <string name="preferences_backup_override">Souhaitez-vous remplacer la sauvegarde existante ?</string>
     <string name="preferences_notification_summary">Configurer le son et plus depuis les réglages du système</string>
