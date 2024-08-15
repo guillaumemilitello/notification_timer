@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
 
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -47,7 +49,9 @@
         <service
             android:name=".TimerService"
             android:icon="@mipmap/ic_launcher"
-            android:label="TimerService" />
+            android:label="TimerService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false"/>
 
         <receiver
             android:name=".TimerServiceReceiver"

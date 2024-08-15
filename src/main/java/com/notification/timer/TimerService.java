@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 
@@ -180,7 +182,12 @@ public class TimerService extends Service {
         filter.addAction(IntentAction.NOTIFICATION_DISMISS);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(IntentAction.ACQUIRE_WAKELOCK);
-        registerReceiver(timerServiceReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(timerServiceReceiver, filter, Context.RECEIVER_EXPORTED);
+        }
+        else {
+            registerReceiver(timerServiceReceiver, filter);
+        }
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
@@ -231,7 +238,11 @@ public class TimerService extends Service {
     private void startNotificationForeground() {
         if (!mainActivityVisible) {
             Log.d(TAG, "startNotificationForeground");
-            startForeground(interactiveNotification.getId(), interactiveNotification.getNotification());
+            int type = 0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+            }
+            ServiceCompat.startForeground(this, interactiveNotification.getId(), interactiveNotification.getNotification(), type);
             interactiveNotification.setVisible();
         }
     }
