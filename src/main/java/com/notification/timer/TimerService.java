@@ -179,6 +179,7 @@ public class TimerService extends Service {
         filter.addAction(IntentAction.TIMER_PLUS);
         filter.addAction(IntentAction.SETS_MINUS);
         filter.addAction(IntentAction.SETS_PLUS);
+        filter.addAction(IntentAction.NOTIFICATION_CLEAR);
         filter.addAction(IntentAction.NOTIFICATION_DISMISS);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(IntentAction.ACQUIRE_WAKELOCK);
@@ -432,6 +433,14 @@ public class TimerService extends Service {
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
     }
 
+    void dismiss() {
+        Log.d(TAG, "dismiss: state=" + state);
+        if (state == State.READY) {
+            updateNotificationVisibility(false);
+            clear();
+        }
+    }
+
     void clear() {
         Log.d(TAG, "clear");
 
@@ -583,7 +592,7 @@ public class TimerService extends Service {
     private void notificationDeleted() {
         interactiveNotificationAlertDone = true;
         Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " state=" + state);
-        interactiveNotification.dismiss();
+        interactiveNotification.clear();
     }
 
     public void stopCountDown(){

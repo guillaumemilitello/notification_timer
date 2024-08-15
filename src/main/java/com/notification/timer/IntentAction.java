@@ -25,6 +25,7 @@ class IntentAction {
     static final String SET_DONE = "com.notification.timer.action.SET_DONE";
     static final String ALL_SETS_DONE = "com.notification.timer.action.ALL_SETS_DONE";
 
+    static final String NOTIFICATION_CLEAR = "com.notification.timer.action.NOTIFICATION_CLEAR";
     static final String NOTIFICATION_DISMISS = "com.notification.timer.action.NOTIFICATION_DISMISS";
 
     // Sent from the TimerService to the MainActivity UI and InteractiveNotification

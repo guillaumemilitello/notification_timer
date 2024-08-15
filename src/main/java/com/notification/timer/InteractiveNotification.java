@@ -169,7 +169,7 @@ class InteractiveNotification extends Notification {
         NEXT_SET("next_set"),
         EXTRA_SET("extra_set"),
         STEP_TIME("step_time"),
-        DISMISS("dismiss");
+        CLEAR("dismiss");
 
         private final String action;
 
@@ -397,9 +397,9 @@ class InteractiveNotification extends Notification {
                     // Do not display the RESET button for the first set
                     if ((!setsNumberReset && setsUser == Integer.MAX_VALUE) || setsCurrent <= 1) {
                         button2 = ButtonAction.NO_ACTION;
-                        button1 = ButtonAction.DISMISS;
+                        button1 = ButtonAction.CLEAR;
                     } else {
-                        button2 = ButtonAction.DISMISS;
+                        button2 = ButtonAction.CLEAR;
                         button1 = ButtonAction.RESET;
                     }
                     button0 = ButtonAction.START;
@@ -410,22 +410,22 @@ class InteractiveNotification extends Notification {
                     button0 = ButtonAction.PAUSE;
                     break;
                 case PAUSED:
-                    button2 = ButtonAction.DISMISS;
+                    button2 = ButtonAction.CLEAR;
                     button1 = ButtonAction.NEXT_SET;
                     button0 = ButtonAction.RESUME;
                     break;
                 case SET_DONE:
                     if (!setsNumberReset && setsUser == Integer.MAX_VALUE) {
                         button2 = ButtonAction.NO_ACTION;
-                        button1 = ButtonAction.DISMISS;
+                        button1 = ButtonAction.CLEAR;
                     } else {
-                        button2 = ButtonAction.DISMISS;
+                        button2 = ButtonAction.CLEAR;
                         button1 = ButtonAction.RESET;
                     }
                     button0 = ButtonAction.START;
                     break;
                 case ALL_SETS_DONE:
-                    button2 = ButtonAction.DISMISS;
+                    button2 = ButtonAction.CLEAR;
                     button1 = ButtonAction.RESET;
                     button0 = ButtonAction.EXTRA_SET;
                     break;
@@ -494,9 +494,9 @@ class InteractiveNotification extends Notification {
                 iconId = R.drawable.ic_chevrons_left;
                 intent = new Intent().setAction(IntentAction.RESET);
                 break;
-            case DISMISS:
+            case CLEAR:
                 iconId = R.drawable.ic_preset_delete;
-                intent = new Intent().setAction(IntentAction.NOTIFICATION_DISMISS);
+                intent = new Intent().setAction(IntentAction.NOTIFICATION_CLEAR);
                 break;
             case NO_ACTION:
                 return;
@@ -575,7 +575,8 @@ class InteractiveNotification extends Notification {
                             .setDeleteIntent(pendingIntentDeleted)
                             .setColorized(isColorEnable())
                             .setVisibility(VISIBILITY_PUBLIC)
-                            .setColor(getColor());
+                            .setColor(getColor())
+                            .setOngoing(true);
                 case READY:
                     return new Builder(context, getReadyChannelId())
                             .setSmallIcon(R.drawable.ic_notification)
@@ -583,7 +584,8 @@ class InteractiveNotification extends Notification {
                             .setDeleteIntent(pendingIntentDeleted)
                             .setColorized(isColorEnable())
                             .setVisibility(VISIBILITY_PUBLIC)
-                            .setColor(getColor());
+                            .setColor(getColor())
+                            .setOngoing(true);
                 default:
                     return new Builder(context, updateChannelId)
                             .setSmallIcon(R.drawable.ic_notification)
@@ -591,7 +593,8 @@ class InteractiveNotification extends Notification {
                             .setDeleteIntent(pendingIntentDeleted)
                             .setColorized(isColorEnable())
                             .setVisibility(VISIBILITY_PUBLIC)
-                            .setColor(getColor());
+                            .setColor(getColor())
+                            .setOngoing(true);
             }
         } else {
             switch (notificationMode) {
@@ -601,6 +604,7 @@ class InteractiveNotification extends Notification {
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
                             .setPriority(PRIORITY_MAX)
+                            .setOngoing(true)
                             .setLights(lightColorEnable ? lightColor : COLOR_DEFAULT, lightFlashRateOn, lightFlashRateOff)
                             .setVibrate(vibrationEnable ? MainActivity.vibrationPattern : null)
                             .setSound(ringtone)
@@ -612,6 +616,7 @@ class InteractiveNotification extends Notification {
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
                             .setPriority(PRIORITY_MAX)
+                            .setOngoing(true)
                             .setLights(COLOR_DEFAULT, 0, 0)
                             .setVibrate(vibrationReadyEnable ? MainActivity.vibrationPattern : null)
                             .setSound(ringtoneReady)
@@ -623,6 +628,7 @@ class InteractiveNotification extends Notification {
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(pendingIntentDeleted)
                             .setPriority(PRIORITY_MAX)
+                            .setOngoing(true)
                             .setLights(COLOR_DEFAULT, 0, 0)
                             .setVisibility(VISIBILITY_PUBLIC)
                             .setColor(getColor());
@@ -810,7 +816,7 @@ class InteractiveNotification extends Notification {
         Log.d(TAG, "updateSetsTextView: nameUser=" + nameUser + "setsString='" + setsString + "'");
     }
 
-    void dismiss() {
+    void clear() {
         if (visible) {
             notificationManager.cancel(ID);
             visible = false;

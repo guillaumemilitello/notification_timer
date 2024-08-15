@@ -30,8 +30,10 @@ public class MainActivityReceiver extends BroadcastReceiver {
                     ((MainActivity) context).stop();
                     break;
                 case IntentAction.CLEAR:
-                case IntentAction.NOTIFICATION_DISMISS:
                     ((MainActivity) context).clear();
+                    break;
+                case IntentAction.NOTIFICATION_DISMISS:
+                    ((MainActivity) context).dismiss();
                     break;
                 case IntentAction.NEXT_SET:
                     ((MainActivity) context).nextSet();

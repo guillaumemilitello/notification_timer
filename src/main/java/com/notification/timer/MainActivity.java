@@ -446,6 +446,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         filter.addAction(IntentAction.TIMER_STATE);
         filter.addAction(IntentAction.TIMER_UPDATE);
         filter.addAction(IntentAction.TIMER_DONE);
+        filter.addAction(IntentAction.NOTIFICATION_CLEAR);
         filter.addAction(IntentAction.NOTIFICATION_DISMISS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(mainActivityReceiver, filter, Context.RECEIVER_EXPORTED);
@@ -1210,6 +1211,13 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         timerState = TimerService.State.RUNNING;
         Log.d(TAG, "nextSetStart: timerState=" + timerState);
         updateButtonsLayout();
+    }
+
+    void dismiss() {
+        Log.d(TAG, "dismiss: timerState=" + timerState);
+        if (timerState == TimerService.State.READY) {
+            clear();
+        }
     }
 
     void clear() {
