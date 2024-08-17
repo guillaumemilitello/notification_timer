@@ -1213,13 +1213,6 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         updateButtonsLayout();
     }
 
-    void dismiss() {
-        Log.d(TAG, "dismiss: timerState=" + timerState);
-        if (timerState == TimerService.State.READY) {
-            clear();
-        }
-    }
-
     void clear() {
         Log.d(TAG, "clear: timerState=" + timerState);
 

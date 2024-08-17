@@ -252,7 +252,6 @@ public class TimerService extends Service {
         if (mainActivityVisible) {
             Log.d(TAG, "stopNotificationForeground");
             stopForeground(true);
-            interactiveNotification.dismiss();
         }
     }
 
@@ -431,14 +430,6 @@ public class TimerService extends Service {
         updateTimerIntent(timerCurrent, setsCurrent);
 
         saveContextPreferences(CONTEXT_PREFERENCE_TIMER_CURRENT | CONTEXT_PREFERENCE_SETS_CURRENT);
-    }
-
-    void dismiss() {
-        Log.d(TAG, "dismiss: state=" + state);
-        if (state == State.READY) {
-            updateNotificationVisibility(false);
-            clear();
-        }
     }
 
     void clear() {
