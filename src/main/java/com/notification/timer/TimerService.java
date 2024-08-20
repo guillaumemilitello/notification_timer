@@ -241,7 +241,7 @@ public class TimerService extends Service {
             Log.d(TAG, "startNotificationForeground");
             int type = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
+                type = ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE;
             }
             ServiceCompat.startForeground(this, interactiveNotification.getId(), interactiveNotification.getNotification(), type);
             interactiveNotification.setVisible();
