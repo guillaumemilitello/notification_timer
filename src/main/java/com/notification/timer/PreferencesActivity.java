@@ -31,12 +31,16 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.WindowManager;
+import android.view.View;
 import android.widget.Toast;
 
 import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder;
@@ -100,19 +104,45 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preferences_actionbar);
 
         // Update system color bar and icon for the system
-        setSupportActionBar((Toolbar) findViewById(R.id.preferences_toolbar));
+        Toolbar toolbar = findViewById(R.id.preferences_toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.status_bar));
         setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                 ContextCompat.getColor(this, R.color.colorPrimary)));
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, 0);
+
+            if (toolbar != null) {
+                toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(), toolbar.getPaddingBottom());
+            }
+
+            View contentFrame = findViewById(R.id.content_frame);
+            if (contentFrame != null) {
+                contentFrame.setPadding(contentFrame.getPaddingLeft(), contentFrame.getPaddingTop(),
+                        contentFrame.getPaddingRight(), systemBars.bottom);
+            }
+
+            View listView = findViewById(android.R.id.list);
+            if (listView != null) {
+                listView.setPadding(listView.getPaddingLeft(), listView.getPaddingTop(),
+                        listView.getPaddingRight(), systemBars.bottom);
+                // Ensure the list items don't get cut off
+                if (listView instanceof android.widget.ListView) {
+                    ((android.widget.ListView) listView).setClipToPadding(false);
+                }
+            }
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         timerGetReadyPickerBuilder = new HmsPickerBuilder();
         timerGetReadyPickerBuilder.setFragmentManager(getFragmentManager());

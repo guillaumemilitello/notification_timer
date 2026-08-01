@@ -31,7 +31,11 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.activity.EdgeToEdge;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -262,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
@@ -269,14 +274,34 @@ public class MainActivity extends AppCompatActivity implements HmsPickerDialogFr
         // Update system color bar and icon for the system
         Toolbar toolbar = findViewById(R.id.actionBar);
         setSupportActionBar(toolbar);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.status_bar));
         setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                 ContextCompat.getColor(this, R.color.colorPrimary)));
         if (toolbar != null) {
             toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.bpWhite));
         }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, 0);
+
+            if (toolbar != null) {
+                toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(), toolbar.getPaddingBottom());
+            }
+
+            View bottomButtons = findViewById(R.id.layoutBottomButtons);
+            if (bottomButtons != null) {
+                bottomButtons.setPadding(bottomButtons.getPaddingLeft(), bottomButtons.getPaddingTop(),
+                        bottomButtons.getPaddingRight(), systemBars.bottom);
+            }
+
+            View helpLayout = findViewById(R.id.layoutHelp);
+            if (helpLayout != null) {
+                helpLayout.setPadding(helpLayout.getPaddingLeft(), helpLayout.getPaddingTop(),
+                        helpLayout.getPaddingRight(), systemBars.bottom);
+            }
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         density = getResources().getDisplayMetrics().density;
 
