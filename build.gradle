@@ -1,11 +1,21 @@
 apply plugin: 'com.android.application'
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
 android {
     namespace 'com.notification.timer'
     compileSdk 37
 
     signingConfigs {
-        releaseConfig {
+        config {
+            keyAlias localProperties['signing.keyAlias'] ?: ''
+            keyPassword localProperties['signing.keyPassword'] ?: ''
+            storeFile localProperties['signing.storeFile'] ? file(localProperties['signing.storeFile']) : null
+            storePassword localProperties['signing.storePassword'] ?: ''
         }
     }
     defaultConfig {
