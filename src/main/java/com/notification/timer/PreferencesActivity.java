@@ -4,7 +4,6 @@ package com.notification.timer;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -12,13 +11,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -31,21 +31,23 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.WindowManager;
+import android.view.View;
 import android.widget.Toast;
 
 import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder;
 import com.codetroopers.betterpickers.hmspicker.HmsPickerDialogFragment;
 import com.kizitonwose.colorpreference.ColorPreference;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -74,15 +76,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     private static int dayNightMode;
 
-    private File sharedPreferencesFile;
     private boolean restoringPreferences;
-    private boolean overridePreferencesFile;
 
-    private static final String WRITE_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.WRITE_EXTERNAL_STORAGE;
-    private static final String READ_PERMISSION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE;
-
-    private static final int WRITE_PERMISSION_REQUEST_CODE = 1;
-    private static final int READ_PERMISSION_REQUEST_CODE = 2;
+    // Already used WRITE_PERMISSION_REQUEST_CODE = 1;
+    // Already used READ_PERMISSION_REQUEST_CODE = 2;
+    private static final int CREATE_BACKUP_REQUEST_CODE = 3;
+    private static final int RESTORE_BACKUP_REQUEST_CODE = 4;
     private static final int NOTIFICATION_SETTINGS_REQUEST_CODE = 100;
 
     private TimerPreferenceFragment settingsFragment;
@@ -100,19 +99,55 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preferences_actionbar);
 
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (windowInsetsController != null) {
+            boolean isDark = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+            windowInsetsController.setAppearanceLightStatusBars(!isDark);
+            windowInsetsController.setAppearanceLightNavigationBars(!isDark);
+        }
+
         // Update system color bar and icon for the system
-        setSupportActionBar((Toolbar) findViewById(R.id.preferences_toolbar));
+        Toolbar toolbar = findViewById(R.id.preferences_toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.status_bar));
         setTaskDescription(new ActivityManager.TaskDescription(getApplicationInfo().name,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher),
                 ContextCompat.getColor(this, R.color.colorPrimary)));
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, 0);
+
+            if (toolbar != null) {
+                toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(), toolbar.getPaddingBottom());
+            }
+
+            View contentFrame = findViewById(R.id.content_frame);
+            if (contentFrame != null) {
+                contentFrame.setPadding(contentFrame.getPaddingLeft(), contentFrame.getPaddingTop(),
+                        contentFrame.getPaddingRight(), systemBars.bottom);
+            }
+
+            View listView = findViewById(android.R.id.list);
+            if (listView != null) {
+                listView.setPadding(listView.getPaddingLeft(), listView.getPaddingTop(),
+                        listView.getPaddingRight(), systemBars.bottom);
+                // Ensure the list items don't get cut off
+                if (listView instanceof android.widget.ListView) {
+                    ((android.widget.ListView) listView).setClipToPadding(false);
+                }
+            }
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         timerGetReadyPickerBuilder = new HmsPickerBuilder();
         timerGetReadyPickerBuilder.setFragmentManager(getFragmentManager());
@@ -130,15 +165,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
         }
 
-        String relativePath = "/NotificationTimer/prefs.backup";
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            sharedPreferencesFile = new File(getBaseContext().getExternalFilesDir(null), relativePath);
-        } else {
-            sharedPreferencesFile = new File(getBaseContext().getFilesDir(), relativePath);
-        }
-
         restoringPreferences = false;
-        overridePreferencesFile = false;
     }
 
     @SuppressWarnings("deprecation")
@@ -252,6 +279,13 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         }
         if (requestCode == READY_CHANNEL_ACTIVITY_REQUEST) {
             updateReadyNotificationChannelPreferences();
+        }
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            if (requestCode == CREATE_BACKUP_REQUEST_CODE) {
+                performSaveSharedPreferencesToUri(data.getData());
+            } else if (requestCode == RESTORE_BACKUP_REQUEST_CODE) {
+                performLoadSharedPreferencesFromUri(data.getData());
+            }
         }
     }
 
@@ -432,25 +466,21 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     private String getUriTitle(String uriString) {
         Log.d(TAG, "getUriTitle : uriString=" + uriString);
-        if (isRingtoneInaccessible(uriString)) {
-            return uriString.substring(uriString.lastIndexOf("/")+1) + getString(R.string.preferences_external_media);
+        Uri uri = Uri.parse(uriString);
+        Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), uri);
+        if (ringtone != null) {
+            String title = ringtone.getTitle(getApplicationContext());
+            if (title != null && !title.equals("Unknown")) {
+                return title;
+            }
         }
-        Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(uriString));
-        final String summary = ringtone.getTitle(getApplicationContext());
-        if (summary.equals("Unknown")) {
-            return "None";
-        }
-        return summary;
-    }
 
-    private boolean isRingtoneInaccessible(String uriString) {
-        if (uriString != null && !uriString.matches("(.*)media/external(.*)")) {
-            return false;
+        // Fallback for custom ringtones when permission is denied or title is unknown
+        String lastPathSegment = uri.getLastPathSegment();
+        if (lastPathSegment != null) {
+            return lastPathSegment;
         }
-        final String permission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE;
-        final int permissionCheck = ContextCompat.checkSelfPermission(this, permission);
-        Log.d(TAG, "isRingtoneInaccessible : permissionCheck=" + permissionCheck);
-        return permissionCheck == PERMISSION_DENIED;
+        return "Custom Ringtone";
     }
 
     @TargetApi(Build.VERSION_CODES.TIRAMISU)
@@ -508,58 +538,27 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == WRITE_PERMISSION_REQUEST_CODE || requestCode == READ_PERMISSION_REQUEST_CODE) {
-            for (int i = 0; i < permissions.length; i++) {
-                String permission = permissions[i];
-                if (permission.equals(WRITE_PERMISSION) || permission.equals(READ_PERMISSION)) {
-                    int grantResult = grantResults[i];
-                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "onRequestPermissionsResult : permission=" + permission + " requestCode=" + requestCode + " granted");
-                        saveSharedPreferencesToFile();
-                    } else {
-                        Log.d(TAG, "onRequestPermissionsResult : permission=" + permission + " requestCode=" + requestCode + " denied");
-                        Toast.makeText(this, getString(R.string.preferences_permission_denied), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }
+        // Legacy storage permission handling removed in favor of SAF
     }
 
     private void saveSharedPreferencesToFile() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/octet-stream");
+        intent.putExtra(Intent.EXTRA_TITLE, "notification_timer.backup");
+        startActivityForResult(intent, CREATE_BACKUP_REQUEST_CODE);
+    }
+
+    private void performSaveSharedPreferencesToUri(Uri uri) {
         ObjectOutputStream objectOutputStream = null;
         try {
-            final int permissionCheck = ContextCompat.checkSelfPermission(this, WRITE_PERMISSION);
-            Log.d(TAG, "saveSharedPreferencesToFile: permissionCheck=" + permissionCheck);
-            if (permissionCheck == PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{WRITE_PERMISSION}, WRITE_PERMISSION_REQUEST_CODE);
-                return;
-            }
-            if (sharedPreferencesFile.exists()) {
-                Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " already exists");
-                if (!overridePreferencesFile) {
-                    showAlertDialogFileOverride();
-                    return;
-                }
-            } else {
-                Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " does not exists");
-                if (sharedPreferencesFile.getParentFile() != null && sharedPreferencesFile.getParentFile().mkdirs()) {
-                    if (!sharedPreferencesFile.createNewFile()) {
-                        Log.d(TAG, "saveSharedPreferencesToFile: createNewFile");
-                        Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else {
-                    Log.d(TAG, "saveSharedPreferencesToFile: mkdirs");
-                    Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
-                }
-            }
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(sharedPreferencesFile));
+            objectOutputStream = new ObjectOutputStream(getContentResolver().openOutputStream(uri));
             objectOutputStream.writeObject(sharedPreferences.getAll());
             Toast.makeText(this, getString(R.string.preferences_backup_success), Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "saveSharedPreferencesToFile: " + sharedPreferencesFile.getAbsolutePath() + " overridePreferencesFile=" + overridePreferencesFile);
-            overridePreferencesFile = false;
+            Log.d(TAG, "performSaveSharedPreferencesToUri: success");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "performSaveSharedPreferencesToUri: error", e);
+            Toast.makeText(this, getString(R.string.preferences_backup_error), Toast.LENGTH_SHORT).show();
         } finally {
             try {
                 if (objectOutputStream != null) {
@@ -572,43 +571,19 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
         }
     }
 
-    private void showAlertDialogFileOverride() {
-        Log.d(TAG, "showAlertDialogFileOverride");
-        AlertDialog alertDialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme).create();
-        alertDialog.setMessage(getString(R.string.preferences_backup_override));
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alert_yes),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        overridePreferencesFile = true;
-                        saveSharedPreferencesToFile();
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alert_no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
+    private void loadSharedPreferencesFromFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/octet-stream");
+        startActivityForResult(intent, RESTORE_BACKUP_REQUEST_CODE);
     }
 
     @SuppressWarnings("unchecked")
-    private void loadSharedPreferencesFromFile() {
+    private void performLoadSharedPreferencesFromUri(Uri uri) {
         ObjectInputStream objectInputStream = null;
         try {
-            final int permissionCheck = ContextCompat.checkSelfPermission(this, READ_PERMISSION);
-            Log.d(TAG, "loadSharedPreferencesFromFile : permissionCheck=" + permissionCheck);
-            if (permissionCheck == PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{READ_PERMISSION}, READ_PERMISSION_REQUEST_CODE);
-                return;
-            }
-            Log.d(TAG, "loadSharedPreferencesFromFile: " + sharedPreferencesFile.getAbsolutePath());
-            if (!sharedPreferencesFile.exists()) {
-                Toast.makeText(this, getString(R.string.preferences_restore_no_file), Toast.LENGTH_SHORT).show();
-                return;
-            }
             restoringPreferences = true;
-            objectInputStream = new ObjectInputStream(new FileInputStream(sharedPreferencesFile));
+            objectInputStream = new ObjectInputStream(getContentResolver().openInputStream(uri));
             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
             sharedPreferencesEditor.clear();
             for (Map.Entry<String, ?> entry : ((Map<String, ?>) objectInputStream.readObject()).entrySet()) {
@@ -618,7 +593,7 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
                     continue;
                 }
                 Object value = entry.getValue();
-                Log.d(TAG, "loadSharedPreferencesFromFile: key=" + key + ", value=" + value);
+                Log.d(TAG, "performLoadSharedPreferencesFromUri: key=" + key + ", value=" + value);
                 if (value instanceof Boolean) {
                     final boolean valueBoolean = (Boolean) value;
                     sharedPreferencesEditor.putBoolean(key, (Boolean) value);
@@ -648,11 +623,12 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
             sharedPreferencesEditor.apply();
             updateAllPreferences();
             Toast.makeText(this, getString(R.string.preferences_restore_success), Toast.LENGTH_SHORT).show();
-            restoringPreferences = false;
             updateDayNightMode();
         } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "performLoadSharedPreferencesFromUri: error", e);
+            Toast.makeText(this, getString(R.string.preferences_restore_no_file), Toast.LENGTH_SHORT).show();
         } finally {
+            restoringPreferences = false;
             try {
                 if (objectInputStream != null) {
                     objectInputStream.close();

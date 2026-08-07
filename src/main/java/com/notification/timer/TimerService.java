@@ -54,12 +54,8 @@ public class TimerService extends Service {
 
     // Notification related
     private InteractiveNotification interactiveNotification;
-    private boolean interactiveNotificationAlertDone = false;
     private boolean interactiveNotificationDone = false;
 
-    public void setInteractiveNotificationAlertDone() {
-        interactiveNotificationAlertDone = true;
-    }
 
     // Running values
     private long timerCurrent = 0;
@@ -214,25 +210,24 @@ public class TimerService extends Service {
 
     public void updateNotificationVisibility(boolean visible) {
         Log.d(TAG, "updateNotificationVisibility: visible=" + visible + ", state=" + state + ", mainActivityVisible=" + mainActivityVisible);
-        if (state != State.WAITING) {
-            if (timerCurrent == 0 && setsCurrent == 0) {
-                Log.e(TAG, "updateNotificationVisibility: wrong layout state=" + state + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
-                state = State.WAITING;
-                return;
-            }
-            setMainActivityVisible(!visible);
-            if (visible) {
+        if (visible) {
+            if (state != State.WAITING) {
+                if (timerCurrent == 0 && setsCurrent == 0) {
+                    Log.e(TAG, "updateNotificationVisibility: wrong layout state=" + state + ", timerCurrent=" + timerCurrent + ", setsCurrent=" + setsCurrent);
+                    state = State.WAITING;
+                    return;
+                }
+                setMainActivityVisible(false);
                 notificationUpdateTimerCurrent(timerCurrent);
                 startNotificationForeground();
                 interactiveNotificationDone = false;
-            } else {
-                Log.d(TAG, "updateNotificationVisibility: stopForeground");
-                stopNotificationForeground();
-                interactiveNotificationDone = true;
-                if (!interactiveNotificationAlertDone) {
-                    notificationDeleted();
-                }
             }
+        } else {
+            setMainActivityVisible(true);
+            Log.d(TAG, "updateNotificationVisibility: stopForeground");
+            stopNotificationForeground();
+            interactiveNotificationDone = true;
+            notificationDeleted();
         }
     }
 
@@ -367,7 +362,7 @@ public class TimerService extends Service {
     private void doneInteractiveNotification(InteractiveNotification.NotificationMode notificationMode) {
         notificationUpdateTimerCurrent(timerCurrent);
         interactiveNotification.updateSetsCurrent(setsCurrent);
-        interactiveNotificationAlertDone = false;
+
         if (state == State.READY) {
             interactiveNotification.updateButtonsLayout(InteractiveNotification.ButtonsLayout.READY, notificationMode);
         } else if (setsCurrent <= setsUser) {
@@ -581,7 +576,6 @@ public class TimerService extends Service {
     }
 
     private void notificationDeleted() {
-        interactiveNotificationAlertDone = true;
         Log.d(TAG, "notificationDeleted: setsCurrent=" + setsCurrent + ", setsUser=" + setsUser + " state=" + state);
         interactiveNotification.clear();
     }
