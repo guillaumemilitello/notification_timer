@@ -1,0 +1,20 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+- tapOn: "Add Timer"
+- assertVisible: "Sets:"
+# Type 1 min (1-0-0)
+- tapOn: "1"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "Start"
+# Verify Timer Card appears
+- extendedWaitUntil:
+    visible: "Set 1"
+    timeout: 5000
+# Tap Play/Pause icon to pause
+- tapOn: "Play/Pause"
+# Clear
+- tapOn: "Clear"
+- assertNotVisible: "Set 1"

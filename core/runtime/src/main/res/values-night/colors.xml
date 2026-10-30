@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="progress_bar_background">#4DFFFFFF</color>
+    <color name="progress_bar_current">#9FA8DA</color>
+    <color name="progress_bar_get_ready">#FF5252</color>
+    <color name="progress_bar_timer_text">#FFFFFF</color>
+    <color name="progress_bar_set_text">#E0E0E0</color>
+    <color name="icon_color_tint">#E0E0E0</color>
+</resources>

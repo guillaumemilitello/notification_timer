@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:background="@android:color/transparent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    tools:ignore="HardcodedText,ContentDescription">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/textViewTimer_line"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Chronometer
+                android:id="@+id/textViewTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="00:00"
+                android:textColor="@color/progress_bar_get_ready"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewSets_short"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:paddingStart="6dp"
+                android:paddingEnd="4dp"
+                android:singleLine="true"
+                android:text="Timer"
+                android:textColor="@color/progress_bar_set_text"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBarTimer"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@+id/textViewTimer_line"
+            android:indeterminate="false"
+            android:max="1000"
+            android:paddingStart="0dp"
+            android:paddingEnd="8dp"
+            android:progress="1000"
+            android:progressBackgroundTint="@color/progress_bar_background"
+            android:progressDrawable="@drawable/notification_progress_bar"
+            android:progressTint="@color/progress_bar_get_ready" />
+
+        <TextView
+            android:id="@+id/textViewSets"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@+id/textViewTimer_line"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="Time out!"
+            android:textColor="@color/progress_bar_set_text"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/buttonPlayPause"
+            android:layout_width="42dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_play"
+            android:theme="@style/notificationImageButton"
+            android:tint="@color/icon_color_tint" />
+
+        <ImageButton
+            android:id="@+id/buttonNext"
+            android:layout_width="42dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_chevron_right"
+            android:theme="@style/notificationImageButton"
+            android:tint="@color/icon_color_tint" />
+
+        <ImageButton
+            android:id="@+id/buttonClose"
+            android:layout_width="42dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_preset_delete"
+            android:theme="@style/notificationImageButton"
+            android:tint="@color/icon_color_tint" />
+
+    </LinearLayout>
+
+</LinearLayout>

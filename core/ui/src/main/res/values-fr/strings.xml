@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback">Envoyer un retour…</string>
+    <string name="rateApp">Noter l\'application</string>
+    <string name="setsTimerReset">Reset nombre de minuteurs</string>
+    <string name="help">Indications</string>
+    <string name="settings">Paramètres</string>
+    <string name="keepScreenOn">Écran toujours allumé</string>
+    <string name="presets">Minuteurs sauvegardés</string>
+    <!-- Main Activity -->
+    <string name="default_timer_name">Minuteur</string>
+    <string name="presetsListEmpty">Liste des minuteurs vide</string>
+    <string name="notification_permission_denied">Autorisation insuffisante pour l\'utilisation des notifications, vérifiez les paramètres.</string>
+    <!-- Pickers -->
+    <string name="picker_timer">Minuteur</string>
+    <string name="picker_sets">Limite de minuteurs</string>
+    <string name="picker_timer_get_ready">Temps de la notification</string>
+    <string name="picker_split_screen">Augmentez la hauteur de la fenêtre pour créer un minuteur</string>
+    <!-- Alerts -->
+    <string name="select_preset">Êtes-vous sûr de vouloir arrêter le minuteur en cours pour celui sélectionné ?</string>
+    <string name="delete_preset">Êtes-vous sûr de vouloir supprimer le minuteur sélectionné ?</string>
+    <string name="reset_preset">Êtes-vous sûr de vouloir réinitializer l\'indicateur de limite de minuteurs ?</string>
+    <string name="clear_preset">Êtes-vous sûr de vouloir arrêter et supprimer le minuteur en cours ?</string>
+    <string name="alert_time_out">Temps écoulé !</string>
+    <string name="alert_set_done">Voulez-vous lancer le prochain minuteur?</string>
+    <string name="alert_all_set_done">Quelle action aimeriez-vous faire ensuite?</string>
+    <string name="alert_extra_set">MINUTEUR SUPPLÉMENTAIRE</string>
+    <string name="alert_reset">RÉINITIALISATION</string>
+    <string name="alert_clear">REMISE À ZÉRO</string>
+    <string name="alert_yes">OUI</string>
+    <string name="alert_no">NON</string>
+    <string name="alert_stop_asking">ARRÊTER DE DEMANDER</string>
+    <!-- Notification -->
+    <string name="notif_timer_done">Temps écoulé !</string>
+    <!-- HelpOverlay -->
+    <string name="help_tap_to_quit">Appuyez pour quitter les indications</string>
+    <!-- Settings -->
+    <string name="notification">Notification</string>
+    <string name="extra_notification">Notification supplémentaire</string>
+    <string name="customization">Personnalisation</string>
+    <string name="backup">Sauvegarde</string>
+    <string name="extra_notification_summary">Notification supplémentaire avant la fin du minuteur</string>
+    <string name="timer_plus">Incrémentation du temps</string>
+    <string name="timer_minus">Décrémentation du temps</string>
+    <string name="sets_pref_category">Information du minuteurs</string>
+    <string name="sets_name_display_enable">Affichage du nom du minuteur</string>
+    <string name="sets_name_display_enable_summary">Afficher le nom du minuteur au dessus du temps restant</string>
+    <string name="sets_number_display_enable">Afficher le nombre de minuteurs</string>
+    <string name="sets_number_display_enable_summary">Affichage du nombre de minuteurs. Toujours affiché si il y a un indicateur de limite de minuteurs</string>
+    <string name="sets_number_reset">Réinitialisation du nombre de minuteurs</string>
+    <string name="sets_number_reset_summary">Remise à zéro du nombre total de minuteurs au début de chaque nouveau minuteur. Fonctionne uniquement avec des minuteurs sans indicateur de limite</string>
+    <string name="reset">Réinitialisation du nombre de minuteurs</string>
+    <string name="reset_summary">Réinitialise le nombre de minuteurs si il y a un indicateur de limite de minuteurs. Appui long pour réinitializer le timer</string>
+    <string name="sets_picker_enable">Limite de minuteurs</string>
+    <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
+    <string name="preset_select_asking">Alerte lors de la sélection de minuteur</string>
+    <string name="preset_select_asking_summary">Afficher une alerte lors de la sélection d\'un nouveau minteur alors qu\'un minuteur est déjà en cours</string>
+    <string name="clear_asking">Alerte lors de la réinitialization du minuteur</string>
+    <string name="clear_asking_summary">Afficher une alerte lors de l\'arrêt et de la réinitialization du minutuer en cours</string>
+    <string name="step_time">Saut de temps</string>
+    <string name="step_time_increment">Incrémentation de %1$d secondes</string>
+    <string name="step_time_decrement">Décrémentation de %1$d secondes</string>
+    <string name="vibrate">Vibreur</string>
+    <string name="vibrate_on">Vibreur activé</string>
+    <string name="vibrate_off">Vibreur désactivé</string>
+    <string name="vibrate_summary">Vibration lorsque le temps est écoulé</string>
+    <string name="ringtone">Son</string>
+    <string name="channel">Son et vibreur</string>
+    <string name="enable">Activer</string>
+    <string name="get_ready_time">Temps</string>
+    <string name="get_ready_time_summary">La notification se produira %1$d:%2$02d avant la fin du minuteur</string>
+    <string name="vibrate_summary_get_ready">Vibration lors de la notification supplémentaire</string>
+    <string name="color_enable">Couleur de fond de la notification</string>
+    <string name="color_enable_summary">Applique les couleurs suivantes à l\'arrière-plan de la notification</string>
+    <string name="color_running">Minuteur en cours</string>
+    <string name="color_running_summary">Couleur d\'arrière-plan après la notification supplémentaire</string>
+    <string name="color_ready">Minueur prêt</string>
+    <string name="color_ready_summary">Couleur d\'arrière-plan avant la fin du minuteur</string>
+    <string name="color_done">Minuteur terminé</string>
+    <string name="color_done_summary">Couleur d\'arrière-plan lorsque le temps est écoulé</string>
+    <string name="preferences_backup">Sauvegarde</string>
+    <string name="preferences_backup_summary">Sauvegarde des paramètres et des minuteurs sauvegardés sur cet appareil</string>
+    <string name="preferences_restore">Restauration</string>
+    <string name="preferences_restore_summary">Restauration des paramètres et des minuteurs sauvegardés depuis cet appareil</string>
+    <string name="preferences_backup_error">Erreur lors de la création du fichier</string>
+    <string name="preferences_backup_success">Sauvegarde réussie</string>
+    <string name="preferences_restore_no_file">Aucun fichier trouvé</string>
+    <string name="preferences_restore_success">Restauration réussie</string>
+    <string name="preferences_permission_denied">Autorisations insuffisantes</string>
+    <string name="preferences_notification_permission_denied">Autorisations insuffisantes, cliquez pour activer</string>
+    <string name="preferences_permission_granted">Autorisations suffisantes</string>
+    <string name="preferences_backup_override">Souhaitez-vous remplacer la sauvegarde existante ?</string>
+    <string name="preferences_notification_summary">Configurer le son et plus depuis les réglages du système</string>
+    <string name="preferences_background_theme">Thème de l\'arrière-plan</string>
+    <string name="preferences_dark_theme">Thème de l\'application</string>
+    <string name="preferences_notification_permission">Permission</string>
+</resources>

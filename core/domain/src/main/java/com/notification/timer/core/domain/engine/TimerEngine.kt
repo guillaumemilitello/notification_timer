@@ -1,0 +1,321 @@
+package com.notification.timer.core.domain.engine
+
+import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.Timer
+import com.notification.timer.core.domain.model.TimerCommand
+import com.notification.timer.core.domain.model.TimerState
+import com.notification.timer.core.domain.ports.AlertPlayerPort
+import com.notification.timer.core.domain.ports.TimeSource
+import com.notification.timer.core.domain.ports.TimerNotifierPort
+import com.notification.timer.core.domain.ports.TimerStore
+import com.notification.timer.core.domain.ports.WakeupSchedulerPort
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
+
+class TimerEngine(
+    private val timeSource: TimeSource,
+    private val timerStore: TimerStore,
+    private val wakeupScheduler: WakeupSchedulerPort,
+    private val alertPlayer: AlertPlayerPort,
+    private val timerNotifier: TimerNotifierPort,
+) {
+    companion object {
+        const val NOTIFICATION_REFRESH_INTERVAL_MS = 2_000L
+        const val MIN_TIMER_ID = 1000
+
+        fun refreshIntervalMsForRunningCount(runningCount: Int): Long = maxOf(NOTIFICATION_REFRESH_INTERVAL_MS, runningCount * 500L)
+    }
+
+    private val _timers = MutableStateFlow<List<Timer>>(emptyList())
+    val timers: StateFlow<List<Timer>> = _timers.asStateFlow()
+
+    private val commandChannel = Channel<TimerCommand>(Channel.UNLIMITED)
+    private var loopJob: Job? = null
+    private var nextTimerId = MIN_TIMER_ID
+    private var lastNotificationRefreshElapsedMs: Long = 0L
+
+    fun start(scope: CoroutineScope) {
+        loopJob =
+            scope.launch {
+                val nowElapsedMs = timeSource.elapsedRealtimeMs()
+
+                // Restore and reconcile persisted timers and monotonic ID counter on process start
+                val restored = timerStore.loadTimers()
+                val persistedNextId = timerStore.loadNextTimerId()
+                val maxExistingId = restored.maxOfOrNull { it.id } ?: (MIN_TIMER_ID - 1)
+                nextTimerId = maxOf(MIN_TIMER_ID, persistedNextId, maxExistingId + 1)
+
+                if (restored.isNotEmpty()) {
+                    var stateChanged = false
+                    val newlyCompletedIds = mutableSetOf<Int>()
+                    val reconciled =
+                        restored.map { timer ->
+                            if (timer.state is TimerState.Running) {
+                                val (updatedTimer, alerts) = TimerStateMachine.checkAlertsAndEnd(timer, nowElapsedMs)
+                                if (updatedTimer != timer) {
+                                    stateChanged = true
+                                    if (updatedTimer.state !is TimerState.Running && alerts.isNotEmpty()) {
+                                        newlyCompletedIds.add(updatedTimer.id)
+                                    }
+                                }
+                                for (alert in alerts) {
+                                    alertPlayer.playAlert(alert)
+                                }
+                                updatedTimer
+                            } else {
+                                timer
+                            }
+                        }
+
+                    _timers.value = reconciled
+
+                    if (stateChanged) {
+                        timerStore.saveRuntimeState(reconciled, nextTimerId)
+                    }
+                    scheduleNextWakeup(reconciled, nowElapsedMs)
+                    timerNotifier.reconcileRestoredNotifications(reconciled, newlyCompletedIds)
+                    lastNotificationRefreshElapsedMs = nowElapsedMs
+                } else {
+                    timerNotifier.reconcileRestoredNotifications(emptyList(), emptySet())
+                }
+
+                // Command processing loop
+                launch {
+                    for (command in commandChannel) {
+                        processCommand(command)
+                    }
+                }
+
+                // Ticker & event loop
+                while (true) {
+                    val nowMs = timeSource.elapsedRealtimeMs()
+                    tick(nowMs)
+                    val nextEventMs = EventPlanner.findEarliestNextEventMs(_timers.value, nowMs)
+                    val delayMs =
+                        if (nextEventMs != null) {
+                            (nextEventMs - nowMs).coerceIn(10L, 500L)
+                        } else {
+                            500L
+                        }
+                    delay(delayMs.milliseconds)
+                }
+            }
+    }
+
+    fun submitCommand(command: TimerCommand) {
+        commandChannel.trySend(command)
+    }
+
+    private suspend fun processCommand(command: TimerCommand) {
+        val nowElapsedMs = timeSource.elapsedRealtimeMs()
+        val currentList = _timers.value.toMutableList()
+
+        when (command) {
+            is TimerCommand.Create -> {
+                var newTimer = createTimerFromPreset(command.preset, currentList)
+                if (command.startImmediately) {
+                    newTimer = TimerStateMachine.start(newTimer, nowElapsedMs)
+                }
+                currentList.add(0, newTimer)
+            }
+
+            is TimerCommand.Start -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.start(currentList[index], nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.Pause -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.pause(currentList[index], nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.Resume -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.resume(currentList[index], nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.AdjustTime -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.adjustTime(currentList[index], command.deltaSec, nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.StepTime -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.adjustTime(currentList[index], command.deltaSec, nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.NextSet -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.nextSet(currentList[index])
+                }
+            }
+
+            is TimerCommand.StartNextSet -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.startNextSet(currentList[index], nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.Stop -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.stop(currentList[index])
+                }
+            }
+
+            is TimerCommand.ExtraSet -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.extraSet(currentList[index], nowElapsedMs)
+                }
+            }
+
+            is TimerCommand.Reset -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.reset(currentList[index])
+                }
+            }
+
+            is TimerCommand.Clear -> {
+                currentList.removeAll { it.id == command.timerId }
+            }
+
+            is TimerCommand.DismissNotification -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.dismissNotification(currentList[index])
+                }
+            }
+
+            is TimerCommand.CloseNotification -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.closeNotification(currentList[index])
+                }
+            }
+
+            is TimerCommand.Rename -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.rename(currentList[index], command.newName)
+                }
+            }
+
+            is TimerCommand.UpdateColor -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.updateColor(currentList[index], command.colorHex)
+                }
+            }
+
+            is TimerCommand.Reorder -> {
+                if (command.fromIndex in currentList.indices &&
+                    command.toIndex in currentList.indices &&
+                    command.fromIndex != command.toIndex
+                ) {
+                    val moved = currentList.removeAt(command.fromIndex)
+                    currentList.add(command.toIndex, moved)
+                }
+            }
+        }
+
+        _timers.value = currentList
+        timerStore.saveRuntimeState(currentList, nextTimerId)
+        scheduleNextWakeup(currentList, nowElapsedMs)
+        timerNotifier.updateNotifications(currentList)
+    }
+
+    private suspend fun tick(nowElapsedMs: Long) {
+        val currentList = _timers.value.toMutableList()
+        var stateChanged = false
+        var runningCount = 0
+
+        for (i in currentList.indices) {
+            val timer = currentList[i]
+            if (timer.state is TimerState.Running) {
+                val (updatedTimer, firedAlerts) = TimerStateMachine.checkAlertsAndEnd(timer, nowElapsedMs)
+                if (updatedTimer != timer) {
+                    currentList[i] = updatedTimer
+                    stateChanged = true
+                    for (alert in firedAlerts) {
+                        alertPlayer.playAlert(alert)
+                    }
+                }
+                if (currentList[i].state is TimerState.Running) {
+                    runningCount++
+                }
+            }
+        }
+
+        if (stateChanged) {
+            _timers.value = currentList
+            timerStore.saveRuntimeState(currentList, nextTimerId)
+            scheduleNextWakeup(currentList, nowElapsedMs)
+            timerNotifier.updateNotifications(currentList)
+            lastNotificationRefreshElapsedMs = nowElapsedMs
+        } else if (runningCount > 0 &&
+            nowElapsedMs - lastNotificationRefreshElapsedMs >= refreshIntervalMsForRunningCount(runningCount)
+        ) {
+            // Refresh running notification progress bars without persisting state on ticks
+            timerNotifier.updateNotifications(currentList)
+            lastNotificationRefreshElapsedMs = nowElapsedMs
+        }
+    }
+
+    private fun scheduleNextWakeup(
+        timers: List<Timer>,
+        nowElapsedMs: Long,
+    ) {
+        val earliestEventMs = EventPlanner.findEarliestNextEventMs(timers, nowElapsedMs)
+        if (earliestEventMs != null) {
+            wakeupScheduler.scheduleWakeup(earliestEventMs)
+        } else {
+            wakeupScheduler.cancelWakeup()
+        }
+    }
+
+    private fun createTimerFromPreset(
+        preset: Preset,
+        existingTimers: List<Timer>,
+    ): Timer {
+        val id = nextTimerId++
+        val existingLabels = existingTimers.map { it.label }.toSet()
+        val label =
+            if (preset.name !in existingLabels) {
+                preset.name
+            } else {
+                var suffix = 2
+                while ("${preset.name} $suffix" in existingLabels) {
+                    suffix++
+                }
+                "${preset.name} $suffix"
+            }
+
+        return Timer(
+            id = id,
+            presetId = preset.id,
+            config = preset,
+            label = label,
+        )
+    }
+}
