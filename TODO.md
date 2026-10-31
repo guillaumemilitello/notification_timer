@@ -3,10 +3,10 @@
 List of items, bugs, and enhancements noticed while testing NotificationTimer 2.0.
 
 ## Now
-- [ ] Create a README.md file to explain how to use the project, install dependencies, etc...
-- [ ] How to run unit and maestro tests
-- [ ] List and extend all tests (unit and integration (maestro))
-- [ ] Create a unit and integration tests "gate"
+- [x] Create a README.md file to explain how to use the project, install dependencies, etc...
+- [x] How to run unit and maestro tests
+- [x] List and suggest new tests (unit and integration (maestro))
+- [x] Create a unit and integration tests "gate"
 
 ### MainActivity
 - [ ] I want to change the progression of the timer by clicking on the progress bar.

@@ -1,0 +1,19 @@
+appId: com.notification.timer.debug
+tags:
+  - wip
+---
+- launchApp:
+    clearState: true
+
+# Open Settings / Options from top app bar
+- tapOn: "More options" # Overflow or settings menu
+- tapOn: "Settings"
+
+# Verify settings screen headers
+- extendedWaitUntil:
+    visible: "Preferences"
+    timeout: 5000
+
+# Back to main screen
+- pressKey: Back
+- assertVisible: "NotificationTimer"

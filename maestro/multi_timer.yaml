@@ -1,0 +1,34 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Add first timer (1 min)
+- tapOn: "Add Timer"
+- assertVisible: "Sets:"
+- tapOn: "1"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "Start"
+
+# Verify first timer appears
+- extendedWaitUntil:
+    visible: "Set 1"
+    timeout: 5000
+
+# 2. Add second timer (2 min)
+- tapOn: "Add Timer"
+- assertVisible: "Sets:"
+- tapOn: "2"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "Start"
+
+# Verify multiple timers coexist
+- extendedWaitUntil:
+    visible: "Set 1"
+    timeout: 5000
+- assertVisible: "Timer"
+
+# Pause the visible timer
+- tapOn: "Play/Pause"

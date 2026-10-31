@@ -1,0 +1,29 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# Add and start a 3-minute timer
+- tapOn: "Add Timer"
+- assertVisible: "Sets:"
+- tapOn: "3"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "Start"
+
+- extendedWaitUntil:
+    visible: "Set 1"
+    timeout: 5000
+
+# Put app into background and open system notification shade
+- pressKey: Home
+- openNotifications
+
+# Verify the timer notification is present in system shade
+- extendedWaitUntil:
+    visible: "NotificationTimer"
+    timeout: 5000
+
+# Return to app
+- launchApp
+- assertVisible: "Set 1"
