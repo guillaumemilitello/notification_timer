@@ -1,39 +1,75 @@
 # TODO
 
-List of items, bugs, and enhancements noticed while testing NotificationTimer 2.0.
+NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
-## Now
-- [x] Create a README.md file to explain how to use the project, install dependencies, etc...
-- [x] How to run unit and maestro tests
-- [x] List and suggest new tests (unit and integration (maestro))
-- [x] Create a unit and integration tests "gate"
+## Now (Active Backlog)
 
-### MainActivity
-- [ ] I want to change the progression of the timer by clicking on the progress bar.
-- [ ] Settings for a timer implementation island
+### MainActivity & UI
+- [ ] Change countdown progression by clicking or dragging on progress bar.
+- [ ] Per-timer settings floating island (alerts list, sound picker, vibration pattern, ±time step).
+- [ ] Circular dial picker as second input mode in numpad.
 
-### Notification
-- [ ] Better Design, progress bar and icons
+### Notifications
+- [ ] Notification redesign: custom progress bar, refreshed vector icons, lock-screen layout polish.
 
-### Long term
-- [ ] Timer colors
-- [ ] M Extra notifications or steps
-- [ ] Focus mode
+## Next (Roadmap & Enhancements)
+- [ ] M extra notifications / alert steps per timer with custom thresholds.
+- [ ] Material 3 Expressive redesign (shared play button style when active, live animations).
+- [ ] Focus mode (fullscreen immersive countdown view).
+- [ ] Home screen widgets (Jetpack Glance) and Quick Settings tile.
+- [ ] Alarm volume stream option (play alerts on alarm stream instead of notification stream).
+- [ ] Android 16 Live Updates style (optional alternative layout).
 
 ## Completed
 
-- [x] Fixed extra second at the end: `00:00` is no longer displayed during countdown (uses ceiling rounding `(millis + 999) / 1000` for time formatting and alert threshold calculations).
-- [x] The main button Play/Pause is always centered in a 3-slot layout (`[Empty] [Play/Pause] [Next/Reset/Stop]`, with timer termination moved exclusively to the long-press floating red cross).
-- [x] Adding a timer places the new timer at the top of the list (while keeping the floating `+` button).
-- [x] Long-press options scoped strictly to the triggered timer (floating red cross, settings wheel, and drag handle).
-- [x] Drag-and-drop reordering with live item animations.
-- [x] New Timer & Timer Settings as MD3 center floating islands.
-- [x] Fixed notifications jumping to 'silent' section when paused or moving between sets (upgraded channel to `IMPORTANCE_DEFAULT` without sound, maintained ongoing foreground service while active, and set `CATEGORY_STOPWATCH`).
-- [x] Eliminated `0:00` and negative `-00:01` values: upon timer completion, state immediately advances to the next set in `Ready(isCompleted = true)` with full duration, color staying green (`#4CAF50`), and `RemoteViews` chronometer countdown prevented from overrunning past zero.
-- [x] Strict per-timer notification isolation & N-timer scalability: removed 5-timer ceiling, persisted monotonic `TimerId` counter, tracked explicit per-timer `isNotificationVisible` lifecycle (including notification close/swipe dismissal without deleting tiles), added per-timer `TimerNotificationSpec` diffing with sticky Running-only foreground service anchoring, and scaled periodic refresh intervals dynamically across N running timers.
+### Groundwork & Core Architecture
+- [x] Multi-module Gradle build (`:app`, `:feature:*`, `:core:*`) with version catalog and convention plugins.
+- [x] Tooling setup: Spotless (ktlint), Detekt, Android Lint, strict quality gate script (`gate.ps1` / `gate.sh`).
+- [x] Resource porting: Recursive variable fonts, notification layouts, 18-color palette, English, French, and Spanish localization.
+- [x] Documentation: Lean caveman `AGENT.md`, `CONTRIBUTING.md`, `docs/architecture.md`, `docs/testing.md`, `README.md` with Mermaid diagram.
 
+### Domain Core (`:core:domain`)
+- [x] Pure Kotlin business models (`Timer`, `Preset`, `Alert`, `UserSettings`, `TimerCommand`, `TimerEvent`).
+- [x] Deterministic state machine (`Ready`, `Running`, `Paused`, `Completed`).
+- [x] Event planner for alert scheduling, threshold calculations, and next-event computation.
+- [x] `TimerEngine`: command queue, single-threaded processing, restore and reconcile on startup.
+- [x] Invariant enforcement: timestamps only (`elapsedRealtime`), zero tick counters, state changes only in domain.
 
-## Later
+### Data & Persistence (`:core:data`)
+- [x] DataStore persistence with JSON serialization (`library.json` for presets/settings, `runtime.json` for active live timers).
+- [x] Schema versioning with fallback handling for corrupted files.
+- [x] Storage Access Framework (SAF) JSON backup export and import repository with schema checks.
 
-- [ ] MD3. Play button should be shared when playing.
-- [ ] Focus mode
+### Android Runtime (`:core:runtime`)
+- [x] Background wakeup with `AlarmManager.setExactAndAllowWhileIdle` (2-second early margin) + `PARTIAL_WAKE_LOCK`.
+- [x] `AlertPlayer`: audio ducking (`AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK`), vibration patterns, logging to `InMemoryEventLog`.
+- [x] `ForegroundService` (`specialUse` subtype) with sticky Running-only anchoring.
+- [x] Per-timer `RemoteViews` notification renderer with countdown `Chronometer` (no per-second re-posting).
+- [x] Dynamic luminance calculation (`0.2126*R + 0.7152*G + 0.0722*B > 0.5`) picking black vs. white text on phase colors.
+- [x] Per-timer deterministic `PendingIntent`s (`ntimer://timer/{id}/{action}`) with `FLAG_IMMUTABLE`.
+
+### Jetpack Compose UI (`:feature:*`, `:core:ui`)
+- [x] Horizontal timer pager and dynamic presets strip with urgent-phase color chips.
+- [x] Custom `TextAutoSize` modifier for auto-scaling timer digits without clipping.
+- [x] Compose numpad with formatted display buffer and sets selector.
+- [x] Preset editor wizard with alert configuration.
+- [x] Settings screen, JSON backup import/export UI, and "How it works" guidance page.
+- [x] Floating island dialogs (MD3 center dialogs) for Add Timer and Timer Settings.
+
+### Bug Fixes & UX Polish
+- [x] Eliminated extra second at countdown end: ceiling rounding `(millis + 999) / 1000` for time display and alert thresholds.
+- [x] Centered 3-slot Play/Pause control layout (`[Empty] [Play/Pause] [Next/Reset/Stop]`).
+- [x] Timer termination moved exclusively to scoped floating red cross button.
+- [x] New timers placed at top of list while preserving floating `+` button.
+- [x] Scoped long-press options per timer (floating red cross, settings wheel, drag handle).
+- [x] Drag-and-drop timer reordering with live animated item movements.
+- [x] Prevented notifications jumping to silent section: channel `IMPORTANCE_DEFAULT` without sound, ongoing foreground service, `CATEGORY_STOPWATCH`.
+- [x] Prevented `0:00` and `-00:01` overruns: state advances to next set in `Ready(isCompleted = true)` with full duration, color staying green (`#4CAF50`).
+- [x] Strict per-timer notification isolation and N-timer scalability: removed 5-timer ceiling, persisted monotonic `TimerId`, per-timer `isNotificationVisible` lifecycle.
+
+### Testing & Verification
+- [x] JVM unit tests covering domain state machine, event planner, and `TimerEngine`.
+- [x] Robolectric tests covering `BackupRepository`, `DataStoreStore`, `AlertPlayer`, `WakeupScheduler`, and `NotificationRenderer`.
+- [x] Feature ViewModel unit tests with Turbine and coroutines test dispatcher (`TimersViewModelTest`).
+- [x] Maestro end-to-end integration flows (`timer_basics.yaml`, `multi_timer.yaml`, `notification_actions.yaml`, `settings_and_help.yaml` tagged `wip`).
+- [x] Unified quality gate scripts (`scripts/gate.ps1`, `scripts/gate.sh`) enforcing `spotlessCheck`, `detekt`, `test`, `check`.

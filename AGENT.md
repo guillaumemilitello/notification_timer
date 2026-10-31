@@ -7,7 +7,7 @@ Rules for AI agents working on NotificationTimer 2.0.
 - Use IDE tools (`read_file`, `find_declaration`, `find_usages`, `grep`).
 - Never use shell for reading or editing files (`sed`, `awk`, `cat`, redirection).
 - Keep changes minimal, surgical, focused.
-- Update `TODO.md` and `PLAN.md` checkboxes when work is done.
+- Update `TODO.md` checkboxes when work is done.
 
 ## Architecture Invariants (Never Break)
 - **State ownership**: Only `:core:domain` state machine changes timer state. UI, receivers, services send commands only.
@@ -47,5 +47,5 @@ Rules for AI agents working on NotificationTimer 2.0.
 - Gate runs clean (zero warnings, zero errors).
 - No architectural invariant broken.
 - Strings added to `values/strings.xml`, `values-fr/strings.xml`, `values-es/strings.xml`.
-- Checkbox updated in `TODO.md` / `PLAN.md`.
+- Checkbox updated in `TODO.md`.
 - Commit with conventional commit format (`feat:`, `fix:`, `test:`, `docs:`).

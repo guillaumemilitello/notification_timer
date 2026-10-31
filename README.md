@@ -133,7 +133,7 @@ More testing details: [docs/testing.md](docs/testing.md).
 ## Documentation
 - [CONTRIBUTING.md](CONTRIBUTING.md): Rules for code contributions and PRs.
 - [AGENT.md](AGENT.md): Strict instructions for AI agents modifying this codebase.
-- [PLAN.md](PLAN.md): Technical roadmap and specifications.
+- [TODO.md](TODO.md): Backlog, roadmap, and completed milestones.
 - [docs/architecture.md](docs/architecture.md): Module boundaries and architecture invariants.
 - [docs/testing.md](docs/testing.md): Testing strategy and layers.
 - [docs/spike-notifications.md](docs/spike-notifications.md): Phase 1 notification measurements and findings.
