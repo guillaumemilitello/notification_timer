@@ -1,163 +1,139 @@
 # NotificationTimer 2.0 ⏱️
 
-A modern, multi-timer Android application designed for precision, background resilience, and customizable alerts. NotificationTimer 2.0 is a complete Kotlin & Jetpack Compose multi-module rewrite engineered for Android 15+ (minSdk 35, targetSdk 37).
-
-Each timer operates independently with its own set of alerts (sound, vibration, phase color) and dedicated interactive notification with custom lock-screen controls.
+Multi-timer Android app. Independent timers, custom alerts, background resilience, interactive notifications with lock-screen controls. Kotlin + Jetpack Compose multi-module architecture for Android 15+ (`minSdk 35`, `targetSdk 37`).
 
 ---
 
-## Architecture & Modules
+## Architecture
 
-The project is built following strict unidirectional data flow and clean architecture invariants:
+```mermaid
+graph TD
+    subgraph App [Application]
+        A[":app"]
+    end
 
+    subgraph Features [Feature Modules]
+        FT[":feature:timers"]
+        FP[":feature:presets"]
+        FS[":feature:settings"]
+    end
+
+    subgraph Core [Core Modules]
+        CU[":core:ui"]
+        CD[":core:domain"]
+        CR[":core:runtime"]
+        CDA[":core:data"]
+        CT[":core:testing"]
+    end
+
+    A --> FT
+    A --> FP
+    A --> FS
+    A --> CR
+    A --> CDA
+
+    FT --> CU
+    FT --> CD
+    FP --> CU
+    FP --> CD
+    FS --> CU
+    FS --> CD
+
+    CR --> CD
+    CDA --> CD
+    CT --> CD
 ```
-                  ┌──────────────┐
-                  │     :app     │ (Application entry point, DI assembly)
-                  └──────┬───────┘
-         ┌───────────────┼───────────────┐
-         ▼               ▼               ▼
-┌────────────────┐┌──────────────┐┌────────────────┐
-│:feature:timers ││:feature:presets│:feature:settings│ (Compose UI Features)
-└────────┬───────┘└──────┬───────┘└──────┬─────────┘
-         │               │               │
-         ├───────────────┼───────────────┤
-         ▼                               ▼
-  ┌─────────────┐                 ┌─────────────┐
-  │  :core:ui   │                 │:core:domain │ (Pure Kotlin: Engine, State Machine)
-  └─────────────┘                 └──────┬──────┘
-                                         │
-                         ┌───────────────┴───────────────┐
-                         ▼                               ▼
-                  ┌─────────────┐                 ┌─────────────┐
-                  │ :core:data  │                 │:core:runtime│ (Service, Alarms, Notifications)
-                  └─────────────┘                 └─────────────┘
-```
 
-* **`:app`**: Application entry point, `MainActivity`, navigation host, and Hilt root setup.
-* **`:feature:timers`**: Main screen, horizontal timer pager, dynamic presets strip, and floating island dialogs.
-* **`:feature:presets`**: Preset editor wizard, numpad input, and alert configuration.
-* **`:feature:settings`**: Settings UI, JSON backup import/export, and "How it works" guide.
-* **`:core:ui`**: Material 3 theming, Recursive variable font integration, and custom auto-sizing text components.
-* **`:core:domain`**: Pure Kotlin business models, deterministic state machine, event scheduler, and `TimerEngine`. Zero Android framework dependencies.
-* **`:core:data`**: DataStore persistence (`library.json`, `runtime.json`), JSON codecs, and SAF backup repository.
-* **`:core:runtime`**: Foreground service management, AlarmManager exact wakeups, interactive notification renderer (`RemoteViews`), and alert audio/haptics.
-* **`:core:testing`**: Test doubles, fake clocks, and in-memory test stores.
+### Modules
+- **`:app`**: Application entry point, `MainActivity`, navigation, Hilt DI.
+- **`:feature:timers`**: Timer screen, horizontal pager, presets strip, island dialogs.
+- **`:feature:presets`**: Preset editor, numpad, alert configuration.
+- **`:feature:settings`**: Settings UI, JSON backup import/export, how-it-works page.
+- **`:core:ui`**: Material 3 theme, Recursive font, auto-sizing text.
+- **`:core:domain`**: Pure Kotlin. Models, state machine, event scheduler, `TimerEngine`. Zero Android dependencies.
+- **`:core:data`**: DataStore persistence (`library.json`, `runtime.json`), JSON codecs, backup repository.
+- **`:core:runtime`**: Foreground service, AlarmManager wakeup, notification renderer (`RemoteViews`), audio/vibration player.
+- **`:core:testing`**: Test doubles, fake clocks, in-memory stores.
+
+More architecture details: [docs/architecture.md](docs/architecture.md).
 
 ---
 
-## Prerequisites & Installation
-
-### Environment Requirements
-- **JDK**: Java 17 or higher
-- **Android Studio**: Ladybug (2024.2.1) or newer recommended
-- **Android SDK**:
-  - `compileSdk`: **37**
-  - `minSdk`: **35**
-  - `targetSdk`: **37**
-- **Maestro CLI** (optional, for end-to-end testing):
+## Prerequisites
+- **JDK**: 17+
+- **Android SDK**: `compileSdk 37`, `minSdk 35`, `targetSdk 37`
+- **Maestro CLI** (for E2E tests):
   - macOS / Linux: `curl -fsSL "https://get.maestro.mobile.dev" | bash`
   - Windows: `powershell -c "irm https://get.maestro.mobile.dev | iex"`
 
-### Building the Project
-Clone the repository and build the debug APK:
+---
 
+## Build
 ```bash
-# Clone the repository
-git clone https://github.com/guillaumemilitello/notification_timer.git
-cd notification_timer
-
 # Build debug APK
 ./gradlew assembleDebug
 ```
 
 ---
 
-## Running Tests
+## Testing & Quality Gate
 
-### Running Tests from Android Studio UI
-
-You can run and debug tests directly within the Android Studio IDE without touching the command line:
-
-1. **From the Code Editor (Gutter Icons)**:
-   - Open any test file (e.g. [`TimerEngineTest.kt`](file:///D:/Code/notification_timer/core/domain/src/test/java/com/notification/timer/core/domain/engine/TimerEngineTest.kt) or [`BackupRepositoryTest.kt`](file:///D:/Code/notification_timer/core/data/src/test/java/com/notification/timer/core/data/repository/BackupRepositoryTest.kt)).
-   - Click the green **Play icon (▶)** in the left gutter next to the class declaration (to run all tests in the file) or next to any individual `@Test` function.
-   - Choose **Run '...'** or **Debug '...'**.
-
-2. **From the Project Explorer**:
-   - In the **Project** or **Android** tool window (left panel `Alt+1` / `Cmd+1`):
-     - Switch view to **Project**.
-     - Right-click any module's `src/test` folder (e.g. `core/domain/src/test` or `core/runtime/src/test`).
-     - Select **Run 'Tests in 'test''** (or press `Ctrl+Shift+F10` / `Ctrl+Shift+R`).
-
-3. **From the Gradle Tool Window**:
-   - Open the **Gradle** side panel (on the right side of Android Studio).
-   - Expand `notification_timer` -> `Tasks` -> `verification`.
-   - Double-click **`test`** (runs all unit tests) or **`check`** (runs unit tests + lint + spotless + detekt).
-   - Alternatively, expand any subproject (e.g. `:core:domain` -> `Tasks` -> `verification` -> `test`).
-
----
-
-### Command Line
-
-#### 1. Unit & Local Tests (JVM & Robolectric)
-Run all unit tests across all subprojects:
-
+### 1. Unit & Local Tests
 ```bash
-# Run all unit tests
+# All unit tests
 ./gradlew test
 
-# Run unit tests for a specific module
+# Specific module
 ./gradlew :core:domain:test
 ./gradlew :core:runtime:testDebugUnitTest
 ./gradlew :core:data:testDebugUnitTest
+./gradlew :feature:timers:testDebugUnitTest
 ```
 
-### 2. Code Quality & Lint Gates
-Execute the comprehensive verification gate (linting, Spotless formatting check, detekt static analysis, and unit tests):
-
+### 2. Code Quality & Format
 ```bash
-# Complete quality check
-./gradlew check
+# Check code style & static analysis
+./gradlew spotlessCheck
+./gradlew detekt
 
-# Automatically fix code formatting issues
+# Auto-fix code formatting
 ./gradlew spotlessApply
+
+# Full check
+./gradlew check
 ```
 
-### 3. Maestro End-to-End Tests
-[Maestro](https://maestro.mobile.dev/) is used for reliable UI integration and smoke flows.
-
-Make sure an Android device or emulator (API 35+) is running and connected via ADB:
-
+### 3. Maestro E2E
 ```bash
-# Verify connected device
-adb devices
-
-# Install the debug build onto the device
+# Install debug build
 ./gradlew :app:installDebug
 
-# Run a specific Maestro test flow
+# Run single flow
 maestro test maestro/timer_basics.yaml
 
-# Or run all flows in the maestro directory
-maestro test maestro/
+# Run active test suite
+maestro test --exclude-tags wip maestro/
 ```
 
-### 4. Running the Quality Gate Script
-You can run the unified test and quality gate script directly from the repository root:
-
-* **Windows PowerShell:**
+### 4. Quality Gate Script (Mandatory Before Commit)
+- **Windows**:
   ```powershell
   .\scripts\gate.ps1
   ```
-  *(Pass `-RunMaestro` to include end-to-end Maestro tests on a connected device: `.\scripts\gate.ps1 -RunMaestro`)*
-
-* **macOS / Linux:**
+- **Linux / macOS**:
   ```bash
   ./scripts/gate.sh
   ```
-  *(Pass `--maestro` to include end-to-end Maestro tests: `./scripts/gate.sh --maestro`)*
+Pass `-RunMaestro` (Windows) or `--maestro` (Linux/Mac) to run Maestro E2E on connected device.
+
+More testing details: [docs/testing.md](docs/testing.md).
 
 ---
 
-## Contributing & Agent Guidelines
-For development rules, invariants, and guidelines for AI agents, refer to [AGENTS.md](AGENTS.md) and the comprehensive architecture roadmap in [PLAN.md](PLAN.md).
+## Documentation
+- [CONTRIBUTING.md](CONTRIBUTING.md): Rules for code contributions and PRs.
+- [AGENT.md](AGENT.md): Strict instructions for AI agents modifying this codebase.
+- [PLAN.md](PLAN.md): Technical roadmap and specifications.
+- [docs/architecture.md](docs/architecture.md): Module boundaries and architecture invariants.
+- [docs/testing.md](docs/testing.md): Testing strategy and layers.
+- [docs/spike-notifications.md](docs/spike-notifications.md): Phase 1 notification measurements and findings.
