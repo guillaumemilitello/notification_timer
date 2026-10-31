@@ -12,7 +12,7 @@ isProject: false
 
 NotificationTimer 2.0 is a Kotlin rewrite that runs several timers at once. Each timer has its own alerts and its own notification controls. This plan turns [REFACTOR.md](REFACTOR.md) into a functional spec, technical decisions and phases with exit criteria.
 
-It's written for AI implementation. Every session starts from this file and `AGENTS.md`, and ticks the checkboxes in section 13 as work lands.
+It's written for AI implementation. Every session starts from this file and `AGENT.md`, and ticks the checkboxes in section 13 as work lands.
 
 ## 1. REFACTOR.md coverage
 
@@ -587,7 +587,7 @@ Each phase ends with a demo on a device and its exit criteria met.
   - the notification layouts, with their styles and colors;
   - the icons and the 18-color palette;
   - the English, French and Spanish strings.
-- [x] Write `AGENTS.md`, following the outline in section 15.
+- [x] Write `AGENT.md`, following the outline in section 15.
 - Exit: the empty app installs next to 1.x, and `./gradlew check` passes in CI.
 
 ### Phase 1: Notification and wake-up spike (riskiest part first)
@@ -687,7 +687,7 @@ Cases:
 
 ## 15. Working with AI agents
 
-`AGENTS.md` outline:
+`AGENT.md` outline:
 - Purpose, with a link to this plan.
 - The module map and dependency rules (section 6).
 - The invariants (section 6).
@@ -701,7 +701,7 @@ Cases:
 - A gotchas log for platform quirks and flaky tests.
 
 Session loop:
-1. Pick one unchecked task in section 13, and read its sections here and in `AGENTS.md`.
+1. Pick one unchecked task in section 13, and read its sections here and in `AGENT.md`.
 2. Write the behavior as Given/When/Then scenarios, then the failing tests. The SDD skills fit here: `sdd-setup` in Phase 0, then `sdd-define-specs` and `sdd-define-scenarios` for each phase.
 3. Implement inside the module that owns the behavior. Read `legacy/` for 1.x behavior, but don't copy its structure.
 4. Run `./gradlew check`, tick the task here, and make small atomic commits (`sdd-commit` fits).
