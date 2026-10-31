@@ -2,8 +2,22 @@
 
 List of items, bugs, and enhancements noticed while testing NotificationTimer 2.0.
 
-## Open Items
+## Now
+- [ ] Create a README.md file to explain how to use the project, install dependencies, etc...
+- [ ] How to run unit and maestro tests
+- [ ] List and extend all tests (unit and integration (maestro))
+- [ ] Create a unit and integration tests "gate"
 
+### MainActivity
+- [ ] I want to change the progression of the timer by clicking on the progress bar.
+- [ ] Settings for a timer implementation island
+
+### Notification
+- [ ] Better Design, progress bar and icons
+
+### Long term
+- [ ] Timer colors
+- [ ] M Extra notifications or steps
 - [ ] Focus mode
 
 ## Completed
@@ -22,5 +36,4 @@ List of items, bugs, and enhancements noticed while testing NotificationTimer 2.
 ## Later
 
 - [ ] MD3. Play button should be shared when playing.
-- [ ] I want to change the progression of the timer by clicking on the progress bar.
 - [ ] Focus mode
