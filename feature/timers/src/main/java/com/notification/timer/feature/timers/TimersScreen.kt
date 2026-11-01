@@ -35,9 +35,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -61,8 +64,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -125,6 +126,20 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
     val presets by viewModel.presets.collectAsStateWithLifecycle()
 
     var showAddIsland by remember { mutableStateOf(false) }
+    var showDraftSettings by remember { mutableStateOf(false) }
+    var draftTimerName by remember { mutableStateOf("") }
+    var draftColorHex by remember { mutableStateOf("#3F51B5") }
+    var draftSets by remember { mutableStateOf<Int?>(null) }
+    var draftDigits by remember { mutableStateOf("") }
+
+    val resetDraft = {
+        draftTimerName = ""
+        draftColorHex = "#3F51B5"
+        draftSets = null
+        draftDigits = ""
+        showDraftSettings = false
+    }
+
     var optionsTimerId by remember { mutableStateOf<Int?>(null) }
     var settingsTimerId by remember { mutableStateOf<Int?>(null) }
 
@@ -279,26 +294,70 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
     }
 
     if (showAddIsland) {
-        Md3CenterIslandDialog(onDismissRequest = { showAddIsland = false }) {
-            AddTimerContent(
-                presets = presets,
-                onDismiss = { showAddIsland = false },
-                onPresetSelected = {
-                    viewModel.startTimerFromPreset(it)
+        Md3CenterIslandDialog(
+            onDismissRequest = {
+                if (showDraftSettings) {
+                    showDraftSettings = false
+                } else {
                     showAddIsland = false
-                },
-                onNumpadConfirm = { name, durationSec, sets ->
-                    val preset =
-                        Preset(
-                            id = "temp_${System.currentTimeMillis()}",
-                            name = name.ifBlank { "Timer" },
-                            durationSec = durationSec,
-                            sets = sets,
-                        )
-                    viewModel.startTimerFromPreset(preset)
-                    showAddIsland = false
-                },
-            )
+                    resetDraft()
+                }
+            },
+        ) {
+            if (showDraftSettings) {
+                TimerSettingsIslandContent(
+                    initialName = draftTimerName,
+                    initialColorHex = draftColorHex,
+                    initialSets = draftSets,
+                    onSave = { newName, newColorHex, newSets ->
+                        draftTimerName = newName
+                        draftColorHex = newColorHex
+                        draftSets = newSets
+                        showDraftSettings = false
+                    },
+                    onCancel = { showDraftSettings = false },
+                )
+            } else {
+                AddTimerContent(
+                    presets = presets,
+                    timerName = draftTimerName,
+                    onTimerNameChange = { draftTimerName = it },
+                    digits = draftDigits,
+                    onDigitsChange = { draftDigits = it },
+                    setsCount = draftSets ?: 0,
+                    onSetsCountChange = { draftSets = if (it == 0) null else it },
+                    colorHex = draftColorHex,
+                    onOpenSettings = { showDraftSettings = true },
+                    onDismiss = {
+                        showAddIsland = false
+                        resetDraft()
+                    },
+                    onPresetSelected = { preset ->
+                        val finalPreset =
+                            preset.copy(
+                                name = if (draftTimerName.isNotBlank()) draftTimerName.trim() else preset.name,
+                                sets = draftSets ?: preset.sets,
+                                runningColor = if (draftColorHex != "#3F51B5") draftColorHex else preset.runningColor,
+                            )
+                        viewModel.startTimerFromPreset(finalPreset)
+                        showAddIsland = false
+                        resetDraft()
+                    },
+                    onNumpadConfirm = { name, durationSec, sets ->
+                        val preset =
+                            Preset(
+                                id = "temp_${System.currentTimeMillis()}",
+                                name = name.ifBlank { "Timer" },
+                                durationSec = durationSec,
+                                sets = sets,
+                                runningColor = draftColorHex,
+                            )
+                        viewModel.startTimerFromPreset(preset)
+                        showAddIsland = false
+                        resetDraft()
+                    },
+                )
+            }
         }
     }
 
@@ -355,14 +414,31 @@ fun AddTimerContent(
     onDismiss: () -> Unit,
     onPresetSelected: (Preset) -> Unit,
     onNumpadConfirm: (name: String, durationSec: Int, sets: Int?) -> Unit,
+    modifier: Modifier = Modifier,
+    timerName: String = "",
+    onTimerNameChange: ((String) -> Unit)? = null,
+    digits: String = "",
+    onDigitsChange: ((String) -> Unit)? = null,
+    setsCount: Int = 0,
+    onSetsCountChange: ((Int) -> Unit)? = null,
+    colorHex: String = "#3F51B5",
+    onOpenSettings: () -> Unit = {},
 ) {
-    var timerName by remember { mutableStateOf("") }
-    var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Manual", "Presets")
+    var internalTimerName by remember { mutableStateOf(timerName) }
+    val effectiveTimerName = if (onTimerNameChange != null) timerName else internalTimerName
+    val updateTimerName: (String) -> Unit = {
+        if (onTimerNameChange != null) {
+            onTimerNameChange(it)
+        } else {
+            internalTimerName = it
+        }
+    }
+
+    var showPresets by remember { mutableStateOf(false) }
 
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp, bottom = 16.dp),
     ) {
@@ -370,98 +446,153 @@ fun AddTimerContent(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, end = 12.dp),
+                    .padding(start = if (showPresets) 12.dp else 24.dp, end = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = "New Timer",
-                style = MaterialTheme.typography.headlineSmall,
-            )
-            IconButton(onClick = onDismiss) {
-                Icon(Icons.Default.Close, contentDescription = "Close")
-            }
-        }
-
-        TabRow(
-            selectedTabIndex = selectedTab,
-            containerColor = androidx.compose.ui.graphics.Color.Transparent,
-        ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title) },
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (showPresets) {
+                    IconButton(onClick = { showPresets = false }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                        )
+                    }
+                }
+                Text(
+                    text = if (showPresets) stringResource(R.string.presets) else stringResource(R.string.new_timer),
+                    style = MaterialTheme.typography.headlineSmall,
                 )
             }
-        }
-
-        when (selectedTab) {
-            0 -> {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    OutlinedTextField(
-                        value = timerName,
-                        onValueChange = { timerName = it },
-                        label = { Text(stringResource(R.string.timer_name)) },
-                        placeholder = { Text(stringResource(R.string.default_timer_name)) },
-                        singleLine = true,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp, vertical = 8.dp),
-                    )
-                    NumpadView(
-                        onConfirm = { durationSec, sets ->
-                            onNumpadConfirm(timerName.trim(), durationSec, sets)
-                        },
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onOpenSettings) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = stringResource(R.string.timer_settings_title),
                     )
                 }
+                IconButton(onClick = { showPresets = !showPresets }) {
+                    Icon(
+                        imageVector = if (showPresets) Icons.Default.Dialpad else Icons.Default.Bookmarks,
+                        contentDescription =
+                            if (showPresets) {
+                                stringResource(R.string.manual_timer)
+                            } else {
+                                stringResource(R.string.presets)
+                            },
+                    )
+                }
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
+                }
             }
+        }
 
-            1 -> {
-                LazyColumn(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 240.dp, max = 380.dp)
-                            .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (presets.isEmpty()) {
-                        item {
-                            Text("No presets available. Create one in Settings.", modifier = Modifier.padding(16.dp))
-                        }
-                    } else {
-                        items(presets, key = { it.id }) { preset ->
-                            Card(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            val finalPreset =
-                                                if (timerName.isNotBlank()) {
-                                                    preset.copy(name = timerName.trim())
-                                                } else {
-                                                    preset
-                                                }
-                                            onPresetSelected(finalPreset)
-                                        },
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(preset.name, style = MaterialTheme.typography.titleMedium)
-                                    val duration = formatTime(preset.durationSec * 1000L)
-                                    Text("Duration: $duration", style = MaterialTheme.typography.bodyMedium)
-                                }
+        if (showPresets) {
+            LazyColumn(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 240.dp, max = 380.dp)
+                        .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (presets.isEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.no_presets_available),
+                            modifier = Modifier.padding(16.dp),
+                        )
+                    }
+                } else {
+                    items(presets, key = { it.id }) { preset ->
+                        Card(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        val finalPreset =
+                                            if (effectiveTimerName.isNotBlank()) {
+                                                preset.copy(name = effectiveTimerName.trim())
+                                            } else {
+                                                preset
+                                            }
+                                        onPresetSelected(finalPreset)
+                                    },
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(preset.name, style = MaterialTheme.typography.titleMedium)
+                                val duration = formatTime(preset.durationSec * 1000L)
+                                Text("Duration: $duration", style = MaterialTheme.typography.bodyMedium)
                             }
                         }
                     }
                 }
+            }
+        } else {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                val parsedColor =
+                    remember(colorHex) {
+                        try {
+                            androidx.compose.ui.graphics
+                                .Color(Color.parseColor(colorHex))
+                        } catch (_: Exception) {
+                            androidx.compose.ui.graphics
+                                .Color(0xFF3F51B5)
+                        }
+                    }
+
+                OutlinedTextField(
+                    value = effectiveTimerName,
+                    onValueChange = updateTimerName,
+                    label = { Text(stringResource(R.string.timer_name)) },
+                    placeholder = { Text(stringResource(R.string.default_timer_name)) },
+                    singleLine = true,
+                    trailingIcon = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 4.dp),
+                        ) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .size(16.dp)
+                                        .clip(CircleShape)
+                                        .background(parsedColor)
+                                        .border(
+                                            width = 1.dp,
+                                            color = MaterialTheme.colorScheme.outlineVariant,
+                                            shape = CircleShape,
+                                        ),
+                            )
+                            IconButton(onClick = onOpenSettings) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = stringResource(R.string.more_settings),
+                                )
+                            }
+                        }
+                    },
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                )
+                NumpadView(
+                    digits = digits,
+                    onDigitsChange = onDigitsChange,
+                    setsCount = setsCount,
+                    onSetsCountChange = onSetsCountChange,
+                    onConfirm = { durationSec, sets ->
+                        onNumpadConfirm(effectiveTimerName.trim(), durationSec, sets)
+                    },
+                )
             }
         }
     }
@@ -767,13 +898,17 @@ fun TimerCardItem(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TimerSettingsIslandContent(
-    timer: Timer,
+    initialName: String,
+    initialColorHex: String,
+    initialSets: Int?,
     onSave: (newName: String, newColorHex: String, newSets: Int?) -> Unit,
     onCancel: () -> Unit,
+    title: String = "Timer Settings",
+    timerKey: Any = Unit,
 ) {
-    var name by remember(timer.id) { mutableStateOf(timer.label) }
-    var selectedColorHex by remember(timer.id) { mutableStateOf(timer.config.runningColor) }
-    var setsCount by remember(timer.id) { mutableIntStateOf(timer.config.sets ?: 0) }
+    var name by remember(timerKey) { mutableStateOf(initialName) }
+    var selectedColorHex by remember(timerKey) { mutableStateOf(initialColorHex) }
+    var setsCount by remember(timerKey) { mutableIntStateOf(initialSets ?: 0) }
 
     Column(
         modifier =
@@ -789,7 +924,7 @@ fun TimerSettingsIslandContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Timer Settings",
+                text = title,
                 style = MaterialTheme.typography.headlineSmall,
             )
             IconButton(onClick = onCancel) {
@@ -808,6 +943,7 @@ fun TimerSettingsIslandContent(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Timer Name") },
+                placeholder = { Text(stringResource(R.string.default_timer_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -972,6 +1108,20 @@ fun TimerSettingsIslandContent(
         }
     }
 }
+
+@Composable
+fun TimerSettingsIslandContent(
+    timer: Timer,
+    onSave: (newName: String, newColorHex: String, newSets: Int?) -> Unit,
+    onCancel: () -> Unit,
+) = TimerSettingsIslandContent(
+    initialName = timer.label,
+    initialColorHex = timer.config.runningColor,
+    initialSets = timer.config.sets,
+    onSave = onSave,
+    onCancel = onCancel,
+    timerKey = timer.id,
+)
 
 @Composable
 private fun RowScope.ControlSlot(content: @Composable () -> Unit) {

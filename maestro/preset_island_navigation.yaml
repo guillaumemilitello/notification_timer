@@ -1,0 +1,35 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Open Add Timer dialog (new timer entry island)
+- tapOn: "Add Timer"
+- assertVisible: "New Timer"
+
+# 2. Verify tabs for "Manual" and "Presets" are removed
+- assertNotVisible: "Manual"
+
+# 3. Verify Default is manual (timer name input, sets, numpad visible)
+- assertVisible: "Timer Name"
+- assertVisible: "Sets:"
+
+# 4. Tap presets icon left to the close cross to access presets
+- tapOn: "Presets"
+- assertVisible: "Presets"
+
+# 5. Return to manual timer via dialpad / manual timer icon
+- tapOn: "Manual timer"
+- assertVisible: "New Timer"
+- assertVisible: "Sets:"
+
+# 6. Tap presets icon again and return via Back arrow
+- tapOn: "Presets"
+- assertVisible: "Presets"
+- tapOn: "Back"
+- assertVisible: "New Timer"
+- assertVisible: "Sets:"
+
+# 7. Close dialog
+- tapOn: "Close"
+- assertNotVisible: "New Timer"

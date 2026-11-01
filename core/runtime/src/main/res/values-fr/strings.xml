@@ -108,4 +108,13 @@
     <string name="timer_settings_sets_hint">0 pour séries infinies, ou 1 à N séries</string>
     <string name="decrease_sets">Diminuer les séries</string>
     <string name="increase_sets">Augmenter les séries</string>
+    <string name="timer_settings_title">Réglages du minuteur</string>
+    <string name="timer_settings_description">Réglages du minuteur</string>
+    <string name="new_timer">Nouveau minuteur</string>
+    <string name="more_settings">Plus de réglages</string>
+    <string name="more_options">Plus d\'options</string>
+    <string name="manual_timer">Minuteur manuel</string>
+    <string name="no_presets_available">Aucun minuteur sauvegardé disponible. Créez-en un dans les Réglages.</string>
+    <string name="close">Fermer</string>
+    <string name="back">Retour</string>
 </resources>

@@ -3,8 +3,14 @@
 NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
 ## Now (Active Backlog)
-- [x] I should be able to enter the timer name when entering a new timer
-- [x] From the timer settings I should also be able to change the number of sets (from 0 (infinite) to N)
+- [x] In a new timer entry island: remove the tab for "Manual" and "Preset", Default is manual and presets will be accessible through an icon left to the close cross.
+- [ ] Remove the manual timer setting wheel from the timer name text box
+
+
+- [x] When entering a new timer, I should have access to "more" settings with the wheel icon and access to the same settings I get after a set timer and a long-press. The settings should then be saved into the current draft timer until the user press "start".
+
+- [ ] Draft an image for next item.
+- [ ] After long press on a Timer, I don't want to see the Drag to Organize, redesign it (more like MD3), the `=` sign should be closed to the text and drag and drop should be easy. The settings wheel icon should also be well integrated.
 
 ### MainActivity & UI
 - [ ] Change countdown progression by clicking or dragging on progress bar.

@@ -155,4 +155,41 @@ class TimersViewModelTest {
             assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: Pause(timerId=1001)") })
             assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: UpdateSets(timerId=1001, sets=3)") })
         }
+
+    @Test
+    fun `startTimerFromPreset with custom draft timer preset submits command and logs`() =
+        runTest(testDispatcher) {
+            val customDraftPreset =
+                Preset(
+                    id = "temp_123",
+                    name = "Boxing Round",
+                    durationSec = 180,
+                    sets = 12,
+                    runningColor = "#E91E63",
+                )
+            viewModel.startTimerFromPreset(customDraftPreset)
+            advanceUntilIdle()
+
+            assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: Boxing Round (180s)") })
+        }
+
+    @Test
+    fun `selecting preset with custom draft name and sets submits merged preset`() =
+        runTest(testDispatcher) {
+            val basePreset = samplePresets.first() // Pomodoro, 1500s
+            val customDraftName = "My Focus Session"
+            val customDraftSets = 4
+            val customDraftColor = "#4CAF50"
+
+            val finalPreset =
+                basePreset.copy(
+                    name = customDraftName,
+                    sets = customDraftSets,
+                    runningColor = customDraftColor,
+                )
+            viewModel.startTimerFromPreset(finalPreset)
+            advanceUntilIdle()
+
+            assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: My Focus Session (1500s)") })
+        }
 }

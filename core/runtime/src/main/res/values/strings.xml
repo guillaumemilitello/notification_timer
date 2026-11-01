@@ -163,4 +163,13 @@
     <string name="timer_settings_sets_hint">0 for infinite sets, or 1 to N sets</string>
     <string name="decrease_sets">Decrease sets</string>
     <string name="increase_sets">Increase sets</string>
+    <string name="timer_settings_title">Timer Settings</string>
+    <string name="timer_settings_description">Timer settings</string>
+    <string name="new_timer">New Timer</string>
+    <string name="more_settings">More settings</string>
+    <string name="more_options">More Options</string>
+    <string name="manual_timer">Manual timer</string>
+    <string name="no_presets_available">No presets available. Create one in Settings.</string>
+    <string name="close">Close</string>
+    <string name="back">Back</string>
 </resources>
