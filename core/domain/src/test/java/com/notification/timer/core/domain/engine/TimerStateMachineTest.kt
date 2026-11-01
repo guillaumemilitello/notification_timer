@@ -185,6 +185,25 @@ class TimerStateMachineTest {
     }
 
     @Test
+    fun `updateSets updates sets count and normalizes zero or negative to null infinite`() {
+        // Change from 2 to 5 sets
+        val updatedTo5 = TimerStateMachine.updateSets(baseTimer, 5)
+        assertEquals(5, updatedTo5.config.sets)
+
+        // Change to 0 sets (infinite) -> should be null
+        val updatedTo0 = TimerStateMachine.updateSets(updatedTo5, 0)
+        assertEquals(null, updatedTo0.config.sets)
+
+        // Change to negative -> should be null
+        val updatedToNeg = TimerStateMachine.updateSets(updatedTo5, -1)
+        assertEquals(null, updatedToNeg.config.sets)
+
+        // Change to null explicitly
+        val updatedToNull = TimerStateMachine.updateSets(updatedTo5, null)
+        assertEquals(null, updatedToNull.config.sets)
+    }
+
+    @Test
     fun `notification visibility stays isolated across lifecycle transitions`() {
         assertFalse(baseTimer.isNotificationVisible)
 

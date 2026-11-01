@@ -254,6 +254,20 @@ class TimerEngineTest {
             assertTrue(eventLog.messages.any { it.contains("submitCommand: Start(timerId=${timer2AtT10.id})") })
             assertTrue(eventLog.messages.any { it.contains("Started timer ${timer2AtT10.id}") })
 
+            // Update sets of Timer 2 from null to 4
+            engine.submitCommand(TimerCommand.UpdateSets(timer2AtT10.id, 4))
+            runCurrent()
+
+            val timer2AfterUpdate = engine.timers.value.first { it.id == timer2AtT10.id }
+            assertEquals(4, timer2AfterUpdate.config.sets)
+
+            // Update sets to 0 (infinite)
+            engine.submitCommand(TimerCommand.UpdateSets(timer2AtT10.id, 0))
+            runCurrent()
+
+            val timer2AfterInfinite = engine.timers.value.first { it.id == timer2AtT10.id }
+            assertEquals(null, timer2AfterInfinite.config.sets)
+
             engineScope.cancel()
         }
 }

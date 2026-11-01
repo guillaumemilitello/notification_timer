@@ -226,6 +226,23 @@ object TimerStateMachine {
             config = timer.config.copy(runningColor = colorHex),
         )
 
+    fun updateSets(
+        timer: Timer,
+        sets: Int?,
+    ): Timer {
+        val normalizedSets = if (sets != null && sets > 0) sets else null
+        val updatedSet =
+            if (normalizedSets != null && timer.currentSet > normalizedSets && timer.state is TimerState.Ready) {
+                1
+            } else {
+                timer.currentSet
+            }
+        return timer.copy(
+            config = timer.config.copy(sets = normalizedSets),
+            currentSet = updatedSet,
+        )
+    }
+
     fun checkAlertsAndEnd(
         timer: Timer,
         nowElapsedMs: Long,

@@ -1,0 +1,59 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Enter timer name when adding a new timer
+- tapOn: "Add Timer"
+- assertVisible: "New Timer"
+- assertVisible: "Timer Name"
+- tapOn: "Timer Name"
+- inputText: "Workout"
+- assertVisible: "Sets:"
+# Type 1 min (1-0-0)
+- tapOn: "1"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "Start"
+
+# Verify Timer Card appears with custom name "Workout"
+- extendedWaitUntil:
+    visible: "Workout"
+    timeout: 5000
+- assertVisible: "Set 1"
+
+# 2. Long press timer card to show options, then open settings
+- longPressOn: "Workout"
+- tapOn: "Timer settings"
+- assertVisible: "Timer Settings"
+- assertVisible: "Sets"
+- assertVisible: "0 (Infinite)"
+
+# Increase sets to 3
+- tapOn: "Increase sets"
+- tapOn: "Increase sets"
+- tapOn: "Increase sets"
+- assertVisible: "3 sets"
+
+# Save settings
+- tapOn: "Save"
+
+# Verify timer now shows "Set 1 of 3"
+- extendedWaitUntil:
+    visible: "Set 1 of 3"
+    timeout: 5000
+
+# 3. Change sets back to 0 (infinite)
+- longPressOn: "Workout"
+- tapOn: "Timer settings"
+- assertVisible: "Timer Settings"
+- tapOn: "Decrease sets"
+- tapOn: "Decrease sets"
+- tapOn: "Decrease sets"
+- assertVisible: "0 (Infinite)"
+- tapOn: "Save"
+
+# Verify timer now shows infinite sets ("Set 1" instead of "Set 1 of 3")
+- extendedWaitUntil:
+    visible: "Set 1"
+    timeout: 5000

@@ -94,4 +94,12 @@
     <string name="preferences_background_theme">Thème de l\'arrière-plan</string>
     <string name="preferences_dark_theme">Thème de l\'application</string>
     <string name="preferences_notification_permission">Permission</string>
+    <!-- Timer Settings & Add Timer -->
+    <string name="timer_name">Nom du minuteur</string>
+    <string name="timer_settings_sets_title">Séries</string>
+    <string name="timer_settings_sets_infinite">0 (Infini)</string>
+    <string name="timer_settings_sets_count">%1$d séries</string>
+    <string name="timer_settings_sets_hint">0 pour séries infinies, ou 1 à N séries</string>
+    <string name="decrease_sets">Diminuer les séries</string>
+    <string name="increase_sets">Augmenter les séries</string>
 </resources>

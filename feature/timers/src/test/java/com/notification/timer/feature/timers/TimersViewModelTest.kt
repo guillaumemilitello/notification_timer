@@ -148,9 +148,11 @@ class TimersViewModelTest {
         runTest(testDispatcher) {
             viewModel.startTimerFromPreset(samplePresets.first())
             viewModel.handleCommand(TimerCommand.Pause(1001))
+            viewModel.handleCommand(TimerCommand.UpdateSets(1001, 3))
             advanceUntilIdle()
 
             assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: Pomodoro (1500s)") })
             assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: Pause(timerId=1001)") })
+            assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: UpdateSets(timerId=1001, sets=3)") })
         }
 }

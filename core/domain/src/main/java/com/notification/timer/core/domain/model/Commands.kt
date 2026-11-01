@@ -62,6 +62,11 @@ sealed interface TimerCommand {
         val colorHex: String,
     ) : TimerCommand
 
+    data class UpdateSets(
+        val timerId: Int,
+        val sets: Int?,
+    ) : TimerCommand
+
     data class Reorder(
         val fromIndex: Int,
         val toIndex: Int,

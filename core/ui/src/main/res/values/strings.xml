@@ -99,4 +99,12 @@
     <string name="preferences_dark_theme">Application theme</string>
     <string name="preferences_notification_permission">Permission</string>
     <string name="timer_separator" translatable="false">:</string>
+    <!-- Timer Settings & Add Timer -->
+    <string name="timer_name">Timer Name</string>
+    <string name="timer_settings_sets_title">Sets</string>
+    <string name="timer_settings_sets_infinite">0 (Infinite)</string>
+    <string name="timer_settings_sets_count">%1$d sets</string>
+    <string name="timer_settings_sets_hint">0 for infinite sets, or 1 to N sets</string>
+    <string name="decrease_sets">Decrease sets</string>
+    <string name="increase_sets">Increase sets</string>
 </resources>

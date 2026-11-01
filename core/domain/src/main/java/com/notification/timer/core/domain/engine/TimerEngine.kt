@@ -267,6 +267,14 @@ class TimerEngine(
                 }
             }
 
+            is TimerCommand.UpdateSets -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] = TimerStateMachine.updateSets(currentList[index], command.sets)
+                    eventLog?.d("TimerEngine", "Updated sets for timer ${command.timerId} to ${command.sets}")
+                }
+            }
+
             is TimerCommand.Reorder -> {
                 if (command.fromIndex in currentList.indices &&
                     command.toIndex in currentList.indices &&

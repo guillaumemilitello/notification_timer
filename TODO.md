@@ -3,6 +3,8 @@
 NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
 ## Now (Active Backlog)
+- [x] I should be able to enter the timer name when entering a new timer
+- [x] From the timer settings I should also be able to change the number of sets (from 0 (infinite) to N)
 
 ### MainActivity & UI
 - [ ] Change countdown progression by clicking or dragging on progress bar.
@@ -55,6 +57,8 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 - [x] Preset editor wizard with alert configuration.
 - [x] Settings screen, JSON backup import/export UI, and "How it works" guidance page.
 - [x] Floating island dialogs (MD3 center dialogs) for Add Timer and Timer Settings.
+- [x] Custom timer name entry when creating a new timer via Add Timer dialog.
+- [x] Per-timer sets selector (from 0 (infinite) to N) in Timer Settings island.
 
 ### Bug Fixes & UX Polish
 - [x] Eliminated extra second at countdown end: ceiling rounding `(millis + 999) / 1000` for time display and alert thresholds.

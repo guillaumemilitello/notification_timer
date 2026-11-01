@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Stop
@@ -77,6 +79,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -91,6 +95,7 @@ import com.notification.timer.core.domain.model.TimerAction
 import com.notification.timer.core.domain.model.TimerCommand
 import com.notification.timer.core.domain.model.TimerState
 import com.notification.timer.core.ui.AutoResizeText
+import com.notification.timer.core.ui.R
 import com.notification.timer.core.ui.theme.RecursiveMonospaceFontFamily
 import com.notification.timer.feature.presets.NumpadView
 import kotlinx.coroutines.delay
@@ -282,11 +287,11 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
                     viewModel.startTimerFromPreset(it)
                     showAddIsland = false
                 },
-                onNumpadConfirm = { durationSec, sets ->
+                onNumpadConfirm = { name, durationSec, sets ->
                     val preset =
                         Preset(
                             id = "temp_${System.currentTimeMillis()}",
-                            name = "Timer",
+                            name = name.ifBlank { "Timer" },
                             durationSec = durationSec,
                             sets = sets,
                         )
@@ -302,12 +307,15 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
         Md3CenterIslandDialog(onDismissRequest = { settingsTimerId = null }) {
             TimerSettingsIslandContent(
                 timer = activeSettingsTimer,
-                onSave = { newName, newColorHex ->
+                onSave = { newName, newColorHex, newSets ->
                     if (newName.isNotBlank() && newName != activeSettingsTimer.label) {
                         viewModel.handleCommand(TimerCommand.Rename(activeSettingsTimer.id, newName.trim()))
                     }
                     if (newColorHex != activeSettingsTimer.config.runningColor) {
                         viewModel.handleCommand(TimerCommand.UpdateColor(activeSettingsTimer.id, newColorHex))
+                    }
+                    if (newSets != activeSettingsTimer.config.sets) {
+                        viewModel.handleCommand(TimerCommand.UpdateSets(activeSettingsTimer.id, newSets))
                     }
                     settingsTimerId = null
                 },
@@ -346,8 +354,9 @@ fun AddTimerContent(
     presets: List<Preset>,
     onDismiss: () -> Unit,
     onPresetSelected: (Preset) -> Unit,
-    onNumpadConfirm: (Int, Int?) -> Unit,
+    onNumpadConfirm: (name: String, durationSec: Int, sets: Int?) -> Unit,
 ) {
+    var timerName by remember { mutableStateOf("") }
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("Manual", "Presets")
 
@@ -389,9 +398,30 @@ fun AddTimerContent(
 
         when (selectedTab) {
             0 -> {
-                NumpadView(
-                    onConfirm = onNumpadConfirm,
-                )
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    OutlinedTextField(
+                        value = timerName,
+                        onValueChange = { timerName = it },
+                        label = { Text(stringResource(R.string.timer_name)) },
+                        placeholder = { Text(stringResource(R.string.default_timer_name)) },
+                        singleLine = true,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 8.dp),
+                    )
+                    NumpadView(
+                        onConfirm = { durationSec, sets ->
+                            onNumpadConfirm(timerName.trim(), durationSec, sets)
+                        },
+                    )
+                }
             }
 
             1 -> {
@@ -413,7 +443,15 @@ fun AddTimerContent(
                                 modifier =
                                     Modifier
                                         .fillMaxWidth()
-                                        .clickable { onPresetSelected(preset) },
+                                        .clickable {
+                                            val finalPreset =
+                                                if (timerName.isNotBlank()) {
+                                                    preset.copy(name = timerName.trim())
+                                                } else {
+                                                    preset
+                                                }
+                                            onPresetSelected(finalPreset)
+                                        },
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(preset.name, style = MaterialTheme.typography.titleMedium)
@@ -730,11 +768,12 @@ fun TimerCardItem(
 @Composable
 fun TimerSettingsIslandContent(
     timer: Timer,
-    onSave: (newName: String, newColorHex: String) -> Unit,
+    onSave: (newName: String, newColorHex: String, newSets: Int?) -> Unit,
     onCancel: () -> Unit,
 ) {
     var name by remember(timer.id) { mutableStateOf(timer.label) }
     var selectedColorHex by remember(timer.id) { mutableStateOf(timer.config.runningColor) }
+    var setsCount by remember(timer.id) { mutableIntStateOf(timer.config.sets ?: 0) }
 
     Column(
         modifier =
@@ -833,7 +872,69 @@ fun TimerSettingsIslandContent(
 
         HorizontalDivider()
 
-        // Section 3: Scalable placeholder for upcoming per-timer options
+        // Section 3: Sets (Number of sets from 0 (infinite) to N)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = stringResource(R.string.timer_settings_sets_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text =
+                            if (setsCount == 0) {
+                                stringResource(R.string.timer_settings_sets_infinite)
+                            } else {
+                                stringResource(R.string.timer_settings_sets_count, setsCount)
+                            },
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.timer_settings_sets_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    IconButton(
+                        onClick = { if (setsCount > 0) setsCount-- },
+                        enabled = setsCount > 0,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = stringResource(R.string.decrease_sets),
+                        )
+                    }
+                    Text(
+                        text = if (setsCount == 0) "0 (∞)" else setsCount.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.widthIn(min = 36.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                    IconButton(
+                        onClick = { if (setsCount < 99) setsCount++ },
+                        enabled = setsCount < 99,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.increase_sets),
+                        )
+                    }
+                }
+            }
+        }
+
+        HorizontalDivider()
+
+        // Section 4: Scalable placeholder for upcoming per-timer options
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 text = "More Options",
@@ -841,7 +942,7 @@ fun TimerSettingsIslandContent(
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = "Additional timer settings (alerts, sound, sets, vibration) will appear here.",
+                text = "Additional timer settings (alerts, sound, vibration) will appear here.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -860,7 +961,10 @@ fun TimerSettingsIslandContent(
                 Text("Cancel")
             }
             Button(
-                onClick = { onSave(name, selectedColorHex) },
+                onClick = {
+                    val finalSets = if (setsCount == 0) null else setsCount
+                    onSave(name, selectedColorHex, finalSets)
+                },
                 modifier = Modifier.weight(1f),
             ) {
                 Text("Save")

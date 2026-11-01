@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Main Activity -->
+    <string name="default_timer_name">Temporizador</string>
     <!-- Pickers -->
     <!-- Alerts -->
     <!-- Notification -->
     <!-- HelpOverlay -->
     <!-- Settings -->
+    <!-- Timer Settings & Add Timer -->
+    <string name="timer_name">Nombre del temporizador</string>
+    <string name="timer_settings_sets_title">Series</string>
+    <string name="timer_settings_sets_infinite">0 (Infinito)</string>
+    <string name="timer_settings_sets_count">%1$d series</string>
+    <string name="timer_settings_sets_hint">0 para series infinitas, o 1 a N series</string>
+    <string name="decrease_sets">Disminuir series</string>
+    <string name="increase_sets">Aumentar series</string>
 </resources>
