@@ -3,6 +3,7 @@
 NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
 ## Now (Active Backlog)
+- [ ] Review the complete app project to add debug and info logs, make sure they are disabled in Release (validate it is a curent good practice)
 
 ### MainActivity & UI
 - [ ] Change countdown progression by clicking or dragging on progress bar.
@@ -18,7 +19,6 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 - [ ] Focus mode (fullscreen immersive countdown view).
 - [ ] Home screen widgets (Jetpack Glance) and Quick Settings tile.
 - [ ] Alarm volume stream option (play alerts on alarm stream instead of notification stream).
-- [ ] Android 16 Live Updates style (optional alternative layout).
 
 ## Completed
 
@@ -66,6 +66,7 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 - [x] Prevented notifications jumping to silent section: channel `IMPORTANCE_DEFAULT` without sound, ongoing foreground service, `CATEGORY_STOPWATCH`.
 - [x] Prevented `0:00` and `-00:01` overruns: state advances to next set in `Ready(isCompleted = true)` with full duration, color staying green (`#4CAF50`).
 - [x] Strict per-timer notification isolation and N-timer scalability: removed 5-timer ceiling, persisted monotonic `TimerId`, per-timer `isNotificationVisible` lifecycle.
+- [x] Prevented countdown number jump on Play: evaluated elapsed time dynamically during composition and decoupled running ticker from stale remember snapshot.
 
 ### Testing & Verification
 - [x] JVM unit tests covering domain state machine, event planner, and `TimerEngine`.

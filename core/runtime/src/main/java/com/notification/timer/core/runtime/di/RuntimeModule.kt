@@ -1,5 +1,6 @@
 package com.notification.timer.core.runtime.di
 
+import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.domain.engine.TimerEngine
 import com.notification.timer.core.domain.ports.AlertPlayerPort
 import com.notification.timer.core.domain.ports.TimeSource
@@ -45,6 +46,7 @@ abstract class RuntimeModule {
             wakeupSchedulerPort: WakeupSchedulerPort,
             alertPlayerPort: AlertPlayerPort,
             timerNotifierPort: TimerNotifierPort,
+            eventLog: EventLog,
         ): TimerEngine =
             TimerEngine(
                 timeSource = timeSource,
@@ -52,6 +54,7 @@ abstract class RuntimeModule {
                 wakeupScheduler = wakeupSchedulerPort,
                 alertPlayer = alertPlayerPort,
                 timerNotifier = timerNotifierPort,
+                eventLog = eventLog,
             )
     }
 }

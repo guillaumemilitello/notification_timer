@@ -1,5 +1,6 @@
 package com.notification.timer.core.domain.engine
 
+import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerCommand
@@ -25,6 +26,7 @@ class TimerEngine(
     private val wakeupScheduler: WakeupSchedulerPort,
     private val alertPlayer: AlertPlayerPort,
     private val timerNotifier: TimerNotifierPort,
+    private val eventLog: EventLog? = null,
 ) {
     companion object {
         const val NOTIFICATION_REFRESH_INTERVAL_MS = 2_000L
@@ -110,11 +112,13 @@ class TimerEngine(
     }
 
     fun submitCommand(command: TimerCommand) {
+        eventLog?.log("TimerEngine", "submitCommand: $command")
         commandChannel.trySend(command)
     }
 
     private suspend fun processCommand(command: TimerCommand) {
         val nowElapsedMs = timeSource.elapsedRealtimeMs()
+        eventLog?.log("TimerEngine", "processCommand: $command at nowMs=$nowElapsedMs")
         val currentList = _timers.value.toMutableList()
 
         when (command) {
@@ -124,26 +128,45 @@ class TimerEngine(
                     newTimer = TimerStateMachine.start(newTimer, nowElapsedMs)
                 }
                 currentList.add(0, newTimer)
+                eventLog?.log(
+                    "TimerEngine",
+                    "Created timer ${newTimer.id} ('${newTimer.label}'): state=${newTimer.state}",
+                )
             }
 
             is TimerCommand.Start -> {
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
+                    val prev = currentList[index]
                     currentList[index] = TimerStateMachine.start(currentList[index], nowElapsedMs)
+                    eventLog?.log(
+                        "TimerEngine",
+                        "Started timer ${command.timerId} ('${prev.label}'): ${prev.state} -> ${currentList[index].state}",
+                    )
                 }
             }
 
             is TimerCommand.Pause -> {
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
+                    val prev = currentList[index]
                     currentList[index] = TimerStateMachine.pause(currentList[index], nowElapsedMs)
+                    eventLog?.log(
+                        "TimerEngine",
+                        "Paused timer ${command.timerId} ('${prev.label}'): ${prev.state} -> ${currentList[index].state}",
+                    )
                 }
             }
 
             is TimerCommand.Resume -> {
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
+                    val prev = currentList[index]
                     currentList[index] = TimerStateMachine.resume(currentList[index], nowElapsedMs)
+                    eventLog?.log(
+                        "TimerEngine",
+                        "Resumed timer ${command.timerId} ('${prev.label}'): ${prev.state} -> ${currentList[index].state}",
+                    )
                 }
             }
 
@@ -257,6 +280,11 @@ class TimerEngine(
                 if (updatedTimer != timer) {
                     currentList[i] = updatedTimer
                     stateChanged = true
+                    eventLog?.log(
+                        "TimerEngine",
+                        "Timer ${updatedTimer.id} ('${updatedTimer.label}') state changed on tick to ${updatedTimer.state}" +
+                            if (firedAlerts.isNotEmpty()) ", alerts=${firedAlerts.map { it.name }}" else "",
+                    )
                     for (alert in firedAlerts) {
                         alertPlayer.playAlert(alert)
                     }

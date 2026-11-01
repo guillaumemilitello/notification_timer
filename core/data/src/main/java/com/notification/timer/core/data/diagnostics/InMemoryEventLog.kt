@@ -27,6 +27,11 @@ class InMemoryEventLog
             while (buffer.size > maxCapacity) {
                 buffer.poll()
             }
+            try {
+                android.util.Log.d(tag, message)
+            } catch (_: Throwable) {
+                // Ignore in pure JVM unit tests where android.util.Log is not mocked
+            }
         }
 
         override fun getEntries(): List<LogEntry> = buffer.toList()

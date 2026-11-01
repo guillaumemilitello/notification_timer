@@ -2,6 +2,7 @@ package com.notification.timer.feature.timers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.domain.engine.TimerEngine
 import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
@@ -21,6 +22,7 @@ class TimersViewModel
     constructor(
         private val timerEngine: TimerEngine,
         private val libraryRepository: LibraryRepository,
+        private val eventLog: EventLog? = null,
     ) : ViewModel() {
         val timers: StateFlow<List<Timer>> =
             timerEngine.timers.stateIn(
@@ -39,10 +41,12 @@ class TimersViewModel
         }
 
         fun startTimerFromPreset(preset: Preset) {
+            eventLog?.log("TimersViewModel", "startTimerFromPreset: ${preset.name} (${preset.durationSec}s)")
             timerEngine.submitCommand(TimerCommand.Create(preset, startImmediately = true))
         }
 
         fun handleCommand(command: TimerCommand) {
+            eventLog?.log("TimersViewModel", "handleCommand: $command")
             timerEngine.submitCommand(command)
         }
     }

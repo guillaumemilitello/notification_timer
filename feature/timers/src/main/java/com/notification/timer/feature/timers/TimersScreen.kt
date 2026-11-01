@@ -3,6 +3,7 @@
 package com.notification.timer.feature.timers
 
 import android.graphics.Color
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -444,18 +445,29 @@ fun TimerCardItem(
     onCommand: (TimerCommand) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Tick every 32ms (~30fps) for smooth progress bar and time updates while running
-    var nowElapsedMs by remember { mutableLongStateOf(android.os.SystemClock.elapsedRealtime()) }
-    LaunchedEffect(timer.state) {
+    // Subscribe to a 32ms (~30fps) ticker while running for smooth progress and countdown updates
+    var tick by remember(timer.id) { mutableLongStateOf(0L) }
+    LaunchedEffect(timer.id, timer.state) {
+        Log.d(
+            "TimersScreen",
+            "Timer #${timer.id} ('${timer.label}') state changed to ${timer.state::class.simpleName}",
+        )
         if (timer.state is TimerState.Running) {
             while (true) {
-                nowElapsedMs = android.os.SystemClock.elapsedRealtime()
+                tick = android.os.SystemClock.elapsedRealtime()
                 delay(32.milliseconds)
             }
-        } else {
-            nowElapsedMs = android.os.SystemClock.elapsedRealtime()
         }
     }
+
+    // Always evaluate current elapsed time dynamically during composition so that
+    // state transitions (Ready -> Running, Paused -> Running) never read a stale timestamp.
+    val nowElapsedMs =
+        if (timer.state is TimerState.Running && tick >= 0) {
+            android.os.SystemClock.elapsedRealtime()
+        } else {
+            android.os.SystemClock.elapsedRealtime()
+        }
 
     val durationMs = timer.config.durationSec * 1000L
     val rawRemainingMs = timer.remainingMs(nowElapsedMs)
@@ -648,6 +660,10 @@ fun TimerCardItem(
                             color = phaseColor,
                             modifier =
                                 Modifier.clickable {
+                                    Log.d(
+                                        "TimersScreen",
+                                        "Play/Pause clicked for timer ${timer.id} ('${timer.label}') in state ${timer.state::class.simpleName} actions=$actions",
+                                    )
                                     when {
                                         TimerAction.START in actions -> onCommand(TimerCommand.Start(timer.id))
                                         TimerAction.PAUSE in actions -> onCommand(TimerCommand.Pause(timer.id))
@@ -675,17 +691,26 @@ fun TimerCardItem(
                     ControlSlot {
                         when {
                             TimerAction.NEXT_SET in actions ->
-                                IconButton(onClick = { onCommand(TimerCommand.NextSet(timer.id)) }) {
+                                IconButton(onClick = {
+                                    Log.d("TimersScreen", "NextSet clicked for timer ${timer.id}")
+                                    onCommand(TimerCommand.NextSet(timer.id))
+                                }) {
                                     Icon(Icons.Default.SkipNext, contentDescription = "Next Set")
                                 }
 
                             TimerAction.STOP in actions ->
-                                IconButton(onClick = { onCommand(TimerCommand.Stop(timer.id)) }) {
+                                IconButton(onClick = {
+                                    Log.d("TimersScreen", "Stop clicked for timer ${timer.id}")
+                                    onCommand(TimerCommand.Stop(timer.id))
+                                }) {
                                     Icon(Icons.Default.Stop, contentDescription = "Stop")
                                 }
 
                             TimerAction.RESET in actions ->
-                                IconButton(onClick = { onCommand(TimerCommand.Reset(timer.id)) }) {
+                                IconButton(onClick = {
+                                    Log.d("TimersScreen", "Reset clicked for timer ${timer.id}")
+                                    onCommand(TimerCommand.Reset(timer.id))
+                                }) {
                                     Icon(Icons.Default.Refresh, contentDescription = "Reset")
                                 }
                         }

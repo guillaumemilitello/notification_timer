@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -79,6 +80,24 @@ class TimersViewModelTest {
             override fun updateNotifications(timers: List<Timer>) {}
         }
 
+    private val fakeEventLog =
+        object : com.notification.timer.core.domain.diagnostics.EventLog {
+            val logs = mutableListOf<String>()
+
+            override fun log(
+                tag: String,
+                message: String,
+            ) {
+                logs.add("[$tag] $message")
+            }
+
+            override fun getEntries(): List<com.notification.timer.core.domain.diagnostics.LogEntry> = emptyList()
+
+            override fun clear() {
+                logs.clear()
+            }
+        }
+
     private lateinit var timerEngine: TimerEngine
     private lateinit var viewModel: TimersViewModel
 
@@ -92,9 +111,10 @@ class TimersViewModelTest {
                 wakeupScheduler = fakeWakeupScheduler,
                 alertPlayer = fakeAlertPlayer,
                 timerNotifier = fakeTimerNotifier,
+                eventLog = fakeEventLog,
             )
         // Construct ViewModel without calling timerEngine.start() to avoid infinite loop
-        viewModel = TimersViewModel(timerEngine, fakeLibraryRepository)
+        viewModel = TimersViewModel(timerEngine, fakeLibraryRepository, fakeEventLog)
     }
 
     @After
@@ -124,10 +144,13 @@ class TimersViewModelTest {
         }
 
     @Test
-    fun `startTimerFromPreset and handleCommand submit commands without error`() =
+    fun `startTimerFromPreset and handleCommand submit commands and record logs`() =
         runTest(testDispatcher) {
             viewModel.startTimerFromPreset(samplePresets.first())
             viewModel.handleCommand(TimerCommand.Pause(1001))
             advanceUntilIdle()
+
+            assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: Pomodoro (1500s)") })
+            assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: Pause(timerId=1001)") })
         }
 }

@@ -1,9 +1,12 @@
 package com.notification.timer.core.domain.engine
 
+import com.notification.timer.core.domain.diagnostics.EventLog
+import com.notification.timer.core.domain.diagnostics.LogEntry
 import com.notification.timer.core.domain.model.Alert
 import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerCommand
+import com.notification.timer.core.domain.model.TimerState
 import com.notification.timer.core.domain.ports.AlertPlayerPort
 import com.notification.timer.core.domain.ports.TimeSource
 import com.notification.timer.core.domain.ports.TimerNotifierPort
@@ -68,6 +71,23 @@ class TimerEngineTest {
 
         override fun updateNotifications(timers: List<Timer>) {
             snapshots.add(timers)
+        }
+    }
+
+    private class RecordingEventLog : EventLog {
+        val messages = mutableListOf<String>()
+
+        override fun log(
+            tag: String,
+            message: String,
+        ) {
+            messages.add("[$tag] $message")
+        }
+
+        override fun getEntries(): List<LogEntry> = emptyList()
+
+        override fun clear() {
+            messages.clear()
         }
     }
 
@@ -148,5 +168,92 @@ class TimerEngineTest {
 
             advanceTimeBy(10)
             restartedScope.cancel()
+        }
+
+    @Test
+    fun `multiple timers started at different times have strictly isolated remaining times and log state transitions`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            val engineScope = TestScope(dispatcher)
+            val clock = FakeTimeSource(elapsedMs = 10_000L)
+            val store = InMemoryTimerStore()
+            val notifier = RecordingNotifier()
+            val eventLog = RecordingEventLog()
+            val engine =
+                TimerEngine(
+                    timeSource = clock,
+                    timerStore = store,
+                    wakeupScheduler = NoOpWakeupScheduler(),
+                    alertPlayer = NoOpAlertPlayer(),
+                    timerNotifier = notifier,
+                    eventLog = eventLog,
+                )
+
+            engine.start(engineScope)
+            runCurrent()
+
+            // Timer 1: 60s started immediately at t = 10_000
+            engine.submitCommand(
+                TimerCommand.Create(
+                    preset = Preset(id = "p1", name = "Timer 1", durationSec = 60),
+                    startImmediately = true,
+                ),
+            )
+            // Timer 2: 30s created in Ready state at t = 10_000
+            engine.submitCommand(
+                TimerCommand.Create(
+                    preset = Preset(id = "p2", name = "Timer 2", durationSec = 30),
+                    startImmediately = false,
+                ),
+            )
+            runCurrent()
+
+            val timersAtT10 = engine.timers.value
+            assertEquals(2, timersAtT10.size)
+            val timer2AtT10 = timersAtT10.first { it.config.id == "p2" }
+            val timer1AtT10 = timersAtT10.first { it.config.id == "p1" }
+
+            assertTrue(timer1AtT10.state is TimerState.Running)
+            assertTrue(timer2AtT10.state is TimerState.Ready)
+            assertEquals(60_000L, timer1AtT10.remainingMs(clock.elapsedRealtimeMs()))
+            assertEquals(30_000L, timer2AtT10.remainingMs(clock.elapsedRealtimeMs()))
+
+            // Timer 1 runs for 25 seconds while Timer 2 sits idle in Ready
+            clock.elapsedMs = 35_000L
+            runCurrent()
+
+            assertEquals(35_000L, timer1AtT10.remainingMs(clock.elapsedRealtimeMs()))
+            // Timer 2 sitting in Ready must still compute exact preset duration
+            assertEquals(30_000L, timer2AtT10.remainingMs(clock.elapsedRealtimeMs()))
+
+            // User presses Play on Timer 2 at t = 35_000
+            engine.submitCommand(TimerCommand.Start(timer2AtT10.id))
+            runCurrent()
+
+            val timersAtT35 = engine.timers.value
+            val timer2Started = timersAtT35.first { it.id == timer2AtT10.id }
+            val timer1Running = timersAtT35.first { it.id == timer1AtT10.id }
+
+            assertTrue(timer2Started.state is TimerState.Running)
+            val runningState2 = timer2Started.state as TimerState.Running
+            // Ends at 35_000 + 30_000 = 65_000
+            assertEquals(65_000L, runningState2.endsAtElapsedMs)
+
+            // Remaining time right after start must be EXACTLY duration (30_000ms), NOT 55_000ms
+            assertEquals(30_000L, timer2Started.remainingMs(clock.elapsedRealtimeMs()))
+            assertEquals(35_000L, timer1Running.remainingMs(clock.elapsedRealtimeMs()))
+
+            // Advance 10s to t = 45_000
+            clock.elapsedMs = 45_000L
+            runCurrent()
+
+            assertEquals(20_000L, timer2Started.remainingMs(clock.elapsedRealtimeMs()))
+            assertEquals(25_000L, timer1Running.remainingMs(clock.elapsedRealtimeMs()))
+
+            // Verify eventLog recorded the commands and state transitions
+            assertTrue(eventLog.messages.any { it.contains("submitCommand: Start(timerId=${timer2AtT10.id})") })
+            assertTrue(eventLog.messages.any { it.contains("Started timer ${timer2AtT10.id}") })
+
+            engineScope.cancel()
         }
 }
