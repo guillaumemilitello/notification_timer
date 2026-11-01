@@ -3,7 +3,6 @@
 NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
 ## Now (Active Backlog)
-- [ ] Review the complete app project to add debug and info logs, make sure they are disabled in Release (validate it is a curent good practice)
 
 ### MainActivity & UI
 - [ ] Change countdown progression by clicking or dragging on progress bar.
@@ -27,6 +26,7 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 - [x] Tooling setup: Spotless (ktlint), Detekt, Android Lint, strict quality gate script (`gate.ps1` / `gate.sh`).
 - [x] Resource porting: Recursive variable fonts, notification layouts, 18-color palette, English, French, and Spanish localization.
 - [x] Documentation: Lean caveman `AGENT.md`, `CONTRIBUTING.md`, `docs/architecture.md`, `docs/testing.md`, `README.md` with Mermaid diagram.
+- [x] Structured diagnostic logging across all modules with log levels, in-memory event buffer, and R8 rules stripping debug/info logs in release builds.
 
 ### Domain Core (`:core:domain`)
 - [x] Pure Kotlin business models (`Timer`, `Preset`, `Alert`, `UserSettings`, `TimerCommand`, `TimerEvent`).

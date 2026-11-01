@@ -3,7 +3,6 @@
 package com.notification.timer.feature.timers
 
 import android.graphics.Color
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -448,10 +447,6 @@ fun TimerCardItem(
     // Subscribe to a 32ms (~30fps) ticker while running for smooth progress and countdown updates
     var tick by remember(timer.id) { mutableLongStateOf(0L) }
     LaunchedEffect(timer.id, timer.state) {
-        Log.d(
-            "TimersScreen",
-            "Timer #${timer.id} ('${timer.label}') state changed to ${timer.state::class.simpleName}",
-        )
         if (timer.state is TimerState.Running) {
             while (true) {
                 tick = android.os.SystemClock.elapsedRealtime()
@@ -660,10 +655,6 @@ fun TimerCardItem(
                             color = phaseColor,
                             modifier =
                                 Modifier.clickable {
-                                    Log.d(
-                                        "TimersScreen",
-                                        "Play/Pause clicked for timer ${timer.id} ('${timer.label}') in state ${timer.state::class.simpleName} actions=$actions",
-                                    )
                                     when {
                                         TimerAction.START in actions -> onCommand(TimerCommand.Start(timer.id))
                                         TimerAction.PAUSE in actions -> onCommand(TimerCommand.Pause(timer.id))
@@ -691,26 +682,17 @@ fun TimerCardItem(
                     ControlSlot {
                         when {
                             TimerAction.NEXT_SET in actions ->
-                                IconButton(onClick = {
-                                    Log.d("TimersScreen", "NextSet clicked for timer ${timer.id}")
-                                    onCommand(TimerCommand.NextSet(timer.id))
-                                }) {
+                                IconButton(onClick = { onCommand(TimerCommand.NextSet(timer.id)) }) {
                                     Icon(Icons.Default.SkipNext, contentDescription = "Next Set")
                                 }
 
                             TimerAction.STOP in actions ->
-                                IconButton(onClick = {
-                                    Log.d("TimersScreen", "Stop clicked for timer ${timer.id}")
-                                    onCommand(TimerCommand.Stop(timer.id))
-                                }) {
+                                IconButton(onClick = { onCommand(TimerCommand.Stop(timer.id)) }) {
                                     Icon(Icons.Default.Stop, contentDescription = "Stop")
                                 }
 
                             TimerAction.RESET in actions ->
-                                IconButton(onClick = {
-                                    Log.d("TimersScreen", "Reset clicked for timer ${timer.id}")
-                                    onCommand(TimerCommand.Reset(timer.id))
-                                }) {
+                                IconButton(onClick = { onCommand(TimerCommand.Reset(timer.id)) }) {
                                     Icon(Icons.Default.Refresh, contentDescription = "Reset")
                                 }
                         }

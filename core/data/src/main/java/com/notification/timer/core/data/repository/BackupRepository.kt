@@ -59,10 +59,10 @@ class BackupRepository
                     context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                         outputStream.write(jsonString.toByteArray(Charsets.UTF_8))
                     }
-                    eventLog.log("BackupRepository", "Exported ${libraryData.presets.size} presets successfully")
+                    eventLog.i("BackupRepository", "Exported ${libraryData.presets.size} presets successfully")
                     true
                 } catch (e: Exception) {
-                    eventLog.log("BackupRepository", "Export failed: ${e.message}")
+                    eventLog.e("BackupRepository", "Export failed: ${e.message}", e)
                     false
                 }
             }
@@ -89,10 +89,10 @@ class BackupRepository
                         )
                     dataStoreStore.saveLibraryData(updatedLibrary)
 
-                    eventLog.log("BackupRepository", "Imported ${exportData.presets.size} presets successfully")
+                    eventLog.i("BackupRepository", "Imported ${exportData.presets.size} presets successfully")
                     ImportResult.Success(exportData.presets.size)
                 } catch (e: Exception) {
-                    eventLog.log("BackupRepository", "Import failed: ${e.message}")
+                    eventLog.e("BackupRepository", "Import failed: ${e.message}", e)
                     ImportResult.ErrorInvalidFormat(e.message ?: "Unknown error")
                 }
             }

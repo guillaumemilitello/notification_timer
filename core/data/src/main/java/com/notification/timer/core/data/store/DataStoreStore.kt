@@ -39,6 +39,7 @@ class DataStoreStore
         suspend fun saveLibraryData(data: LibraryData) =
             libraryMutex.withLock {
                 writeAtomic(libraryFile, LibraryData.serializer(), data)
+                eventLog.d("DataStoreStore", "Saved library data: ${data.presets.size} presets")
             }
 
         suspend fun loadRuntimeData(): RuntimeData =
@@ -49,6 +50,7 @@ class DataStoreStore
         suspend fun saveRuntimeData(data: RuntimeData) =
             runtimeMutex.withLock {
                 writeAtomic(runtimeFile, RuntimeData.serializer(), data)
+                eventLog.d("DataStoreStore", "Saved runtime state: ${data.timers.size} timers")
             }
 
         private suspend fun <T> readOrRecover(
@@ -63,7 +65,7 @@ class DataStoreStore
                     val content = file.readText()
                     JsonCodec.json.decodeFromString(serializer, content)
                 } catch (e: Exception) {
-                    eventLog.log("DataStoreStore", "Corrupt file detected at ${file.name}: ${e.message}")
+                    eventLog.w("DataStoreStore", "Corrupt file detected at ${file.name}: ${e.message}", e)
                     val corruptFile = File(file.parentFile, "${file.nameWithoutExtension}_corrupt_${System.currentTimeMillis()}.json")
                     file.renameTo(corruptFile)
                     default

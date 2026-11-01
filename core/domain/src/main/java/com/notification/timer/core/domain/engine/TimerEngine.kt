@@ -53,6 +53,10 @@ class TimerEngine(
                 val persistedNextId = timerStore.loadNextTimerId()
                 val maxExistingId = restored.maxOfOrNull { it.id } ?: (MIN_TIMER_ID - 1)
                 nextTimerId = maxOf(MIN_TIMER_ID, persistedNextId, maxExistingId + 1)
+                eventLog?.i(
+                    "TimerEngine",
+                    "Engine started: restored ${restored.size} timers, nextTimerId=$nextTimerId at nowMs=$nowElapsedMs",
+                )
 
                 if (restored.isNotEmpty()) {
                     var stateChanged = false
@@ -174,6 +178,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.adjustTime(currentList[index], command.deltaSec, nowElapsedMs)
+                    eventLog?.d("TimerEngine", "Adjusted time for timer ${command.timerId} by ${command.deltaSec}s")
                 }
             }
 
@@ -181,6 +186,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.adjustTime(currentList[index], command.deltaSec, nowElapsedMs)
+                    eventLog?.d("TimerEngine", "Stepped time for timer ${command.timerId} by ${command.deltaSec}s")
                 }
             }
 
@@ -188,6 +194,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.nextSet(currentList[index])
+                    eventLog?.d("TimerEngine", "Advanced to next set for timer ${command.timerId}")
                 }
             }
 
@@ -195,6 +202,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.startNextSet(currentList[index], nowElapsedMs)
+                    eventLog?.d("TimerEngine", "Started next set for timer ${command.timerId}")
                 }
             }
 
@@ -202,6 +210,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.stop(currentList[index])
+                    eventLog?.d("TimerEngine", "Stopped timer ${command.timerId}")
                 }
             }
 
@@ -209,6 +218,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.extraSet(currentList[index], nowElapsedMs)
+                    eventLog?.d("TimerEngine", "Triggered extra set for timer ${command.timerId}")
                 }
             }
 
@@ -216,17 +226,20 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.reset(currentList[index])
+                    eventLog?.d("TimerEngine", "Reset timer ${command.timerId}")
                 }
             }
 
             is TimerCommand.Clear -> {
                 currentList.removeAll { it.id == command.timerId }
+                eventLog?.d("TimerEngine", "Cleared timer ${command.timerId}")
             }
 
             is TimerCommand.DismissNotification -> {
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.dismissNotification(currentList[index])
+                    eventLog?.d("TimerEngine", "Dismissed notification for timer ${command.timerId}")
                 }
             }
 
@@ -234,6 +247,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.closeNotification(currentList[index])
+                    eventLog?.d("TimerEngine", "Closed notification for timer ${command.timerId}")
                 }
             }
 
@@ -241,6 +255,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.rename(currentList[index], command.newName)
+                    eventLog?.d("TimerEngine", "Renamed timer ${command.timerId} to '${command.newName}'")
                 }
             }
 
@@ -248,6 +263,7 @@ class TimerEngine(
                 val index = currentList.indexOfFirst { it.id == command.timerId }
                 if (index != -1) {
                     currentList[index] = TimerStateMachine.updateColor(currentList[index], command.colorHex)
+                    eventLog?.d("TimerEngine", "Updated color for timer ${command.timerId} to ${command.colorHex}")
                 }
             }
 
@@ -258,6 +274,7 @@ class TimerEngine(
                 ) {
                     val moved = currentList.removeAt(command.fromIndex)
                     currentList.add(command.toIndex, moved)
+                    eventLog?.d("TimerEngine", "Reordered timer from ${command.fromIndex} to ${command.toIndex}")
                 }
             }
         }

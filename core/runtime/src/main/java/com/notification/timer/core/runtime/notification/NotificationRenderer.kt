@@ -192,7 +192,7 @@ class NotificationRenderer
             }
 
             val notification = builder.build()
-            eventLog.log(
+            eventLog.d(
                 "NotificationRenderer",
                 "Rendered custom notification for timer $title (channel=$channelId, running=$isRunning)",
             )
@@ -359,13 +359,13 @@ class NotificationRenderer
         ) {
             activeNotifications[timerId] = notification
             notificationManager.notify(timerId, notification)
-            eventLog.log("NotificationRenderer", "Posted notification $timerId")
+            eventLog.i("NotificationRenderer", "Posted notification $timerId")
         }
 
         fun cancelNotification(timerId: Int) {
             activeNotifications.remove(timerId)
             notificationManager.cancel(timerId)
-            eventLog.log("NotificationRenderer", "Cancelled notification $timerId")
+            eventLog.i("NotificationRenderer", "Cancelled notification $timerId")
         }
 
         fun getActiveNotification(timerId: Int): Notification? = activeNotifications[timerId]

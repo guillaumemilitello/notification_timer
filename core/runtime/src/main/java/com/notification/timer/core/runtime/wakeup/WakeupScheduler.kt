@@ -44,18 +44,18 @@ class WakeupScheduler
                     triggerAtMs,
                     pendingIntent,
                 )
-                eventLog.log(
+                eventLog.d(
                     "WakeupScheduler",
                     "Armed exact wakeup for elapsedMs=$triggerAtMs (delay=${triggerAtMs - SystemClock.elapsedRealtime()}ms)",
                 )
             } catch (e: Exception) {
-                eventLog.log("WakeupScheduler", "Failed to schedule exact alarm: ${e.message}")
+                eventLog.w("WakeupScheduler", "Failed to schedule exact alarm: ${e.message}", e)
             }
         }
 
         fun cancelWakeup() {
             alarmManager.cancel(createWakeupPendingIntent())
-            eventLog.log("WakeupScheduler", "Cancelled scheduled wakeup")
+            eventLog.d("WakeupScheduler", "Cancelled scheduled wakeup")
         }
 
         fun acquireWakeLock(timeoutMs: Long = WAKELOCK_TIMEOUT_MS) {
@@ -67,13 +67,13 @@ class WakeupScheduler
                     )
             }
             wakeLock?.acquire(timeoutMs)
-            eventLog.log("WakeupScheduler", "Acquired PARTIAL_WAKE_LOCK for ${timeoutMs}ms")
+            eventLog.d("WakeupScheduler", "Acquired PARTIAL_WAKE_LOCK for ${timeoutMs}ms")
         }
 
         fun releaseWakeLock() {
             if (wakeLock?.isHeld == true) {
                 wakeLock?.release()
-                eventLog.log("WakeupScheduler", "Released PARTIAL_WAKE_LOCK")
+                eventLog.d("WakeupScheduler", "Released PARTIAL_WAKE_LOCK")
             }
         }
 

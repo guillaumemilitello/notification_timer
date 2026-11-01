@@ -28,13 +28,13 @@ class WakeupReceiver : BroadcastReceiver() {
 
         val pendingResult = goAsync()
         wakeupScheduler.acquireWakeLock(WakeupScheduler.WAKELOCK_TIMEOUT_MS)
-        eventLog.log("WakeupReceiver", "Wakeup alarm fired, processing state tick")
+        eventLog.i("WakeupReceiver", "Wakeup alarm fired, processing state tick")
 
         try {
             // Engine loop will pick up and process due alerts on tick
             pendingResult.finish()
         } catch (e: Exception) {
-            eventLog.log("WakeupReceiver", "Error during wakeup: ${e.message}")
+            eventLog.e("WakeupReceiver", "Error during wakeup: ${e.message}", e)
             pendingResult.finish()
         }
     }

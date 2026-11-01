@@ -73,7 +73,7 @@ class TimerForegroundService : Service() {
             return START_NOT_STICKY
         }
 
-        eventLog.log("TimerForegroundService", "onStartCommand for timer $timerId")
+        eventLog.i("TimerForegroundService", "onStartCommand for timer $timerId (activeForegroundId=$activeForegroundId)")
 
         val previousForegroundId = activeForegroundId
         if (previousForegroundId != -1 && previousForegroundId != timerId) {
@@ -128,7 +128,7 @@ class TimerForegroundService : Service() {
     override fun onDestroy() {
         detachOrRemoveActiveForeground()
         super.onDestroy()
-        eventLog.log("TimerForegroundService", "onDestroy")
+        eventLog.i("TimerForegroundService", "onDestroy")
     }
 
     private fun detachOrRemoveActiveForeground() {

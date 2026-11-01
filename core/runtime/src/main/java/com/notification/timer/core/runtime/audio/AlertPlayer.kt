@@ -27,7 +27,7 @@ class AlertPlayer
 
         @SuppressLint("MissingPermission")
         override fun playAlert(alert: Alert) {
-            eventLog.log("AlertPlayer", "Playing alert '${alert.name}' (vibrate=${alert.vibrate}, sound=${alert.sound})")
+            eventLog.i("AlertPlayer", "Playing alert '${alert.name}' (vibrate=${alert.vibrate}, sound=${alert.sound})")
 
             val audioAttributes =
                 AudioAttributes
@@ -41,7 +41,8 @@ class AlertPlayer
                     .Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
                     .setAudioAttributes(audioAttributes)
                     .build()
-            audioManager.requestAudioFocus(focusRequest)
+            val focusResult = audioManager.requestAudioFocus(focusRequest)
+            eventLog.d("AlertPlayer", "Requested audio focus (focusResult=$focusResult)")
 
             // Play Ringtone
             try {
@@ -53,7 +54,7 @@ class AlertPlayer
                 ringtone?.audioAttributes = audioAttributes
                 ringtone?.play()
             } catch (e: Exception) {
-                eventLog.log("AlertPlayer", "Failed to play ringtone: ${e.message}")
+                eventLog.w("AlertPlayer", "Failed to play ringtone: ${e.message}", e)
             }
 
             // Trigger Vibration
@@ -68,7 +69,7 @@ class AlertPlayer
                 val vibrator = context.getSystemService(Vibrator::class.java)
                 vibrator?.vibrate(VibrationEffect.createOneShot(500L, VibrationEffect.DEFAULT_AMPLITUDE))
             } catch (e: Exception) {
-                eventLog.log("AlertPlayer", "Failed to vibrate: ${e.message}")
+                eventLog.w("AlertPlayer", "Failed to vibrate: ${e.message}", e)
             }
         }
     }
