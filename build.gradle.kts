@@ -32,4 +32,10 @@ subprojects {
         allRules = false
         ignoreFailures = true
     }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors.set(true)
+        }
+    }
 }
