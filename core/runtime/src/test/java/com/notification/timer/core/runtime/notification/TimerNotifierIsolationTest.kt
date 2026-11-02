@@ -13,7 +13,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -209,21 +208,21 @@ class TimerNotifierIsolationTest {
         val config = TimerConfig(id = "c1", name = "Baking", durationSec = 60, runningColor = customColor)
         val timer = Timer(id = 2000, configId = config.id, config = config, label = "Baking")
 
-        // 1. Running -> Notification color matches setting and is colorized
+        // 1. Running -> Notification color matches setting and is not forced colorized
         val runningTimer = TimerStateMachine.start(timer, nowElapsedMs = clock.elapsedMs)
         adapter.updateNotifications(listOf(runningTimer))
         val runningNotification = shadowOf(notificationManager).getNotification(2000)
         assertNotNull(runningNotification)
         assertEquals(parsedCustomColor, runningNotification.color)
-        assertTrue(runningNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+        assertFalse(runningNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
 
-        // 2. Paused -> Notification color stays in setting color and remains colorized
+        // 2. Paused -> Notification color stays in setting color and remains not forced colorized
         val pausedTimer = TimerStateMachine.pause(runningTimer, nowElapsedMs = clock.elapsedMs + 10_000L)
         adapter.updateNotifications(listOf(pausedTimer))
         val pausedNotification = shadowOf(notificationManager).getNotification(2000)
         assertNotNull(pausedNotification)
         assertEquals(parsedCustomColor, pausedNotification.color)
-        assertTrue(pausedNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+        assertFalse(pausedNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
 
         // 3. Update color in settings while paused -> Notification updates to new setting color
         val updatedColor = "#00BCD4" // Cyan
@@ -233,7 +232,7 @@ class TimerNotifierIsolationTest {
         val recoloredNotification = shadowOf(notificationManager).getNotification(2000)
         assertNotNull(recoloredNotification)
         assertEquals(parsedUpdatedColor, recoloredNotification.color)
-        assertTrue(recoloredNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+        assertFalse(recoloredNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
 
         // 4. Resume and Complete -> Notification keeps default color following system theme and is not colorized
         val resumedTimer = TimerStateMachine.resume(recoloredTimer, nowElapsedMs = clock.elapsedMs + 10_000L)
@@ -244,5 +243,44 @@ class TimerNotifierIsolationTest {
         assertNotNull(doneNotification)
         assertEquals(NotificationCompat.COLOR_DEFAULT, doneNotification.color)
         assertFalse(doneNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+    }
+
+    @Test
+    fun `four concurrent timers with distinct colors maintain colors independently when paused one by one`() {
+        val colors = listOf("#FF4336", "#3F51B5", "#00BCD4", "#FFD740")
+        var currentTimers =
+            colors.mapIndexed { index, hex ->
+                val timerId = 1000 + index
+                val config = TimerConfig(id = "c$timerId", name = "Timer $timerId", durationSec = 120, runningColor = hex)
+                TimerStateMachine.start(
+                    Timer(id = timerId, configId = config.id, config = config, label = config.name),
+                    nowElapsedMs = clock.elapsedMs,
+                )
+            }
+
+        adapter.updateNotifications(currentTimers)
+
+        // All 4 running with their distinct colors
+        for (i in colors.indices) {
+            val notif = shadowOf(notificationManager).getNotification(1000 + i)
+            assertNotNull(notif)
+            assertEquals(Color.parseColor(colors[i]), notif.color)
+        }
+
+        // Pause each timer one by one and assert each timer retains its exact color
+        for (pauseIndex in colors.indices) {
+            val timerToPause = currentTimers[pauseIndex]
+            val paused = TimerStateMachine.pause(timerToPause, nowElapsedMs = clock.elapsedMs + 5000L)
+            currentTimers = currentTimers.map { if (it.id == paused.id) paused else it }
+
+            adapter.updateNotifications(currentTimers)
+
+            // Verify ALL 4 timers retain their respective colors, even as FGS transitions or detaches
+            for (i in colors.indices) {
+                val notif = shadowOf(notificationManager).getNotification(1000 + i)
+                assertNotNull("Timer ${1000 + i} notification must be active", notif)
+                assertEquals("Timer ${1000 + i} must keep its color", Color.parseColor(colors[i]), notif.color)
+            }
+        }
     }
 }

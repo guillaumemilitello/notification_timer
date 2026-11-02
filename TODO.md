@@ -4,7 +4,6 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
 ## Now (Active Backlog)
 - [x] Notification color is not sync with the timer settings, when done it should keep the default color (follwing the system theme). When paused it should stay in the setting color !
-
 - [x] In a new timer entry island: remove the tab for "Manual" and "Preset", Default is manual and history will be accessible through an icon left to the close cross.
 - [x] Remove the manual timer setting wheel and color from the timer name text box. Use default values, only changeable from the settings.
 - [x] Redesign the timer tile from the main activity. I want a dedicated "part/object" (dont know the name) at the top with the name and set equivalent to the "= drag to reorder" when available.

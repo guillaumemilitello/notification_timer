@@ -26,10 +26,8 @@ internal data class TimerNotificationSpec(
     val chronometerBaseElapsedMs: Long?,
     val showNext: Boolean,
     val isAlerting: Boolean,
-    val isForeground: Boolean,
     val isOngoing: Boolean,
-    val isDone: Boolean = false,
-    val phaseColor: Int,
+    val colorTheme: NotificationColorTheme,
 ) {
     fun hasStructuralChangeFrom(other: TimerNotificationSpec): Boolean = copy(progressPermille = 0) != other.copy(progressPermille = 0)
 }
@@ -66,16 +64,13 @@ class TimerNotifierAdapter
                 renderer.cancelNotification(orphanId)
             }
 
-            val targetForegroundId = selectTargetForegroundTimerId(timers)
-
             for (timer in timers) {
                 if (!timer.isNotificationVisible) {
                     postedEntries.remove(timer.id)
                     continue
                 }
 
-                val isForeground = timer.id == targetForegroundId
-                val spec = buildSpec(timer, nowElapsedMs, isForeground)
+                val spec = buildSpec(timer, nowElapsedMs)
                 val shouldPostOnRestore =
                     timer.state is TimerState.Running || timer.id in newlyCompletedIds
 
@@ -94,6 +89,7 @@ class TimerNotifierAdapter
                     )
             }
 
+            val targetForegroundId = selectTargetForegroundTimerId(timers)
             syncForegroundService(targetForegroundId)
         }
 
@@ -125,8 +121,7 @@ class TimerNotifierAdapter
             for (timer in timers) {
                 if (!timer.isNotificationVisible) continue
 
-                val isForeground = timer.id == targetForegroundId
-                val spec = buildSpec(timer, nowElapsedMs, isForeground)
+                val spec = buildSpec(timer, nowElapsedMs)
                 val previous = postedEntries[timer.id]
 
                 val shouldPost =
@@ -173,7 +168,6 @@ class TimerNotifierAdapter
         private fun buildSpec(
             timer: Timer,
             nowElapsedMs: Long,
-            isForeground: Boolean,
         ): TimerNotificationSpec {
             val remainingMs = timer.remainingMs(nowElapsedMs)
             val durationMs = timer.config.durationSec * 1000L
@@ -181,10 +175,6 @@ class TimerNotifierAdapter
             val state = timer.state
             val isRunning = state is TimerState.Running
             val isOngoing = state is TimerState.Running || state is TimerState.Paused
-            val isDone =
-                (state is TimerState.Ready && state.isCompleted) ||
-                    state is TimerState.SetDone ||
-                    state is TimerState.AllSetsDone
             val showProgress = state is TimerState.Running || state is TimerState.Paused
             val showNext = TimerAction.NEXT_SET in actions
             val isAlerting = state is TimerState.SetDone || state is TimerState.AllSetsDone
@@ -212,6 +202,12 @@ class TimerNotifierAdapter
                     Color.parseColor("#7a82b7")
                 }
 
+            val colorTheme: NotificationColorTheme =
+                when (state) {
+                    is TimerState.Running, is TimerState.Paused -> NotificationColorTheme.Active(parsedColor)
+                    is TimerState.Ready, is TimerState.SetDone, is TimerState.AllSetsDone -> NotificationColorTheme.SystemDefault
+                }
+
             val setLabel =
                 when {
                     timer.config.sets != null && timer.config.sets!! > 1 ->
@@ -222,9 +218,9 @@ class TimerNotifierAdapter
                 }
 
             val subtitle =
-                when (val state = timer.state) {
+                when (val timerState = timer.state) {
                     is TimerState.Ready -> {
-                        val prefix = if (state.isCompleted) "Done" else "Ready"
+                        val prefix = if (timerState.isCompleted) "Done" else "Ready"
                         if (setLabel != null) "$prefix · $setLabel" else prefix
                     }
                     is TimerState.Running -> setLabel ?: ""
@@ -254,10 +250,8 @@ class TimerNotifierAdapter
                 chronometerBaseElapsedMs = chronometerBaseElapsedMs,
                 showNext = showNext,
                 isAlerting = isAlerting,
-                isForeground = isForeground,
                 isOngoing = isOngoing,
-                isDone = isDone,
-                phaseColor = parsedColor,
+                colorTheme = colorTheme,
             )
         }
 
@@ -267,21 +261,21 @@ class TimerNotifierAdapter
             nowElapsedMs: Long,
             postedAtWallMs: Long,
         ) = renderer.renderTimerNotification(
-            timerId = spec.timerId,
-            title = spec.title,
-            subtitle = spec.subtitle,
-            remainingMs = timer.remainingMs(nowElapsedMs),
-            durationMs = spec.durationMs,
-            isRunning = spec.isRunning,
-            showProgress = spec.showProgress,
-            showNext = spec.showNext,
-            isAlerting = spec.isAlerting,
-            isForeground = spec.isForeground,
-            isOngoing = spec.isOngoing,
-            isDone = spec.isDone,
-            chronometerBaseElapsedMs = spec.chronometerBaseElapsedMs,
-            phaseColor = spec.phaseColor,
-            postedAtWallMs = postedAtWallMs,
+            TimerNotificationModel(
+                timerId = spec.timerId,
+                title = spec.title,
+                subtitle = spec.subtitle,
+                remainingMs = timer.remainingMs(nowElapsedMs),
+                durationMs = spec.durationMs,
+                isRunning = spec.isRunning,
+                showProgress = spec.showProgress,
+                showNext = spec.showNext,
+                isAlerting = spec.isAlerting,
+                isOngoing = spec.isOngoing,
+                chronometerBaseElapsedMs = spec.chronometerBaseElapsedMs,
+                colorTheme = spec.colorTheme,
+                postedAtWallMs = postedAtWallMs,
+            ),
         )
 
         private fun syncForegroundService(targetForegroundId: Int?) {

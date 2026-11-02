@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.SystemClock
 import android.view.View
 import android.widget.RemoteViews
@@ -96,6 +95,99 @@ class NotificationRenderer
             notificationManager.createNotificationChannels(listOf(runningChannel, alertChannel))
         }
 
+        fun renderTimerNotification(model: TimerNotificationModel): Notification {
+            val channelId = if (model.isAlerting) CHANNEL_ALERT else CHANNEL_RUNNING
+            val notificationColor =
+                when (val theme = model.colorTheme) {
+                    is NotificationColorTheme.Active -> theme.colorInt
+                    NotificationColorTheme.SystemDefault -> NotificationCompat.COLOR_DEFAULT
+                }
+
+            val openAppIntent =
+                PendingIntent.getActivity(
+                    context,
+                    model.timerId,
+                    context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                        data = Uri.parse("ntimer://open/${model.timerId}")
+                    } ?: Intent(),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                )
+
+            val remoteViews = RemoteViews(context.packageName, R.layout.notification)
+
+            configureColorAndAccent(
+                remoteViews = remoteViews,
+                colorTheme = model.colorTheme,
+                isAlerting = model.isAlerting,
+            )
+
+            configureTextAndProgress(
+                remoteViews = remoteViews,
+                title = model.title,
+                subtitle = model.subtitle,
+                remainingMs = model.remainingMs,
+                durationMs = model.durationMs,
+                showProgress = model.showProgress,
+                colorTheme = model.colorTheme,
+            )
+
+            configureChronometer(
+                remoteViews = remoteViews,
+                remainingMs = model.remainingMs,
+                isRunning = model.isRunning,
+                chronometerBaseElapsedMs = model.chronometerBaseElapsedMs,
+            )
+
+            val dismissPendingIntent =
+                configureButtons(
+                    remoteViews = remoteViews,
+                    timerId = model.timerId,
+                    isRunning = model.isRunning,
+                    showNext = model.showNext,
+                )
+
+            val builder =
+                NotificationCompat
+                    .Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setContentIntent(openAppIntent)
+                    .setDeleteIntent(dismissPendingIntent)
+                    .setCustomContentView(remoteViews)
+                    .setCustomBigContentView(remoteViews)
+                    .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                    .setColor(notificationColor)
+                    .setColorized(false)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setOngoing(model.isOngoing)
+                    .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
+                    .setOnlyAlertOnce(!model.isAlerting)
+                    .setWhen(model.postedAtWallMs)
+                    .setShowWhen(false)
+                    .setGroup("timer_${model.timerId}")
+
+            if (model.isAlerting) {
+                builder.setCustomHeadsUpContentView(remoteViews)
+            }
+
+            val notification = builder.build()
+            val displayedText =
+                if (model.isRunning && model.remainingMs > 1000L && model.chronometerBaseElapsedMs != null) {
+                    "Chronometer(base=${model.chronometerBaseElapsedMs})"
+                } else if (model.isRunning && model.remainingMs in 1..1000L) {
+                    "00:00 (frozen)"
+                } else {
+                    formatDisplayTime(model.remainingMs.coerceAtLeast(0L))
+                }
+            eventLog.d(
+                "NotificationRenderer",
+                "Rendered notification: id=${model.timerId}, title='${model.title}', time='$displayedText', subtitle='${model.subtitle}', running=${model.isRunning}, alerting=${model.isAlerting}, remainingMs=${model.remainingMs}",
+            )
+            return notification
+        }
+
+        /**
+         * Backward-compatible convenience overload for callers/tests using explicit arguments.
+         */
         fun renderTimerNotification(
             timerId: Int,
             title: String,
@@ -114,100 +206,71 @@ class NotificationRenderer
             useColoredNotification: Boolean = true,
             postedAtWallMs: Long = System.currentTimeMillis(),
         ): Notification {
-            val channelId = if (isAlerting) CHANNEL_ALERT else CHANNEL_RUNNING
-            val shouldColorize = useColoredNotification && !isAlerting && !isDone && isOngoing
-            val notificationColor = if (isDone) NotificationCompat.COLOR_DEFAULT else phaseColor
-
-            val openAppIntent =
-                PendingIntent.getActivity(
-                    context,
-                    timerId,
-                    context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-                        data = Uri.parse("ntimer://open/$timerId")
-                    } ?: Intent(),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                )
-
-            val layoutId =
-                when {
-                    isAlerting -> R.layout.notification_red_text
-                    shouldColorize -> {
-                        val luminance = calculateLuminance(phaseColor)
-                        if (luminance > 0.5) {
-                            R.layout.notification_black_text
-                        } else {
-                            R.layout.notification_white_text
-                        }
-                    }
-                    else -> R.layout.notification
-                }
-
-            val remoteViews = RemoteViews(context.packageName, layoutId)
-
-            configureTextAndProgress(
-                remoteViews = remoteViews,
-                title = title,
-                subtitle = subtitle,
-                remainingMs = remainingMs,
-                durationMs = durationMs,
-                showProgress = showProgress,
-                shouldColorize = shouldColorize,
-                isAlerting = isAlerting,
-                phaseColor = phaseColor,
-            )
-
-            configureChronometer(
-                remoteViews = remoteViews,
-                remainingMs = remainingMs,
-                isRunning = isRunning,
-                chronometerBaseElapsedMs = chronometerBaseElapsedMs,
-            )
-
-            val dismissPendingIntent =
-                configureButtons(
-                    remoteViews = remoteViews,
-                    timerId = timerId,
-                    isRunning = isRunning,
-                    showNext = showNext,
-                )
-
-            val builder =
-                NotificationCompat
-                    .Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_notification)
-                    .setContentIntent(openAppIntent)
-                    .setDeleteIntent(dismissPendingIntent)
-                    .setCustomContentView(remoteViews)
-                    .setCustomBigContentView(remoteViews)
-                    .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-                    .setColor(notificationColor)
-                    .setColorized(shouldColorize)
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setOngoing(isOngoing)
-                    .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
-                    .setOnlyAlertOnce(!isAlerting)
-                    .setWhen(postedAtWallMs)
-                    .setShowWhen(false)
-                    .setGroup("timer_$timerId")
-
-            if (isAlerting) {
-                builder.setCustomHeadsUpContentView(remoteViews)
-            }
-
-            val notification = builder.build()
-            val displayedText =
-                if (isRunning && remainingMs > 1000L && chronometerBaseElapsedMs != null) {
-                    "Chronometer(base=$chronometerBaseElapsedMs)"
-                } else if (isRunning && remainingMs in 1..1000L) {
-                    "00:00 (frozen)"
+            val colorTheme =
+                if (isDone || !useColoredNotification) {
+                    NotificationColorTheme.SystemDefault
                 } else {
-                    formatTime(remainingMs.coerceAtLeast(0L))
+                    NotificationColorTheme.Active(phaseColor)
                 }
-            eventLog.d(
-                "NotificationRenderer",
-                "Rendered notification: id=$timerId, title='$title', time='$displayedText', subtitle='$subtitle', running=$isRunning, alerting=$isAlerting, remainingMs=$remainingMs",
+
+            return renderTimerNotification(
+                TimerNotificationModel(
+                    timerId = timerId,
+                    title = title,
+                    subtitle = subtitle,
+                    remainingMs = remainingMs,
+                    durationMs = durationMs,
+                    isRunning = isRunning,
+                    showProgress = showProgress,
+                    showNext = showNext,
+                    isAlerting = isAlerting,
+                    isOngoing = isOngoing,
+                    chronometerBaseElapsedMs = chronometerBaseElapsedMs,
+                    colorTheme = colorTheme,
+                    postedAtWallMs = postedAtWallMs,
+                ),
             )
-            return notification
+        }
+
+        private fun configureColorAndAccent(
+            remoteViews: RemoteViews,
+            colorTheme: NotificationColorTheme,
+            isAlerting: Boolean,
+        ) {
+            when (colorTheme) {
+                is NotificationColorTheme.Active -> {
+                    val resolved = NotificationColorResolver.resolve(colorTheme.colorInt)
+                    remoteViews.setViewVisibility(R.id.viewColorAccent, View.VISIBLE)
+                    remoteViews.setColorStateList(
+                        R.id.viewColorAccent,
+                        "setImageTintList",
+                        ColorStateList.valueOf(resolved.dayAccentColor),
+                        ColorStateList.valueOf(resolved.nightAccentColor),
+                    )
+
+                    // Accent countdown timer text with theme-contrast-safe color
+                    remoteViews.setColorInt(
+                        R.id.textViewTimer,
+                        "setTextColor",
+                        resolved.dayAccentColor,
+                        resolved.nightAccentColor,
+                    )
+                    remoteViews.setColorInt(
+                        R.id.textViewTimerStatic,
+                        "setTextColor",
+                        resolved.dayAccentColor,
+                        resolved.nightAccentColor,
+                    )
+                }
+
+                NotificationColorTheme.SystemDefault -> {
+                    remoteViews.setViewVisibility(R.id.viewColorAccent, View.GONE)
+                    val textColorRes =
+                        if (isAlerting) R.color.progress_bar_get_ready else R.color.progress_bar_timer_text
+                    remoteViews.setColor(R.id.textViewTimer, "setTextColor", textColorRes)
+                    remoteViews.setColor(R.id.textViewTimerStatic, "setTextColor", textColorRes)
+                }
+            }
         }
 
         private fun configureTextAndProgress(
@@ -217,9 +280,7 @@ class NotificationRenderer
             remainingMs: Long,
             durationMs: Long,
             showProgress: Boolean,
-            shouldColorize: Boolean,
-            isAlerting: Boolean,
-            phaseColor: Int,
+            colorTheme: NotificationColorTheme,
         ) {
             if (showProgress) {
                 val headerText = if (subtitle.isNotBlank()) "$title · $subtitle" else title
@@ -237,13 +298,33 @@ class NotificationRenderer
                     }
                 remoteViews.setProgressBar(R.id.progressBarTimer, PROGRESS_MAX, progress, false)
 
-                if (!shouldColorize && !isAlerting && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val luminance = calculateLuminance(phaseColor)
-                    if (luminance in 0.12..0.85) {
+                when (colorTheme) {
+                    is NotificationColorTheme.Active -> {
+                        val resolved = NotificationColorResolver.resolve(colorTheme.colorInt)
                         remoteViews.setColorStateList(
                             R.id.progressBarTimer,
                             "setProgressTintList",
-                            ColorStateList.valueOf(phaseColor),
+                            ColorStateList.valueOf(resolved.dayAccentColor),
+                            ColorStateList.valueOf(resolved.nightAccentColor),
+                        )
+                        remoteViews.setColorStateList(
+                            R.id.progressBarTimer,
+                            "setProgressBackgroundTintList",
+                            ColorStateList.valueOf(resolved.dayTrackColor),
+                            ColorStateList.valueOf(resolved.nightTrackColor),
+                        )
+                    }
+
+                    NotificationColorTheme.SystemDefault -> {
+                        remoteViews.setColor(
+                            R.id.progressBarTimer,
+                            "setProgressTintList",
+                            R.color.progress_bar_current,
+                        )
+                        remoteViews.setColor(
+                            R.id.progressBarTimer,
+                            "setProgressBackgroundTintList",
+                            R.color.progress_bar_background,
                         )
                     }
                 }
@@ -273,15 +354,13 @@ class NotificationRenderer
                 remoteViews.setViewVisibility(R.id.textViewTimer, View.VISIBLE)
                 remoteViews.setViewVisibility(R.id.textViewTimerStatic, View.GONE)
                 remoteViews.setChronometer(R.id.textViewTimer, stopTime + CHRONOMETER_CEILING_OFFSET_MS, null, true)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    remoteViews.setChronometerCountDown(R.id.textViewTimer, true)
-                }
+                remoteViews.setChronometerCountDown(R.id.textViewTimer, true)
             } else {
                 remoteViews.setViewVisibility(R.id.textViewTimer, View.GONE)
                 remoteViews.setChronometer(R.id.textViewTimer, 0, null, false)
                 remoteViews.setViewVisibility(R.id.textViewTimerStatic, View.VISIBLE)
                 val displayMs = if (isRunning && remainingMs in 1..1000L) 0L else remainingMs.coerceAtLeast(0L)
-                remoteViews.setTextViewText(R.id.textViewTimerStatic, formatTime(displayMs))
+                remoteViews.setTextViewText(R.id.textViewTimerStatic, formatDisplayTime(displayMs))
             }
         }
 
@@ -392,13 +471,4 @@ class NotificationRenderer
                     .filter { it >= MIN_TIMER_NOTIFICATION_ID }
                     .toSet()
             }.getOrDefault(emptySet())
-
-        private fun calculateLuminance(color: Int): Double {
-            val r = Color.red(color) / 255.0
-            val g = Color.green(color) / 255.0
-            val b = Color.blue(color) / 255.0
-            return 0.2126 * r + 0.7152 * g + 0.0722 * b
-        }
-
-        private fun formatTime(millis: Long): String = formatDisplayTime(millis)
     }

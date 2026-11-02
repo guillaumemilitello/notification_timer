@@ -77,6 +77,7 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
+        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
         val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
@@ -84,6 +85,7 @@ class NotificationRendererTest {
         val nextBtn = root.findViewById<ImageButton>(R.id.buttonNext)
         val closeBtn = root.findViewById<ImageButton>(R.id.buttonClose)
 
+        assertEquals(View.VISIBLE, accentBar.visibility)
         assertEquals(View.VISIBLE, progressBar.visibility)
         assertEquals(250, progressBar.progress)
         assertEquals(NotificationRenderer.PROGRESS_MAX, progressBar.max)
@@ -103,7 +105,10 @@ class NotificationRendererTest {
         assertEquals(R.id.buttonClose, buttonContainer.getChildAt(2).id)
 
         assertEquals(Color.parseColor("#3F51B5"), notification.color)
-        assertTrue(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+        assertFalse(
+            "Native Material 3 style never forces setColorized(true)",
+            notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false),
+        )
     }
 
     @Test
@@ -124,10 +129,12 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
+        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val timerText = root.findViewById<TextView>(R.id.textViewTimerStatic)
         val chrono = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
 
+        assertEquals(View.VISIBLE, accentBar.visibility)
         assertEquals(View.VISIBLE, progressBar.visibility)
         assertEquals(500, progressBar.progress)
         assertEquals(View.GONE, chrono.visibility)
@@ -135,7 +142,7 @@ class NotificationRendererTest {
         assertEquals("00:30", timerText.text.toString())
 
         assertEquals(Color.parseColor("#FFFFFF"), notification.color)
-        assertTrue(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+        assertFalse(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
     }
 
     @Test
@@ -157,10 +164,12 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
+        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
         val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
 
+        assertEquals(View.GONE, accentBar.visibility)
         assertEquals(View.GONE, progressBar.visibility)
         assertEquals(View.VISIBLE, subtitleLabel.visibility)
         assertEquals("Done", subtitleLabel.text.toString())
@@ -183,14 +192,17 @@ class NotificationRendererTest {
                 showProgress = false,
                 showNext = false,
                 isAlerting = true,
+                isDone = true,
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
+        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
         val nextBtn = root.findViewById<ImageButton>(R.id.buttonNext)
         val closeBtn = root.findViewById<ImageButton>(R.id.buttonClose)
 
+        assertEquals(View.GONE, accentBar.visibility)
         assertEquals(View.GONE, progressBar.visibility)
         assertEquals(View.VISIBLE, subtitleLabel.visibility)
         assertEquals("Time out!", subtitleLabel.text.toString())

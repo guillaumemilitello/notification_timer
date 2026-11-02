@@ -57,6 +57,7 @@ graph TD
 - **Explicit PendingIntents**: Immutable (`FLAG_IMMUTABLE`), explicit, deterministic URI derived from `TimerId`.
 - **Dumb UI**: Composables are display-only. Zero state machine logic in Compose.
 - **User-owned display preferences**: "Keep Screen On" (`UserSettings.keepScreenOn` in `library.json`) only changes on explicit user tap. The app never toggles it automatically. Applied via `View.keepScreenOn` while the timers screen is visible.
+- **Independent notification rendering**: Each active timer renders its notification independently on standard SystemUI notification surface (`setColorized(false)`). TimerForegroundService is an invisible process keepalive with zero visual coupling to any single timer notification.
 
 ## Dependency Rules
 - Feature modules depend ONLY on `:core:domain` and `:core:ui`.

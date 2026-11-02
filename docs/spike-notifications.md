@@ -5,11 +5,10 @@ Phase 1 validation measurements and results.
 ## Diagnostics Event Log
 - `InMemoryEventLog` ring buffer (1,000 entries).
 - Logs all timer commands, wakeups, wake locks, notification updates.
-- Exposed in debug harness (`SpikeHarnessScreen`).
 
 ## Notification Layout & Chronometer
-- Custom `RemoteViews`: `notification.xml`, `notification_black_text.xml`, `notification_white_text.xml`, `notification_red_text.xml`.
-- Luminance formula `0.2126*R + 0.7152*G + 0.0722*B > 0.5` picks black vs. white text on phase color.
+- Native Material 3 accent style: unified `notification.xml` with leading `viewColorAccent` bar.
+- Theme-aware contrast resolver (`NotificationColorResolver`) ensuring WCAG contrast in Light and Dark modes.
 - `Chronometer` with `setCountDown(true)` ticks in system process. Zero per-second re-posting.
 - Paused timers freeze with static string (`M:SS` or `H:MM:SS`). No drift.
 

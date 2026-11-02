@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.IBinder
 import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.runtime.notification.NotificationRenderer
+import com.notification.timer.core.runtime.notification.TimerNotificationModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -84,14 +85,16 @@ class TimerForegroundService : Service() {
         val activeNotification = notificationRenderer.getActiveNotification(timerId)
         val notificationToStart =
             activeNotification ?: notificationRenderer.renderTimerNotification(
-                timerId = timerId,
-                title = "Timer",
-                subtitle = "",
-                remainingMs = 0L,
-                durationMs = 0L,
-                isRunning = false,
-                showProgress = false,
-                showNext = false,
+                TimerNotificationModel(
+                    timerId = timerId,
+                    title = "Timer",
+                    subtitle = "",
+                    remainingMs = 0L,
+                    durationMs = 0L,
+                    isRunning = false,
+                    showProgress = false,
+                    showNext = false,
+                ),
             )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
