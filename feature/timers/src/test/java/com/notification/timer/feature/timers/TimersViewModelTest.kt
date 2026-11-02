@@ -361,4 +361,49 @@ class TimersViewModelTest {
                 assertFalse(historyEntry.config.done.vibrate)
             }
         }
+
+    @Test
+    fun `updateTimerSettings updates name color sets alert settings and saves to history`() =
+        runTest(testDispatcher) {
+            timerEngine.start(backgroundScope)
+            advanceUntilIdle()
+
+            val config = TimerConfig(id = "c_settings_test", name = "Old Name", durationSec = 300, runningColor = "#3F51B5")
+            viewModel.startTimer(config)
+            advanceUntilIdle()
+
+            viewModel.timers.test {
+                val list = awaitItem()
+                val timer = list.first { it.config.id == "c_settings_test" }
+
+                viewModel.updateTimerSettings(
+                    timerId = timer.id,
+                    name = "New Name",
+                    colorHex = "#FF5722",
+                    sets = 5,
+                    soundEnabled = false,
+                    soundUri = "content://sound/alert",
+                    vibrate = true,
+                )
+                advanceUntilIdle()
+
+                val updatedList = expectMostRecentItem()
+                val updatedTimer = updatedList.first { it.id == timer.id }
+                assertEquals("New Name", updatedTimer.label)
+                assertEquals("#FF5722", updatedTimer.config.runningColor)
+                assertEquals(5, updatedTimer.config.sets)
+                assertFalse(updatedTimer.config.done.soundEnabled)
+                assertEquals("content://sound/alert", updatedTimer.config.done.sound)
+                assertTrue(updatedTimer.config.done.vibrate)
+
+                val history = fakeHistoryRepository.history.first()
+                val historyEntry = history.first { it.timerId == "c_settings_test" }
+                assertEquals("New Name", historyEntry.config.name)
+                assertEquals("#FF5722", historyEntry.config.runningColor)
+                assertEquals(5, historyEntry.config.sets)
+                assertFalse(historyEntry.config.done.soundEnabled)
+                assertEquals("content://sound/alert", historyEntry.config.done.sound)
+                assertTrue(historyEntry.config.done.vibrate)
+            }
+        }
 }

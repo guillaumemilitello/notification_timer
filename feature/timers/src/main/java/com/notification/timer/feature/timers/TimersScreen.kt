@@ -378,7 +378,7 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
                             entry.config.copy(
                                 name = if (draftTimerName.isNotBlank()) draftTimerName.trim() else entry.config.name,
                                 sets = draftSets ?: entry.config.sets,
-                                runningColor = if (draftColorHex != "#3F51B5") draftColorHex else entry.config.runningColor,
+                                runningColor = if (draftSettingsModified) draftColorHex else entry.config.runningColor,
                                 done =
                                     if (draftSettingsModified) {
                                         entry.config.done.copy(
@@ -427,26 +427,15 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
             TimerSettingsIslandContent(
                 timer = activeSettingsTimer,
                 onSave = { newName, newColorHex, newSets, newSoundEnabled, newSoundUri, newVibrate ->
-                    if (newName.isNotBlank() && newName != activeSettingsTimer.label) {
-                        viewModel.handleCommand(TimerCommand.Rename(activeSettingsTimer.id, newName.trim()))
-                    }
-                    if (newColorHex != activeSettingsTimer.config.runningColor) {
-                        viewModel.handleCommand(TimerCommand.UpdateColor(activeSettingsTimer.id, newColorHex))
-                    }
-                    if (newSets != activeSettingsTimer.config.sets) {
-                        viewModel.handleCommand(TimerCommand.UpdateSets(activeSettingsTimer.id, newSets))
-                    }
-                    if (newSoundEnabled != activeSettingsTimer.config.done.soundEnabled ||
-                        newSoundUri != activeSettingsTimer.config.done.sound ||
-                        newVibrate != activeSettingsTimer.config.done.vibrate
-                    ) {
-                        viewModel.updateTimerAlertSettings(
-                            timerId = activeSettingsTimer.id,
-                            soundEnabled = newSoundEnabled,
-                            soundUri = newSoundUri,
-                            vibrate = newVibrate,
-                        )
-                    }
+                    viewModel.updateTimerSettings(
+                        timerId = activeSettingsTimer.id,
+                        name = newName,
+                        colorHex = newColorHex,
+                        sets = newSets,
+                        soundEnabled = newSoundEnabled,
+                        soundUri = newSoundUri,
+                        vibrate = newVibrate,
+                    )
                     settingsTimerId = null
                 },
                 onCancel = { settingsTimerId = null },

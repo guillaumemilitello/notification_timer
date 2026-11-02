@@ -73,24 +73,45 @@ class TimersViewModel
             }
         }
 
-        fun updateTimerAlertSettings(
+        fun updateTimerSettings(
             timerId: Int,
+            name: String,
+            colorHex: String,
+            sets: Int?,
             soundEnabled: Boolean,
             soundUri: String?,
             vibrate: Boolean,
         ) {
             val timer = timers.value.firstOrNull { it.id == timerId }
-            handleCommand(
-                TimerCommand.UpdateAlertSettings(
-                    timerId = timerId,
-                    soundEnabled = soundEnabled,
-                    soundUri = soundUri,
-                    vibrate = vibrate,
-                ),
-            )
+            if (name.isNotBlank() && (timer == null || name != timer.label)) {
+                handleCommand(TimerCommand.Rename(timerId, name.trim()))
+            }
+            if (timer == null || colorHex != timer.config.runningColor) {
+                handleCommand(TimerCommand.UpdateColor(timerId, colorHex))
+            }
+            if (timer == null || sets != timer.config.sets) {
+                handleCommand(TimerCommand.UpdateSets(timerId, sets))
+            }
+            if (timer == null ||
+                soundEnabled != timer.config.done.soundEnabled ||
+                soundUri != timer.config.done.sound ||
+                vibrate != timer.config.done.vibrate
+            ) {
+                handleCommand(
+                    TimerCommand.UpdateAlertSettings(
+                        timerId = timerId,
+                        soundEnabled = soundEnabled,
+                        soundUri = soundUri,
+                        vibrate = vibrate,
+                    ),
+                )
+            }
             if (timer != null) {
                 val updatedConfig =
                     timer.config.copy(
+                        name = if (name.isNotBlank()) name.trim() else timer.config.name,
+                        runningColor = colorHex,
+                        sets = sets,
                         done =
                             timer.config.done.copy(
                                 soundEnabled = soundEnabled,
@@ -102,6 +123,24 @@ class TimersViewModel
                     historyRepository.updateTimerConfig(updatedConfig)
                 }
             }
+        }
+
+        fun updateTimerAlertSettings(
+            timerId: Int,
+            soundEnabled: Boolean,
+            soundUri: String?,
+            vibrate: Boolean,
+        ) {
+            val timer = timers.value.firstOrNull { it.id == timerId }
+            updateTimerSettings(
+                timerId = timerId,
+                name = timer?.label ?: "",
+                colorHex = timer?.config?.runningColor ?: "#3F51B5",
+                sets = timer?.config?.sets,
+                soundEnabled = soundEnabled,
+                soundUri = soundUri,
+                vibrate = vibrate,
+            )
         }
 
         fun handleCommand(command: TimerCommand) {

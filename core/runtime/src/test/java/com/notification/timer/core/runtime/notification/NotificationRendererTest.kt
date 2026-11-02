@@ -9,6 +9,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
 import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.runtime.R
@@ -100,10 +101,13 @@ class NotificationRendererTest {
         assertEquals(R.id.buttonPlayPause, buttonContainer.getChildAt(0).id)
         assertEquals(R.id.buttonNext, buttonContainer.getChildAt(1).id)
         assertEquals(R.id.buttonClose, buttonContainer.getChildAt(2).id)
+
+        assertEquals(Color.parseColor("#3F51B5"), notification.color)
+        assertTrue(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
     }
 
     @Test
-    fun `paused notification keeps progress bar visible at paused progress`() {
+    fun `paused notification keeps progress bar visible at paused progress and stays in setting color`() {
         val notification =
             renderer.renderTimerNotification(
                 timerId = 1001,
@@ -115,6 +119,7 @@ class NotificationRendererTest {
                 showProgress = true,
                 showNext = true,
                 isForeground = false,
+                isOngoing = true,
                 phaseColor = Color.parseColor("#FFFFFF"),
             )
 
@@ -128,6 +133,41 @@ class NotificationRendererTest {
         assertEquals(View.GONE, chrono.visibility)
         assertEquals(View.VISIBLE, timerText.visibility)
         assertEquals("00:30", timerText.text.toString())
+
+        assertEquals(Color.parseColor("#FFFFFF"), notification.color)
+        assertTrue(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+    }
+
+    @Test
+    fun `done notification keeps default system theme color and is not colorized`() {
+        val notification =
+            renderer.renderTimerNotification(
+                timerId = 1003,
+                title = "Pasta",
+                subtitle = "Done",
+                remainingMs = 0L,
+                durationMs = 60_000L,
+                isRunning = false,
+                showProgress = false,
+                showNext = true,
+                isAlerting = false,
+                isDone = true,
+                isOngoing = false,
+                phaseColor = Color.parseColor("#4CAF50"),
+            )
+
+        val root = notification.contentView.apply(context, FrameLayout(context))
+        val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
+        val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
+        val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
+
+        assertEquals(View.GONE, progressBar.visibility)
+        assertEquals(View.VISIBLE, subtitleLabel.visibility)
+        assertEquals("Done", subtitleLabel.text.toString())
+        assertEquals("Pasta", shortLabel.text.toString())
+
+        assertEquals(NotificationCompat.COLOR_DEFAULT, notification.color)
+        assertFalse(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
     }
 
     @Test

@@ -2,13 +2,18 @@ package com.notification.timer.core.runtime.notification
 
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.Color
+import androidx.core.app.NotificationCompat
 import androidx.test.core.app.ApplicationProvider
 import com.notification.timer.core.domain.engine.TimerStateMachine
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.ports.TimeSource
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -195,5 +200,49 @@ class TimerNotifierIsolationTest {
         assertNotNull("Timer 1004 must remain", shadowOf(notificationManager).getNotification(1004))
         assertNotNull("Timer 1005 must remain", shadowOf(notificationManager).getNotification(1005))
         assertNotNull("Timer 1006 must remain", shadowOf(notificationManager).getNotification(1006))
+    }
+
+    @Test
+    fun `notification color syncs with timer settings when running and paused and keeps default color when done`() {
+        val customColor = "#E91E63" // Pink
+        val parsedCustomColor = Color.parseColor(customColor)
+        val config = TimerConfig(id = "c1", name = "Baking", durationSec = 60, runningColor = customColor)
+        val timer = Timer(id = 2000, configId = config.id, config = config, label = "Baking")
+
+        // 1. Running -> Notification color matches setting and is colorized
+        val runningTimer = TimerStateMachine.start(timer, nowElapsedMs = clock.elapsedMs)
+        adapter.updateNotifications(listOf(runningTimer))
+        val runningNotification = shadowOf(notificationManager).getNotification(2000)
+        assertNotNull(runningNotification)
+        assertEquals(parsedCustomColor, runningNotification.color)
+        assertTrue(runningNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+
+        // 2. Paused -> Notification color stays in setting color and remains colorized
+        val pausedTimer = TimerStateMachine.pause(runningTimer, nowElapsedMs = clock.elapsedMs + 10_000L)
+        adapter.updateNotifications(listOf(pausedTimer))
+        val pausedNotification = shadowOf(notificationManager).getNotification(2000)
+        assertNotNull(pausedNotification)
+        assertEquals(parsedCustomColor, pausedNotification.color)
+        assertTrue(pausedNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+
+        // 3. Update color in settings while paused -> Notification updates to new setting color
+        val updatedColor = "#00BCD4" // Cyan
+        val parsedUpdatedColor = Color.parseColor(updatedColor)
+        val recoloredTimer = TimerStateMachine.updateColor(pausedTimer, updatedColor)
+        adapter.updateNotifications(listOf(recoloredTimer))
+        val recoloredNotification = shadowOf(notificationManager).getNotification(2000)
+        assertNotNull(recoloredNotification)
+        assertEquals(parsedUpdatedColor, recoloredNotification.color)
+        assertTrue(recoloredNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+
+        // 4. Resume and Complete -> Notification keeps default color following system theme and is not colorized
+        val resumedTimer = TimerStateMachine.resume(recoloredTimer, nowElapsedMs = clock.elapsedMs + 10_000L)
+        clock.elapsedMs += 70_000L
+        val (doneTimer, _) = TimerStateMachine.checkAlertsAndEnd(resumedTimer, nowElapsedMs = clock.elapsedMs)
+        adapter.updateNotifications(listOf(doneTimer))
+        val doneNotification = shadowOf(notificationManager).getNotification(2000)
+        assertNotNull(doneNotification)
+        assertEquals(NotificationCompat.COLOR_DEFAULT, doneNotification.color)
+        assertFalse(doneNotification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
     }
 }

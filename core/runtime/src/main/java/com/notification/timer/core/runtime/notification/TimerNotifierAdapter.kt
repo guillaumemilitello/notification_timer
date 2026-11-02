@@ -28,6 +28,7 @@ internal data class TimerNotificationSpec(
     val isAlerting: Boolean,
     val isForeground: Boolean,
     val isOngoing: Boolean,
+    val isDone: Boolean = false,
     val phaseColor: Int,
 ) {
     fun hasStructuralChangeFrom(other: TimerNotificationSpec): Boolean = copy(progressPermille = 0) != other.copy(progressPermille = 0)
@@ -177,14 +178,19 @@ class TimerNotifierAdapter
             val remainingMs = timer.remainingMs(nowElapsedMs)
             val durationMs = timer.config.durationSec * 1000L
             val actions = TimerStateMachine.actionsFor(timer)
-            val isRunning = timer.state is TimerState.Running
-            val isOngoing = timer.state is TimerState.Running || timer.state is TimerState.Paused
-            val showProgress = timer.state is TimerState.Running || timer.state is TimerState.Paused
+            val state = timer.state
+            val isRunning = state is TimerState.Running
+            val isOngoing = state is TimerState.Running || state is TimerState.Paused
+            val isDone =
+                (state is TimerState.Ready && state.isCompleted) ||
+                    state is TimerState.SetDone ||
+                    state is TimerState.AllSetsDone
+            val showProgress = state is TimerState.Running || state is TimerState.Paused
             val showNext = TimerAction.NEXT_SET in actions
-            val isAlerting = timer.state is TimerState.SetDone || timer.state is TimerState.AllSetsDone
+            val isAlerting = state is TimerState.SetDone || state is TimerState.AllSetsDone
             val chronometerBaseElapsedMs =
-                if (isRunning && remainingMs > 1000L) {
-                    (timer.state as? TimerState.Running)?.endsAtElapsedMs
+                if (state is TimerState.Running && remainingMs > 1000L) {
+                    state.endsAtElapsedMs
                 } else {
                     null
                 }
@@ -250,6 +256,7 @@ class TimerNotifierAdapter
                 isAlerting = isAlerting,
                 isForeground = isForeground,
                 isOngoing = isOngoing,
+                isDone = isDone,
                 phaseColor = parsedColor,
             )
         }
@@ -271,6 +278,7 @@ class TimerNotifierAdapter
             isAlerting = spec.isAlerting,
             isForeground = spec.isForeground,
             isOngoing = spec.isOngoing,
+            isDone = spec.isDone,
             chronometerBaseElapsedMs = spec.chronometerBaseElapsedMs,
             phaseColor = spec.phaseColor,
             postedAtWallMs = postedAtWallMs,

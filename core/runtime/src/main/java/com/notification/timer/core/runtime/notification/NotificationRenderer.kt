@@ -108,13 +108,15 @@ class NotificationRenderer
             isAlerting: Boolean = false,
             isForeground: Boolean = false,
             isOngoing: Boolean = true,
+            isDone: Boolean = false,
             chronometerBaseElapsedMs: Long? = null,
             phaseColor: Int = Color.parseColor("#7a82b7"),
             useColoredNotification: Boolean = true,
             postedAtWallMs: Long = System.currentTimeMillis(),
         ): Notification {
             val channelId = if (isAlerting) CHANNEL_ALERT else CHANNEL_RUNNING
-            val shouldColorize = useColoredNotification && isForeground && !isAlerting
+            val shouldColorize = useColoredNotification && !isAlerting && !isDone && isOngoing
+            val notificationColor = if (isDone) NotificationCompat.COLOR_DEFAULT else phaseColor
 
             val openAppIntent =
                 PendingIntent.getActivity(
@@ -178,7 +180,7 @@ class NotificationRenderer
                     .setCustomContentView(remoteViews)
                     .setCustomBigContentView(remoteViews)
                     .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-                    .setColor(phaseColor)
+                    .setColor(notificationColor)
                     .setColorized(shouldColorize)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setOngoing(isOngoing)

@@ -3,6 +3,8 @@
 NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 
 ## Now (Active Backlog)
+- [x] Notification color is not sync with the timer settings, when done it should keep the default color (follwing the system theme). When paused it should stay in the setting color !
+
 - [x] In a new timer entry island: remove the tab for "Manual" and "Preset", Default is manual and history will be accessible through an icon left to the close cross.
 - [x] Remove the manual timer setting wheel and color from the timer name text box. Use default values, only changeable from the settings.
 - [x] Redesign the timer tile from the main activity. I want a dedicated "part/object" (dont know the name) at the top with the name and set equivalent to the "= drag to reorder" when available.
@@ -94,6 +96,7 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 - [x] Prevented countdown number jump on Play: evaluated elapsed time dynamically during composition and decoupled running ticker from stale remember snapshot.
 - [x] Fixed notification pause rewind and latency: offset Chronometer base by `+999ms` to match ceiling division and dispatched notification updates ahead of disk persistence.
 - [x] Prevented Chronometer negative overruns (`-00:01`): swapped to `TextView` with non-negative static text when stopped/completed, added pre-emptive freeze to static `00:00` in the final second, and armed exact completion wakeups with direct engine tick dispatch.
+- [x] Notification color sync with timer settings: notification stays in setting color when paused, updates immediately on timer settings color changes, and reverts to default system theme color when done.
 
 ### Testing & Verification
 - [x] JVM unit tests covering domain state machine, event planner, config fingerprinting, and `TimerEngine`.
