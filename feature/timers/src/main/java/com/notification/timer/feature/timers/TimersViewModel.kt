@@ -4,14 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.domain.engine.TimerEngine
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.HistoryEntry
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerCommand
-import com.notification.timer.core.domain.ports.LibraryRepository
+import com.notification.timer.core.domain.model.TimerConfig
+import com.notification.timer.core.domain.ports.DisplayPreferences
+import com.notification.timer.core.domain.ports.HistoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,28 +25,83 @@ class TimersViewModel
     @Inject
     constructor(
         private val timerEngine: TimerEngine,
-        private val libraryRepository: LibraryRepository,
+        private val historyRepository: HistoryRepository,
+        private val displayPreferences: DisplayPreferences,
         private val eventLog: EventLog? = null,
     ) : ViewModel() {
-        val timers: StateFlow<List<Timer>> =
-            timerEngine.timers.stateIn(
+        val timers: StateFlow<List<Timer>> = timerEngine.timers
+
+        val history: StateFlow<List<HistoryEntry>> =
+            historyRepository.history.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
                 emptyList(),
             )
 
-        private val _presets = MutableStateFlow<List<Preset>>(emptyList())
-        val presets: StateFlow<List<Preset>> = _presets
+        private val _keepScreenOn = MutableStateFlow(false)
 
-        init {
+        /** User-controlled; only [toggleKeepScreenOn] changes it. */
+        val keepScreenOn: StateFlow<Boolean> = _keepScreenOn.asStateFlow()
+
+        private val keepScreenOnLoad: Job =
             viewModelScope.launch {
-                _presets.value = libraryRepository.loadPresets()
+                _keepScreenOn.value = displayPreferences.loadKeepScreenOn()
+            }
+
+        fun toggleKeepScreenOn() {
+            viewModelScope.launch {
+                // Wait for the persisted value so an early tap is never overwritten by the initial load.
+                keepScreenOnLoad.join()
+                val enabled = !_keepScreenOn.value
+                _keepScreenOn.value = enabled
+                eventLog?.log("TimersViewModel", "toggleKeepScreenOn: $enabled")
+                displayPreferences.saveKeepScreenOn(enabled)
             }
         }
 
-        fun startTimerFromPreset(preset: Preset) {
-            eventLog?.log("TimersViewModel", "startTimerFromPreset: ${preset.name} (${preset.durationSec}s)")
-            timerEngine.submitCommand(TimerCommand.Create(preset, startImmediately = true))
+        fun startTimer(config: TimerConfig) {
+            eventLog?.log("TimersViewModel", "startTimer: ${config.name} (${config.durationSec}s)")
+            timerEngine.submitCommand(TimerCommand.Create(config, startImmediately = true))
+            viewModelScope.launch {
+                historyRepository.recordTimerUsed(config, System.currentTimeMillis())
+            }
+        }
+
+        fun toggleHistoryStar(timerId: String) {
+            viewModelScope.launch {
+                historyRepository.toggleStar(timerId)
+            }
+        }
+
+        fun updateTimerAlertSettings(
+            timerId: Int,
+            soundEnabled: Boolean,
+            soundUri: String?,
+            vibrate: Boolean,
+        ) {
+            val timer = timers.value.firstOrNull { it.id == timerId }
+            handleCommand(
+                TimerCommand.UpdateAlertSettings(
+                    timerId = timerId,
+                    soundEnabled = soundEnabled,
+                    soundUri = soundUri,
+                    vibrate = vibrate,
+                ),
+            )
+            if (timer != null) {
+                val updatedConfig =
+                    timer.config.copy(
+                        done =
+                            timer.config.done.copy(
+                                soundEnabled = soundEnabled,
+                                sound = soundUri,
+                                vibrate = vibrate,
+                            ),
+                    )
+                viewModelScope.launch {
+                    historyRepository.updateTimerConfig(updatedConfig)
+                }
+            }
         }
 
         fun handleCommand(command: TimerCommand) {

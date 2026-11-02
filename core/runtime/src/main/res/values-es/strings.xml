@@ -20,9 +20,20 @@
     <string name="new_timer">Nuevo temporizador</string>
     <string name="more_settings">Más ajustes</string>
     <string name="more_options">Más opciones</string>
-    <string name="presets">Preajustes</string>
+    <string name="history">Historial</string>
     <string name="manual_timer">Temporizador manual</string>
-    <string name="no_presets_available">No hay preajustes disponibles. Crea uno en Ajustes.</string>
+    <string name="no_history_available">No hay historial disponible. Inicia un temporizador para verlo aquí.</string>
+    <string name="star_timer">Destacar temporizador</string>
+    <string name="unstar_timer">Quitar destacado</string>
     <string name="close">Cerrar</string>
     <string name="back">Atrás</string>
+    <string name="history_limit">Límite del historial</string>
+    <string name="history_limit_summary">Número máximo de temporizadores en el historial (%1$d)</string>
+    <string name="timer_settings_notification_title">Sonido y vibración</string>
+    <string name="timer_settings_sound_title">Sonido</string>
+    <string name="timer_settings_sound_summary">Reproducir sonido cuando se acabe el tiempo</string>
+    <string name="timer_settings_sound_default">Sonido de notificación predeterminado</string>
+    <string name="timer_settings_choose_sound">Elegir sonido</string>
+    <string name="timer_settings_vibrate_title">Vibrar</string>
+    <string name="timer_settings_vibrate_summary">Vibrar cuando se acabe el tiempo</string>
 </resources>

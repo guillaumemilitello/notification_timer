@@ -2,7 +2,7 @@ package com.notification.timer.core.domain.model
 
 sealed interface TimerCommand {
     data class Create(
-        val preset: Preset,
+        val config: TimerConfig,
         val startImmediately: Boolean = false,
     ) : TimerCommand
 
@@ -65,6 +65,13 @@ sealed interface TimerCommand {
     data class UpdateSets(
         val timerId: Int,
         val sets: Int?,
+    ) : TimerCommand
+
+    data class UpdateAlertSettings(
+        val timerId: Int,
+        val soundEnabled: Boolean,
+        val soundUri: String?,
+        val vibrate: Boolean,
     ) : TimerCommand
 
     data class Reorder(

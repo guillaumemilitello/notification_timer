@@ -1,0 +1,42 @@
+appId: com.notification.timer.debug
+---
+# Keep Screen On header toggle (1.5 icons: ic_screen / ic_screen_locked).
+# The state is a user decision: only a tap changes it, and it persists across restarts.
+- launchApp:
+    clearState: true
+
+# 1. Toggle is in the header, off by default
+- assertVisible: "NotificationTimer"
+- assertVisible:
+    text: "Keep Screen On"
+    checked: false
+
+# 2. Turn it on
+- tapOn: "Keep Screen On"
+- assertVisible:
+    text: "Keep Screen On"
+    checked: true
+
+# 3. State persists across app restart
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "NotificationTimer"
+    timeout: 5000
+- assertVisible:
+    text: "Keep Screen On"
+    checked: true
+
+# 4. Turn it off again and verify persistence of the off state
+- tapOn: "Keep Screen On"
+- assertVisible:
+    text: "Keep Screen On"
+    checked: false
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "NotificationTimer"
+    timeout: 5000
+- assertVisible:
+    text: "Keep Screen On"
+    checked: false

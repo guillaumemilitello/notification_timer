@@ -7,10 +7,8 @@
     <string name="help">Indications</string>
     <string name="settings">Settings</string>
     <string name="keepScreenOn">Keep Screen On</string>
-    <string name="presets">Presets</string>
     <!-- Main Activity -->
     <string name="default_timer_name">Timer</string>
-    <string name="presetsListEmpty">Timers list empty</string>
     <string name="notification_permission_denied">Insufficient permission to use notifications, check settings</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
@@ -18,10 +16,6 @@
     <string name="picker_timer_get_ready">Extra notification time</string>
     <string name="picker_split_screen">Increase the height of the window to create a timer</string>
     <!-- Alerts -->
-    <string name="select_preset">Are you sure you want to stop the current timer to select this one?</string>
-    <string name="delete_preset">Are you sure you want to delete the selected timer?</string>
-    <string name="reset_preset">Are you sure you want to reinitialize the limit indicator?</string>
-    <string name="clear_preset">Are you sure you want to clear the current timer and reinitialize the timer number or limit indicator?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
@@ -57,8 +51,6 @@
     <string name="reset_summary">Reinitialize the timer number with timers with limit indicator. Use long press to reinitialize the timer</string>
     <string name="sets_picker_enable">Limit indicator</string>
     <string name="sets_picker_enable_summary">Add the possibility to enter a limit indicator for the timer number during the timer creation</string>
-    <string name="preset_select_asking">Timer selection alert</string>
-    <string name="preset_select_asking_summary">Display an alert dialog when selecting a new timer in the list if the current timer is running</string>
     <string name="clear_asking">Timer reinitialization alert</string>
     <string name="clear_asking_summary">Display an alert dialog when clearing and reinitializing the current running timer</string>
     <string name="step_time">Step time</string>
@@ -113,7 +105,21 @@
     <string name="more_settings">More settings</string>
     <string name="more_options">More Options</string>
     <string name="manual_timer">Manual timer</string>
-    <string name="no_presets_available">No presets available. Create one in Settings.</string>
+    <string name="history">History</string>
+    <string name="no_history_available">No history available yet. Start a timer to see it here.</string>
+    <string name="star_timer">Star timer</string>
+    <string name="unstar_timer">Unstar timer</string>
     <string name="close">Close</string>
     <string name="back">Back</string>
+    <string name="drag_to_reorder">Drag to reorder</string>
+    <string name="delete_timer">Delete timer</string>
+    <string name="history_limit">History Limit</string>
+    <string name="history_limit_summary">Maximum number of timers to keep in history (%1$d)</string>
+    <string name="timer_settings_notification_title">Sound &amp; Vibration</string>
+    <string name="timer_settings_sound_title">Sound</string>
+    <string name="timer_settings_sound_summary">Play alert sound when time is out</string>
+    <string name="timer_settings_sound_default">Default notification sound</string>
+    <string name="timer_settings_choose_sound">Choose sound</string>
+    <string name="timer_settings_vibrate_title">Vibrate</string>
+    <string name="timer_settings_vibrate_summary">Vibrate when time is out</string>
 </resources>

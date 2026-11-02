@@ -1,8 +1,10 @@
 package com.notification.timer.core.domain.ports
 
 import com.notification.timer.core.domain.model.Alert
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.HistoryEntry
 import com.notification.timer.core.domain.model.Timer
+import com.notification.timer.core.domain.model.TimerConfig
+import kotlinx.coroutines.flow.Flow
 
 interface TimeSource {
     fun elapsedRealtimeMs(): Long
@@ -25,10 +27,33 @@ interface TimerStore {
     suspend fun loadNextTimerId(): Int = 1000
 }
 
-interface LibraryRepository {
-    suspend fun savePresets(presets: List<Preset>)
+interface HistoryRepository {
+    val history: Flow<List<HistoryEntry>>
 
-    suspend fun loadPresets(): List<Preset>
+    val maxHistorySize: Flow<Int>
+
+    suspend fun recordTimerUsed(
+        config: TimerConfig,
+        nowEpochMs: Long,
+    )
+
+    suspend fun updateTimerConfig(config: TimerConfig)
+
+    suspend fun toggleStar(timerId: String)
+
+    suspend fun setMaxHistorySize(maxSize: Int)
+
+    suspend fun getMaxHistorySize(): Int
+}
+
+/**
+ * User-controlled display preferences. Values only change on explicit user action;
+ * the app never toggles them on its own.
+ */
+interface DisplayPreferences {
+    suspend fun loadKeepScreenOn(): Boolean
+
+    suspend fun saveKeepScreenOn(enabled: Boolean)
 }
 
 interface WakeupSchedulerPort {

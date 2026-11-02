@@ -12,7 +12,6 @@ graph TD
 
     subgraph Features [Feature Modules]
         FT[":feature:timers"]
-        FP[":feature:presets"]
         FS[":feature:settings"]
     end
 
@@ -25,15 +24,12 @@ graph TD
     end
 
     A --> FT
-    A --> FP
     A --> FS
     A --> CR
     A --> CDA
 
     FT --> CU
     FT --> CD
-    FP --> CU
-    FP --> CD
     FS --> CU
     FS --> CD
 
@@ -44,12 +40,11 @@ graph TD
 
 ## Module Responsibilities
 - **`:app`**: Application setup, `MainActivity`, navigation graph, Hilt DI assembly.
-- **`:feature:timers`**: Timer screen, horizontal timer pager, presets strip, island dialogs.
-- **`:feature:presets`**: Preset editor, numpad, alert setup.
-- **`:feature:settings`**: Settings screen, import/export UI, how-it-works page.
-- **`:core:ui`**: Material 3 theme, Recursive font, auto-sizing text.
-- **`:core:domain`**: Pure Kotlin. Models, state machine, `TimerEngine`, event planner. Zero Android dependencies.
-- **`:core:data`**: DataStore persistence (`library.json`, `runtime.json`), JSON codecs, backup repository.
+- **`:feature:timers`**: Timer screen, horizontal timer pager, timer cards, island dialogs, history list with star pinning, "Keep Screen On" header toggle.
+- **`:feature:settings`**: Settings screen, configurable history limit, import/export UI, how-it-works page.
+- **`:core:ui`**: Material 3 theme, Recursive font, auto-sizing text, numpad view, `KeepScreenOnToggle` / `KeepScreenOnEffect`.
+- **`:core:domain`**: Pure Kotlin. Models (`Timer`, `TimerConfig`, `HistoryEntry`), state machine, `TimerEngine`, event planner, ports (`TimerStore`, `HistoryRepository`, `DisplayPreferences`, ...). Zero Android dependencies.
+- **`:core:data`**: DataStore persistence (`library.json`, `runtime.json`), normalized JSON codecs, history repository, backup repository, `DisplayPreferencesRepository`.
 - **`:core:runtime`**: Foreground service, AlarmManager wakeup, notification renderer (`RemoteViews`), alert audio/vibration.
 - **`:core:testing`**: Test doubles, fake clocks, in-memory stores.
 
@@ -61,6 +56,7 @@ graph TD
 - **Single-threaded engine**: `TimerEngine` processes one command or event at a time.
 - **Explicit PendingIntents**: Immutable (`FLAG_IMMUTABLE`), explicit, deterministic URI derived from `TimerId`.
 - **Dumb UI**: Composables are display-only. Zero state machine logic in Compose.
+- **User-owned display preferences**: "Keep Screen On" (`UserSettings.keepScreenOn` in `library.json`) only changes on explicit user tap. The app never toggles it automatically. Applied via `View.keepScreenOn` while the timers screen is visible.
 
 ## Dependency Rules
 - Feature modules depend ONLY on `:core:domain` and `:core:ui`.

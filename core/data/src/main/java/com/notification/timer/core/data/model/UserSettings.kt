@@ -1,6 +1,6 @@
 package com.notification.timer.core.data.model
 
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.TimerConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,13 +20,25 @@ data class UserSettings(
     val theme: String = "system",
     val askBeforeClearingRunning: Boolean = true,
     val keepScreenOn: Boolean = false,
+    val maxHistorySize: Int = 10,
+)
+
+@Serializable
+data class HistoryRecord(
+    val timerId: String,
+    val useCount: Int = 1,
+    val lastUsedAtMs: Long,
+    val isStarred: Boolean = false,
 )
 
 @Serializable
 data class LibraryData(
-    val schemaVersion: Int = 1,
+    val schemaVersion: Int = 2,
     val settings: UserSettings = UserSettings(),
-    val presets: List<Preset> = emptyList(),
+    val timersById: Map<String, TimerConfig> = emptyMap(),
+    val history: List<HistoryRecord> = emptyList(),
+    // Legacy field for automatic migration during app upgrade
+    val presets: List<TimerConfig> = emptyList(),
 )
 
 @Serializable
@@ -38,9 +50,12 @@ data class RuntimeData(
 
 @Serializable
 data class ExportData(
-    val schemaVersion: Int = 1,
+    val schemaVersion: Int = 2,
     val appVersion: String = "2.0.0",
     val exportedAt: String,
     val settings: UserSettings = UserSettings(),
-    val presets: List<Preset> = emptyList(),
+    val timersById: Map<String, TimerConfig> = emptyMap(),
+    val history: List<HistoryRecord> = emptyList(),
+    // Optional legacy list for importing older v1 backups
+    val presets: List<TimerConfig> = emptyList(),
 )

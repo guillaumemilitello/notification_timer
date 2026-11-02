@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:function-naming")
 
-package com.notification.timer.feature.presets
+package com.notification.timer.core.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.notification.timer.core.ui.AutoResizeText
 import com.notification.timer.core.ui.theme.RecursiveMonospaceFontFamily
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -40,13 +39,34 @@ import com.notification.timer.core.ui.theme.RecursiveMonospaceFontFamily
 fun NumpadView(
     onConfirm: (durationSec: Int, sets: Int?) -> Unit,
     modifier: Modifier = Modifier,
+    digits: String? = null,
+    onDigitsChange: ((String) -> Unit)? = null,
+    setsCount: Int? = null,
+    onSetsCountChange: ((Int) -> Unit)? = null,
 ) {
-    var digits by remember { mutableStateOf("") }
-    var setsCount by remember { mutableIntStateOf(0) } // 0 = infinite, >0 = sets count
+    var internalDigits by remember { mutableStateOf("") }
+    val effectiveDigits = digits ?: internalDigits
+    val updateDigits: (String) -> Unit = { newDigits ->
+        if (onDigitsChange != null) {
+            onDigitsChange(newDigits)
+        } else {
+            internalDigits = newDigits
+        }
+    }
+
+    var internalSetsCount by remember { mutableIntStateOf(0) }
+    val effectiveSetsCount = setsCount ?: internalSetsCount
+    val updateSetsCount: (Int) -> Unit = { newSets ->
+        if (onSetsCountChange != null) {
+            onSetsCountChange(newSets)
+        } else {
+            internalSetsCount = newSets
+        }
+    }
 
     val totalSeconds =
-        remember(digits) {
-            val padded = digits.padStart(6, '0')
+        remember(effectiveDigits) {
+            val padded = effectiveDigits.padStart(6, '0')
             val h = padded.substring(0, 2).toIntOrNull() ?: 0
             val m = padded.substring(2, 4).toIntOrNull() ?: 0
             val s = padded.substring(4, 6).toIntOrNull() ?: 0
@@ -54,8 +74,8 @@ fun NumpadView(
         }
 
     val displayString =
-        remember(digits) {
-            val padded = digits.padStart(6, '0')
+        remember(effectiveDigits) {
+            val padded = effectiveDigits.padStart(6, '0')
             val h = padded.substring(0, 2)
             val m = padded.substring(2, 4)
             val s = padded.substring(4, 6)
@@ -83,14 +103,20 @@ fun NumpadView(
             modifier = Modifier.padding(bottom = 16.dp),
         ) {
             Text("Sets:", style = MaterialTheme.typography.titleMedium)
-            IconButton(onClick = { if (setsCount > 0) setsCount-- }) {
+            IconButton(
+                onClick = { if (effectiveSetsCount > 0) updateSetsCount(effectiveSetsCount - 1) },
+                enabled = effectiveSetsCount > 0,
+            ) {
                 Icon(Icons.Default.Remove, contentDescription = "Decrease sets")
             }
             Text(
-                text = if (setsCount == 0) "∞" else "$setsCount",
+                text = if (effectiveSetsCount == 0) "∞" else effectiveSetsCount.toString(),
                 style = MaterialTheme.typography.titleLarge,
             )
-            IconButton(onClick = { if (setsCount < 99) setsCount++ }) {
+            IconButton(
+                onClick = { if (effectiveSetsCount < 99) updateSetsCount(effectiveSetsCount + 1) },
+                enabled = effectiveSetsCount < 99,
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Increase sets")
             }
         }
@@ -122,10 +148,10 @@ fun NumpadView(
                                         .height(56.dp)
                                         .combinedClickable(
                                             onClick = {
-                                                if (digits.isNotEmpty()) digits = digits.dropLast(1)
+                                                if (effectiveDigits.isNotEmpty()) updateDigits(effectiveDigits.dropLast(1))
                                             },
                                             onLongClick = {
-                                                digits = ""
+                                                updateDigits("")
                                             },
                                         ),
                             ) {
@@ -143,7 +169,7 @@ fun NumpadView(
                             Button(
                                 onClick = {
                                     if (totalSeconds > 0) {
-                                        onConfirm(totalSeconds, if (setsCount == 0) null else setsCount)
+                                        onConfirm(totalSeconds, if (effectiveSetsCount == 0) null else effectiveSetsCount)
                                     }
                                 },
                                 enabled = totalSeconds > 0,
@@ -159,8 +185,8 @@ fun NumpadView(
                         else -> {
                             OutlinedButton(
                                 onClick = {
-                                    if (digits.length < 6) {
-                                        digits += cell
+                                    if (effectiveDigits.length < 6) {
+                                        updateDigits(effectiveDigits + cell)
                                     }
                                 },
                                 modifier =

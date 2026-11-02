@@ -1,0 +1,39 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Open Add Timer dialog and access Timer Settings
+- tapOn: "Add Timer"
+- assertVisible: "New Timer"
+- tapOn: "Timer settings"
+- assertVisible: "Timer Settings"
+- assertVisible: "Sound & Vibration"
+- assertVisible: "Sound"
+- assertVisible: "Vibrate"
+
+# 2. Toggle Sound and Vibrate in draft settings
+- tapOn: "Sound"
+- tapOn: "Vibrate"
+
+# Save settings back to draft
+- tapOn: "Save"
+
+# 3. Enter duration and start timer
+- tapOn: "4"
+- tapOn: "5"
+- tapOn: "Start"
+
+# 4. Verify timer card is visible
+- extendedWaitUntil:
+    visible: "00:45"
+    timeout: 5000
+
+# 5. Long-press timer card to access timer settings for running/existing timer
+- longPressOn: "00:45"
+- tapOn: "Timer settings"
+- assertVisible: "Timer Settings"
+- assertVisible: "Sound & Vibration"
+- assertVisible: "Sound"
+- assertVisible: "Vibrate"
+- tapOn: "Save"

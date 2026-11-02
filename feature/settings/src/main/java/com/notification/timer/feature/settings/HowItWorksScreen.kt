@@ -32,13 +32,13 @@ fun HowItWorksScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Presets & Live Timers",
+            text = "History & Live Timers",
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
             text =
-                "Presets are saved templates. Tapping a preset creates a live timer on its own tab. " +
-                    "You can run up to 5 timers concurrently.",
+                "Timers you start are automatically kept in your history, ordered by frequency and your starred favorites. " +
+                    "Tapping an entry creates a live timer with its configuration.",
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -63,7 +63,7 @@ fun HowItWorksScreen(modifier: Modifier = Modifier) {
         )
         Text(
             text =
-                "Each timer can have up to 5 alerts before the end. When an alert triggers, " +
+                "Each timer can have alerts before the end. When an alert triggers, " +
                     "its phase color updates and the sound plays once.",
             style = MaterialTheme.typography.bodyMedium,
         )

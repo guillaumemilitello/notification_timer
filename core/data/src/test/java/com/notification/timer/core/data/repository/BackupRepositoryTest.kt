@@ -4,10 +4,11 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.notification.timer.core.data.diagnostics.InMemoryEventLog
+import com.notification.timer.core.data.model.HistoryRecord
 import com.notification.timer.core.data.model.LibraryData
 import com.notification.timer.core.data.model.UserSettings
 import com.notification.timer.core.data.store.DataStoreStore
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.TimerConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -39,9 +40,9 @@ class BackupRepositoryTest {
     @Test
     fun `export and import round-trip preserves library data`() =
         runTest {
-            val originalPreset =
-                Preset(
-                    id = "p-101",
+            val originalConfig =
+                TimerConfig(
+                    id = "c-101",
                     name = "Tabata Interval",
                     durationSec = 20,
                     sets = 8,
@@ -49,7 +50,16 @@ class BackupRepositoryTest {
             val initialLibrary =
                 LibraryData(
                     settings = UserSettings(timeIncrementSec = 45),
-                    presets = listOf(originalPreset),
+                    timersById = mapOf("c-101" to originalConfig),
+                    history =
+                        listOf(
+                            HistoryRecord(
+                                timerId = "c-101",
+                                useCount = 5,
+                                lastUsedAtMs = 5000L,
+                                isStarred = true,
+                            ),
+                        ),
                 )
             dataStoreStore.saveLibraryData(initialLibrary)
 
@@ -67,14 +77,53 @@ class BackupRepositoryTest {
             // Import back
             val importResult = backupRepository.importFromUri(exportUri)
             assertTrue("Import should succeed", importResult is ImportResult.Success)
-            assertEquals(1, (importResult as ImportResult.Success).presetsCount)
+            assertEquals(1, (importResult as ImportResult.Success).historyCount)
 
             val reloaded = dataStoreStore.loadLibraryData()
             assertEquals(45, reloaded.settings.timeIncrementSec)
-            assertEquals(1, reloaded.presets.size)
-            assertEquals("Tabata Interval", reloaded.presets[0].name)
-            assertEquals(20, reloaded.presets[0].durationSec)
-            assertEquals(8, reloaded.presets[0].sets)
+            assertEquals(1, reloaded.timersById.size)
+            assertEquals("Tabata Interval", reloaded.timersById["c-101"]?.name)
+            assertEquals(20, reloaded.timersById["c-101"]?.durationSec)
+            assertEquals(8, reloaded.timersById["c-101"]?.sets)
+            assertEquals(1, reloaded.history.size)
+            assertTrue(reloaded.history[0].isStarred)
+            assertEquals(5, reloaded.history[0].useCount)
+        }
+
+    @Test
+    fun `import legacy schema version 1 preserves presets as history`() =
+        runTest {
+            val legacyFile = tempFolder.newFile("legacy_backup.json")
+            val legacyJson =
+                """
+                {
+                    "schemaVersion": 1,
+                    "appVersion": "1.0.0",
+                    "exportedAt": "2024-01-01T00:00:00Z",
+                    "settings": { "timeIncrementSec": 15 },
+                    "presets": [
+                        {
+                            "id": "legacy-p1",
+                            "name": "Tea",
+                            "durationSec": 180,
+                            "sets": 1
+                        }
+                    ]
+                }
+                """.trimIndent()
+            legacyFile.writeText(legacyJson)
+            val legacyUri = Uri.fromFile(legacyFile)
+
+            val importResult = backupRepository.importFromUri(legacyUri)
+            assertTrue("Import should succeed for legacy schema 1", importResult is ImportResult.Success)
+            assertEquals(1, (importResult as ImportResult.Success).historyCount)
+
+            val reloaded = dataStoreStore.loadLibraryData()
+            assertEquals(15, reloaded.settings.timeIncrementSec)
+            assertEquals(1, reloaded.timersById.size)
+            assertEquals("Tea", reloaded.timersById["legacy-p1"]?.name)
+            assertEquals(1, reloaded.history.size)
+            assertEquals("legacy-p1", reloaded.history[0].timerId)
         }
 
     @Test
@@ -99,7 +148,8 @@ class BackupRepositoryTest {
                     "appVersion": "99.0.0",
                     "exportedAt": "2099-01-01T00:00:00Z",
                     "settings": { "timeIncrementSec": 15 },
-                    "presets": []
+                    "timersById": {},
+                    "history": []
                 }
                 """.trimIndent()
             futureFile.writeText(futureJson)

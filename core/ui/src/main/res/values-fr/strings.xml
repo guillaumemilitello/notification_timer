@@ -6,10 +6,8 @@
     <string name="help">Indications</string>
     <string name="settings">Paramètres</string>
     <string name="keepScreenOn">Écran toujours allumé</string>
-    <string name="presets">Minuteurs sauvegardés</string>
     <!-- Main Activity -->
     <string name="default_timer_name">Minuteur</string>
-    <string name="presetsListEmpty">Liste des minuteurs vide</string>
     <string name="notification_permission_denied">Autorisation insuffisante pour l\'utilisation des notifications, vérifiez les paramètres.</string>
     <!-- Pickers -->
     <string name="picker_timer">Minuteur</string>
@@ -17,10 +15,6 @@
     <string name="picker_timer_get_ready">Temps de la notification</string>
     <string name="picker_split_screen">Augmentez la hauteur de la fenêtre pour créer un minuteur</string>
     <!-- Alerts -->
-    <string name="select_preset">Êtes-vous sûr de vouloir arrêter le minuteur en cours pour celui sélectionné ?</string>
-    <string name="delete_preset">Êtes-vous sûr de vouloir supprimer le minuteur sélectionné ?</string>
-    <string name="reset_preset">Êtes-vous sûr de vouloir réinitializer l\'indicateur de limite de minuteurs ?</string>
-    <string name="clear_preset">Êtes-vous sûr de vouloir arrêter et supprimer le minuteur en cours ?</string>
     <string name="alert_time_out">Temps écoulé !</string>
     <string name="alert_set_done">Voulez-vous lancer le prochain minuteur?</string>
     <string name="alert_all_set_done">Quelle action aimeriez-vous faire ensuite?</string>
@@ -53,8 +47,6 @@
     <string name="reset_summary">Réinitialise le nombre de minuteurs si il y a un indicateur de limite de minuteurs. Appui long pour réinitializer le timer</string>
     <string name="sets_picker_enable">Limite de minuteurs</string>
     <string name="sets_picker_enable_summary">Permet d\'ajouter un indicateur de limite de minuteurs lors de la création</string>
-    <string name="preset_select_asking">Alerte lors de la sélection de minuteur</string>
-    <string name="preset_select_asking_summary">Afficher une alerte lors de la sélection d\'un nouveau minteur alors qu\'un minuteur est déjà en cours</string>
     <string name="clear_asking">Alerte lors de la réinitialization du minuteur</string>
     <string name="clear_asking_summary">Afficher une alerte lors de l\'arrêt et de la réinitialization du minutuer en cours</string>
     <string name="step_time">Saut de temps</string>
@@ -108,7 +100,21 @@
     <string name="more_settings">Plus de réglages</string>
     <string name="more_options">Plus d\'options</string>
     <string name="manual_timer">Minuteur manuel</string>
-    <string name="no_presets_available">Aucun minuteur sauvegardé disponible. Créez-en un dans les Réglages.</string>
+    <string name="history">Historique</string>
+    <string name="no_history_available">Aucun historique disponible. Lancez un minuteur pour le voir ici.</string>
+    <string name="star_timer">Épingler le minuteur</string>
+    <string name="unstar_timer">Désépingler le minuteur</string>
     <string name="close">Fermer</string>
     <string name="back">Retour</string>
+    <string name="drag_to_reorder">Glisser pour réorganiser</string>
+    <string name="delete_timer">Supprimer le minuteur</string>
+    <string name="history_limit">Limite de l\'historique</string>
+    <string name="history_limit_summary">Nombre maximal de minuteurs conservés dans l\'historique (%1$d)</string>
+    <string name="timer_settings_notification_title">Son et vibreur</string>
+    <string name="timer_settings_sound_title">Son</string>
+    <string name="timer_settings_sound_summary">Jouer un son lorsque le temps est écoulé</string>
+    <string name="timer_settings_sound_default">Son de notification par défaut</string>
+    <string name="timer_settings_choose_sound">Choisir un son</string>
+    <string name="timer_settings_vibrate_title">Vibreur</string>
+    <string name="timer_settings_vibrate_summary">Faire vibrer lorsque le temps est écoulé</string>
 </resources>

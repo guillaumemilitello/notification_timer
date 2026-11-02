@@ -27,34 +27,39 @@ class AlertPlayer
 
         @SuppressLint("MissingPermission")
         override fun playAlert(alert: Alert) {
-            eventLog.i("AlertPlayer", "Playing alert '${alert.name}' (vibrate=${alert.vibrate}, sound=${alert.sound})")
+            eventLog.i(
+                "AlertPlayer",
+                "Playing alert '${alert.name}' (vibrate=${alert.vibrate}, soundEnabled=${alert.soundEnabled}, sound=${alert.sound})",
+            )
 
-            val audioAttributes =
-                AudioAttributes
-                    .Builder()
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
+            if (alert.soundEnabled) {
+                val audioAttributes =
+                    AudioAttributes
+                        .Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
 
-            val focusRequest =
-                AudioFocusRequest
-                    .Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
-                    .setAudioAttributes(audioAttributes)
-                    .build()
-            val focusResult = audioManager.requestAudioFocus(focusRequest)
-            eventLog.d("AlertPlayer", "Requested audio focus (focusResult=$focusResult)")
+                val focusRequest =
+                    AudioFocusRequest
+                        .Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                        .setAudioAttributes(audioAttributes)
+                        .build()
+                val focusResult = audioManager.requestAudioFocus(focusRequest)
+                eventLog.d("AlertPlayer", "Requested audio focus (focusResult=$focusResult)")
 
-            // Play Ringtone
-            try {
-                val soundUri =
-                    alert.sound?.let { Uri.parse(it) }
-                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                // Play Ringtone
+                try {
+                    val soundUri =
+                        alert.sound?.takeIf { it.isNotBlank() }?.let { Uri.parse(it) }
+                            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-                val ringtone = RingtoneManager.getRingtone(context, soundUri)
-                ringtone?.audioAttributes = audioAttributes
-                ringtone?.play()
-            } catch (e: Exception) {
-                eventLog.w("AlertPlayer", "Failed to play ringtone: ${e.message}", e)
+                    val ringtone = RingtoneManager.getRingtone(context, soundUri)
+                    ringtone?.audioAttributes = audioAttributes
+                    ringtone?.play()
+                } catch (e: Exception) {
+                    eventLog.w("AlertPlayer", "Failed to play ringtone: ${e.message}", e)
+                }
             }
 
             // Trigger Vibration

@@ -1,10 +1,12 @@
 package com.notification.timer.core.data.di
 
 import com.notification.timer.core.data.diagnostics.InMemoryEventLog
-import com.notification.timer.core.data.repository.LibraryRepositoryImpl
+import com.notification.timer.core.data.repository.DisplayPreferencesRepository
+import com.notification.timer.core.data.repository.HistoryRepositoryImpl
 import com.notification.timer.core.data.repository.TimerStoreImpl
 import com.notification.timer.core.domain.diagnostics.EventLog
-import com.notification.timer.core.domain.ports.LibraryRepository
+import com.notification.timer.core.domain.ports.DisplayPreferences
+import com.notification.timer.core.domain.ports.HistoryRepository
 import com.notification.timer.core.domain.ports.TimerStore
 import dagger.Binds
 import dagger.Module
@@ -25,5 +27,9 @@ abstract class DataModule {
 
     @Binds
     @Singleton
-    abstract fun bindLibraryRepository(impl: LibraryRepositoryImpl): LibraryRepository
+    abstract fun bindHistoryRepository(impl: HistoryRepositoryImpl): HistoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDisplayPreferences(impl: DisplayPreferencesRepository): DisplayPreferences
 }

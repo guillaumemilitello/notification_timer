@@ -62,4 +62,50 @@ class AlertPlayerTest {
             entries.any { it.message.contains("vibrate=false") },
         )
     }
+
+    @Test
+    fun `playAlert with sound disabled logs soundEnabled=false and does not request audio focus`() {
+        val silentAlert =
+            Alert(
+                name = "Silent Timer",
+                beforeEndSec = 0,
+                vibrate = true,
+                sound = null,
+                soundEnabled = false,
+                color = "#4CAF50",
+            )
+
+        alertPlayer.playAlert(silentAlert)
+
+        val entries = eventLog.getEntries()
+        assertTrue(
+            "Should log playing alert with soundEnabled=false",
+            entries.any { it.message.contains("soundEnabled=false") },
+        )
+        assertTrue(
+            "Should not request audio focus when sound is disabled",
+            entries.none { it.message.contains("Requested audio focus") },
+        )
+    }
+
+    @Test
+    fun `playAlert with custom sound logs custom sound URI`() {
+        val customSoundAlert =
+            Alert(
+                name = "Custom Alert",
+                beforeEndSec = 0,
+                vibrate = false,
+                sound = "content://settings/custom_ringtone",
+                soundEnabled = true,
+                color = "#4CAF50",
+            )
+
+        alertPlayer.playAlert(customSoundAlert)
+
+        val entries = eventLog.getEntries()
+        assertTrue(
+            "Should log playing alert with custom sound",
+            entries.any { it.message.contains("sound=content://settings/custom_ringtone") },
+        )
+    }
 }

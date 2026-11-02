@@ -1,0 +1,42 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Open Add Timer dialog
+- tapOn: "Add Timer"
+- assertVisible: "New Timer"
+- assertNotVisible: "More settings"
+
+# 2. Access timer settings with the wheel icon while entering a new timer
+- tapOn: "Timer settings"
+- assertVisible: "Timer Settings"
+- assertVisible: "General"
+- assertVisible: "Background Color"
+- assertVisible: "Sets"
+
+# Change settings in draft timer
+- tapOn: "Timer Name"
+- inputText: "Draft HIIT"
+- tapOn: "Increase sets"
+- tapOn: "Increase sets"
+- assertVisible: "2 sets"
+
+# Save settings back to the draft timer
+- tapOn: "Save"
+
+# 3. Verify settings are saved into the draft timer in the Add Timer dialog
+- assertVisible: "New Timer"
+- assertVisible: "Draft HIIT"
+- assertVisible: "2"
+
+# 4. Type duration and start timer
+- tapOn: "3"
+- tapOn: "0"
+- tapOn: "Start"
+
+# 5. Verify timer was created with the draft settings
+- extendedWaitUntil:
+    visible: "Draft HIIT"
+    timeout: 5000
+- assertVisible: "Set 1 of 2"

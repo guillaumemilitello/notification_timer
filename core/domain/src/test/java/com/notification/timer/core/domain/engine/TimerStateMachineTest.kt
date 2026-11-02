@@ -1,9 +1,9 @@
 package com.notification.timer.core.domain.engine
 
 import com.notification.timer.core.domain.model.Alert
-import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerAction
+import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.model.TimerState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -11,9 +11,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TimerStateMachineTest {
-    private val samplePreset =
-        Preset(
-            id = "test_preset",
+    private val sampleConfig =
+        TimerConfig(
+            id = "test_config",
             name = "Workout",
             durationSec = 60,
             sets = 2,
@@ -26,8 +26,8 @@ class TimerStateMachineTest {
     private val baseTimer =
         Timer(
             id = 1000,
-            presetId = samplePreset.id,
-            config = samplePreset,
+            configId = sampleConfig.id,
+            config = sampleConfig,
             label = "Workout",
         )
 
@@ -160,12 +160,12 @@ class TimerStateMachineTest {
     fun `checkAlertsAndEnd suppresses intermediate alert when more than 1 minute late`() {
         val now = 100000L
         // Duration 120s (ends at 220000L), alert at 80s before end (due at 140000L)
-        val alertPreset =
-            samplePreset.copy(
+        val alertConfig =
+            sampleConfig.copy(
                 durationSec = 120,
                 alerts = listOf(Alert(name = "Halfway", beforeEndSec = 80, color = "#FF9800")),
             )
-        val longTimer = baseTimer.copy(config = alertPreset)
+        val longTimer = baseTimer.copy(config = alertConfig)
         val runningLong = TimerStateMachine.start(longTimer, nowElapsedMs = now)
 
         // Check at 140000L + 65000L = 205000L (still running, 15s remaining, 65s late for alert)
@@ -238,5 +238,29 @@ class TimerStateMachineTest {
         assertTrue(closedRunning.state is TimerState.Ready)
         assertFalse((closedRunning.state as TimerState.Ready).isCompleted)
         assertFalse(closedRunning.isNotificationVisible)
+    }
+
+    @Test
+    fun `updateAlertSettings modifies sound, soundEnabled, and vibrate on timer config done alert`() {
+        val timer =
+            Timer(
+                id = 1,
+                config = TimerConfig(id = "c1", name = "Test", durationSec = 60),
+                label = "Test",
+            )
+        assertTrue(timer.config.done.soundEnabled)
+        assertTrue(timer.config.done.vibrate)
+
+        val updated =
+            TimerStateMachine.updateAlertSettings(
+                timer = timer,
+                soundEnabled = false,
+                soundUri = "content://settings/custom_ringtone",
+                vibrate = false,
+            )
+
+        assertFalse(updated.config.done.soundEnabled)
+        assertEquals("content://settings/custom_ringtone", updated.config.done.sound)
+        assertFalse(updated.config.done.vibrate)
     }
 }

@@ -2,7 +2,13 @@
 
 package com.notification.timer.feature.timers
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
+import android.media.RingtoneManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -23,7 +29,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,18 +41,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -62,8 +72,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -80,8 +90,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -90,15 +103,19 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.notification.timer.core.domain.engine.TimerStateMachine
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.Alert
+import com.notification.timer.core.domain.model.HistoryEntry
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerAction
 import com.notification.timer.core.domain.model.TimerCommand
+import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.model.TimerState
 import com.notification.timer.core.ui.AutoResizeText
+import com.notification.timer.core.ui.KeepScreenOnEffect
+import com.notification.timer.core.ui.KeepScreenOnToggle
+import com.notification.timer.core.ui.NumpadView
 import com.notification.timer.core.ui.R
 import com.notification.timer.core.ui.theme.RecursiveMonospaceFontFamily
-import com.notification.timer.feature.presets.NumpadView
 import kotlinx.coroutines.delay
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
@@ -123,19 +140,30 @@ val TIMER_COLOR_PALETTE =
 @Composable
 fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
     val timers by viewModel.timers.collectAsStateWithLifecycle()
-    val presets by viewModel.presets.collectAsStateWithLifecycle()
+    val history by viewModel.history.collectAsStateWithLifecycle()
+    val keepScreenOn by viewModel.keepScreenOn.collectAsStateWithLifecycle()
+
+    KeepScreenOnEffect(enabled = keepScreenOn)
 
     var showAddIsland by remember { mutableStateOf(false) }
     var showDraftSettings by remember { mutableStateOf(false) }
     var draftTimerName by remember { mutableStateOf("") }
     var draftColorHex by remember { mutableStateOf("#3F51B5") }
     var draftSets by remember { mutableStateOf<Int?>(null) }
+    var draftSoundEnabled by remember { mutableStateOf(true) }
+    var draftSoundUri by remember { mutableStateOf<String?>(null) }
+    var draftVibrate by remember { mutableStateOf(true) }
+    var draftSettingsModified by remember { mutableStateOf(false) }
     var draftDigits by remember { mutableStateOf("") }
 
     val resetDraft = {
         draftTimerName = ""
         draftColorHex = "#3F51B5"
         draftSets = null
+        draftSoundEnabled = true
+        draftSoundUri = null
+        draftVibrate = true
+        draftSettingsModified = false
         draftDigits = ""
         showDraftSettings = false
     }
@@ -167,6 +195,12 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
         topBar = {
             TopAppBar(
                 title = { Text("NotificationTimer") },
+                actions = {
+                    KeepScreenOnToggle(
+                        checked = keepScreenOn,
+                        onCheckedChange = { viewModel.toggleKeepScreenOn() },
+                    )
+                },
             )
         },
         floatingActionButton = {
@@ -309,50 +343,76 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
                     initialName = draftTimerName,
                     initialColorHex = draftColorHex,
                     initialSets = draftSets,
-                    onSave = { newName, newColorHex, newSets ->
+                    initialSoundEnabled = draftSoundEnabled,
+                    initialSoundUri = draftSoundUri,
+                    initialVibrate = draftVibrate,
+                    onSave = { newName, newColorHex, newSets, newSoundEnabled, newSoundUri, newVibrate ->
                         draftTimerName = newName
                         draftColorHex = newColorHex
                         draftSets = newSets
+                        draftSoundEnabled = newSoundEnabled
+                        draftSoundUri = newSoundUri
+                        draftVibrate = newVibrate
+                        draftSettingsModified = true
                         showDraftSettings = false
                     },
                     onCancel = { showDraftSettings = false },
                 )
             } else {
                 AddTimerContent(
-                    presets = presets,
+                    history = history,
                     timerName = draftTimerName,
                     onTimerNameChange = { draftTimerName = it },
                     digits = draftDigits,
                     onDigitsChange = { draftDigits = it },
                     setsCount = draftSets ?: 0,
                     onSetsCountChange = { draftSets = if (it == 0) null else it },
-                    colorHex = draftColorHex,
                     onOpenSettings = { showDraftSettings = true },
+                    onToggleStar = { viewModel.toggleHistoryStar(it) },
                     onDismiss = {
                         showAddIsland = false
                         resetDraft()
                     },
-                    onPresetSelected = { preset ->
-                        val finalPreset =
-                            preset.copy(
-                                name = if (draftTimerName.isNotBlank()) draftTimerName.trim() else preset.name,
-                                sets = draftSets ?: preset.sets,
-                                runningColor = if (draftColorHex != "#3F51B5") draftColorHex else preset.runningColor,
+                    onHistorySelected = { entry ->
+                        val finalConfig =
+                            entry.config.copy(
+                                name = if (draftTimerName.isNotBlank()) draftTimerName.trim() else entry.config.name,
+                                sets = draftSets ?: entry.config.sets,
+                                runningColor = if (draftColorHex != "#3F51B5") draftColorHex else entry.config.runningColor,
+                                done =
+                                    if (draftSettingsModified) {
+                                        entry.config.done.copy(
+                                            sound = draftSoundUri,
+                                            soundEnabled = draftSoundEnabled,
+                                            vibrate = draftVibrate,
+                                        )
+                                    } else {
+                                        entry.config.done
+                                    },
                             )
-                        viewModel.startTimerFromPreset(finalPreset)
+                        viewModel.startTimer(finalConfig)
                         showAddIsland = false
                         resetDraft()
                     },
                     onNumpadConfirm = { name, durationSec, sets ->
-                        val preset =
-                            Preset(
+                        val config =
+                            TimerConfig(
                                 id = "temp_${System.currentTimeMillis()}",
                                 name = name.ifBlank { "Timer" },
                                 durationSec = durationSec,
                                 sets = sets,
                                 runningColor = draftColorHex,
+                                done =
+                                    Alert(
+                                        name = "Time out!",
+                                        beforeEndSec = 0,
+                                        color = "#4CAF50",
+                                        sound = draftSoundUri,
+                                        soundEnabled = draftSoundEnabled,
+                                        vibrate = draftVibrate,
+                                    ),
                             )
-                        viewModel.startTimerFromPreset(preset)
+                        viewModel.startTimer(config)
                         showAddIsland = false
                         resetDraft()
                     },
@@ -366,7 +426,7 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
         Md3CenterIslandDialog(onDismissRequest = { settingsTimerId = null }) {
             TimerSettingsIslandContent(
                 timer = activeSettingsTimer,
-                onSave = { newName, newColorHex, newSets ->
+                onSave = { newName, newColorHex, newSets, newSoundEnabled, newSoundUri, newVibrate ->
                     if (newName.isNotBlank() && newName != activeSettingsTimer.label) {
                         viewModel.handleCommand(TimerCommand.Rename(activeSettingsTimer.id, newName.trim()))
                     }
@@ -375,6 +435,17 @@ fun TimersScreen(viewModel: TimersViewModel = hiltViewModel()) {
                     }
                     if (newSets != activeSettingsTimer.config.sets) {
                         viewModel.handleCommand(TimerCommand.UpdateSets(activeSettingsTimer.id, newSets))
+                    }
+                    if (newSoundEnabled != activeSettingsTimer.config.done.soundEnabled ||
+                        newSoundUri != activeSettingsTimer.config.done.sound ||
+                        newVibrate != activeSettingsTimer.config.done.vibrate
+                    ) {
+                        viewModel.updateTimerAlertSettings(
+                            timerId = activeSettingsTimer.id,
+                            soundEnabled = newSoundEnabled,
+                            soundUri = newSoundUri,
+                            vibrate = newVibrate,
+                        )
                     }
                     settingsTimerId = null
                 },
@@ -410,9 +481,9 @@ fun Md3CenterIslandDialog(
 
 @Composable
 fun AddTimerContent(
-    presets: List<Preset>,
+    history: List<HistoryEntry>,
     onDismiss: () -> Unit,
-    onPresetSelected: (Preset) -> Unit,
+    onHistorySelected: (HistoryEntry) -> Unit,
     onNumpadConfirm: (name: String, durationSec: Int, sets: Int?) -> Unit,
     modifier: Modifier = Modifier,
     timerName: String = "",
@@ -421,8 +492,8 @@ fun AddTimerContent(
     onDigitsChange: ((String) -> Unit)? = null,
     setsCount: Int = 0,
     onSetsCountChange: ((Int) -> Unit)? = null,
-    colorHex: String = "#3F51B5",
     onOpenSettings: () -> Unit = {},
+    onToggleStar: (String) -> Unit = {},
 ) {
     var internalTimerName by remember { mutableStateOf(timerName) }
     val effectiveTimerName = if (onTimerNameChange != null) timerName else internalTimerName
@@ -434,7 +505,7 @@ fun AddTimerContent(
         }
     }
 
-    var showPresets by remember { mutableStateOf(false) }
+    var showHistory by remember { mutableStateOf(false) }
 
     Column(
         modifier =
@@ -446,13 +517,13 @@ fun AddTimerContent(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = if (showPresets) 12.dp else 24.dp, end = 12.dp),
+                    .padding(start = if (showHistory) 12.dp else 24.dp, end = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (showPresets) {
-                    IconButton(onClick = { showPresets = false }) {
+                if (showHistory) {
+                    IconButton(onClick = { showHistory = false }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back),
@@ -460,7 +531,7 @@ fun AddTimerContent(
                     }
                 }
                 Text(
-                    text = if (showPresets) stringResource(R.string.presets) else stringResource(R.string.new_timer),
+                    text = if (showHistory) stringResource(R.string.history) else stringResource(R.string.new_timer),
                     style = MaterialTheme.typography.headlineSmall,
                 )
             }
@@ -471,14 +542,14 @@ fun AddTimerContent(
                         contentDescription = stringResource(R.string.timer_settings_title),
                     )
                 }
-                IconButton(onClick = { showPresets = !showPresets }) {
+                IconButton(onClick = { showHistory = !showHistory }) {
                     Icon(
-                        imageVector = if (showPresets) Icons.Default.Dialpad else Icons.Default.Bookmarks,
+                        imageVector = if (showHistory) Icons.Default.Dialpad else Icons.Default.History,
                         contentDescription =
-                            if (showPresets) {
+                            if (showHistory) {
                                 stringResource(R.string.manual_timer)
                             } else {
-                                stringResource(R.string.presets)
+                                stringResource(R.string.history)
                             },
                     )
                 }
@@ -488,7 +559,7 @@ fun AddTimerContent(
             }
         }
 
-        if (showPresets) {
+        if (showHistory) {
             LazyColumn(
                 modifier =
                     Modifier
@@ -497,33 +568,63 @@ fun AddTimerContent(
                         .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (presets.isEmpty()) {
+                if (history.isEmpty()) {
                     item {
                         Text(
-                            text = stringResource(R.string.no_presets_available),
+                            text = stringResource(R.string.no_history_available),
                             modifier = Modifier.padding(16.dp),
                         )
                     }
                 } else {
-                    items(presets, key = { it.id }) { preset ->
+                    items(history, key = { it.timerId }) { entry ->
                         Card(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        val finalPreset =
-                                            if (effectiveTimerName.isNotBlank()) {
-                                                preset.copy(name = effectiveTimerName.trim())
-                                            } else {
-                                                preset
-                                            }
-                                        onPresetSelected(finalPreset)
+                                        onHistorySelected(entry)
                                     },
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(preset.name, style = MaterialTheme.typography.titleMedium)
-                                val duration = formatTime(preset.durationSec * 1000L)
-                                Text("Duration: $duration", style = MaterialTheme.typography.bodyMedium)
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(entry.config.name, style = MaterialTheme.typography.titleMedium)
+                                    val duration = formatTime(entry.config.durationSec * 1000L)
+                                    val sets = entry.config.sets
+                                    val setsText =
+                                        if (sets != null) {
+                                            stringResource(R.string.timer_settings_sets_count, sets)
+                                        } else {
+                                            stringResource(R.string.timer_settings_sets_infinite)
+                                        }
+                                    Text("$duration • $setsText", style = MaterialTheme.typography.bodyMedium)
+                                }
+                                IconButton(
+                                    onClick = { onToggleStar(entry.timerId) },
+                                ) {
+                                    Icon(
+                                        imageVector = if (entry.isStarred) Icons.Default.Star else Icons.Default.StarBorder,
+                                        contentDescription =
+                                            if (entry.isStarred) {
+                                                stringResource(R.string.unstar_timer)
+                                            } else {
+                                                stringResource(R.string.star_timer)
+                                            },
+                                        tint =
+                                            if (entry.isStarred) {
+                                                androidx.compose.ui.graphics
+                                                    .Color(0xFFFFB300)
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurfaceVariant
+                                            },
+                                    )
+                                }
                             }
                         }
                     }
@@ -537,48 +638,12 @@ fun AddTimerContent(
                         .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                val parsedColor =
-                    remember(colorHex) {
-                        try {
-                            androidx.compose.ui.graphics
-                                .Color(Color.parseColor(colorHex))
-                        } catch (_: Exception) {
-                            androidx.compose.ui.graphics
-                                .Color(0xFF3F51B5)
-                        }
-                    }
-
                 OutlinedTextField(
                     value = effectiveTimerName,
                     onValueChange = updateTimerName,
                     label = { Text(stringResource(R.string.timer_name)) },
                     placeholder = { Text(stringResource(R.string.default_timer_name)) },
                     singleLine = true,
-                    trailingIcon = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(end = 4.dp),
-                        ) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .size(16.dp)
-                                        .clip(CircleShape)
-                                        .background(parsedColor)
-                                        .border(
-                                            width = 1.dp,
-                                            color = MaterialTheme.colorScheme.outlineVariant,
-                                            shape = CircleShape,
-                                        ),
-                            )
-                            IconButton(onClick = onOpenSettings) {
-                                Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = stringResource(R.string.more_settings),
-                                )
-                            }
-                        }
-                    },
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -688,53 +753,52 @@ fun TimerCardItem(
                         .fillMaxWidth()
                         .padding(16.dp),
             ) {
-                // Header Info
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(end = if (isOptionsActive) 36.dp else 0.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                // Dedicated Top Header Object (Transparent background and border, always full width)
+                Surface(
+                    color = androidx.compose.ui.graphics.Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(
-                        text = timer.label,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    val setInfo =
-                        if (timer.config.sets != null) {
-                            "Set ${timer.currentSet} of ${timer.config.sets}"
-                        } else {
-                            "Set ${timer.currentSet}"
-                        }
-                    Text(
-                        text = setInfo,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-
-                // Options toolbar for this specific timer: Drag handle & Settings wheel
-                if (isOptionsActive) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Surface(
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-                        tonalElevation = 2.dp,
-                        modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    vertical = if (isOptionsActive) 2.dp else 4.dp,
+                                ),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            // Drag handle to reorder
+                        val setInfo =
+                            if (timer.config.sets != null) {
+                                "Set ${timer.currentSet} of ${timer.config.sets}"
+                            } else {
+                                "Set ${timer.currentSet}"
+                            }
+
+                        if (!isOptionsActive) {
+                            Text(
+                                text = timer.label,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false),
+                            )
+                            Text(
+                                text = setInfo,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        } else {
+                            // Long-press options mode:
+                            // "=" drag handle close to timer name, ready to drag
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier =
                                     Modifier
+                                        .weight(1f, fill = false)
                                         .clip(MaterialTheme.shapes.small)
                                         .pointerInput(timer.id) {
                                             detectDragGestures(
@@ -746,28 +810,59 @@ fun TimerCardItem(
                                                 onDragEnd = { onDragEnd() },
                                                 onDragCancel = { onDragEnd() },
                                             )
-                                        }.padding(horizontal = 8.dp, vertical = 6.dp),
+                                        }.padding(horizontal = 4.dp, vertical = 4.dp),
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.DragHandle,
-                                    contentDescription = "Drag to reorder",
+                                    contentDescription = stringResource(R.string.drag_to_reorder),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(24.dp),
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Drag to reorder",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    text = timer.label,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             }
 
-                            // Settings wheel
-                            IconButton(onClick = onOpenSettings) {
-                                Icon(
-                                    Icons.Default.Settings,
-                                    contentDescription = "Timer settings",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            // Right side: Set info + Settings wheel + Trash red button
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = setInfo,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(end = 4.dp),
                                 )
+                                IconButton(
+                                    onClick = onOpenSettings,
+                                    modifier = Modifier.size(36.dp),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = stringResource(R.string.timer_settings_description),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
+                                IconButton(
+                                    onClick = onCloseTimer,
+                                    modifier = Modifier.size(36.dp),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = stringResource(R.string.delete_timer),
+                                        tint =
+                                            androidx.compose.ui.graphics
+                                                .Color(0xFFD32F2F),
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
                             }
                         }
                     }
@@ -869,29 +964,6 @@ fun TimerCardItem(
                 }
             }
         }
-
-        // Floating red cross at the top right corner exclusively for this timer when options are active
-        if (isOptionsActive) {
-            SmallFloatingActionButton(
-                onClick = onCloseTimer,
-                containerColor =
-                    androidx.compose.ui.graphics
-                        .Color(0xFFD32F2F),
-                contentColor = androidx.compose.ui.graphics.Color.White,
-                shape = CircleShape,
-                modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 6.dp, y = (-6).dp)
-                        .size(36.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close Timer",
-                    modifier = Modifier.size(20.dp),
-                )
-            }
-        }
     }
 }
 
@@ -901,7 +973,10 @@ fun TimerSettingsIslandContent(
     initialName: String,
     initialColorHex: String,
     initialSets: Int?,
-    onSave: (newName: String, newColorHex: String, newSets: Int?) -> Unit,
+    initialSoundEnabled: Boolean = true,
+    initialSoundUri: String? = null,
+    initialVibrate: Boolean = true,
+    onSave: (newName: String, newColorHex: String, newSets: Int?, soundEnabled: Boolean, soundUri: String?, vibrate: Boolean) -> Unit,
     onCancel: () -> Unit,
     title: String = "Timer Settings",
     timerKey: Any = Unit,
@@ -909,6 +984,43 @@ fun TimerSettingsIslandContent(
     var name by remember(timerKey) { mutableStateOf(initialName) }
     var selectedColorHex by remember(timerKey) { mutableStateOf(initialColorHex) }
     var setsCount by remember(timerKey) { mutableIntStateOf(initialSets ?: 0) }
+    var soundEnabled by remember(timerKey) { mutableStateOf(initialSoundEnabled) }
+    var soundUri by remember(timerKey) { mutableStateOf(initialSoundUri) }
+    var vibrate by remember(timerKey) { mutableStateOf(initialVibrate) }
+
+    val context = LocalContext.current
+    val ringtonePickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri: Uri? =
+                    result.data?.getParcelableExtra(
+                        RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
+                        Uri::class.java,
+                    )
+                if (uri != null) {
+                    soundUri = uri.toString()
+                } else {
+                    soundEnabled = false
+                    soundUri = null
+                }
+            }
+        }
+
+    val soundTitle =
+        remember(soundUri, context) {
+            if (soundUri.isNullOrBlank()) {
+                context.getString(R.string.timer_settings_sound_default)
+            } else {
+                try {
+                    val ringtone = RingtoneManager.getRingtone(context, Uri.parse(soundUri))
+                    ringtone?.getTitle(context) ?: context.getString(R.string.timer_settings_sound_default)
+                } catch (_: Exception) {
+                    context.getString(R.string.timer_settings_sound_default)
+                }
+            }
+        }
 
     Column(
         modifier =
@@ -1070,18 +1182,118 @@ fun TimerSettingsIslandContent(
 
         HorizontalDivider()
 
-        // Section 4: Scalable placeholder for upcoming per-timer options
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        // Section 4: Sound and Vibration
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
-                text = "More Options",
+                text = stringResource(R.string.timer_settings_notification_title),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Text(
-                text = "Additional timer settings (alerts, sound, vibration) will appear here.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+
+            // Sound Toggle Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.timer_settings_sound_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.timer_settings_sound_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = soundEnabled,
+                    onCheckedChange = { soundEnabled = it },
+                )
+            }
+
+            // Sound Picker Row
+            if (soundEnabled) {
+                Surface(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable {
+                                try {
+                                    val pickerIntent =
+                                        Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                                            putExtra(
+                                                RingtoneManager.EXTRA_RINGTONE_TYPE,
+                                                RingtoneManager.TYPE_NOTIFICATION,
+                                            )
+                                            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+                                            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
+                                            putExtra(
+                                                RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI,
+                                                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
+                                            )
+                                            val currentUri =
+                                                soundUri?.let { Uri.parse(it) }
+                                                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                                            putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentUri)
+                                        }
+                                    ringtonePickerLauncher.launch(pickerIntent)
+                                } catch (_: Exception) {
+                                    // Fallback if system ringtone picker is unavailable
+                                }
+                            },
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MusicNote,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = soundTitle,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = stringResource(R.string.timer_settings_choose_sound),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+
+            // Vibration Toggle Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.timer_settings_vibrate_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.timer_settings_vibrate_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = vibrate,
+                    onCheckedChange = { vibrate = it },
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -1099,7 +1311,7 @@ fun TimerSettingsIslandContent(
             Button(
                 onClick = {
                     val finalSets = if (setsCount == 0) null else setsCount
-                    onSave(name, selectedColorHex, finalSets)
+                    onSave(name, selectedColorHex, finalSets, soundEnabled, soundUri, vibrate)
                 },
                 modifier = Modifier.weight(1f),
             ) {
@@ -1112,12 +1324,15 @@ fun TimerSettingsIslandContent(
 @Composable
 fun TimerSettingsIslandContent(
     timer: Timer,
-    onSave: (newName: String, newColorHex: String, newSets: Int?) -> Unit,
+    onSave: (newName: String, newColorHex: String, newSets: Int?, soundEnabled: Boolean, soundUri: String?, vibrate: Boolean) -> Unit,
     onCancel: () -> Unit,
 ) = TimerSettingsIslandContent(
     initialName = timer.label,
     initialColorHex = timer.config.runningColor,
     initialSets = timer.config.sets,
+    initialSoundEnabled = timer.config.done.soundEnabled,
+    initialSoundUri = timer.config.done.sound,
+    initialVibrate = timer.config.done.vibrate,
     onSave = onSave,
     onCancel = onCancel,
     timerKey = timer.id,

@@ -58,7 +58,6 @@ dependencies {
     implementation(project(":core:runtime"))
     implementation(project(":core:ui"))
     implementation(project(":feature:timers"))
-    implementation(project(":feature:presets"))
     implementation(project(":feature:settings"))
 
     implementation(libs.androidx.core.ktx)

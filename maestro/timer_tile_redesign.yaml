@@ -1,0 +1,43 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Add timer "TileTest"
+- tapOn: "Add Timer"
+- assertVisible: "New Timer"
+- tapOn: "Timer Name"
+- inputText: "TileTest"
+- tapOn: "1"
+- tapOn: "0"
+- tapOn: "Start"
+
+# Verify timer tile appears with dedicated header showing name and set
+- extendedWaitUntil:
+    visible: "TileTest"
+    timeout: 5000
+- assertVisible: "Set 1"
+
+# 2. Long press timer tile to activate options
+- longPressOn: "TileTest"
+
+# Verify top header transforms: "=" drag handle, settings wheel, and trash button appear
+- assertVisible: "Drag to reorder"
+- assertVisible: "Timer settings"
+- assertVisible: "Delete timer"
+
+# Verify old text "Drag to Organize" or "Drag to reorder" text label does not exist
+- assertNotVisible: "Drag to Organize"
+
+# 3. Open settings from the header wheel icon
+- tapOn: "Timer settings"
+- assertVisible: "Timer Settings"
+- tapOn: "Close"
+
+# 4. Close/delete timer via trash red button
+- tapOn: "Delete timer"
+
+# Verify timer is removed
+- extendedWaitUntil:
+    notVisible: "TileTest"
+    timeout: 5000

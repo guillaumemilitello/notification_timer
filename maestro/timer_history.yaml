@@ -1,0 +1,52 @@
+appId: com.notification.timer.debug
+---
+- launchApp:
+    clearState: true
+
+# 1. Open Add Timer dialog
+- tapOn: "Add Timer"
+- assertVisible: "New Timer"
+
+# 2. Verify tabs for "Manual" and "Presets" do not exist
+- assertNotVisible: "Manual"
+- assertNotVisible: "Presets"
+
+# 3. Verify Default is manual numpad entry
+- assertVisible: "Timer Name"
+- assertVisible: "Sets"
+
+# 4. Tap History icon left of the close button to access history
+- tapOn: "History"
+- assertVisible: "History"
+- assertVisible: "No history available yet. Start a timer to see it here."
+
+# 5. Return to manual timer via dialpad / manual timer icon
+- tapOn: "Manual timer"
+- assertVisible: "New Timer"
+- assertVisible: "Sets"
+
+# 6. Tap History icon again and return via Back arrow
+- tapOn: "History"
+- assertVisible: "History"
+- tapOn: "Back"
+- assertVisible: "New Timer"
+- assertVisible: "Sets"
+
+# 7. Start a timer to create history entry
+- tapOn: "1"
+- tapOn: "0"
+- tapOn: "Start timer"
+- assertVisible: "Timer"
+
+# 8. Re-open Add Timer dialog and verify it appears in history
+- tapOn: "Add Timer"
+- tapOn: "History"
+- assertVisible: "Timer"
+
+# 9. Star the history item
+- tapOn: "Star timer"
+- assertVisible: "Unstar timer"
+
+# 10. Close dialog
+- tapOn: "Close"
+- assertNotVisible: "New Timer"

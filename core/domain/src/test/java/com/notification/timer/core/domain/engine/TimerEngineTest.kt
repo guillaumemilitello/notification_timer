@@ -3,9 +3,9 @@ package com.notification.timer.core.domain.engine
 import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.domain.diagnostics.LogEntry
 import com.notification.timer.core.domain.model.Alert
-import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerCommand
+import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.model.TimerState
 import com.notification.timer.core.domain.ports.AlertPlayerPort
 import com.notification.timer.core.domain.ports.TimeSource
@@ -104,11 +104,11 @@ class TimerEngineTest {
             engine.start(engineScope)
             runCurrent()
 
-            // Create 10 manual timers (with distinct temp preset IDs, just like Numpad)
+            // Create 10 manual timers (with distinct config IDs, just like Numpad)
             repeat(10) { idx ->
                 engine.submitCommand(
                     TimerCommand.Create(
-                        preset = Preset(id = "temp_$idx", name = "Timer", durationSec = 60),
+                        config = TimerConfig(id = "temp_$idx", name = "Timer", durationSec = 60),
                         startImmediately = idx % 2 == 0,
                     ),
                 )
@@ -155,7 +155,7 @@ class TimerEngineTest {
 
             restartedEngine.submitCommand(
                 TimerCommand.Create(
-                    preset = Preset(id = "p_after_restart", name = "Pasta", durationSec = 120),
+                    config = TimerConfig(id = "c_after_restart", name = "Pasta", durationSec = 120),
                     startImmediately = true,
                 ),
             )
@@ -195,14 +195,14 @@ class TimerEngineTest {
             // Timer 1: 60s started immediately at t = 10_000
             engine.submitCommand(
                 TimerCommand.Create(
-                    preset = Preset(id = "p1", name = "Timer 1", durationSec = 60),
+                    config = TimerConfig(id = "c1", name = "Timer 1", durationSec = 60),
                     startImmediately = true,
                 ),
             )
             // Timer 2: 30s created in Ready state at t = 10_000
             engine.submitCommand(
                 TimerCommand.Create(
-                    preset = Preset(id = "p2", name = "Timer 2", durationSec = 30),
+                    config = TimerConfig(id = "c2", name = "Timer 2", durationSec = 30),
                     startImmediately = false,
                 ),
             )
@@ -210,8 +210,8 @@ class TimerEngineTest {
 
             val timersAtT10 = engine.timers.value
             assertEquals(2, timersAtT10.size)
-            val timer2AtT10 = timersAtT10.first { it.config.id == "p2" }
-            val timer1AtT10 = timersAtT10.first { it.config.id == "p1" }
+            val timer2AtT10 = timersAtT10.first { it.config.id == "c2" }
+            val timer1AtT10 = timersAtT10.first { it.config.id == "c1" }
 
             assertTrue(timer1AtT10.state is TimerState.Running)
             assertTrue(timer2AtT10.state is TimerState.Ready)
@@ -223,7 +223,7 @@ class TimerEngineTest {
             runCurrent()
 
             assertEquals(35_000L, timer1AtT10.remainingMs(clock.elapsedRealtimeMs()))
-            // Timer 2 sitting in Ready must still compute exact preset duration
+            // Timer 2 sitting in Ready must still compute exact config duration
             assertEquals(30_000L, timer2AtT10.remainingMs(clock.elapsedRealtimeMs()))
 
             // User presses Play on Timer 2 at t = 35_000
@@ -267,6 +267,80 @@ class TimerEngineTest {
 
             val timer2AfterInfinite = engine.timers.value.first { it.id == timer2AtT10.id }
             assertEquals(null, timer2AfterInfinite.config.sets)
+
+            engineScope.cancel()
+        }
+
+    @Test
+    fun `creating timer from draft config preserves custom name, color, sets, and duration`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            val engineScope = TestScope(dispatcher)
+            val clock = FakeTimeSource()
+            val store = InMemoryTimerStore()
+            val notifier = RecordingNotifier()
+            val engine = TimerEngine(clock, store, NoOpWakeupScheduler(), NoOpAlertPlayer(), notifier)
+
+            engine.start(engineScope)
+            runCurrent()
+
+            val draftConfig =
+                TimerConfig(
+                    id = "temp_draft_1",
+                    name = "Sprint Intervals",
+                    durationSec = 45,
+                    sets = 8,
+                    runningColor = "#E91E63",
+                )
+            engine.submitCommand(TimerCommand.Create(config = draftConfig, startImmediately = true))
+            runCurrent()
+
+            val timers = engine.timers.value
+            assertEquals(1, timers.size)
+            val timer = timers.first()
+            assertEquals("Sprint Intervals", timer.label)
+            assertEquals("#E91E63", timer.config.runningColor)
+            assertEquals(8, timer.config.sets)
+            assertEquals(45, timer.config.durationSec)
+            assertTrue(timer.state is TimerState.Running)
+
+            engineScope.cancel()
+        }
+
+    @Test
+    fun `UpdateAlertSettings updates sound and vibration of target timer`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            val engineScope = TestScope(dispatcher)
+            val clock = FakeTimeSource()
+            val store = InMemoryTimerStore()
+            val engine = TimerEngine(clock, store, NoOpWakeupScheduler(), NoOpAlertPlayer(), RecordingNotifier())
+
+            engine.start(engineScope)
+            runCurrent()
+
+            val config = TimerConfig(id = "c1", name = "Cook", durationSec = 100)
+            engine.submitCommand(TimerCommand.Create(config, startImmediately = false))
+            runCurrent()
+
+            val created = engine.timers.value.first()
+            assertTrue(created.config.done.soundEnabled)
+            assertTrue(created.config.done.vibrate)
+
+            engine.submitCommand(
+                TimerCommand.UpdateAlertSettings(
+                    timerId = created.id,
+                    soundEnabled = false,
+                    soundUri = "content://media/alarm",
+                    vibrate = false,
+                ),
+            )
+            runCurrent()
+
+            val updated = engine.timers.value.first()
+            assertFalse(updated.config.done.soundEnabled)
+            assertEquals("content://media/alarm", updated.config.done.sound)
+            assertFalse(updated.config.done.vibrate)
 
             engineScope.cancel()
         }

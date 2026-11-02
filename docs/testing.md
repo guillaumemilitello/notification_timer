@@ -8,10 +8,13 @@ Testing guide and rules for NotificationTimer 2.0.
   - Tools: JUnit 4, `kotlinx-coroutines-test`, Turbine, Kotest property testing.
 - **Robolectric & Integration Tests (`:core:runtime`, `:core:data`)**:
   - Emulate Android framework (AlarmManager, NotificationManager, DataStore, Audio/Vibration) on JVM.
+  - Example: `DisplayPreferencesRepositoryTest` (keep-screen-on persistence, legacy file compatibility), `HistoryRepositoryImplTest` (deduplication, ranking, eviction).
 - **ViewModel Unit Tests (`:feature:*`)**:
   - StateFlow emission verification using Turbine and test coroutine dispatchers.
+  - Example: `TimersViewModelTest` (commands, history, keep-screen-on toggle).
 - **Maestro E2E Tests (`maestro/`)**:
-  - Real device or emulator UI integration flows (timer creation, notification shade actions, multi-timer concurrency).
+  - Real device or emulator UI integration flows (timer creation, notification shade actions, multi-timer concurrency, history navigation).
+  - Example: `timer_history.yaml`, `keep_screen_on.yaml`.
 
 ## Running Tests
 

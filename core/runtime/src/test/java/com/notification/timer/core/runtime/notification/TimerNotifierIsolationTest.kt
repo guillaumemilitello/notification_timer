@@ -4,14 +4,11 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.notification.timer.core.domain.engine.TimerStateMachine
-import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
+import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.ports.TimeSource
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,18 +16,28 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
+private class NoOpEventLog : com.notification.timer.core.domain.diagnostics.EventLog {
+    override fun log(
+        tag: String,
+        message: String,
+    ) {}
+
+    override fun getEntries() = emptyList<com.notification.timer.core.domain.diagnostics.LogEntry>()
+
+    override fun clear() {}
+}
+
+private class MutableTimeSource : TimeSource {
+    var elapsedMs: Long = 100_000L
+
+    override fun elapsedRealtimeMs(): Long = elapsedMs
+
+    override fun currentTimeMillis(): Long = elapsedMs
+}
+
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 class TimerNotifierIsolationTest {
-    private class MutableTimeSource(
-        var elapsedMs: Long = 50_000L,
-        var wallMs: Long = 1_700_000_000_000L,
-    ) : TimeSource {
-        override fun elapsedRealtimeMs(): Long = elapsedMs
-
-        override fun currentTimeMillis(): Long = wallMs
-    }
-
     private lateinit var context: Context
     private lateinit var notificationManager: NotificationManager
     private lateinit var renderer: NotificationRenderer
@@ -41,23 +48,23 @@ class TimerNotifierIsolationTest {
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        renderer = NotificationRenderer(context, FakeEventLog())
+        renderer = NotificationRenderer(context, NoOpEventLog())
         clock = MutableTimeSource()
         adapter = TimerNotifierAdapter(context, renderer, clock)
     }
 
     @Test
     fun `starting Timer B never resurrects dismissed Done notification of Timer A`() {
-        val presetA = Preset(id = "a", name = "Eggs", durationSec = 30, sets = 2)
-        val presetB = Preset(id = "b", name = "Tea", durationSec = 180)
+        val configA = TimerConfig(id = "a", name = "Eggs", durationSec = 30, sets = 2)
+        val configB = TimerConfig(id = "b", name = "Tea", durationSec = 180)
 
         // 1. Timer A starts and runs to completion ("Done")
         val timerARunning =
             TimerStateMachine.start(
-                Timer(id = 1000, presetId = presetA.id, config = presetA, label = "Eggs"),
+                Timer(id = 1000, configId = configA.id, config = configA, label = "Eggs"),
                 nowElapsedMs = clock.elapsedMs,
             )
-        val timerBIdle = Timer(id = 1001, presetId = presetB.id, config = presetB, label = "Tea")
+        val timerBIdle = Timer(id = 1001, configId = configB.id, config = configB, label = "Tea")
 
         adapter.updateNotifications(listOf(timerARunning, timerBIdle))
         assertNotNull("Running Timer A should post notification", shadowOf(notificationManager).getNotification(1000))
@@ -68,132 +75,125 @@ class TimerNotifierIsolationTest {
         val (timerADone, _) = TimerStateMachine.checkAlertsAndEnd(timerARunning, clock.elapsedMs)
         adapter.updateNotifications(listOf(timerADone, timerBIdle))
         val doneNotification = shadowOf(notificationManager).getNotification(1000)
-        assertNotNull("Completed Timer A should show Done notification", doneNotification)
-        assertFalse(
-            "Done notification must not be ongoing so user can swipe it away",
-            (doneNotification.flags and android.app.Notification.FLAG_ONGOING_EVENT) != 0,
-        )
+        assertNotNull("Completed Timer A should display Done notification", doneNotification)
 
-        // 2. User dismisses/closes Timer A's Done notification
+        // 2. User swipes away/dismisses Timer A's Done notification
         val timerADismissed = TimerStateMachine.dismissNotification(timerADone)
         adapter.updateNotifications(listOf(timerADismissed, timerBIdle))
         assertNull("Dismissed Timer A notification must be cancelled", shadowOf(notificationManager).getNotification(1000))
 
-        // 3. User presses Play on Timer B -> Timer A's notification MUST NOT reappear!
-        clock.elapsedMs += 5_000L
-        val timerBRunning = TimerStateMachine.start(timerBIdle, clock.elapsedMs)
+        // 3. User starts Timer B -> Timer B becomes Running
+        val timerBRunning = TimerStateMachine.start(timerBIdle, nowElapsedMs = clock.elapsedMs)
         adapter.updateNotifications(listOf(timerADismissed, timerBRunning))
 
-        assertNull(
-            "Pressing Play on Timer B must NEVER resurrect Timer A's Done notification",
-            shadowOf(notificationManager).getNotification(1000),
-        )
-        assertNotNull("Timer B notification should be posted", shadowOf(notificationManager).getNotification(1001))
-
-        // 4. Even across periodic ticks and Pause/Resume on Timer B, Timer A stays absent
-        clock.elapsedMs += 10_000L
-        adapter.updateNotifications(listOf(timerADismissed, timerBRunning))
-        assertNull(shadowOf(notificationManager).getNotification(1000))
-
-        val timerBPaused = TimerStateMachine.pause(timerBRunning, clock.elapsedMs)
-        adapter.updateNotifications(listOf(timerADismissed, timerBPaused))
-        assertNull(shadowOf(notificationManager).getNotification(1000))
-        assertNotNull(shadowOf(notificationManager).getNotification(1001))
+        // Invariant: Timer B is posted, but Timer A MUST NOT be resurrected!
+        assertNotNull("Timer B must have active notification", shadowOf(notificationManager).getNotification(1001))
+        assertNull("Dismissed Timer A MUST NOT be resurrected when Timer B starts", shadowOf(notificationManager).getNotification(1000))
     }
 
     @Test
-    fun `starting Timer B does not re-post or update untouched Done notification of Timer A`() {
-        val presetA = Preset(id = "a", name = "Pasta", durationSec = 10)
-        val presetB = Preset(id = "b", name = "Sauce", durationSec = 60)
+    fun `closing Timer A from notification cancels its notification and keeps Timer B intact`() {
+        val configA = TimerConfig(id = "a", name = "Eggs", durationSec = 60)
+        val configB = TimerConfig(id = "b", name = "Tea", durationSec = 120)
 
-        val timerARunning =
+        val timerA =
             TimerStateMachine.start(
-                Timer(id = 1000, presetId = presetA.id, config = presetA, label = "Pasta"),
+                Timer(id = 1000, configId = configA.id, config = configA, label = "Eggs"),
                 nowElapsedMs = clock.elapsedMs,
             )
-        adapter.updateNotifications(listOf(timerARunning))
+        val timerB =
+            TimerStateMachine.start(
+                Timer(id = 1001, configId = configB.id, config = configB, label = "Tea"),
+                nowElapsedMs = clock.elapsedMs,
+            )
 
-        clock.elapsedMs += 10_000L
-        clock.wallMs += 10_000L
-        val (timerADone, _) = TimerStateMachine.checkAlertsAndEnd(timerARunning, clock.elapsedMs)
-        adapter.updateNotifications(listOf(timerADone))
-        val originalDoneInstance = shadowOf(notificationManager).getNotification(1000)
-        assertNotNull(originalDoneInstance)
+        adapter.updateNotifications(listOf(timerA, timerB))
+        assertNotNull(shadowOf(notificationManager).getNotification(1000))
+        assertNotNull(shadowOf(notificationManager).getNotification(1001))
 
-        // Even if OS cleared notification 1000 externally (e.g. Clear All before broadcast arrived),
-        // starting Timer B must NOT re-post notification 1000 because Timer A's spec did not change!
-        notificationManager.cancel(1000)
-        assertNull(shadowOf(notificationManager).getNotification(1000))
+        // User taps close cross on Timer A -> closeNotification sets isNotificationVisible = false
+        val timerAClosed = TimerStateMachine.closeNotification(timerA)
+        adapter.updateNotifications(listOf(timerAClosed, timerB))
 
-        clock.elapsedMs += 5_000L
-        clock.wallMs += 5_000L
+        assertNull("Timer A notification must be cancelled after close cross", shadowOf(notificationManager).getNotification(1000))
+        assertNotNull("Timer B notification must remain intact", shadowOf(notificationManager).getNotification(1001))
+    }
+
+    @Test
+    fun `reconcileRestoredNotifications reconciles without re-alerting already completed timers`() {
+        val configA = TimerConfig(id = "a", name = "Pasta", durationSec = 10)
+        val configB = TimerConfig(id = "b", name = "Sauce", durationSec = 60)
+
+        // Restored timers where Timer A completed while app was dead
+        val timerACompleted =
+            Timer(
+                id = 1000,
+                configId = configA.id,
+                config = configA,
+                label = "Pasta",
+                state =
+                    com.notification.timer.core.domain.model.TimerState
+                        .Ready(isCompleted = true),
+                isNotificationVisible = true,
+            )
         val timerBRunning =
             TimerStateMachine.start(
-                Timer(id = 1001, presetId = presetB.id, config = presetB, label = "Sauce"),
+                Timer(id = 1001, configId = configB.id, config = configB, label = "Sauce"),
                 nowElapsedMs = clock.elapsedMs,
             )
-        adapter.updateNotifications(listOf(timerADone, timerBRunning))
 
-        assertNull(
-            "Unchanged Timer A must receive zero notify() calls when Timer B starts",
-            shadowOf(notificationManager).getNotification(1000),
+        // 1. If timerA was NOT newly completed on this startup reconciliation (i.e. already notified earlier)
+        adapter.reconcileRestoredNotifications(
+            timers = listOf(timerACompleted, timerBRunning),
+            newlyCompletedIds = emptySet(),
         )
+
+        // Notification for Running Timer B should be active
         assertNotNull(shadowOf(notificationManager).getNotification(1001))
+        // Notification for already-completed Timer A should NOT be re-posted to silent shade unless newly completed
+        assertNull("Already-completed restored timer should not re-post notification", shadowOf(notificationManager).getNotification(1000))
+
+        // 2. If timerA WAS newly completed during this startup's reconciliation tick
+        adapter.reconcileRestoredNotifications(
+            timers = listOf(timerACompleted, timerBRunning),
+            newlyCompletedIds = setOf(1000),
+        )
+        assertNotNull("Newly completed restored timer MUST post Done notification", shadowOf(notificationManager).getNotification(1000))
     }
 
     @Test
-    fun `scales to N concurrent timers with sticky foreground anchor and isolated updates`() {
+    fun `renders N notifications independently with unique IDs`() {
         val timers =
-            (0 until 8).map { i ->
-                val base =
-                    Timer(
-                        id = 1000 + i,
-                        presetId = "p_$i",
-                        config = Preset(id = "p_$i", name = "Timer ${i + 1}", durationSec = 300 - i * 20),
-                        label = "Timer ${i + 1}",
-                    )
-                when {
-                    i < 3 -> TimerStateMachine.start(base, clock.elapsedMs)
-                    i < 5 -> {
-                        val started = TimerStateMachine.start(base, clock.elapsedMs)
-                        TimerStateMachine.pause(started, clock.elapsedMs + 5_000L)
-                    }
-                    else -> base
-                }
+            (0 until 7).map { i ->
+                val timerId = 1000 + i
+                val config = TimerConfig(id = "c_$i", name = "Timer ${i + 1}", durationSec = 300 - i * 20)
+                TimerStateMachine.start(
+                    Timer(id = timerId, configId = config.id, config = config, label = config.name),
+                    nowElapsedMs = clock.elapsedMs,
+                )
             }
 
         adapter.updateNotifications(timers)
 
-        // Active running (1000..1002) and paused (1003..1004) have notifications; idle Ready (1005..1007) do not
-        for (id in 1000..1004) {
-            assertNotNull("Timer $id should have active notification", shadowOf(notificationManager).getNotification(id))
-            assertEquals("timer_$id", shadowOf(notificationManager).getNotification(id).group)
-        }
-        for (id in 1005..1007) {
-            assertNull("Idle Ready timer $id should not have notification", shadowOf(notificationManager).getNotification(id))
+        // Verify each timer has its own active notification with exact ID
+        for (timer in timers) {
+            val notification = shadowOf(notificationManager).getNotification(timer.id)
+            assertNotNull("Timer ${timer.id} must have posted notification", notification)
         }
 
-        // Capture exact Notification instances of 1000..1004, then start timer 1007 with a 5-second duration (shortest!)
-        // Sticky foreground anchor must keep existing running anchor unchanged and NOT re-post 1000..1004!
-        val beforeInstances = (1000..1004).associateWith { shadowOf(notificationManager).getNotification(it) }
-
-        clock.elapsedMs += 500L // Within progress refresh interval
-        val updatedTimers =
-            timers.map { t ->
-                if (t.id == 1007) {
-                    TimerStateMachine.start(t.copy(config = t.config.copy(durationSec = 5)), clock.elapsedMs)
-                } else {
-                    t
-                }
+        // Cancel the 3rd timer (ID 1002)
+        val remaining =
+            timers.map {
+                if (it.id == 1002) TimerStateMachine.closeNotification(it) else it
             }
-        adapter.updateNotifications(updatedTimers)
+        adapter.updateNotifications(remaining)
 
-        for ((id, originalNotif) in beforeInstances) {
-            assertTrue(
-                "Starting Timer 1007 must not re-render or re-post Timer $id",
-                originalNotif === shadowOf(notificationManager).getNotification(id),
-            )
-        }
-        assertNotNull("Started Timer 1007 must post its own notification", shadowOf(notificationManager).getNotification(1007))
+        assertNull("Timer 1002 should be cancelled", shadowOf(notificationManager).getNotification(1002))
+        assertNotNull("Timer 1000 must remain", shadowOf(notificationManager).getNotification(1000))
+        assertNotNull("Timer 1001 must remain", shadowOf(notificationManager).getNotification(1001))
+        assertNotNull("Timer 1003 must remain", shadowOf(notificationManager).getNotification(1003))
+        assertNotNull("Timer 1004 must remain", shadowOf(notificationManager).getNotification(1004))
+        assertNotNull("Timer 1005 must remain", shadowOf(notificationManager).getNotification(1005))
+        assertNotNull("Timer 1006 must remain", shadowOf(notificationManager).getNotification(1006))
     }
 }

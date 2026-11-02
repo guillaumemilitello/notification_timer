@@ -3,17 +3,23 @@ package com.notification.timer.feature.timers
 import app.cash.turbine.test
 import com.notification.timer.core.domain.engine.TimerEngine
 import com.notification.timer.core.domain.model.Alert
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.HistoryEntry
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerCommand
+import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.ports.AlertPlayerPort
-import com.notification.timer.core.domain.ports.LibraryRepository
+import com.notification.timer.core.domain.ports.DisplayPreferences
+import com.notification.timer.core.domain.ports.HistoryRepository
 import com.notification.timer.core.domain.ports.TimeSource
 import com.notification.timer.core.domain.ports.TimerNotifierPort
 import com.notification.timer.core.domain.ports.TimerStore
 import com.notification.timer.core.domain.ports.WakeupSchedulerPort
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -21,6 +27,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -29,18 +36,59 @@ import org.junit.Test
 class TimersViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
-    private val samplePresets =
+    private val sampleConfigs =
         listOf(
-            Preset(id = "p1", name = "Pomodoro", durationSec = 1500),
-            Preset(id = "p2", name = "Short Break", durationSec = 300),
+            TimerConfig(id = "c1", name = "Pomodoro", durationSec = 1500),
+            TimerConfig(id = "c2", name = "Short Break", durationSec = 300),
         )
 
-    private val fakeLibraryRepository =
-        object : LibraryRepository {
-            override suspend fun loadPresets(): List<Preset> = samplePresets
+    private class FakeHistoryRepository(
+        initial: List<HistoryEntry> = emptyList(),
+    ) : HistoryRepository {
+        private val _history = MutableStateFlow(initial)
+        override val history: Flow<List<HistoryEntry>> = _history.asStateFlow()
+        override val maxHistorySize: Flow<Int> = MutableStateFlow(10)
 
-            override suspend fun savePresets(presets: List<Preset>) {}
+        val recorded = mutableListOf<TimerConfig>()
+        val toggledStars = mutableListOf<String>()
+        val updatedConfigs = mutableListOf<TimerConfig>()
+
+        override suspend fun recordTimerUsed(
+            config: TimerConfig,
+            nowEpochMs: Long,
+        ) {
+            recorded.add(config)
+            val entry =
+                HistoryEntry(
+                    timerId = config.id,
+                    config = config,
+                    useCount = 1,
+                    lastUsedAtMs = nowEpochMs,
+                    isStarred = false,
+                )
+            _history.value = _history.value + entry
         }
+
+        override suspend fun updateTimerConfig(config: TimerConfig) {
+            updatedConfigs.add(config)
+            _history.value =
+                _history.value.map {
+                    if (it.timerId == config.id) it.copy(config = config) else it
+                }
+        }
+
+        override suspend fun toggleStar(timerId: String) {
+            toggledStars.add(timerId)
+            _history.value =
+                _history.value.map {
+                    if (it.timerId == timerId) it.copy(isStarred = !it.isStarred) else it
+                }
+        }
+
+        override suspend fun setMaxHistorySize(size: Int) {}
+
+        override suspend fun getMaxHistorySize(): Int = 10
+    }
 
     private val fakeTimeSource =
         object : TimeSource {
@@ -98,6 +146,21 @@ class TimersViewModelTest {
             }
         }
 
+    private class FakeDisplayPreferences(
+        var stored: Boolean = false,
+    ) : DisplayPreferences {
+        val saved = mutableListOf<Boolean>()
+
+        override suspend fun loadKeepScreenOn(): Boolean = stored
+
+        override suspend fun saveKeepScreenOn(enabled: Boolean) {
+            stored = enabled
+            saved.add(enabled)
+        }
+    }
+
+    private lateinit var fakeDisplayPreferences: FakeDisplayPreferences
+    private lateinit var fakeHistoryRepository: FakeHistoryRepository
     private lateinit var timerEngine: TimerEngine
     private lateinit var viewModel: TimersViewModel
 
@@ -113,8 +176,27 @@ class TimersViewModelTest {
                 timerNotifier = fakeTimerNotifier,
                 eventLog = fakeEventLog,
             )
-        // Construct ViewModel without calling timerEngine.start() to avoid infinite loop
-        viewModel = TimersViewModel(timerEngine, fakeLibraryRepository, fakeEventLog)
+        fakeDisplayPreferences = FakeDisplayPreferences()
+        fakeHistoryRepository =
+            FakeHistoryRepository(
+                listOf(
+                    HistoryEntry(
+                        timerId = "c1",
+                        config = sampleConfigs[0],
+                        useCount = 5,
+                        lastUsedAtMs = 1000L,
+                        isStarred = true,
+                    ),
+                    HistoryEntry(
+                        timerId = "c2",
+                        config = sampleConfigs[1],
+                        useCount = 2,
+                        lastUsedAtMs = 500L,
+                        isStarred = false,
+                    ),
+                ),
+            )
+        viewModel = TimersViewModel(timerEngine, fakeHistoryRepository, fakeDisplayPreferences, fakeEventLog)
     }
 
     @After
@@ -123,14 +205,16 @@ class TimersViewModelTest {
     }
 
     @Test
-    fun `initial presets are loaded from repository into StateFlow`() =
+    fun `initial history is loaded from repository into StateFlow`() =
         runTest(testDispatcher) {
-            viewModel.presets.test {
+            viewModel.history.test {
                 advanceUntilIdle()
-                val loadedPresets = expectMostRecentItem()
-                assertEquals(2, loadedPresets.size)
-                assertEquals("Pomodoro", loadedPresets[0].name)
-                assertEquals("Short Break", loadedPresets[1].name)
+                val loadedHistory = expectMostRecentItem()
+                assertEquals(2, loadedHistory.size)
+                assertEquals("Pomodoro", loadedHistory[0].config.name)
+                assertTrue(loadedHistory[0].isStarred)
+                assertEquals("Short Break", loadedHistory[1].config.name)
+                assertFalse(loadedHistory[1].isStarred)
             }
         }
 
@@ -144,52 +228,137 @@ class TimersViewModelTest {
         }
 
     @Test
-    fun `startTimerFromPreset and handleCommand submit commands and record logs`() =
+    fun `startTimer records in history repository and submits create command`() =
         runTest(testDispatcher) {
-            viewModel.startTimerFromPreset(samplePresets.first())
-            viewModel.handleCommand(TimerCommand.Pause(1001))
-            viewModel.handleCommand(TimerCommand.UpdateSets(1001, 3))
-            advanceUntilIdle()
-
-            assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: Pomodoro (1500s)") })
-            assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: Pause(timerId=1001)") })
-            assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: UpdateSets(timerId=1001, sets=3)") })
-        }
-
-    @Test
-    fun `startTimerFromPreset with custom draft timer preset submits command and logs`() =
-        runTest(testDispatcher) {
-            val customDraftPreset =
-                Preset(
-                    id = "temp_123",
+            val config =
+                TimerConfig(
+                    id = "c_custom",
                     name = "Boxing Round",
                     durationSec = 180,
                     sets = 12,
                     runningColor = "#E91E63",
                 )
-            viewModel.startTimerFromPreset(customDraftPreset)
+            viewModel.startTimer(config)
             advanceUntilIdle()
 
-            assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: Boxing Round (180s)") })
+            assertEquals(1, fakeHistoryRepository.recorded.size)
+            assertEquals("Boxing Round", fakeHistoryRepository.recorded[0].name)
+            assertTrue(fakeEventLog.logs.any { it.contains("startTimer: Boxing Round (180s)") })
         }
 
     @Test
-    fun `selecting preset with custom draft name and sets submits merged preset`() =
+    fun `toggleHistoryStar invokes repository and updates star state`() =
         runTest(testDispatcher) {
-            val basePreset = samplePresets.first() // Pomodoro, 1500s
-            val customDraftName = "My Focus Session"
-            val customDraftSets = 4
-            val customDraftColor = "#4CAF50"
+            viewModel.history.test {
+                viewModel.toggleHistoryStar("c2")
+                advanceUntilIdle()
 
-            val finalPreset =
-                basePreset.copy(
-                    name = customDraftName,
-                    sets = customDraftSets,
-                    runningColor = customDraftColor,
-                )
-            viewModel.startTimerFromPreset(finalPreset)
+                assertEquals(listOf("c2"), fakeHistoryRepository.toggledStars)
+                val updated = expectMostRecentItem().first { it.timerId == "c2" }
+                assertTrue(updated.isStarred)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `handleCommand submits commands and records logs`() =
+        runTest(testDispatcher) {
+            viewModel.handleCommand(TimerCommand.Pause(1001))
+            viewModel.handleCommand(TimerCommand.UpdateSets(1001, 3))
             advanceUntilIdle()
 
-            assertTrue(fakeEventLog.logs.any { it.contains("startTimerFromPreset: My Focus Session (1500s)") })
+            assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: Pause(timerId=1001)") })
+            assertTrue(fakeEventLog.logs.any { it.contains("handleCommand: UpdateSets(timerId=1001, sets=3)") })
+        }
+
+    @Test
+    fun `keepScreenOn defaults to false and never changes without user toggle`() =
+        runTest(testDispatcher) {
+            viewModel.handleCommand(TimerCommand.Pause(1001))
+            advanceUntilIdle()
+
+            assertFalse(viewModel.keepScreenOn.value)
+            assertTrue(fakeDisplayPreferences.saved.isEmpty())
+        }
+
+    @Test
+    fun `keepScreenOn reflects persisted value on startup`() =
+        runTest(testDispatcher) {
+            val prefs = FakeDisplayPreferences(stored = true)
+            val vm = TimersViewModel(timerEngine, fakeHistoryRepository, prefs, fakeEventLog)
+            advanceUntilIdle()
+
+            assertTrue(vm.keepScreenOn.value)
+            assertTrue(prefs.saved.isEmpty())
+        }
+
+    @Test
+    fun `toggleKeepScreenOn flips state, persists it, and logs`() =
+        runTest(testDispatcher) {
+            viewModel.keepScreenOn.test {
+                assertFalse(awaitItem())
+
+                viewModel.toggleKeepScreenOn()
+                advanceUntilIdle()
+                assertTrue(awaitItem())
+
+                viewModel.toggleKeepScreenOn()
+                advanceUntilIdle()
+                assertFalse(awaitItem())
+            }
+            assertEquals(listOf(true, false), fakeDisplayPreferences.saved)
+            assertTrue(fakeEventLog.logs.any { it.contains("toggleKeepScreenOn: true") })
+            assertTrue(fakeEventLog.logs.any { it.contains("toggleKeepScreenOn: false") })
+        }
+
+    @Test
+    fun `early toggle before initial load completes is not overwritten`() =
+        runTest(testDispatcher) {
+            val prefs = FakeDisplayPreferences(stored = true)
+            val vm = TimersViewModel(timerEngine, fakeHistoryRepository, prefs, fakeEventLog)
+            // Tap before the dispatcher has run the initial load.
+            vm.toggleKeepScreenOn()
+            advanceUntilIdle()
+
+            assertFalse(vm.keepScreenOn.value)
+            assertEquals(listOf(false), prefs.saved)
+        }
+
+    @Test
+    fun `updateTimerAlertSettings submits command and updates history`() =
+        runTest(testDispatcher) {
+            timerEngine.start(backgroundScope)
+            advanceUntilIdle()
+
+            val config = TimerConfig(id = "c_alert_test", name = "Baking", durationSec = 600)
+            viewModel.startTimer(config)
+            advanceUntilIdle()
+
+            viewModel.timers.test {
+                val list = awaitItem()
+                val timer = list.first { it.config.id == "c_alert_test" }
+                assertTrue(timer.config.done.soundEnabled)
+                assertTrue(timer.config.done.vibrate)
+
+                viewModel.updateTimerAlertSettings(
+                    timerId = timer.id,
+                    soundEnabled = false,
+                    soundUri = "content://custom/sound",
+                    vibrate = false,
+                )
+                advanceUntilIdle()
+
+                val updatedList = awaitItem()
+                val updatedTimer = updatedList.first { it.id == timer.id }
+                assertFalse(updatedTimer.config.done.soundEnabled)
+                assertEquals("content://custom/sound", updatedTimer.config.done.sound)
+                assertFalse(updatedTimer.config.done.vibrate)
+
+                val history = fakeHistoryRepository.history.first()
+                val historyEntry = history.first { it.timerId == "c_alert_test" }
+                assertFalse(historyEntry.config.done.soundEnabled)
+                assertEquals("content://custom/sound", historyEntry.config.done.sound)
+                assertFalse(historyEntry.config.done.vibrate)
+            }
         }
 }

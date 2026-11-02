@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">NotificationTimer</string>
     <string name="feedback">Send feedback…</string>
     <string name="rateApp">Rate Application</string>
@@ -7,10 +7,8 @@
     <string name="help">Indications</string>
     <string name="settings">Settings</string>
     <string name="keepScreenOn">Keep Screen On</string>
-    <string name="presets">Presets</string>
     <!-- Main Activity -->
     <string name="default_timer_name">Timer</string>
-    <string name="presetsListEmpty">Timers list empty</string>
     <string name="notification_permission_denied">Insufficient permission to use notifications, check settings</string>
     <!-- Pickers -->
     <string name="picker_timer">Timer</string>
@@ -18,10 +16,7 @@
     <string name="picker_timer_get_ready">Extra notification time</string>
     <string name="picker_split_screen">Increase the height of the window to create a timer</string>
     <!-- Alerts -->
-    <string name="select_preset">Are you sure you want to stop the current timer to select this one?</string>
-    <string name="delete_preset">Are you sure you want to delete the selected timer?</string>
-    <string name="reset_preset">Are you sure you want to reinitialize the limit indicator?</string>
-    <string name="clear_preset">Are you sure you want to clear the current timer and reinitialize the timer number or limit indicator?</string>
+    <string name="clear_timer">Are you sure you want to clear the current timer?</string>
     <string name="alert_time_out">"Time out!"</string>
     <string name="alert_set_done">"Would you like to launch the next timer?"</string>
     <string name="alert_all_set_done">"Which action would you like to do next?"</string>
@@ -57,8 +52,6 @@
     <string name="reset_summary">Reinitialize the timer number with timers with limit indicator. Use long press to reinitialize the timer</string>
     <string name="sets_picker_enable">Limit indicator</string>
     <string name="sets_picker_enable_summary">Add the possibility to enter a limit indicator for the timer number during the timer creation</string>
-    <string name="preset_select_asking">Timer selection alert</string>
-    <string name="preset_select_asking_summary">Display an alert dialog when selecting a new timer in the list if the current timer is running</string>
     <string name="clear_asking">Timer reinitialization alert</string>
     <string name="clear_asking_summary">Display an alert dialog when clearing and reinitializing the current running timer</string>
     <string name="step_time">Step time</string>
@@ -70,11 +63,6 @@
     <string name="vibrate_summary">Vibrate when the time is out</string>
     <string name="ringtone">Sound</string>
     <string name="channel">Sound and vibration</string>
-    <string name="light_color_enable">Light</string>
-    <string name="light_color_enable_summary">Light when the time is out</string>
-    <string name="light_color">Light color</string>
-    <string name="light_color_summary">Light color when the time is out</string>
-    <string name="light_flash_rate">Light flash rate</string>
     <string name="enable">Enable</string>
     <string name="get_ready_time">Time</string>
     <string name="get_ready_time_summary">Notification will occur %1$d:%2$02d before the end of the timer</string>
@@ -102,20 +90,19 @@
     <string name="preferences_notification_summary">Configure sound and more from the system settings</string>
     <string name="preferences_background_theme">Background theme</string>
     <string name="preferences_dark_theme">Application theme</string>
-    <string name="preferences_external_media">- External media - Grant storage access from the system application permissions to display the title</string>
     <string name="preferences_notification_permission">Permission</string>
-    <!-- Preferences -->
+    <!-- SharedPreferences keys (internal, not localized) -->
+    <string name="pref_first_start" translatable="false">firstStart</string>
+    <string name="pref_rate_app" translatable="false">rateApp</string>
     <string name="pref_timer_minus" translatable="false">timerMinus</string>
     <string name="pref_timer_plus" translatable="false">timerPlus</string>
-    <string name="pref_sets_number_display_enable" translatable="false">setNumberDisplayEnable</string>
-    <string name="pref_sets_name_display_enable" translatable="false">setsNameLayoutDisplayEnable</string>
-    <string name="pref_sets_picker_enable" translatable="false">setPickerEnable</string>
-    <string name="pref_sets_number_reset" translatable="false">setNumberReset</string>
-    <string name="pref_step_time" translatable="false">stepTime</string>
+    <string name="pref_sets_name_display_enable" translatable="false">setsNameDisplayEnable</string>
+    <string name="pref_sets_picker" translatable="false">setsPicker</string>
+    <string name="pref_sets_number_display_enable" translatable="false">setsNumberDisplayEnable</string>
+    <string name="pref_sets_number_reset" translatable="false">setsNumberReset</string>
     <string name="pref_vibrate" translatable="false">vibrate</string>
-    <string name="pref_ringtone_uri" translatable="false">ringtoneUri</string>
-    <string name="pref_done_channel" translatable="false">doneChannel</string>
-    <string name="pref_notification_permission" translatable="false">notificationPermission</string>
+    <string name="pref_ringtone" translatable="false">ringtone</string>
+    <string name="pref_channel" translatable="false">channel</string>
     <string name="pref_light_color_enable" translatable="false">lightColorEnable</string>
     <string name="pref_light_color" translatable="false">lightColor</string>
     <string name="pref_light_flash_rate" translatable="false">lightFlashRate</string>
@@ -124,36 +111,23 @@
     <string name="pref_timer_get_ready_vibrate" translatable="false">timerGetReadyVibrate</string>
     <string name="pref_timer_get_ready_ringtone_uri" translatable="false">timerGetReadyRingtone</string>
     <string name="pref_ready_channel" translatable="false">readyChannel</string>
-    <string name="pref_preset_select_asking" translatable="false">selectAsking</string>
     <string name="pref_clear_asking" translatable="false">clearAsking</string>
     <string name="pref_reset" translatable="false">resetButton</string>
-    <string name="pref_preset_array" translatable="false">presetArray_</string>
-    <string name="pref_preset_array_timer" translatable="false">presetArray_%1$d_timer</string>
-    <string name="pref_preset_array_sets" translatable="false">presetArray_%1$d_sets</string>
-    <string name="pref_preset_array_name" translatable="false">presetArray_%1$d_name</string>
-    <string name="pref_preset_array_displayMode" translatable="false">presetArray_%1$d_displayMode</string>
     <string name="pref_timer_service" translatable="false">timerService_</string>
     <string name="pref_timer_service_timer_end" translatable="false">timerService_timerEnd</string>
     <string name="pref_timer_service_timer_current" translatable="false">timerService_timerCurrent</string>
     <string name="pref_timer_service_timer_user" translatable="false">timerService_timerUser</string>
     <string name="pref_timer_service_sets_current" translatable="false">timerService_setsCurrent</string>
     <string name="pref_timer_service_sets_user" translatable="false">timerService_setUser</string>
-    <string name="pref_timer_service_name_user" translatable="false">timerService_nameUser</string>
-    <string name="pref_timer_service_displayMode" translatable="false">timerService_displayMode</string>
-    <string name="pref_timer_service_state" translatable="false">timerService_state</string>
-    <string name="pref_timer_service_main_activity_visible" translatable="false">timerService_mainActivityVisible</string>
-    <string name="pref_custom_color_enable" translatable="false">colorEnable</string>
-    <string name="pref_custom_color_running" translatable="false">colorRunning</string>
-    <string name="pref_custom_color_ready" translatable="false">colorReady</string>
-    <string name="pref_custom_color_done" translatable="false">colorDone</string>
-    <string name="pref_timer_text" translatable="false">timerText_</string>
-    <string name="pref_timer_text_size" translatable="false">timerText_size_%1$d_%2$d</string>
-    <string name="pref_backup" translatable="false">preferencesBackup</string>
-    <string name="pref_restore" translatable="false">preferencesRestore</string>
-    <string name="pref_background_theme_mode" translatable="false">backgroundThemeMode</string>
-    <string name="pref_dark_theme_mode" translatable="false">darkThemeMode</string>
-    <string name="pref_first_run" translatable="false">firstRun_10400</string> <!-- display new help from 10400 version code to all users -->
-    <!-- Others -->
+    <string name="pref_color_enable" translatable="false">colorEnable</string>
+    <string name="pref_color_running" translatable="false">colorRunning</string>
+    <string name="pref_color_ready" translatable="false">colorReady</string>
+    <string name="pref_color_done" translatable="false">colorDone</string>
+    <string name="pref_background_mode" translatable="false">backgroundMode</string>
+    <string name="pref_dark_mode" translatable="false">darkMode</string>
+    <string name="pref_help_screen_first_start" translatable="false">helpScreenFirstStart</string>
+    <string name="pref_step_time" translatable="false">stepTime</string>
+    <string name="pref_keep_screen_on" translatable="false">keepScreenOn</string>
     <string name="timer_separator" translatable="false">:</string>
     <!-- Timer Settings & Add Timer -->
     <string name="timer_name">Timer Name</string>
@@ -169,7 +143,19 @@
     <string name="more_settings">More settings</string>
     <string name="more_options">More Options</string>
     <string name="manual_timer">Manual timer</string>
-    <string name="no_presets_available">No presets available. Create one in Settings.</string>
+    <string name="history">History</string>
+    <string name="no_history_available">No history available yet. Start a timer to see it here.</string>
+    <string name="star_timer">Star timer</string>
+    <string name="unstar_timer">Unstar timer</string>
     <string name="close">Close</string>
     <string name="back">Back</string>
+    <string name="history_limit">History Limit</string>
+    <string name="history_limit_summary">Maximum number of timers to keep in history (%1$d)</string>
+    <string name="timer_settings_notification_title">Sound &amp; Vibration</string>
+    <string name="timer_settings_sound_title">Sound</string>
+    <string name="timer_settings_sound_summary">Play alert sound when time is out</string>
+    <string name="timer_settings_sound_default">Default notification sound</string>
+    <string name="timer_settings_choose_sound">Choose sound</string>
+    <string name="timer_settings_vibrate_title">Vibrate</string>
+    <string name="timer_settings_vibrate_summary">Vibrate when time is out</string>
 </resources>

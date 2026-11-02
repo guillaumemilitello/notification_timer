@@ -3,9 +3,10 @@ package com.notification.timer.core.data.store
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.notification.timer.core.data.diagnostics.InMemoryEventLog
+import com.notification.timer.core.data.model.HistoryRecord
 import com.notification.timer.core.data.model.LibraryData
 import com.notification.timer.core.data.model.UserSettings
-import com.notification.timer.core.domain.model.Preset
+import com.notification.timer.core.domain.model.TimerConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -29,19 +30,31 @@ class DataStoreStoreTest {
     @Test
     fun `libraryData round-trip save and load`() =
         runTest {
-            val samplePreset = Preset(id = "p1", name = "Test Preset", durationSec = 100)
+            val sampleConfig = TimerConfig(id = "c1", name = "Test Timer", durationSec = 100)
             val initialData =
                 LibraryData(
                     settings = UserSettings(timeIncrementSec = 30),
-                    presets = listOf(samplePreset),
+                    timersById = mapOf("c1" to sampleConfig),
+                    history =
+                        listOf(
+                            HistoryRecord(
+                                timerId = "c1",
+                                useCount = 3,
+                                lastUsedAtMs = 1000L,
+                                isStarred = true,
+                            ),
+                        ),
                 )
 
             dataStoreStore.saveLibraryData(initialData)
             val loaded = dataStoreStore.loadLibraryData()
 
             assertEquals(30, loaded.settings.timeIncrementSec)
-            assertEquals(1, loaded.presets.size)
-            assertEquals("Test Preset", loaded.presets[0].name)
+            assertEquals(1, loaded.timersById.size)
+            assertEquals("Test Timer", loaded.timersById["c1"]?.name)
+            assertEquals(1, loaded.history.size)
+            assertEquals(3, loaded.history[0].useCount)
+            assertTrue(loaded.history[0].isStarred)
         }
 
     @Test

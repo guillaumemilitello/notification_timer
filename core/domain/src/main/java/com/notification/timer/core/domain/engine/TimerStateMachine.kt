@@ -243,6 +243,24 @@ object TimerStateMachine {
         )
     }
 
+    fun updateAlertSettings(
+        timer: Timer,
+        soundEnabled: Boolean,
+        soundUri: String?,
+        vibrate: Boolean,
+    ): Timer =
+        timer.copy(
+            config =
+                timer.config.copy(
+                    done =
+                        timer.config.done.copy(
+                            soundEnabled = soundEnabled,
+                            sound = soundUri,
+                            vibrate = vibrate,
+                        ),
+                ),
+        )
+
     fun checkAlertsAndEnd(
         timer: Timer,
         nowElapsedMs: Long,

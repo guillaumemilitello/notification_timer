@@ -39,7 +39,7 @@ class DataStoreStore
         suspend fun saveLibraryData(data: LibraryData) =
             libraryMutex.withLock {
                 writeAtomic(libraryFile, LibraryData.serializer(), data)
-                eventLog.d("DataStoreStore", "Saved library data: ${data.presets.size} presets")
+                eventLog.d("DataStoreStore", "Saved library data: ${data.history.size} history items, ${data.timersById.size} timers")
             }
 
         suspend fun loadRuntimeData(): RuntimeData =

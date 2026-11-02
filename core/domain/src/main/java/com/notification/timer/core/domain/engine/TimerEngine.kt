@@ -1,9 +1,9 @@
 package com.notification.timer.core.domain.engine
 
 import com.notification.timer.core.domain.diagnostics.EventLog
-import com.notification.timer.core.domain.model.Preset
 import com.notification.timer.core.domain.model.Timer
 import com.notification.timer.core.domain.model.TimerCommand
+import com.notification.timer.core.domain.model.TimerConfig
 import com.notification.timer.core.domain.model.TimerState
 import com.notification.timer.core.domain.ports.AlertPlayerPort
 import com.notification.timer.core.domain.ports.TimeSource
@@ -127,7 +127,7 @@ class TimerEngine(
 
         when (command) {
             is TimerCommand.Create -> {
-                var newTimer = createTimerFromPreset(command.preset, currentList)
+                var newTimer = createTimerFromConfig(command.config, currentList)
                 if (command.startImmediately) {
                     newTimer = TimerStateMachine.start(newTimer, nowElapsedMs)
                 }
@@ -275,6 +275,23 @@ class TimerEngine(
                 }
             }
 
+            is TimerCommand.UpdateAlertSettings -> {
+                val index = currentList.indexOfFirst { it.id == command.timerId }
+                if (index != -1) {
+                    currentList[index] =
+                        TimerStateMachine.updateAlertSettings(
+                            timer = currentList[index],
+                            soundEnabled = command.soundEnabled,
+                            soundUri = command.soundUri,
+                            vibrate = command.vibrate,
+                        )
+                    eventLog?.d(
+                        "TimerEngine",
+                        "Updated alert settings for timer ${command.timerId} (soundEnabled=${command.soundEnabled}, vibrate=${command.vibrate})",
+                    )
+                }
+            }
+
             is TimerCommand.Reorder -> {
                 if (command.fromIndex in currentList.indices &&
                     command.toIndex in currentList.indices &&
@@ -347,27 +364,27 @@ class TimerEngine(
         }
     }
 
-    private fun createTimerFromPreset(
-        preset: Preset,
+    private fun createTimerFromConfig(
+        config: TimerConfig,
         existingTimers: List<Timer>,
     ): Timer {
         val id = nextTimerId++
         val existingLabels = existingTimers.map { it.label }.toSet()
         val label =
-            if (preset.name !in existingLabels) {
-                preset.name
+            if (config.name !in existingLabels) {
+                config.name
             } else {
                 var suffix = 2
-                while ("${preset.name} $suffix" in existingLabels) {
+                while ("${config.name} $suffix" in existingLabels) {
                     suffix++
                 }
-                "${preset.name} $suffix"
+                "${config.name} $suffix"
             }
 
         return Timer(
             id = id,
-            presetId = preset.id,
-            config = preset,
+            configId = config.id,
+            config = config,
             label = label,
         )
     }

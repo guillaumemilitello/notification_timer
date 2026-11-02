@@ -335,7 +335,7 @@ class NotificationRenderer
                     closeIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
-            remoteViews.setImageViewResource(R.id.buttonClose, R.drawable.ic_preset_delete)
+            remoteViews.setImageViewResource(R.id.buttonClose, R.drawable.ic_timer_delete)
             remoteViews.setOnClickPendingIntent(R.id.buttonClose, closePendingIntent)
 
             // 4. Swipe-dismiss intent (isolated per-timer dismissal)

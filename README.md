@@ -14,7 +14,6 @@ graph TD
 
     subgraph Features [Feature Modules]
         FT[":feature:timers"]
-        FP[":feature:presets"]
         FS[":feature:settings"]
     end
 
@@ -27,15 +26,12 @@ graph TD
     end
 
     A --> FT
-    A --> FP
     A --> FS
     A --> CR
     A --> CDA
 
     FT --> CU
     FT --> CD
-    FP --> CU
-    FP --> CD
     FS --> CU
     FS --> CD
 
@@ -46,12 +42,11 @@ graph TD
 
 ### Modules
 - **`:app`**: Application entry point, `MainActivity`, navigation, Hilt DI.
-- **`:feature:timers`**: Timer screen, horizontal pager, presets strip, island dialogs.
-- **`:feature:presets`**: Preset editor, numpad, alert configuration.
-- **`:feature:settings`**: Settings UI, JSON backup import/export, how-it-works page.
-- **`:core:ui`**: Material 3 theme, Recursive font, auto-sizing text.
-- **`:core:domain`**: Pure Kotlin. Models, state machine, event scheduler, `TimerEngine`. Zero Android dependencies.
-- **`:core:data`**: DataStore persistence (`library.json`, `runtime.json`), JSON codecs, backup repository.
+- **`:feature:timers`**: Timer screen, horizontal pager, timer cards, island dialogs, history list with star pinning, "Keep Screen On" header toggle.
+- **`:feature:settings`**: Settings UI, configurable history size, JSON backup import/export, how-it-works page.
+- **`:core:ui`**: Material 3 theme, Recursive font, auto-sizing text, numpad view, keep-screen-on toggle and effect.
+- **`:core:domain`**: Pure Kotlin. Models (`Timer`, `TimerConfig`, `HistoryEntry`), state machine, event scheduler, `TimerEngine`, ports (`HistoryRepository`, `DisplayPreferences`, ...). Zero Android dependencies.
+- **`:core:data`**: DataStore persistence (`library.json`, `runtime.json`), normalized JSON codecs, history repository, backup repository, display preferences.
 - **`:core:runtime`**: Foreground service, AlarmManager wakeup, notification renderer (`RemoteViews`), audio/vibration player.
 - **`:core:testing`**: Test doubles, fake clocks, in-memory stores.
 
