@@ -72,7 +72,9 @@ class TimerNotifierAdapter
 
                 val spec = buildSpec(timer, nowElapsedMs)
                 val shouldPostOnRestore =
-                    timer.state is TimerState.Running || timer.id in newlyCompletedIds
+                    timer.state is TimerState.Running ||
+                        timer.id in newlyCompletedIds ||
+                        timer.id in systemActiveIds
 
                 if (shouldPostOnRestore) {
                     val notification = renderFromSpec(timer, spec, nowElapsedMs, nowWallMs)

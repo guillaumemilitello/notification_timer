@@ -77,7 +77,6 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
-        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
         val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
@@ -85,7 +84,6 @@ class NotificationRendererTest {
         val nextBtn = root.findViewById<ImageButton>(R.id.buttonNext)
         val closeBtn = root.findViewById<ImageButton>(R.id.buttonClose)
 
-        assertEquals(View.VISIBLE, accentBar.visibility)
         assertEquals(View.VISIBLE, progressBar.visibility)
         assertEquals(250, progressBar.progress)
         assertEquals(NotificationRenderer.PROGRESS_MAX, progressBar.max)
@@ -129,12 +127,10 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
-        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val timerText = root.findViewById<TextView>(R.id.textViewTimerStatic)
         val chrono = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
 
-        assertEquals(View.VISIBLE, accentBar.visibility)
         assertEquals(View.VISIBLE, progressBar.visibility)
         assertEquals(500, progressBar.progress)
         assertEquals(View.GONE, chrono.visibility)
@@ -164,12 +160,10 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
-        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
         val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
 
-        assertEquals(View.GONE, accentBar.visibility)
         assertEquals(View.GONE, progressBar.visibility)
         assertEquals(View.VISIBLE, subtitleLabel.visibility)
         assertEquals("Done", subtitleLabel.text.toString())
@@ -196,13 +190,11 @@ class NotificationRendererTest {
             )
 
         val root = notification.contentView.apply(context, FrameLayout(context))
-        val accentBar = root.findViewById<View>(R.id.viewColorAccent)
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
         val nextBtn = root.findViewById<ImageButton>(R.id.buttonNext)
         val closeBtn = root.findViewById<ImageButton>(R.id.buttonClose)
 
-        assertEquals(View.GONE, accentBar.visibility)
         assertEquals(View.GONE, progressBar.visibility)
         assertEquals(View.VISIBLE, subtitleLabel.visibility)
         assertEquals("Time out!", subtitleLabel.text.toString())

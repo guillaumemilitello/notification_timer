@@ -240,14 +240,6 @@ class NotificationRenderer
             when (colorTheme) {
                 is NotificationColorTheme.Active -> {
                     val resolved = NotificationColorResolver.resolve(colorTheme.colorInt)
-                    remoteViews.setViewVisibility(R.id.viewColorAccent, View.VISIBLE)
-                    remoteViews.setColorStateList(
-                        R.id.viewColorAccent,
-                        "setImageTintList",
-                        ColorStateList.valueOf(resolved.dayAccentColor),
-                        ColorStateList.valueOf(resolved.nightAccentColor),
-                    )
-
                     // Accent countdown timer text with theme-contrast-safe color
                     remoteViews.setColorInt(
                         R.id.textViewTimer,
@@ -264,7 +256,6 @@ class NotificationRenderer
                 }
 
                 NotificationColorTheme.SystemDefault -> {
-                    remoteViews.setViewVisibility(R.id.viewColorAccent, View.GONE)
                     val textColorRes =
                         if (isAlerting) R.color.progress_bar_get_ready else R.color.progress_bar_timer_text
                     remoteViews.setColor(R.id.textViewTimer, "setTextColor", textColorRes)

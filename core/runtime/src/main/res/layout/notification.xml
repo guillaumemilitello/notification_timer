@@ -9,16 +9,6 @@
     android:orientation="horizontal"
     tools:ignore="HardcodedText,ContentDescription">
 
-    <ImageView
-        android:id="@+id/viewColorAccent"
-        android:layout_width="3dp"
-        android:layout_height="36dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="8dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/notification_accent_bar"
-        android:visibility="gone" />
-
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="40dp"
