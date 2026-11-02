@@ -344,4 +344,98 @@ class TimerEngineTest {
 
             engineScope.cancel()
         }
+
+    @Test
+    fun `notifications are updated before runtime state is saved to disk`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            val engineScope = TestScope(dispatcher)
+            val clock = FakeTimeSource()
+            val callOrder = mutableListOf<String>()
+
+            val store =
+                object : TimerStore {
+                    override suspend fun saveTimers(timers: List<Timer>) {}
+
+                    override suspend fun saveRuntimeState(
+                        timers: List<Timer>,
+                        nextTimerId: Int,
+                    ) {
+                        callOrder.add("saveRuntimeState")
+                    }
+
+                    override suspend fun loadTimers(): List<Timer> = emptyList()
+
+                    override suspend fun loadNextTimerId(): Int = 1000
+                }
+
+            val notifier =
+                object : TimerNotifierPort {
+                    override fun updateNotifications(timers: List<Timer>) {
+                        callOrder.add("updateNotifications")
+                    }
+                }
+
+            val engine = TimerEngine(clock, store, NoOpWakeupScheduler(), NoOpAlertPlayer(), notifier)
+            engine.start(engineScope)
+            runCurrent()
+
+            engine.submitCommand(
+                TimerCommand.Create(
+                    config = TimerConfig(id = "c1", name = "OrderCheck", durationSec = 60),
+                    startImmediately = true,
+                ),
+            )
+            runCurrent()
+
+            val updateIndex = callOrder.indexOf("updateNotifications")
+            val saveIndex = callOrder.indexOf("saveRuntimeState")
+            assertTrue("updateNotifications must be called", updateIndex != -1)
+            assertTrue("saveRuntimeState must be called", saveIndex != -1)
+            assertTrue(
+                "updateNotifications ($updateIndex) must execute before saveRuntimeState ($saveIndex)",
+                updateIndex < saveIndex,
+            )
+
+            engineScope.cancel()
+        }
+
+    @Test
+    fun `Wakeup command triggers prompt tick and completes due timer`() =
+        runTest {
+            val dispatcher = StandardTestDispatcher(testScheduler)
+            val engineScope = TestScope(dispatcher)
+            val clock = FakeTimeSource()
+            val store = InMemoryTimerStore()
+            val notifier = RecordingNotifier()
+            val engine = TimerEngine(clock, store, NoOpWakeupScheduler(), NoOpAlertPlayer(), notifier)
+            engine.start(engineScope)
+            runCurrent()
+
+            engine.submitCommand(
+                TimerCommand.Create(
+                    config = TimerConfig(id = "w1", name = "WakeCheck", durationSec = 10),
+                    startImmediately = true,
+                ),
+            )
+            runCurrent()
+
+            val timer = engine.timers.value.first()
+            assertTrue(timer.state is TimerState.Running)
+
+            // Advance clock past timer end (10s = 10_000ms)
+            clock.elapsedMs += 10_000L
+
+            // Submit Wakeup command
+            engine.submitCommand(TimerCommand.Wakeup)
+            runCurrent()
+
+            val finishedTimer = engine.timers.value.first()
+            assertTrue(
+                "Timer should be completed upon wakeup",
+                finishedTimer.state is TimerState.Ready && finishedTimer.state.isCompleted,
+            )
+
+            engineScope.cancel()
+        }
 }

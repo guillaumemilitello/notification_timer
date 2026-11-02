@@ -86,6 +86,8 @@ sealed interface TimerCommand {
     data class CloseNotification(
         val timerId: Int,
     ) : TimerCommand
+
+    data object Wakeup : TimerCommand
 }
 
 enum class TimerAction {

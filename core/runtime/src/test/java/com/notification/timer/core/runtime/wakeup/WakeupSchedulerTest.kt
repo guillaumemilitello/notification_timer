@@ -62,6 +62,18 @@ class WakeupSchedulerTest {
     }
 
     @Test
+    fun `scheduleWakeup within early margin arms alarm for exact event time`() {
+        val now = SystemClock.elapsedRealtime()
+        val eventTime = now + 1200L // 1.2s from now (< 2s margin)
+
+        scheduler.scheduleWakeup(eventTime)
+
+        val nextAlarm = shadowAlarmManager.peekNextScheduledAlarm()
+        assertNotNull("Alarm should be scheduled", nextAlarm)
+        assertEquals(eventTime, nextAlarm!!.triggerAtMs)
+    }
+
+    @Test
     fun `cancelWakeup removes scheduled alarm`() {
         val now = SystemClock.elapsedRealtime()
         scheduler.scheduleWakeup(now + 10_000L)

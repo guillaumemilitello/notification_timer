@@ -92,6 +92,8 @@ NotificationTimer 2.0 backlog, roadmap, and completed milestones.
 - [x] Prevented `0:00` and `-00:01` overruns: state advances to next set in `Ready(isCompleted = true)` with full duration, color staying green (`#4CAF50`).
 - [x] Strict per-timer notification isolation and N-timer scalability: removed 5-timer ceiling, persisted monotonic `TimerId`, per-timer `isNotificationVisible` lifecycle.
 - [x] Prevented countdown number jump on Play: evaluated elapsed time dynamically during composition and decoupled running ticker from stale remember snapshot.
+- [x] Fixed notification pause rewind and latency: offset Chronometer base by `+999ms` to match ceiling division and dispatched notification updates ahead of disk persistence.
+- [x] Prevented Chronometer negative overruns (`-00:01`): swapped to `TextView` with non-negative static text when stopped/completed, added pre-emptive freeze to static `00:00` in the final second, and armed exact completion wakeups with direct engine tick dispatch.
 
 ### Testing & Verification
 - [x] JVM unit tests covering domain state machine, event planner, config fingerprinting, and `TimerEngine`.

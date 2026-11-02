@@ -46,10 +46,11 @@ class NotificationRenderer
 
             const val PROGRESS_MAX = 1000
             const val MIN_TIMER_NOTIFICATION_ID = 1000
+            const val CHRONOMETER_CEILING_OFFSET_MS = 999L
 
             fun formatDisplayTime(millis: Long): String {
                 val totalSeconds = if (millis <= 0) 0 else (millis + 999) / 1000
-                if (totalSeconds <= 0) return "00:01"
+                if (totalSeconds <= 0) return "00:00"
                 val seconds = totalSeconds % 60
                 val minutes = (totalSeconds / 60) % 60
                 val hours = totalSeconds / 3600
@@ -192,9 +193,17 @@ class NotificationRenderer
             }
 
             val notification = builder.build()
+            val displayedText =
+                if (isRunning && remainingMs > 1000L && chronometerBaseElapsedMs != null) {
+                    "Chronometer(base=$chronometerBaseElapsedMs)"
+                } else if (isRunning && remainingMs in 1..1000L) {
+                    "00:00 (frozen)"
+                } else {
+                    formatTime(remainingMs.coerceAtLeast(0L))
+                }
             eventLog.d(
                 "NotificationRenderer",
-                "Rendered custom notification for timer $title (channel=$channelId, running=$isRunning)",
+                "Rendered notification: id=$timerId, title='$title', time='$displayedText', subtitle='$subtitle', running=$isRunning, alerting=$isAlerting, remainingMs=$remainingMs",
             )
             return notification
         }
@@ -254,19 +263,23 @@ class NotificationRenderer
             val stopTime = chronometerBaseElapsedMs ?: (now + remainingMs)
             val isFuture = stopTime > now
 
-            if (isRunning && remainingMs > 0 && isFuture) {
-                remoteViews.setChronometer(R.id.textViewTimer, stopTime, null, true)
+            // When remainingMs <= 1000L or chronometerBaseElapsedMs is null, freeze to static 00:00
+            // so SystemUI's countdown Chronometer cannot tick past zero into negative values.
+            if (isRunning && remainingMs > 1000L && chronometerBaseElapsedMs != null && isFuture) {
+                // Offset by +999ms so Chronometer's integer truncation ((base - now) / 1000)
+                // matches formatDisplayTime ceiling division ((remaining + 999) / 1000).
+                remoteViews.setViewVisibility(R.id.textViewTimer, View.VISIBLE)
+                remoteViews.setViewVisibility(R.id.textViewTimerStatic, View.GONE)
+                remoteViews.setChronometer(R.id.textViewTimer, stopTime + CHRONOMETER_CEILING_OFFSET_MS, null, true)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     remoteViews.setChronometerCountDown(R.id.textViewTimer, true)
                 }
             } else {
-                remoteViews.setChronometer(
-                    R.id.textViewTimer,
-                    0,
-                    null,
-                    false,
-                )
-                remoteViews.setTextViewText(R.id.textViewTimer, formatTime(remainingMs))
+                remoteViews.setViewVisibility(R.id.textViewTimer, View.GONE)
+                remoteViews.setChronometer(R.id.textViewTimer, 0, null, false)
+                remoteViews.setViewVisibility(R.id.textViewTimerStatic, View.VISIBLE)
+                val displayMs = if (isRunning && remainingMs in 1..1000L) 0L else remainingMs.coerceAtLeast(0L)
+                remoteViews.setTextViewText(R.id.textViewTimerStatic, formatTime(displayMs))
             }
         }
 

@@ -126,6 +126,12 @@ class TimerEngine(
         val currentList = _timers.value.toMutableList()
 
         when (command) {
+            is TimerCommand.Wakeup -> {
+                eventLog?.d("TimerEngine", "Processing wakeup tick at nowMs=$nowElapsedMs")
+                tick(nowElapsedMs)
+                return
+            }
+
             is TimerCommand.Create -> {
                 var newTimer = createTimerFromConfig(command.config, currentList)
                 if (command.startImmediately) {
@@ -305,9 +311,9 @@ class TimerEngine(
         }
 
         _timers.value = currentList
-        timerStore.saveRuntimeState(currentList, nextTimerId)
         scheduleNextWakeup(currentList, nowElapsedMs)
         timerNotifier.updateNotifications(currentList)
+        timerStore.saveRuntimeState(currentList, nextTimerId)
     }
 
     private suspend fun tick(nowElapsedMs: Long) {
@@ -339,9 +345,9 @@ class TimerEngine(
 
         if (stateChanged) {
             _timers.value = currentList
-            timerStore.saveRuntimeState(currentList, nextTimerId)
             scheduleNextWakeup(currentList, nowElapsedMs)
             timerNotifier.updateNotifications(currentList)
+            timerStore.saveRuntimeState(currentList, nextTimerId)
             lastNotificationRefreshElapsedMs = nowElapsedMs
         } else if (runningCount > 0 &&
             nowElapsedMs - lastNotificationRefreshElapsedMs >= refreshIntervalMsForRunningCount(runningCount)

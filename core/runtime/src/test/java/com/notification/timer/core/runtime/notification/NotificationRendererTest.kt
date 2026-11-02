@@ -120,10 +120,13 @@ class NotificationRendererTest {
 
         val root = notification.contentView.apply(context, FrameLayout(context))
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
-        val timerText = root.findViewById<TextView>(R.id.textViewTimer)
+        val timerText = root.findViewById<TextView>(R.id.textViewTimerStatic)
+        val chrono = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
 
         assertEquals(View.VISIBLE, progressBar.visibility)
         assertEquals(500, progressBar.progress)
+        assertEquals(View.GONE, chrono.visibility)
+        assertEquals(View.VISIBLE, timerText.visibility)
         assertEquals("00:30", timerText.text.toString())
     }
 
@@ -173,5 +176,78 @@ class NotificationRendererTest {
 
         renderer.cancelNotification(1005)
         assertNull(renderer.getActiveNotification(1005))
+    }
+
+    @Test
+    fun `running chronometer base is offset by 999ms so integer floor division matches formatDisplayTime ceiling`() {
+        val nowElapsed = android.os.SystemClock.elapsedRealtime()
+        val remainingMs = 45_200L // 45.2s remaining
+        val endsAt = nowElapsed + remainingMs
+
+        val notification =
+            renderer.renderTimerNotification(
+                timerId = 1006,
+                title = "OffsetCheck",
+                subtitle = "Set 1/1",
+                remainingMs = remainingMs,
+                durationMs = 60_000L,
+                isRunning = true,
+                chronometerBaseElapsedMs = endsAt,
+            )
+
+        val root = notification.contentView.apply(context, FrameLayout(context))
+        val chronometer = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
+
+        // The base set on chronometer must be endsAt + 999L
+        assertEquals(endsAt + NotificationRenderer.CHRONOMETER_CEILING_OFFSET_MS, chronometer.base)
+        assertEquals(View.VISIBLE, chronometer.visibility)
+        val staticView = root.findViewById<TextView>(R.id.textViewTimerStatic)
+        assertEquals(View.GONE, staticView.visibility)
+
+        // Chronometer's internal calculation: (base - now) / 1000
+        val chronometerDisplayedSeconds = (chronometer.base - nowElapsed) / 1000L
+        val formattedSeconds = ((remainingMs + 999L) / 1000L)
+        assertEquals(46L, chronometerDisplayedSeconds)
+        assertEquals(chronometerDisplayedSeconds, formattedSeconds)
+        assertEquals(NotificationRenderer.formatDisplayTime(remainingMs), "00:46")
+    }
+
+    @Test
+    fun `notification when remainingMs is zero or negative never displays negative static text`() {
+        val notification =
+            renderer.renderTimerNotification(
+                timerId = 1007,
+                title = "ZeroCheck",
+                subtitle = "Set 1/1",
+                remainingMs = -1500L,
+                durationMs = 60_000L,
+                isRunning = false,
+            )
+
+        val root = notification.contentView.apply(context, FrameLayout(context))
+        val staticView = root.findViewById<TextView>(R.id.textViewTimerStatic)
+        assertEquals(View.VISIBLE, staticView.visibility)
+        assertEquals("00:00", staticView.text.toString())
+    }
+
+    @Test
+    fun `running notification within final second freezes chronometer to static 00_00`() {
+        val notification =
+            renderer.renderTimerNotification(
+                timerId = 1008,
+                title = "FreezeCheck",
+                subtitle = "Set 1/1",
+                remainingMs = 800L,
+                durationMs = 60_000L,
+                isRunning = true,
+                chronometerBaseElapsedMs = null,
+            )
+
+        val root = notification.contentView.apply(context, FrameLayout(context))
+        val staticView = root.findViewById<TextView>(R.id.textViewTimerStatic)
+        val chronometer = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
+        assertEquals(View.VISIBLE, staticView.visibility)
+        assertEquals(View.GONE, chronometer.visibility)
+        assertEquals("00:00", staticView.text.toString())
     }
 }

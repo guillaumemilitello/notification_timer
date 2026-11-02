@@ -26,6 +26,12 @@ object EventPlanner {
             val timerEndMs = state.endsAtElapsedMs
             earliestMs = minOfNull(earliestMs, timerEndMs)
 
+            // Check 1s notification freeze point before end (to swap Chronometer with static 00:00)
+            val freezeMs = state.endsAtElapsedMs - 1000L
+            if (freezeMs > nowElapsedMs) {
+                earliestMs = minOfNull(earliestMs, freezeMs)
+            }
+
             // Check unfired alerts
             val remainingSec = ((remainingMs + 999) / 1000).toInt()
             for (alert in timer.config.alerts) {

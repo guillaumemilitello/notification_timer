@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.notification.timer.core.domain.diagnostics.EventLog
 import com.notification.timer.core.domain.engine.TimerEngine
+import com.notification.timer.core.domain.model.TimerCommand
 import com.notification.timer.core.runtime.wakeup.WakeupScheduler
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,10 +29,10 @@ class WakeupReceiver : BroadcastReceiver() {
 
         val pendingResult = goAsync()
         wakeupScheduler.acquireWakeLock(WakeupScheduler.WAKELOCK_TIMEOUT_MS)
-        eventLog.i("WakeupReceiver", "Wakeup alarm fired, processing state tick")
+        eventLog.i("WakeupReceiver", "Wakeup alarm fired, submitting wakeup command to engine")
 
         try {
-            // Engine loop will pick up and process due alerts on tick
+            timerEngine.submitCommand(TimerCommand.Wakeup)
             pendingResult.finish()
         } catch (e: Exception) {
             eventLog.e("WakeupReceiver", "Error during wakeup: ${e.message}", e)

@@ -32,9 +32,13 @@ class WakeupScheduler
 
         @SuppressLint("MissingPermission")
         fun scheduleWakeup(eventTimeElapsedRealtimeMs: Long) {
+            val now = SystemClock.elapsedRealtime()
             val triggerAtMs =
-                (eventTimeElapsedRealtimeMs - EARLY_MARGIN_MS)
-                    .coerceAtLeast(SystemClock.elapsedRealtime())
+                if (eventTimeElapsedRealtimeMs - now > EARLY_MARGIN_MS) {
+                    eventTimeElapsedRealtimeMs - EARLY_MARGIN_MS
+                } else {
+                    eventTimeElapsedRealtimeMs
+                }.coerceAtLeast(now)
 
             val pendingIntent = createWakeupPendingIntent()
 
@@ -46,7 +50,7 @@ class WakeupScheduler
                 )
                 eventLog.d(
                     "WakeupScheduler",
-                    "Armed exact wakeup for elapsedMs=$triggerAtMs (delay=${triggerAtMs - SystemClock.elapsedRealtime()}ms)",
+                    "Armed exact wakeup for elapsedMs=$triggerAtMs (delay=${triggerAtMs - now}ms)",
                 )
             } catch (e: Exception) {
                 eventLog.w("WakeupScheduler", "Failed to schedule exact alarm: ${e.message}", e)

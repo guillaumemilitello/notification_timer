@@ -41,4 +41,14 @@ class EventPlannerTest {
         // Earliest event should be Timer 1's 15s alert at 145000L
         assertEquals(145000L, earliest)
     }
+
+    @Test
+    fun `findEarliestNextEventMs plans 1s freeze point when approaching end`() {
+        val now = 100000L
+        val timer = TimerStateMachine.start(Timer(id = 1000, config = config2, label = "T2"), now) // ends at 220000
+
+        // At 1.5s before end (now = 218500L), freeze point is at 219000L (220000 - 1000)
+        val earliest = EventPlanner.findEarliestNextEventMs(listOf(timer), nowElapsedMs = 218500L)
+        assertEquals(219000L, earliest)
+    }
 }

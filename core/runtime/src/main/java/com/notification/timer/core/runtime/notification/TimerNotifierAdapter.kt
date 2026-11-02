@@ -182,7 +182,12 @@ class TimerNotifierAdapter
             val showProgress = timer.state is TimerState.Running || timer.state is TimerState.Paused
             val showNext = TimerAction.NEXT_SET in actions
             val isAlerting = timer.state is TimerState.SetDone || timer.state is TimerState.AllSetsDone
-            val chronometerBaseElapsedMs = (timer.state as? TimerState.Running)?.endsAtElapsedMs
+            val chronometerBaseElapsedMs =
+                if (isRunning && remainingMs > 1000L) {
+                    (timer.state as? TimerState.Running)?.endsAtElapsedMs
+                } else {
+                    null
+                }
 
             val progressPermille =
                 if (showProgress && durationMs > 0) {
@@ -222,6 +227,15 @@ class TimerNotifierAdapter
                     is TimerState.AllSetsDone -> timer.config.done.name
                 }
 
+            val frozenTimeText =
+                if (isRunning && remainingMs > 1000L) {
+                    null
+                } else if (isRunning && remainingMs in 1..1000L) {
+                    "00:00"
+                } else {
+                    NotificationRenderer.formatDisplayTime(remainingMs)
+                }
+
             return TimerNotificationSpec(
                 timerId = timer.id,
                 title = timer.label,
@@ -230,7 +244,7 @@ class TimerNotifierAdapter
                 isRunning = isRunning,
                 showProgress = showProgress,
                 progressPermille = progressPermille,
-                frozenTimeText = if (isRunning) null else NotificationRenderer.formatDisplayTime(remainingMs),
+                frozenTimeText = frozenTimeText,
                 chronometerBaseElapsedMs = chronometerBaseElapsedMs,
                 showNext = showNext,
                 isAlerting = isAlerting,
