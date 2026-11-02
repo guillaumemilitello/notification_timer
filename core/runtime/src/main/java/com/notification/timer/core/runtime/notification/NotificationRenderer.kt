@@ -240,7 +240,7 @@ class NotificationRenderer
             when (colorTheme) {
                 is NotificationColorTheme.Active -> {
                     val resolved = NotificationColorResolver.resolve(colorTheme.colorInt)
-                    // Accent countdown timer text with theme-contrast-safe color
+                    // Accent all text in the notification with theme-contrast-safe color
                     remoteViews.setColorInt(
                         R.id.textViewTimer,
                         "setTextColor",
@@ -253,6 +253,18 @@ class NotificationRenderer
                         resolved.dayAccentColor,
                         resolved.nightAccentColor,
                     )
+                    remoteViews.setColorInt(
+                        R.id.textViewSets_short,
+                        "setTextColor",
+                        resolved.dayAccentColor,
+                        resolved.nightAccentColor,
+                    )
+                    remoteViews.setColorInt(
+                        R.id.textViewSets,
+                        "setTextColor",
+                        resolved.dayAccentColor,
+                        resolved.nightAccentColor,
+                    )
                 }
 
                 NotificationColorTheme.SystemDefault -> {
@@ -260,6 +272,8 @@ class NotificationRenderer
                         if (isAlerting) R.color.progress_bar_get_ready else R.color.progress_bar_timer_text
                     remoteViews.setColor(R.id.textViewTimer, "setTextColor", textColorRes)
                     remoteViews.setColor(R.id.textViewTimerStatic, "setTextColor", textColorRes)
+                    remoteViews.setColor(R.id.textViewSets_short, "setTextColor", R.color.progress_bar_set_text)
+                    remoteViews.setColor(R.id.textViewSets, "setTextColor", R.color.progress_bar_set_text)
                 }
             }
         }

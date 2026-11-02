@@ -283,4 +283,22 @@ class TimerNotifierIsolationTest {
             }
         }
     }
+
+    @Test
+    fun `stopped notification retains timer setting color and does not fall back to default`() {
+        val customColor = "#9C27B0" // Purple
+        val parsedCustomColor = Color.parseColor(customColor)
+        val config = TimerConfig(id = "c1", name = "Baking", durationSec = 60, runningColor = customColor)
+        val timer = Timer(id = 2000, configId = config.id, config = config, label = "Baking")
+
+        val running = TimerStateMachine.start(timer, nowElapsedMs = clock.elapsedMs)
+        val stopped = TimerStateMachine.stop(running)
+        val visibleStopped = stopped.copy(isNotificationVisible = true)
+
+        adapter.updateNotifications(listOf(visibleStopped))
+        val notification = shadowOf(notificationManager).getNotification(2000)
+        assertNotNull(notification)
+        assertEquals(parsedCustomColor, notification.color)
+        assertFalse(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+    }
 }

@@ -207,7 +207,13 @@ class TimerNotifierAdapter
             val colorTheme: NotificationColorTheme =
                 when (state) {
                     is TimerState.Running, is TimerState.Paused -> NotificationColorTheme.Active(parsedColor)
-                    is TimerState.Ready, is TimerState.SetDone, is TimerState.AllSetsDone -> NotificationColorTheme.SystemDefault
+                    is TimerState.Ready ->
+                        if (state.isCompleted) {
+                            NotificationColorTheme.SystemDefault
+                        } else {
+                            NotificationColorTheme.Active(parsedColor)
+                        }
+                    is TimerState.SetDone, is TimerState.AllSetsDone -> NotificationColorTheme.SystemDefault
                 }
 
             val setLabel =

@@ -2,7 +2,7 @@ package com.notification.timer.core.runtime.notification
 
 sealed interface NotificationColorTheme {
     /**
-     * Used for both Running and Paused timers.
+     * Used for Running, Paused, and Ready (stopped) timers.
      * Carries the timer's active phase color (runningColor or pre-end Alert.color).
      */
     data class Active(
@@ -10,7 +10,7 @@ sealed interface NotificationColorTheme {
     ) : NotificationColorTheme
 
     /**
-     * Used when the timer is Done (Ready(isCompleted=true), SetDone, AllSetsDone) or idle Ready.
+     * Used when the timer is Done (Ready(isCompleted=true), SetDone, AllSetsDone).
      * Uses system default notification colors.
      */
     data object SystemDefault : NotificationColorTheme

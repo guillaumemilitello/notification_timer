@@ -107,6 +107,14 @@ class NotificationRendererTest {
             "Native Material 3 style never forces setColorized(true)",
             notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false),
         )
+
+        val resolved = NotificationColorResolver.resolve(Color.parseColor("#3F51B5"))
+        val chrono = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
+        val staticTimer = root.findViewById<TextView>(R.id.textViewTimerStatic)
+        assertEquals(resolved.dayAccentColor, chrono.currentTextColor)
+        assertEquals(resolved.dayAccentColor, staticTimer.currentTextColor)
+        assertEquals(resolved.dayAccentColor, shortLabel.currentTextColor)
+        assertEquals(resolved.dayAccentColor, subtitleLabel.currentTextColor)
     }
 
     @Test
@@ -130,6 +138,8 @@ class NotificationRendererTest {
         val progressBar = root.findViewById<ProgressBar>(R.id.progressBarTimer)
         val timerText = root.findViewById<TextView>(R.id.textViewTimerStatic)
         val chrono = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
+        val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
+        val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
 
         assertEquals(View.VISIBLE, progressBar.visibility)
         assertEquals(500, progressBar.progress)
@@ -139,6 +149,49 @@ class NotificationRendererTest {
 
         assertEquals(Color.parseColor("#FFFFFF"), notification.color)
         assertFalse(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+
+        val resolved = NotificationColorResolver.resolve(Color.parseColor("#FFFFFF"))
+        assertEquals(resolved.dayAccentColor, timerText.currentTextColor)
+        assertEquals(resolved.dayAccentColor, chrono.currentTextColor)
+        assertEquals(resolved.dayAccentColor, shortLabel.currentTextColor)
+        assertEquals(resolved.dayAccentColor, subtitleLabel.currentTextColor)
+    }
+
+    @Test
+    fun `stopped notification applies setting color to all text views and stays recognizable`() {
+        val color = Color.parseColor("#E91E63")
+        val resolved = NotificationColorResolver.resolve(color)
+        val notification =
+            renderer.renderTimerNotification(
+                timerId = 1005,
+                title = "Tea",
+                subtitle = "Ready",
+                remainingMs = 180_000L,
+                durationMs = 180_000L,
+                isRunning = false,
+                showProgress = false,
+                showNext = false,
+                isAlerting = false,
+                isDone = false,
+                isOngoing = false,
+                phaseColor = color,
+            )
+
+        val root = notification.contentView.apply(context, FrameLayout(context))
+        val timerText = root.findViewById<TextView>(R.id.textViewTimerStatic)
+        val chrono = root.findViewById<android.widget.Chronometer>(R.id.textViewTimer)
+        val shortLabel = root.findViewById<TextView>(R.id.textViewSets_short)
+        val subtitleLabel = root.findViewById<TextView>(R.id.textViewSets)
+
+        assertEquals("Tea", shortLabel.text.toString())
+        assertEquals("Ready", subtitleLabel.text.toString())
+        assertEquals("03:00", timerText.text.toString())
+
+        assertEquals(resolved.dayAccentColor, timerText.currentTextColor)
+        assertEquals(resolved.dayAccentColor, chrono.currentTextColor)
+        assertEquals(resolved.dayAccentColor, shortLabel.currentTextColor)
+        assertEquals(resolved.dayAccentColor, subtitleLabel.currentTextColor)
+        assertEquals(color, notification.color)
     }
 
     @Test
@@ -171,6 +224,9 @@ class NotificationRendererTest {
 
         assertEquals(NotificationCompat.COLOR_DEFAULT, notification.color)
         assertFalse(notification.extras.getBoolean(NotificationCompat.EXTRA_COLORIZED, false))
+
+        assertEquals(context.getColor(R.color.progress_bar_set_text), shortLabel.currentTextColor)
+        assertEquals(context.getColor(R.color.progress_bar_set_text), subtitleLabel.currentTextColor)
     }
 
     @Test
